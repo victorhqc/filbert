@@ -93,13 +93,15 @@ files change.
 - macOS **14.0 (Sonoma)** or newer.
 - To build from source: **Swift 5.9+**. Install the Xcode Command Line Tools
   with `xcode-select --install`.
+- Development tools: **SwiftFormat** and **SwiftLint**.
+  Install with `brew install swiftformat swiftlint`.
 - API keys for the providers you want to track.
 
 ## Status
 
-**Bootstrapping.** This project is in the idea and specification phase. No code
-yet — we are writing specs, establishing standards, and setting up the
-repository.
+**Early development.** The Core protocol, Keychain wrapper, and a stub z.ai
+provider are in place. The app builds and runs as a menu-bar item. Real provider
+integrations and widgets are next.
 
 See [`specs/`](specs/) for the spec files that will drive implementation.
 
