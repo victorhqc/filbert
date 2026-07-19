@@ -67,7 +67,7 @@ public final class Keychain: @unchecked Sendable {
     }
 }
 
-public enum KeychainError: Error {
+public enum KeychainError: Error, Equatable {
     case saveFailed(OSStatus)
     case loadFailed(OSStatus)
     case deleteFailed(OSStatus)

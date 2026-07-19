@@ -15,5 +15,9 @@ let package = Package(
             name: "App",
             dependencies: ["Core", "ZAIProvider"]
         ),
+        .testTarget(
+            name: "CoreTests",
+            dependencies: ["Core"]
+        ),
     ]
 )
