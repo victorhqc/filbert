@@ -1,6 +1,17 @@
 import Core
 import Foundation
 
+// MARK: - Diagnostic logging
+
+/// Lightweight stderr logger so `swift run` surfaces what z.ai actually
+/// returned. Diagnostic only — remove or gate behind a flag once the wire
+/// format is confirmed stable.
+enum ZAILog {
+    static func log(_ message: @autoclosure () -> String) {
+        FileHandle.standardError.write(Data("[ZAIProvider] \(message())\n".utf8))
+    }
+}
+
 // MARK: - Error
 
 public enum ZAIError: Error, Equatable, Sendable {
@@ -36,12 +47,13 @@ private struct ZAILimit: Decodable {
     let percentage: Double?
     let usage: Double?
     let currentValue: Double?
+    let remaining: Double?
     let nextResetTime: Int64?
     let usageDetails: [ZAIUsageDetail]?
 }
 
 private struct ZAIUsageDetail: Decodable {
-    let model: String
+    let modelCode: String
     let usage: Double?
 }
 
@@ -84,20 +96,30 @@ public struct ZAIProvider: AIProvider {
 
         var request = URLRequest(url: URL(string: "https://api.z.ai/api/monitor/usage/quota/limit")!)
         request.httpMethod = "GET"
-        request.setValue("Bearer \(apiKey)", forHTTPHeaderField: "Authorization")
+        // z.ai's monitor endpoint expects the raw token, NOT an "Authorization: Bearer …"
+        // scheme. Sending a "Bearer " prefix is rejected as unauthenticated. This holds
+        // for both regular API and Coding Plan keys — the endpoint is plan-agnostic.
+        request.setValue(apiKey, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.setValue("en-US,en", forHTTPHeaderField: "Accept-Language")
 
         let data: Data
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
         } catch {
+            ZAILog.log("network error: \(error)")
             throw ZAIError.network(error)
         }
 
         guard let httpResponse = response as? HTTPURLResponse else {
+            ZAILog.log("response was not HTTPURLResponse: \(response)")
             throw ZAIError.network(URLError(.badServerResponse))
         }
+
+        let bodyPreview = String(data: data, encoding: .utf8) ?? "<non-utf8 \(data.count) bytes>"
+        ZAILog.log("status=\(httpResponse.statusCode) body=\(bodyPreview)")
 
         guard httpResponse.statusCode == 200 else {
             throw ZAIError.http(httpResponse.statusCode)
@@ -107,6 +129,7 @@ public struct ZAIProvider: AIProvider {
         do {
             quotaResponse = try JSONDecoder().decode(ZAIQuotaResponse.self, from: data)
         } catch {
+            ZAILog.log("decoding error: \(error)")
             throw ZAIError.decoding(error)
         }
 
@@ -130,7 +153,21 @@ public struct ZAIProvider: AIProvider {
                 Date(timeIntervalSince1970: Double($0) / 1000)
             }
 
-            let used = limit.usage ?? limit.currentValue
+            // z.ai overloads these fields by limit type:
+            //  - token windows (unit 3/6): only `percentage`, no usage/currentValue
+            //  - monthly web-tool line (unit 5): `currentValue` = actual used,
+            //    `usage` = the allowance (cap), `remaining` = what's left. So here
+            //    `currentValue` is "used" and `usage` is "total" — not the reverse.
+            let used: Double?
+            let total: Double?
+            if let currentValue = limit.currentValue {
+                used = currentValue
+                total = limit.usage
+            } else {
+                used = limit.usage
+                total = nil
+            }
+
             let details = limit.usageDetails.map { details in
                 details.map { detail in
                     let value: String = if let usage = detail.usage {
@@ -138,13 +175,14 @@ public struct ZAIProvider: AIProvider {
                     } else {
                         "—"
                     }
-                    return UsageDetail(label: detail.model, value: value)
+                    return UsageDetail(label: detail.modelCode, value: value)
                 }
             }
 
             let line = UsageLine(
                 label: String(localized: String.LocalizationValue(labelKey)),
                 used: used,
+                total: total,
                 percentage: limit.percentage,
                 unit: nil,
                 resetDate: resetDate,

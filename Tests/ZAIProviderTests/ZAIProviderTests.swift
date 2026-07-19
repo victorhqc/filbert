@@ -35,7 +35,8 @@ final class ZAIProviderTests: XCTestCase {
         let request = MockURLProtocol.lastRequest
         XCTAssertEqual(request?.url?.absoluteString, "https://api.z.ai/api/monitor/usage/quota/limit")
         XCTAssertEqual(request?.httpMethod, "GET")
-        XCTAssertEqual(request?.value(forHTTPHeaderField: "Authorization"), "Bearer test-key")
+        // z.ai expects the raw token with no "Bearer " prefix.
+        XCTAssertEqual(request?.value(forHTTPHeaderField: "Authorization"), "test-key")
         XCTAssertEqual(request?.value(forHTTPHeaderField: "Accept"), "application/json")
     }
 
@@ -62,6 +63,36 @@ final class ZAIProviderTests: XCTestCase {
 
         XCTAssertEqual(fiveHour.percentage, 42)
         XCTAssertEqual(fiveHour.used, 420)
+    }
+
+    /// z.ai's monthly web-tool line carries `currentValue` (actual used) and
+    /// `usage` (the allowance/cap). `currentValue` must map to `used` and
+    /// `usage` to `total` — not the reverse.
+    func testFetchQuota_currentValueIsUsedAndUsageIsTotal() async throws {
+        let json = """
+        {
+          "data": {
+            "limits": [
+              {
+                "type": "TIME_LIMIT",
+                "unit": 5,
+                "percentage": 0,
+                "usage": 1000,
+                "currentValue": 0,
+                "remaining": 1000
+              }
+            ]
+          }
+        }
+        """.data(using: .utf8)!
+
+        MockURLProtocol.responseData = json
+        MockURLProtocol.responseStatusCode = 200
+
+        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let monthly = quota.lines[0]
+        XCTAssertEqual(monthly.used, 0)
+        XCTAssertEqual(monthly.total, 1000)
     }
 
     func testFetchQuota_ignoresUnknownTypeUnitPairs() async throws {
@@ -247,7 +278,7 @@ final class ZAIProviderTests: XCTestCase {
                 "usage": 420,
                 "nextResetTime": 1713127600000,
                 "usageDetails": [
-                  {"model": "deepseek-v3", "usage": 200}
+                  {"modelCode": "deepseek-v3", "usage": 200}
                 ]
               },
               {

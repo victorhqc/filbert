@@ -22,8 +22,12 @@ quota endpoint and maps the response into `ProviderQuota` (core 01).
   Catalog (`.xcstrings`). `Package.swift` gains `defaultLocalization: "en"` and
   bundles the catalog as a module resource.
 - Endpoint: `GET https://api.z.ai/api/monitor/usage/quota/limit`, header
-  `Authorization: Bearer <apiKey>`, `Accept: application/json`. Plain bearer
-  token — no JWT, no session cookie.
+  `Authorization: <apiKey>` — the **raw token with no `Bearer ` prefix**. z.ai's
+  monitor endpoint rejects the `Bearer` scheme as unauthenticated. Also send
+  `Accept: application/json`, `Content-Type: application/json`, and
+  `Accept-Language: en-US,en`. Plain token — no JWT, no session cookie. The same
+  token works for both regular API and Coding Plan accounts; the endpoint is
+  plan-agnostic.
 - Response shape: `data.limits[]`, each entry keyed by a `(type, unit)` pair:
   - `TOKENS_LIMIT` / unit `3` — 5-hour token window
   - `TOKENS_LIMIT` / unit `6` — weekly token window
@@ -38,7 +42,8 @@ quota endpoint and maps the response into `ProviderQuota` (core 01).
 - **Given** a non-empty API key
 - **When** `fetchQuota(apiKey:)` runs
 - **Then** it issues `GET https://api.z.ai/api/monitor/usage/quota/limit` with
-  `Authorization: Bearer <apiKey>` and `Accept: application/json`
+  `Authorization: <apiKey>` (raw token, no `Bearer ` prefix) and
+  `Accept: application/json`
 
 ### AC2: Each known `(type, unit)` maps to a labelled `UsageLine`
 - **Given** a `200` response with `data.limits[]`
