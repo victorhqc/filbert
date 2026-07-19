@@ -1,5 +1,6 @@
 import SwiftUI
 
+@MainActor
 struct SettingsView: View {
     let viewModel: QuotaViewModel
 

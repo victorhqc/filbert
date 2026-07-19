@@ -1,6 +1,7 @@
 import Core
 import SwiftUI
 
+@MainActor
 struct QuotaView: View {
     let viewModel: QuotaViewModel
 
