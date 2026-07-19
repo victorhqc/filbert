@@ -3,13 +3,13 @@ import Foundation
 
 // MARK: - Error
 
-enum ZAIError: Error, Equatable, Sendable {
+public enum ZAIError: Error, Equatable, Sendable {
     case missingKey
     case http(Int)
     case network(Error)
     case decoding(Error)
 
-    static func == (lhs: ZAIError, rhs: ZAIError) -> Bool {
+    public static func == (lhs: ZAIError, rhs: ZAIError) -> Bool {
         switch (lhs, rhs) {
         case (.missingKey, .missingKey): true
         case let (.http(l), .http(r)): l == r
@@ -67,17 +67,17 @@ private struct ZAILimitLabel {
 
 // MARK: - Provider
 
-struct ZAIProvider: AIProvider {
-    static let providerId = "zai"
-    static let providerName = "z.ai"
+public struct ZAIProvider: AIProvider {
+    public static let providerId = "zai"
+    public static let providerName = "z.ai"
 
     private let session: URLSession
 
-    init(session: URLSession = .shared) {
+    public init(session: URLSession = .shared) {
         self.session = session
     }
 
-    func fetchQuota(apiKey: String) async throws -> ProviderQuota {
+    public func fetchQuota(apiKey: String) async throws -> ProviderQuota {
         guard !apiKey.isEmpty else {
             throw ZAIError.missingKey
         }

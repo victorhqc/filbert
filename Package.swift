@@ -18,7 +18,8 @@ let package = Package(
         ),
         .executableTarget(
             name: "App",
-            dependencies: ["Core", "ZAIProvider"]
+            dependencies: ["Core", "ZAIProvider"],
+            resources: [.process("Resources")]
         ),
         .testTarget(
             name: "CoreTests",
