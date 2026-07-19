@@ -3,13 +3,18 @@ import PackageDescription
 
 let package = Package(
     name: "ai-usage",
+    defaultLocalization: "en",
     platforms: [.macOS(.v14)],
     targets: [
-        .target(name: "Core"),
+        .target(
+            name: "Core",
+            resources: [.process("Resources")]
+        ),
         .target(
             name: "ZAIProvider",
             dependencies: ["Core"],
-            path: "Sources/Providers/ZAI"
+            path: "Sources/Providers/ZAI",
+            resources: [.process("Resources")]
         ),
         .executableTarget(
             name: "App",
@@ -18,6 +23,11 @@ let package = Package(
         .testTarget(
             name: "CoreTests",
             dependencies: ["Core"]
+        ),
+        .testTarget(
+            name: "ZAIProviderTests",
+            dependencies: ["ZAIProvider"],
+            path: "Tests/ZAIProviderTests"
         ),
     ]
 )
