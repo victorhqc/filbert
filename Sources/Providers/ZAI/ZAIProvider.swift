@@ -23,9 +23,9 @@ public enum ZAIError: Error, Equatable, Sendable {
     public static func == (lhs: ZAIError, rhs: ZAIError) -> Bool {
         switch (lhs, rhs) {
         case (.missingKey, .missingKey): true
-        case let (.http(l), .http(r)): l == r
-        case let (.network(l), .network(r)): l.localizedDescription == r.localizedDescription
-        case let (.decoding(l), .decoding(r)): l.localizedDescription == r.localizedDescription
+        case let (.http(lhsVal), .http(rhsVal)): lhsVal == rhsVal
+        case let (.network(lhsVal), .network(rhsVal)): lhsVal.localizedDescription == rhsVal.localizedDescription
+        case let (.decoding(lhsVal), .decoding(rhsVal)): lhsVal.localizedDescription == rhsVal.localizedDescription
         default: false
         }
     }
@@ -145,74 +145,21 @@ public struct ZAIProvider: AIProvider {
         var weeklyLimit: ZAILimit?
 
         for limit in limits {
-            guard let labelKey = ZAILimitLabel.lookup(type: limit.type, unit: limit.unit) else {
-                continue // AC2: unrecognized pairs are ignored
-            }
-
-            let resetDate = limit.nextResetTime.map {
-                Date(timeIntervalSince1970: Double($0) / 1000)
-            }
-
-            // z.ai overloads these fields by limit type:
-            //  - token windows (unit 3/6): only `percentage`, no usage/currentValue
-            //  - monthly web-tool line (unit 5): `currentValue` = actual used,
-            //    `usage` = the allowance (cap), `remaining` = what's left. So here
-            //    `currentValue` is "used" and `usage` is "total" — not the reverse.
-            let used: Double?
-            let total: Double?
-            if let currentValue = limit.currentValue {
-                used = currentValue
-                total = limit.usage
-            } else {
-                used = limit.usage
-                total = nil
-            }
-
-            let details = limit.usageDetails.map { details in
-                details.map { detail in
-                    let value: String = if let usage = detail.usage {
-                        String(format: "%.0f", usage)
-                    } else {
-                        "—"
-                    }
-                    return UsageDetail(label: detail.modelCode, value: value)
-                }
-            }
-
-            let line = UsageLine(
-                label: String(localized: String.LocalizationValue(labelKey)),
-                used: used,
-                total: total,
-                percentage: limit.percentage,
-                unit: nil,
-                resetDate: resetDate,
-                details: details
-            )
+            guard let line = mapLimit(limit) else { continue }
             lines.append(line)
 
             // Track for headline priority (AC5)
-            if limit.type == "TOKENS_LIMIT" && limit.unit == 3 {
+            if limit.type == "TOKENS_LIMIT", limit.unit == 3 {
                 fiveHourLimit = limit
-            } else if limit.type == "TOKENS_LIMIT" && limit.unit == 6 {
+            } else if limit.type == "TOKENS_LIMIT", limit.unit == 6 {
                 weeklyLimit = limit
             }
         }
 
-        // AC5: headline follows 5-hour → weekly priority
-        let primary = fiveHourLimit ?? weeklyLimit
-        let headline: String
-
-        if let primary, let pct = primary.percentage {
-            let pctString = String(format: "%.0f%%", pct)
-            if let resetEpoch = primary.nextResetTime {
-                let resetDate = Date(timeIntervalSince1970: Double(resetEpoch) / 1000)
-                headline = "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))"
-            } else {
-                headline = pctString
-            }
-        } else {
-            headline = String(localized: "No data")
-        }
+        let headline = computeHeadline(
+            fiveHourLimit: fiveHourLimit,
+            weeklyLimit: weeklyLimit
+        )
 
         return ProviderQuota(
             providerId: Self.providerId,
@@ -221,5 +168,72 @@ public struct ZAIProvider: AIProvider {
             lines: lines,
             lastUpdated: Date()
         )
+    }
+
+    /// Maps a single z.ai limit to a UsageLine, or nil when the (type, unit)
+    /// pair is unrecognized (providers 01 AC2).
+    private func mapLimit(_ limit: ZAILimit) -> UsageLine? {
+        guard let labelKey = ZAILimitLabel.lookup(type: limit.type, unit: limit.unit) else {
+            return nil
+        }
+
+        let resetDate = limit.nextResetTime.map {
+            Date(timeIntervalSince1970: Double($0) / 1000)
+        }
+
+        // z.ai overloads these fields by limit type:
+        //  - token windows (unit 3/6): only `percentage`, no usage/currentValue
+        //  - monthly web-tool line (unit 5): `currentValue` = actual used,
+        //    `usage` = the allowance (cap), `remaining` = what's left. So here
+        //    `currentValue` is "used" and `usage` is "total" — not the reverse.
+        let used: Double?
+        let total: Double?
+        if let currentValue = limit.currentValue {
+            used = currentValue
+            total = limit.usage
+        } else {
+            used = limit.usage
+            total = nil
+        }
+
+        let details = limit.usageDetails.map { details in
+            details.map { detail in
+                let value = if let usage = detail.usage {
+                    String(format: "%.0f", usage)
+                } else {
+                    "—"
+                }
+                return UsageDetail(label: detail.modelCode, value: value)
+            }
+        }
+
+        return UsageLine(
+            label: String(localized: String.LocalizationValue(labelKey)),
+            used: used,
+            total: total,
+            percentage: limit.percentage,
+            unit: nil,
+            resetDate: resetDate,
+            details: details
+        )
+    }
+
+    /// Builds the headline string using 5-hour → weekly priority (providers 01 AC5).
+    private func computeHeadline(
+        fiveHourLimit: ZAILimit?,
+        weeklyLimit: ZAILimit?
+    ) -> String {
+        let primary = fiveHourLimit ?? weeklyLimit
+
+        if let primary, let pct = primary.percentage {
+            let pctString = String(format: "%.0f%%", pct)
+            if let resetEpoch = primary.nextResetTime {
+                let resetDate = Date(timeIntervalSince1970: Double(resetEpoch) / 1000)
+                return "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))"
+            }
+            return pctString
+        }
+
+        return String(localized: "No data")
     }
 }

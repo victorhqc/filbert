@@ -1,6 +1,5 @@
 import Core
 import XCTest
-
 @testable import ZAIProvider
 
 final class ZAIProviderTests: XCTestCase {
@@ -69,7 +68,7 @@ final class ZAIProviderTests: XCTestCase {
     /// `usage` (the allowance/cap). `currentValue` must map to `used` and
     /// `usage` to `total` — not the reverse.
     func testFetchQuota_currentValueIsUsedAndUsageIsTotal() async throws {
-        let json = """
+        let json = Data("""
         {
           "data": {
             "limits": [
@@ -84,7 +83,7 @@ final class ZAIProviderTests: XCTestCase {
             ]
           }
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
@@ -96,7 +95,7 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     func testFetchQuota_ignoresUnknownTypeUnitPairs() async throws {
-        let json = """
+        let json = Data("""
         {
           "data": {
             "limits": [
@@ -105,7 +104,7 @@ final class ZAIProviderTests: XCTestCase {
             ]
           }
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
@@ -126,7 +125,8 @@ final class ZAIProviderTests: XCTestCase {
 
         XCTAssertNotNil(fiveHour.resetDate)
         let expected = Date(timeIntervalSince1970: 1_713_127_600)
-        XCTAssertEqual(fiveHour.resetDate!.timeIntervalSince1970, expected.timeIntervalSince1970, accuracy: 1)
+        let resetDate = try XCTUnwrap(fiveHour.resetDate)
+        XCTAssertEqual(resetDate.timeIntervalSince1970, expected.timeIntervalSince1970, accuracy: 1)
     }
 
     // MARK: - AC4: usageDetails → UsageDetail rows
@@ -145,7 +145,7 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     func testFetchQuota_nilDetailsWhenAbsent() async throws {
-        let json = """
+        let json = Data("""
         {
           "data": {
             "limits": [
@@ -153,7 +153,7 @@ final class ZAIProviderTests: XCTestCase {
             ]
           }
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
@@ -175,7 +175,7 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     func testFetchQuota_headlineFallsBackToWeekly() async throws {
-        let json = """
+        let json = Data("""
         {
           "data": {
             "limits": [
@@ -183,7 +183,7 @@ final class ZAIProviderTests: XCTestCase {
             ]
           }
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
@@ -195,13 +195,13 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     func testFetchQuota_headlineNoDataWhenNoRecognizedLimits() async throws {
-        let json = """
+        let json = Data("""
         {
           "data": {
             "limits": []
           }
         }
-        """.data(using: .utf8)!
+        """.utf8)
 
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
@@ -249,7 +249,7 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     func testFetchQuota_throwsDecodingForInvalidJSON() async throws {
-        MockURLProtocol.responseData = "not json".data(using: .utf8)!
+        MockURLProtocol.responseData = Data("not json".utf8)
         MockURLProtocol.responseStatusCode = 200
 
         do {
@@ -267,7 +267,7 @@ final class ZAIProviderTests: XCTestCase {
     // MARK: - Helpers
 
     private func validResponseJSON() -> Data {
-        """
+        Data("""
         {
           "data": {
             "limits": [
@@ -297,7 +297,7 @@ final class ZAIProviderTests: XCTestCase {
             ]
           }
         }
-        """.data(using: .utf8)!
+        """.utf8)
     }
 }
 
@@ -309,8 +309,13 @@ private final class MockURLProtocol: URLProtocol {
     static var responseError: Error?
     static var lastRequest: URLRequest?
 
-    override class func canInit(with request: URLRequest) -> Bool { true }
-    override class func canonicalRequest(for request: URLRequest) -> URLRequest { request }
+    override static func canInit(with _: URLRequest) -> Bool {
+        true
+    }
+
+    override static func canonicalRequest(for request: URLRequest) -> URLRequest {
+        request
+    }
 
     override func startLoading() {
         MockURLProtocol.lastRequest = request

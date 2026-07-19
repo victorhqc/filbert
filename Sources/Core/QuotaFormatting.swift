@@ -6,7 +6,6 @@ import Foundation
 /// Time phrases build on `Date.RelativeFormatStyle`, which the OS
 /// localizes automatically.
 public enum QuotaFormatting {
-
     /// Returns a localized countdown string for a future reset date.
     ///
     /// Uses `Date.RelativeFormatStyle` so the duration portion ("in 3 hours",
