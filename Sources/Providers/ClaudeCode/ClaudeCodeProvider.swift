@@ -180,24 +180,12 @@ public struct ClaudeCodeProvider: AIProvider {
 
         // Map five-hour window when present (providers 02 AC5).
         if let fiveHour = cache.rateLimits?.fiveHour {
-            lines.append(
-                UsageLine(
-                    label: String(localized: "5-hour window"),
-                    percentage: fiveHour.usedPercentage,
-                    resetDate: Date(timeIntervalSince1970: fiveHour.resetsAt)
-                )
-            )
+            lines.append(usageLine(label: String(localized: "5-hour window"), window: fiveHour))
         }
 
         // Map seven-day window when present (providers 02 AC5).
         if let sevenDay = cache.rateLimits?.sevenDay {
-            lines.append(
-                UsageLine(
-                    label: String(localized: "Weekly"),
-                    percentage: sevenDay.usedPercentage,
-                    resetDate: Date(timeIntervalSince1970: sevenDay.resetsAt)
-                )
-            )
+            lines.append(usageLine(label: String(localized: "Weekly"), window: sevenDay))
         }
 
         let headline = computeHeadline(
@@ -222,23 +210,42 @@ public struct ClaudeCodeProvider: AIProvider {
         )
     }
 
+    /// Builds one usage line for a window: a percentage (rendered as a bar
+    /// when present) and a reset countdown (when the reset time is known).
+    private func usageLine(label: String, window: Window) -> UsageLine {
+        UsageLine(
+            label: label,
+            percentage: window.usedPercentage,
+            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) }
+        )
+    }
+
     /// Builds the headline using 5-hour → weekly priority
     /// (providers 02 AC6), reusing the shared `QuotaFormatting.countdown(to:)`
     /// helper so the countdown phrase is identical across providers
-    /// (providers 01 AC5).
+    /// (providers 01 AC5): `"35% · resets in 4 hours"`. Falls back to the
+    /// countdown alone if a window somehow has a reset but no percentage.
     private func computeHeadline(
         fiveHour: Window?,
         sevenDay: Window?
     ) -> String {
-        let primary = fiveHour ?? sevenDay
-
-        if let primary, primary.usedPercentage.isFinite {
-            let pctString = String(format: "%.0f%%", primary.usedPercentage)
-            let resetDate = Date(timeIntervalSince1970: primary.resetsAt)
-            return "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))"
+        guard let primary = fiveHour ?? sevenDay else {
+            return String(localized: "No data")
         }
 
-        return String(localized: "No data")
+        let countdown = primary.resetsAt.map {
+            QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
+        }
+
+        if let usedPercentage = primary.usedPercentage, usedPercentage.isFinite {
+            let pctString = String(format: "%.0f%%", usedPercentage)
+            if let countdown {
+                return "\(pctString) · \(countdown)"
+            }
+            return pctString
+        }
+
+        return countdown ?? String(localized: "No data")
     }
 }
 

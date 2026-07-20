@@ -40,15 +40,33 @@ struct RateLimits: Codable {
 }
 
 /// One usage window: a used-percentage value and a reset timestamp.
+///
+/// Two independent sources populate this, and both produce the same shape
+/// (providers 03):
+///   - The **statusline helper** (providers 02) fires only in Claude Code's
+///     interactive TUI and writes `used_percentage` + `resets_at`.
+///   - The **refresher** (providers 03) spawns `claude -p "/usage"`
+///     headlessly and parses the same `NN% used · resets …` figures out of
+///     that command's text — so it works without an interactive session
+///     (e.g. for users driving Claude Code through Zed).
+///
+/// Both fields are optional so a partial parse (a percentage whose reset
+/// phrase we couldn't parse, say) still surfaces what it has rather than
+/// dropping the whole window.
 struct Window: Codable {
     /// Percentage of the window consumed (0–100).
-    let usedPercentage: Double
+    let usedPercentage: Double?
     /// Unix epoch **seconds** when this window resets (providers 02 AC5).
-    let resetsAt: TimeInterval
+    let resetsAt: TimeInterval?
 
     enum CodingKeys: String, CodingKey {
         case usedPercentage = "used_percentage"
         case resetsAt = "resets_at"
+    }
+
+    init(usedPercentage: Double? = nil, resetsAt: TimeInterval? = nil) {
+        self.usedPercentage = usedPercentage
+        self.resetsAt = resetsAt
     }
 }
 

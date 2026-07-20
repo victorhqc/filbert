@@ -33,8 +33,17 @@ public enum ClaudeCodeRefresherError: Error, Equatable, Sendable {
 
 // MARK: - Refresher (providers 03 AC1, AC2, AC4, AC5)
 
-/// Spawns `claude --model haiku -p …` on demand to repopulate the statusline
-/// cache, then terminates the process after a bounded wait (providers 03).
+/// Spawns `claude -p "/usage"` on demand, parses the usage percentages and
+/// reset times out of that command's text output, and writes the shared
+/// cache — then terminates the process after a bounded wait (providers 03).
+///
+/// This is the headless refresh path. Unlike the statusline helper
+/// (providers 02), which only fires inside Claude Code's interactive TUI, a
+/// `claude -p` run never renders a status line — so the refresher cannot rely
+/// on the helper being invoked. Instead it runs the `/usage` command (which
+/// prints the same `NN% used · resets …` figures the TUI shows) and writes
+/// the cache itself. This makes the Refresh button work for users who drive
+/// Claude Code through an editor (e.g. Zed) and never open the TUI.
 ///
 /// The refresher is an `actor` because the debounce timestamp and the
 /// in-flight task slot both need serialized mutation (providers 03 AC4).
@@ -54,18 +63,33 @@ public actor ClaudeCodeRefresher {
     /// share the same cadence.
     static let spawnDebounceSeconds: TimeInterval = 60
 
-    /// Argv passed to the `claude` binary (providers 03 AC1). Each flag
-    /// pulls its weight — see the spec's AC1 for the rationale per flag.
+    /// Argv passed to the `claude` binary (providers 03 AC1). Notes on order
+    /// and choice:
+    ///   - `-p "/usage"` runs the built-in usage command non-interactively;
+    ///     its text output carries the session (5-hour) and week (7-day)
+    ///     percentages and reset times.
+    ///   - `--output-format json` wraps that text in a single JSON object so
+    ///     we read it cleanly from the `result` field (no `--verbose` needed,
+    ///     unlike `stream-json`).
+    ///   - `--model haiku` / `--max-turns 1` bound the work in case `/usage`
+    ///     ever triggers a model turn; `/usage` is otherwise model-free.
+    ///   - `--no-session-persistence` avoids a throwaway session on disk.
+    ///   - `--tools ""` disables every tool (CLI: `""` means "no tools"). It
+    ///     is variadic, so it must be followed by another *flag* — never by
+    ///     the positional prompt — otherwise it swallows the prompt and
+    ///     `claude` errors with "Input must be provided … when using --print".
+    ///     Keeping `-p "/usage"` last makes the positional prompt unambiguous.
     static let spawnArguments: [String] = [
         "--model", "haiku",
-        "-p",
         "--max-turns", "1",
         "--no-session-persistence",
         "--tools", "",
-        "ok",
+        "--output-format", "json",
+        "-p", "/usage",
     ]
 
     private let locator: ClaudeCodeLocator
+    private let cacheStore: StatuslineCacheStore
     private let spawnTimeout: TimeInterval
     private let terminateGrace: TimeInterval
     private let spawnDebounce: TimeInterval
@@ -79,24 +103,31 @@ public actor ClaudeCodeRefresher {
     /// task instead of starting a second `claude` process (providers 03 AC4).
     private var inFlightTask: Task<Void, Error>?
 
-    /// Production initializer — uses the real locator for binary resolution
-    /// and the production timeout / debounce values.
-    public init(locator: ClaudeCodeLocator = ClaudeCodeLocator()) {
+    /// Production initializer — uses the real locator for binary resolution,
+    /// the shared cache store, and the production timeout / debounce values.
+    public init(
+        locator: ClaudeCodeLocator = ClaudeCodeLocator(),
+        cacheStore: StatuslineCacheStore = StatuslineCacheStore()
+    ) {
         self.locator = locator
+        self.cacheStore = cacheStore
         spawnTimeout = Self.spawnTimeoutSeconds
         terminateGrace = Self.terminateGraceSeconds
         spawnDebounce = Self.spawnDebounceSeconds
     }
 
-    /// Test-only initializer that overrides the timeout / debounce windows.
-    /// Used by `ClaudeCodeRefresherTests` to keep the timeout test fast.
+    /// Test-only initializer that overrides the cache store and the timeout /
+    /// debounce windows. Used by `ClaudeCodeRefresherTests` to point the cache
+    /// at a temp file and keep the timeout test fast.
     init(
         locator: ClaudeCodeLocator,
+        cacheStore: StatuslineCacheStore = StatuslineCacheStore(),
         spawnTimeout: TimeInterval,
         terminateGrace: TimeInterval,
         spawnDebounce: TimeInterval
     ) {
         self.locator = locator
+        self.cacheStore = cacheStore
         self.spawnTimeout = spawnTimeout
         self.terminateGrace = terminateGrace
         self.spawnDebounce = spawnDebounce
@@ -140,9 +171,10 @@ public actor ClaudeCodeRefresher {
         // follow-up clicks within the debounce window (providers 03 AC4).
         lastSpawnAt = Date()
 
-        let task = Task<Void, Error> { [locator, spawnTimeout, terminateGrace] in
+        let task = Task<Void, Error> { [locator, cacheStore, spawnTimeout, terminateGrace] in
             try await Self.runSpawnOnce(
                 locator: locator,
+                cacheStore: cacheStore,
                 spawnTimeout: spawnTimeout,
                 terminateGrace: terminateGrace
             )
@@ -157,12 +189,15 @@ public actor ClaudeCodeRefresher {
     // MARK: - Spawn lifecycle (providers 03 AC1, AC2)
 
     /// Resolves the binary, spawns it with the documented argv, waits for
-    /// exit or the bounded timeout, and terminates the process on timeout.
-    /// Non-timeout failures are logged and swallowed; only `binaryNotFound`
-    /// is surfaced to the caller because the cache cannot be refreshed at
-    /// all without the binary.
+    /// exit or the bounded timeout, then parses the captured stdout and writes
+    /// the cache. Non-timeout failures are logged and swallowed; only
+    /// `binaryNotFound` is surfaced to the caller because nothing can be
+    /// refreshed without the binary. When stdout yields no `rate_limit_event`
+    /// (spawn failed, logged out, CLI drift), the cache is left untouched so a
+    /// failed refresh never clobbers previously good data (providers 03 AC6).
     private static func runSpawnOnce(
         locator: ClaudeCodeLocator,
+        cacheStore: StatuslineCacheStore,
         spawnTimeout: TimeInterval,
         terminateGrace: TimeInterval
     ) async throws {
@@ -176,10 +211,12 @@ public actor ClaudeCodeRefresher {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: binaryPath)
         process.arguments = spawnArguments
-        // Standard streams are intentionally not redirected: the child
-        // inherits the parent's descriptors, which for a GUI menu-bar app
-        // effectively discard the response text. The cache write is the
-        // only side effect we care about (providers 03 AC1).
+        // Capture stdout — that's where the `rate_limit_event` lands in
+        // stream-json mode. stderr is discarded: we never surface the child's
+        // diagnostics, and dropping it keeps a GUI menu-bar app quiet.
+        let stdoutPipe = Pipe()
+        process.standardOutput = stdoutPipe
+        process.standardError = FileHandle.nullDevice
         process.environment = environment
 
         ClaudeCodeRefresherLog.log(
@@ -200,6 +237,22 @@ public actor ClaudeCodeRefresher {
             spawnTimeout: spawnTimeout,
             terminateGrace: terminateGrace
         )
+
+        // Read after exit: the `/usage` JSON output is a few KB — well under
+        // the OS pipe buffer — so no concurrent drain is needed to avoid a
+        // write-side stall. Once the process is reaped the write end is closed
+        // and this returns immediately.
+        let output = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
+
+        let windows = parseUsageWindows(fromUsageJSON: output)
+        guard !windows.isEmpty else {
+            ClaudeCodeRefresherLog.log(
+                "runSpawnOnce: no usage figures in \(output.count) bytes of stdout — cache left as-is"
+            )
+            return
+        }
+
+        mergeAndWriteCache(windows: windows, into: cacheStore)
     }
 
     /// Awaits process exit via `terminationHandler`, with a bounded timeout

@@ -12,6 +12,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
     private var tmpDir: URL!
     private var invocationLogURL: URL!
     private var invocationCountURL: URL!
+    private var cacheURL: URL!
 
     override func setUp() {
         super.setUp()
@@ -23,6 +24,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
         invocationLogURL = tmpDir.appendingPathComponent("invocations.log")
         invocationCountURL = tmpDir.appendingPathComponent("invocations.count")
+        cacheURL = tmpDir.appendingPathComponent("claude-code.json")
     }
 
     override func tearDown() {
@@ -32,7 +34,25 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         tmpDir = nil
         invocationLogURL = nil
         invocationCountURL = nil
+        cacheURL = nil
         super.tearDown()
+    }
+
+    /// A refresher wired to the temp cache file so tests never touch the real
+    /// `~/.cache/ai-usage/claude-code.json`.
+    private func makeRefresher(
+        binaryPath: String?,
+        spawnTimeout: TimeInterval = 30,
+        terminateGrace: TimeInterval = 2,
+        spawnDebounce: TimeInterval = 60
+    ) -> ClaudeCodeRefresher {
+        ClaudeCodeRefresher(
+            locator: ClaudeCodeLocator(injectedPath: binaryPath),
+            cacheStore: StatuslineCacheStore(cacheURL: cacheURL),
+            spawnTimeout: spawnTimeout,
+            terminateGrace: terminateGrace,
+            spawnDebounce: spawnDebounce
+        )
     }
 
     // MARK: - AC1: argv is exactly the documented flags
@@ -46,9 +66,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             exit 0
             """
         )
-        let refresher = ClaudeCodeRefresher(
-            locator: ClaudeCodeLocator(injectedPath: fakeBinary.path)
-        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
         try await refresher.refresh()
 
@@ -58,6 +76,90 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             logged,
             ClaudeCodeRefresher.spawnArguments.joined(separator: " ")
         )
+    }
+
+    // MARK: - AC1 (providers 03): stream-json output is parsed into the cache
+
+    func testRefresh_parsesUsageOutputIntoCache() async throws {
+        // The fake binary emits what `claude -p "/usage" --output-format json`
+        // emits: a JSON object whose `result` holds the usage text.
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-usage",
+            body: usageFakeBinaryBody(session: 77, week: 37)
+        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+
+        try await refresher.refresh()
+
+        let cache = try XCTUnwrap(
+            StatuslineCacheStore(cacheURL: cacheURL).read(),
+            "Refresher should have written a cache from the /usage output"
+        )
+        let fiveHour = try XCTUnwrap(cache.rateLimits?.fiveHour)
+        XCTAssertEqual(fiveHour.usedPercentage, 77)
+        XCTAssertNotNil(fiveHour.resetsAt, "reset phrase should parse to a timestamp")
+
+        let sevenDay = try XCTUnwrap(cache.rateLimits?.sevenDay)
+        XCTAssertEqual(sevenDay.usedPercentage, 37)
+        XCTAssertNotNil(sevenDay.resetsAt)
+    }
+
+    // MARK: - Reset-phrase parsing
+
+    func testParseResetPhrase_decodesMonthDayTimeInZone() throws {
+        let epoch = try XCTUnwrap(
+            ClaudeCodeRefresher.parseResetPhrase("Jul 21 at 12:59am (Europe/Berlin)")
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "Europe/Berlin"))
+        let comps = calendar.dateComponents(
+            [.month, .day, .hour, .minute],
+            from: Date(timeIntervalSince1970: epoch)
+        )
+        XCTAssertEqual(comps.month, 7)
+        XCTAssertEqual(comps.day, 21)
+        XCTAssertEqual(comps.hour, 0) // 12:59am → 00:59
+        XCTAssertEqual(comps.minute, 59)
+    }
+
+    func testParseResetPhrase_handlesHourWithoutMinutesAndPM() throws {
+        let epoch = try XCTUnwrap(
+            ClaudeCodeRefresher.parseResetPhrase("Dec 3 at 11pm (America/New_York)")
+        )
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = try XCTUnwrap(TimeZone(identifier: "America/New_York"))
+        let comps = calendar.dateComponents([.month, .day, .hour], from: Date(timeIntervalSince1970: epoch))
+        XCTAssertEqual(comps.month, 12)
+        XCTAssertEqual(comps.day, 3)
+        XCTAssertEqual(comps.hour, 23) // 11pm → 23:00
+    }
+
+    // MARK: - AC6 (providers 03): a spawn with no usable output never clobbers
+
+    func testRefresh_leavesCacheUntouchedWhenNoUsage() async throws {
+        // Seed a good cache (as the statusline helper would).
+        try StatuslineCacheStore(cacheURL: cacheURL).write(
+            StatuslineCache(
+                writtenAt: 1000,
+                rateLimits: RateLimits(
+                    fiveHour: Window(usedPercentage: 42, resetsAt: 2000),
+                    sevenDay: nil
+                )
+            )
+        )
+
+        // A spawn that prints nothing on stdout (e.g. logged out / CLI drift).
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-empty",
+            body: "#!/bin/bash\nexit 1\n"
+        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+
+        try await refresher.refresh()
+
+        let cache = try XCTUnwrap(StatuslineCacheStore(cacheURL: cacheURL).read())
+        XCTAssertEqual(cache.writtenAt, 1000, "cache must be left exactly as it was")
+        XCTAssertEqual(cache.rateLimits?.fiveHour?.usedPercentage, 42)
     }
 
     // MARK: - AC2: a hung process is terminated within the timeout + grace
@@ -75,11 +177,10 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         // itself is a fake `sleep 60`, simulating a process that never
         // exits. The refresher must terminate it within the configured
         // window plus the SIGKILL grace period.
-        let refresher = ClaudeCodeRefresher(
-            locator: ClaudeCodeLocator(injectedPath: fakeBinary.path),
+        let refresher = makeRefresher(
+            binaryPath: fakeBinary.path,
             spawnTimeout: 1,
-            terminateGrace: 1,
-            spawnDebounce: 60
+            terminateGrace: 1
         )
 
         let start = Date()
@@ -99,12 +200,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
 
     func testRefresh_debouncesSecondCallWithinWindow() async throws {
         let fakeBinary = try writeCountingBinary()
-        let refresher = ClaudeCodeRefresher(
-            locator: ClaudeCodeLocator(injectedPath: fakeBinary.path),
-            spawnTimeout: 30,
-            terminateGrace: 2,
-            spawnDebounce: 60
-        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
         try await refresher.refresh()
         try await refresher.refresh()
@@ -143,12 +239,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             echo counted >> "\(invocationCountURL.path)"
             """
         )
-        let refresher = ClaudeCodeRefresher(
-            locator: ClaudeCodeLocator(injectedPath: fakeBinary.path),
-            spawnTimeout: 30,
-            terminateGrace: 2,
-            spawnDebounce: 60
-        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
         // Fire both refreshes concurrently; both should await the same
         // in-flight task and only one `claude` process should run.
@@ -163,9 +254,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
     // MARK: - AC1 / Risks: binary not found surfaces as a thrown error
 
     func testRefresh_throwsBinaryNotFoundWhenLocatorReturnsNil() async throws {
-        let refresher = ClaudeCodeRefresher(
-            locator: ClaudeCodeLocator(injectedPath: nil)
-        )
+        let refresher = makeRefresher(binaryPath: nil)
 
         do {
             try await refresher.refresh()
@@ -182,17 +271,28 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         // The next call within the debounce window should also short-circuit
         // (it would be a no-op regardless, but the contract is that the
         // debounce timestamp is set on attempt).
-        let refresher = ClaudeCodeRefresher(
-            locator: ClaudeCodeLocator(injectedPath: nil),
-            spawnTimeout: 30,
-            terminateGrace: 2,
-            spawnDebounce: 60
-        )
+        let refresher = makeRefresher(binaryPath: nil)
 
         _ = try? await refresher.refresh()
         // Second call should return without throwing because it's debounced
         // (returns early before re-attempting the binary lookup).
         try await refresher.refresh()
+    }
+
+    /// Shell body for a fake `claude` that echoes a `/usage --output-format
+    /// json` payload: a single JSON object whose `result` holds the usage text
+    /// (newlines encoded as `\n`, matching what `claude` actually emits).
+    private func usageFakeBinaryBody(session: Int, week: Int) -> String {
+        let line1 = "Current session: \(session)% used · resets Jul 21 at 12:59am (Europe/Berlin)"
+        let line2 = "Current week (all models): \(week)% used · resets Jul 24 at 5:59am (Europe/Berlin)"
+        let line3 = "Current week (Fable): 0% used"
+        let result = "\(line1)\\n\(line2)\\n\(line3)"
+        return """
+        #!/bin/bash
+        cat <<'JSON'
+        {"type":"result","is_error":false,"result":"\(result)"}
+        JSON
+        """
     }
 
     /// Writes `body` to `<tmpDir>/<name>`, `chmod +x`s it, and returns the

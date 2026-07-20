@@ -1,16 +1,51 @@
 ## Objective
 
-Spawn a window-less `claude -p` child process with Haiku when the user
-manually clicks the Refresh button so the statusline cache is repopulated
-without the user having to switch to Claude Code and prompt manually.
+Spawn a window-less `claude -p "/usage"` child process when the user manually
+clicks the Refresh button, parse the usage percentages and reset times out of
+that command's output, and write the shared cache — so usage refreshes
+without the user having to open Claude Code's TUI and prompt manually. This
+makes the Refresh button work for users who drive Claude Code through an
+editor (e.g. Zed) and never see the interactive status line.
+
+## Discovery — why `-p` cannot reuse the statusline, and what to use instead
+
+The original plan assumed a `claude -p` spawn would trigger Claude Code's
+`statusLine` command, which would repopulate the cache via the helper
+(providers 02). Empirically that is **false**, and the search for a headless
+data source went through two iterations:
+
+- The status line is a **TUI-only** feature. In `--print` / non-interactive
+  mode Claude Code never renders it, so the configured `statusLine` command
+  (our cache writer) is never invoked and the cache is never written.
+- Driving an interactive session headlessly instead (via a PTY) hits the
+  workspace-trust gate and is far too fragile to rely on.
+- `claude -p … --output-format stream-json --verbose` emits a
+  `rate_limit_event` on stdout headlessly, but it carries only reset times +
+  status + overage — **no `used_percentage`**. Rejected: the percentage is
+  the headline number users want.
+- `claude -p "/usage"` prints the **same figures the TUI shows**, headlessly,
+  inside the JSON `result` field:
+  ```
+  Current session: 77% used · resets Jul 21 at 12:59am (Europe/Berlin)
+  Current week (all models): 37% used · resets Jul 24 at 5:59am (Europe/Berlin)
+  Current week (Fable): 0% used
+  ```
+  "Current session" is the 5-hour window; "Current week (all models)" is the
+  7-day window. This is the data source the refresher uses: it gives the
+  percentage **and** the reset time, in the same shape the statusline helper
+  writes. `/usage` is model-free, so the spawn costs effectively nothing.
+  Trade-off: the text is English-oriented, so parsing is best-effort — an
+  unmatched line is skipped, never guessed.
 
 ## Context
 
 - `Sources/Providers/ClaudeCode/ClaudeCodeRefresher.swift` — new file. Owns
-  spawning `claude --model haiku -p …` as a child `Process`, waiting for
-  process exit (Haiku + `--max-turns 1` keeps this bounded), then returning.
-  Owns the debounce window and in-flight coalescing. Reuses
-  `ClaudeCodeLocator` from (providers 02 AC1) for binary resolution.
+  spawning `claude --model haiku -p "/usage" --output-format json` as a child
+  `Process`, waiting for process exit (bounded), capturing stdout, parsing
+  the session/week percentages + reset phrases, and **writing the cache
+  itself** via `StatuslineCacheStore`. The percentage/reset parsing lives in
+  `ClaudeCodeRefresher+Parse.swift`. Owns the debounce window and in-flight
+  coalescing. Reuses `ClaudeCodeLocator` from (providers 02 AC1).
 - `Sources/Core/ProviderProtocol.swift` — adds a new `ProactiveRefreshable`
   protocol alongside `AIProvider`:
   ```swift
@@ -35,45 +70,58 @@ without the user having to switch to Claude Code and prompt manually.
   a separate spec.
 - `Sources/Providers/ClaudeCode/ClaudeCodeProvider.swift` — declares
   `extension ClaudeCodeProvider: ProactiveRefreshable` and implements
-  `proactiveRefresh()` by delegating to the refresher. `fetchQuota`,
-  cache mapping (providers 02 AC5/AC6), and staleness semantics
-  (providers 02 AC5b/AC10) are unchanged.
+  `proactiveRefresh()` by delegating to the refresher. `fetchQuota` and
+  staleness semantics (providers 02 AC5b/AC10) are unchanged. The cache
+  **mapping** handles a `resets_at` that may be absent (reset phrase didn't
+  parse): the line then shows the percentage bar without a countdown.
+- `Sources/Providers/ClaudeCode/StatuslineCacheStore.swift` — the `Window`
+  model's `used_percentage` and `resets_at` are both optional, so a partial
+  parse still surfaces what it has. Backward compatible: a statusline-written
+  cache (which always has both) decodes unchanged.
 - `Sources/Providers/ClaudeCode/Resources/statusline_helper.swift` —
-  unchanged. The helper remains the sole writer of the cache (providers 02
-  AC7); the refresher never writes the cache directly.
+  unchanged. The helper is **no longer the sole writer**: it owns the
+  percentage writes during interactive TUI use, and the refresher writes the
+  same-shaped percentage windows on the headless `/usage` path. Both use the
+  same atomic temp-file + rename contract (providers 02 AC7), so a concurrent
+  reader never sees a torn file. The refresher merges per-window over the
+  existing cache and only writes when it parsed at least one window, so a
+  failed spawn never clobbers previously good data.
 - Builds on (providers 02). Reverses the "synthetic call explicitly
-  rejected" stance documented in (providers 02 Risks): the user has
-  accepted the small Haiku quota cost in exchange for fresher data with
-  less manual context-switching.
+  rejected" stance documented in (providers 02 Risks): the user has accepted
+  the (near-zero, `/usage` is model-free) spawn cost in exchange for fresher
+  data with less manual context-switching.
 - Related: (core 03) auth shape. This provider is still `.apiKeyFree`;
   the spawn reuses the user's existing Claude Code login and never touches
   the Keychain.
 
 ## Acceptance Criteria
 
-### AC1: Refresher spawns `claude -p` with Haiku and minimal flags
+### AC1: Refresher spawns `claude -p "/usage"` in JSON mode
 - **Given** the `claude` binary is locatable via `ClaudeCodeLocator`
   (providers 02 AC1)
 - **When** the provider asks the refresher to refresh
 - **Then** the refresher spawns the binary with argv
-  `["--model", "haiku", "-p", "--max-turns", "1",
-  "--no-session-persistence", "--tools", "", "ok"]` — no `--debug`, no
-  interactive TUI, no other flags
-- **And** `--model haiku` selects Haiku (cheapest subscription model) so
-  the spawn consumes the smallest possible slice of the user's 5h / 7d
-  windows (CLI reference: `--model` accepts aliases `sonnet`, `opus`,
-  `haiku`, `fable`)
-- **And** `--max-turns 1` caps the agent loop at one model call so the
-  process can't run away with extra turns
-- **And** `--no-session-persistence` prevents the spawn from writing a
+  `["--model", "haiku", "--max-turns", "1", "--no-session-persistence",
+  "--tools", "", "--output-format", "json", "-p", "/usage"]` — no `--debug`,
+  no interactive TUI, no other flags
+- **And** `-p "/usage"` runs the built-in usage command non-interactively;
+  its text output carries the session (5-hour) and week (7-day) percentages
+  and reset times. `/usage` is model-free, so the spawn is effectively free
+- **And** `--output-format json` wraps that text in a single JSON object so
+  the refresher reads it from the `result` field (unlike `stream-json`, this
+  does not require `--verbose`)
+- **And** `--model haiku` / `--max-turns 1` bound the work in the event
+  `/usage` ever triggers a model turn; `--no-session-persistence` prevents a
   throwaway session under `~/.claude/projects/`
-- **And** `--tools ""` disables every tool so the model only emits text
-  and cannot run Bash / Edit / etc.
-- **And** the refresher does **not** configure `standardInput`,
-  `standardOutput`, or `standardError` — the child inherits the parent's
-  descriptors, which for a GUI menu-bar app effectively discard the
-  response text. The response is intentionally ignored; the cache write
-  is the only side effect we care about
+- **And** `--tools ""` disables every tool. Because `--tools` is **variadic**
+  (`<tools...>`), it must be followed by another flag — never by the
+  positional prompt — or the CLI treats `/usage` as a tool name and errors
+  with *"Input must be provided … when using --print"*. This is why the
+  prompt (`-p "/usage"`) is pinned to the end of the argv
+- **And** the refresher captures **stdout** (via a `Pipe`), discards
+  **stderr** (`/dev/null`), and does not configure stdin. The `/usage` output
+  is a few KB — well under the OS pipe buffer — so stdout is drained after
+  the process is reaped
 - **And** the process inherits an environment where `PATH` includes the
   directory the binary was resolved from, so Claude Code's own subprocess
   lookups still succeed
@@ -132,22 +180,26 @@ without the user having to switch to Claude Code and prompt manually.
 - **And** the popover shows the existing `.loading` state for the provider
   while the spawn + cache read is in flight, then transitions to
   `.loaded` / `.error` exactly as today
-- **And** the spawned process inherits the GUI app's std streams (AC1),
-  so no Terminal window, dialog, or notification is shown by `claude`
+- **And** the spawned process's stdout is piped and stderr is discarded
+  (AC1), so no Terminal window, dialog, or notification is shown by `claude`
 - **And** if the user is actively prompting Claude Code in another
-  terminal, both processes coexist — the helper's atomic cache write
-  (providers 02 AC7) prevents torn reads
+  terminal (which drives the statusline writer), both processes coexist —
+  the atomic temp-file + rename cache write (providers 02 AC7), used by the
+  refresher too, prevents torn reads
 
-### AC6: Spawn diagnostics surface via cache `written_at`
-- **Given** the spawn ran and Claude Code invoked the statusline helper
-- **When** the provider reads the cache
-- **Then** the `written_at` timestamp is newer than the pre-spawn value,
-  confirming the spawn successfully triggered the helper
-- **And** if `written_at` did NOT advance (helper not installed, workspace
-  trust not accepted, spawn failed before any API response, etc.), the
-  provider surfaces the resulting "No data" / `.stale` state per
-  (providers 02 AC10) — it does NOT retry the spawn in the same refresh
-  tick
+### AC6: Refresh writes the cache from `/usage`, and a barren spawn never clobbers
+- **Given** the spawn ran and its `result` text yielded at least one window
+- **When** the refresher parses stdout
+- **Then** it writes the cache with a fresh `written_at` and the parsed
+  window(s) (percentage + reset), merging per-window over any existing cache
+- **And** if **no** window parsed (logged out, empty output, output not in
+  the expected English shape, spawn failed, etc.), the refresher leaves the
+  cache exactly as it was — a failed refresh never overwrites good data with
+  an empty one. The provider then surfaces whatever cache exists (or "No
+  data" / `.stale` per providers 02 AC10) and does NOT retry in the same tick
+- **And** a window whose percentage parsed but whose reset phrase did not
+  still surfaces the percentage bar, just without a countdown — a partial
+  result is never dropped wholesale
 
 ### AC7: Orthogonality — ZAI and other providers are untouched
 - **Given** the change lands
@@ -172,21 +224,24 @@ without the user having to switch to Claude Code and prompt manually.
 
 2. **New file: `ClaudeCodeRefresher.swift`.** A `Sendable` `actor` (the
    in-flight task slot + debounce timestamp require mutation) holding a
-   `ClaudeCodeLocator` plus constants `spawnTimeoutSeconds` (30),
-   `terminateGraceSeconds` (2), and `spawnDebounceSeconds` (60). Public
-   surface: `func refresh() async throws`, callable from the provider.
-   Internals: debounce check → in-flight check → spawn → await exit (or
-   timeout → SIGTERM → grace → SIGKILL). Uses `Process`; never touches
-   `URLSession` or Keychain. Does **not** redirect std streams (AC1).
+   `ClaudeCodeLocator` and a `StatuslineCacheStore` plus constants
+   `spawnTimeoutSeconds` (30), `terminateGraceSeconds` (2), and
+   `spawnDebounceSeconds` (60). Public surface: `func refresh() async throws`,
+   callable from the provider. Internals: debounce check → in-flight check →
+   spawn → await exit (or timeout → SIGTERM → grace → SIGKILL) → read piped
+   stdout → parse the `/usage` percentages + reset phrases → merge-and-write
+   the cache. Parsing lives in `ClaudeCodeRefresher+Parse.swift`. Uses
+   `Process`; never touches `URLSession` or Keychain. Captures stdout via a
+   `Pipe`, discards stderr (AC1).
 
 3. **Provider integration.** `ClaudeCodeProvider.init` grows a `refresher`
    parameter defaulting to `ClaudeCodeRefresher()`. An `extension
    ClaudeCodeProvider: ProactiveRefreshable {}` implements
    `proactiveRefresh()` by delegating to `refresher.refresh()`.
-   `fetchQuota` is **unchanged** — it still reads the cache and maps it
-   per (providers 02 AC5/AC6). The spawn always happens *before* the
-   fetch, on the manual path only (AC3); the cache read sees whatever
-   the helper wrote.
+   `fetchQuota` still reads the cache; its **mapping** tolerates a missing
+   `resets_at` (percentage bar without a countdown). The spawn always happens
+   *before* the fetch, on the manual path only (AC3); the cache read sees
+   whatever the refresher (or the statusline helper) most recently wrote.
 
 4. **View model wiring.** `QuotaViewModel` gains `manualRefresh(for:)`
    that: sets `.loading`, calls `registry.proactiveRefresh(for:)`
@@ -199,17 +254,19 @@ without the user having to switch to Claude Code and prompt manually.
 
 5. **Tests.**
    - `ClaudeCodeRefresherTests` — inject a fake binary path pointing at a
-     tiny shell script that asserts its argv matches AC1 exactly
-     (`--model haiku -p --max-turns 1 --no-session-persistence --tools ""
-     ok`) and then sleeps briefly before exiting 0. A second test asserts
-     concurrent callers share one OS process. A third asserts a second
-     call within `spawnDebounceSeconds` skips the spawn entirely. A
-     fourth asserts a hung fake process (sleep 60) is terminated within
+     tiny shell script that asserts its argv matches AC1 exactly (pinning the
+     `/usage` flags and the trailing `-p "/usage"`). One test emits a
+     `/usage` JSON payload on stdout and asserts the refresher parsed both
+     windows (percentage + reset) into the cache. Focused tests cover
+     `parseResetPhrase` across time formats (`12:59am`, `11pm`) and zones.
+     One asserts a spawn that emits no usable output leaves an existing cache
+     untouched. Others assert concurrent callers share one OS process, a
+     second call within `spawnDebounceSeconds` skips the spawn, and a hung
+     fake process (sleep 60) is terminated within
      `spawnTimeoutSeconds + terminateGraceSeconds`.
-   - `ClaudeCodeProviderTests` extension — assert
-     `proactiveRefresh()` delegates to the refresher (use a stub
-     refresher), and that `fetchQuota` is unchanged (no spawn
-     side-effect, just cache read).
+   - `ClaudeCodeProviderProactiveRefreshTests` — assert `proactiveRefresh()`
+     delegates to the refresher and that `fetchQuota` never spawns `claude`.
+     Percentage mapping is already covered by `ClaudeCodeProviderTests`.
    - `ProviderRegistryTests` extension — assert
      `proactiveRefresh(for:)` calls through to a conforming provider and
      throws `.notSupported` for a non-conforming provider.
@@ -229,47 +286,49 @@ without the user having to switch to Claude Code and prompt manually.
    click-debounced; the spawn is gated by the manual click, with its own
    60s debounce window.
 
-No code is written until this spec is reviewed.
+Implemented. The *Discovery* section above records the mid-implementation
+findings (that `-p` cannot drive the statusline, and that `stream-json` lacks
+the percentage) that reshaped the plan to "run `claude -p "/usage"`, parse its
+percentages + reset times, and write the cache".
 
 ## Risks
 
-- **Workspace trust gate.** The statusline command only runs in
-  directories where the user has accepted Claude Code's workspace-trust
-  dialog (statusline doc, Troubleshooting). When we spawn `claude` from
-  the menu-bar app, the CWD we choose must already be trusted or the
-  statusline is silently skipped — `claude --debug` logs
-  `Status line command skipped: workspace trust not accepted`. Default
-  plan: spawn with CWD set to `$HOME`, which is almost always trusted if
-  the user has ever run `claude` at all. Mitigation: AC6 surfaces the
-  skipped-statusline case as "No data" via `written_at` not advancing —
-  it never crashes the app. If `$HOME` proves not to be trusted in
-  practice, a follow-up can scan `~/.claude/projects/` for a known-good
-  directory or surface a setup hint; that complexity is deferred from
-  this spec.
-- **Quota cost — small, bounded, accepted by design.** Each manual spawn
-  bills one Haiku call with roughly prompt-cache-warm input tokens (~10
-  to low hundreds) and a one-token-ish output (`--tools ""` and
-  `--max-turns 1` cap the work). The subscription 5h / 7d windows
-  advance by a sliver — exactly the signal we want to surface. The
-  60s debounce (AC4) bounds worst-case spawns to at most ~60 per hour of
-  continuous clicking, which is not a realistic usage pattern. This is
-  the explicit trade-off vs. the no-cost / no-data status quo in
-  (providers 02).
+- **Workspace trust gate — sidestepped by not using the statusline.** The
+  statusline command only renders in an interactive TUI *and* only in a
+  trusted workspace. This is precisely why the refresher does **not** rely
+  on it: `claude -p` never renders a status line at all, so there is no
+  trust prompt and no statusline-skip to worry about. `/usage` prints its
+  figures regardless of CWD trust. (Earlier iterations tried to trigger the
+  statusline via `-p`, then to read a `stream-json` `rate_limit_event`; see
+  the *Discovery* section for why both were abandoned.)
+- **Parsing is English-oriented and CLI-format-dependent.** The `/usage`
+  output ("Current session: NN% used · resets …") is free text, not a
+  stable API. If Claude Code localizes it or rewors it, the regex stops
+  matching. Mitigation: an unmatched line is skipped (never guessed), and a
+  run that parses nothing leaves the existing cache untouched (AC6) — the
+  worst case is a stale-but-not-wrong cache, never a corrupted one. A
+  percentage that parses but whose reset phrase doesn't still surfaces the
+  bar. `parseResetPhrase` handles the observed time formats (`12:59am`,
+  `1am`, `11pm`) and infers the absent year as the nearest occurrence.
+- **Quota cost — effectively zero.** `/usage` is a model-free command that
+  reports already-tracked usage; it does not consume a 5h / 7d slice the way
+  a real model turn would. `--model haiku` / `--max-turns 1` bound the work
+  in case a future release routes `/usage` through a model. The 60s debounce
+  (AC4) further bounds spawns. This is strictly cheaper than the rejected
+  `-p "ok"` approach, which billed one Haiku call per refresh.
 - **Auth failure is invisible to us.** Claude Code's login state lives
-  outside our process. If the user is logged out, `claude -p` exits
-  non-zero before any API response, so `rate_limits` is never written
-  (statusline doc: `rate_limits` appears only "after the first API
-  response in the session"). Mitigation: AC6 surfaces this case as "No
-  data" via `written_at` not advancing. We do not proactively detect
-  auth state without spawning — there is no documented channel for it.
+  outside our process. If the user is logged out, `claude -p "/usage"` won't
+  print usable figures. Mitigation: AC6 — with nothing parsed, the refresher
+  leaves the existing cache untouched (never clobbers good data) and the
+  provider surfaces whatever cache exists / "No data". We do not proactively
+  detect auth state without spawning — there is no documented channel for it.
 - **`claude` CLI surface is not versioned.** A future Claude Code release
-  could rename `--model`, change Haiku's alias, change `-p` semantics, or
-  gate one of our flags behind a different name. Mitigation: the
-  refresher swallows non-zero exits (AC2) and the view model never
-  surfaces spawn failures as fetch errors (AC3), so a CLI change degrades
-  to "no proactive refresh" — the cache read still works as in
-  (providers 02). Tests pin the exact argv so a CLI surface drift is
-  caught at test time.
+  could rename `--model`, change `-p` semantics, gate one of our flags, or
+  change `/usage`'s output. Mitigation: the refresher swallows non-zero exits
+  (AC2), the view model never surfaces spawn failures as fetch errors (AC3),
+  and a parse miss leaves the cache untouched — so a CLI change degrades to
+  "no proactive refresh", with the cache read still working as in
+  (providers 02). Tests pin the exact argv so an argv drift is caught early.
 - **Orphaned `claude` processes.** If the menu-bar app crashes mid-spawn,
   the child process is left running with no parent waiting. Mitigation:
   AC2 uses `SIGTERM` then `SIGKILL` after a 2s grace; the `Process`
