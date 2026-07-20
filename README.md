@@ -97,6 +97,35 @@ files change.
   Install with `brew install swiftformat swiftlint`.
 - API keys for the providers you want to track.
 
+### Claude Code (optional, only if you track Claude Code usage)
+
+The Claude Code provider reads usage from the **Claude Code CLI** (`claude`),
+not from the Claude desktop app or from editor integrations like Zed's
+Claude agent. Those are separate products that share the Claude brand but
+do not feed AI Usage.
+
+- Install the CLI from your terminal:
+  ```sh
+  curl -fsSL https://claude.ai/install.sh | bash
+  ```
+- Verify in a **new** terminal session (so `PATH` reloads):
+  ```sh
+  which claude
+  # expected: /Users/<you>/.local/bin/claude
+  ```
+- The Claude desktop app (`/Applications/Claude.app`) is **not** a
+  substitute. Its bundled `claude` binary lives under a versioned
+  `~/Library/Application Support/Claude/...` path that changes on every
+  update and is not designed to be invoked directly.
+- Editor integrations (Zed, JetBrains, etc.) talk to Claude over ACP via
+  `npx @agentclientprotocol/claude-agent-acp` and do **not** touch the
+  `statusLine` hook in `~/.claude/settings.json` that AI Usage relies on.
+
+Once the CLI is on your `PATH`, open AI Usage → Settings → Claude Code and
+click **Install Helper**. The helper chains into Claude Code's
+`statusLine.command` and writes a small cache file that AI Usage reads on
+refresh.
+
 ## Status
 
 **Early development.** The Core protocol, Keychain wrapper, and a stub z.ai

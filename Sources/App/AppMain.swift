@@ -1,3 +1,4 @@
+import ClaudeCodeProvider
 import Core
 import SwiftUI
 import ZAIProvider
@@ -11,6 +12,7 @@ struct AppMain: App {
     init() {
         let registry = ProviderRegistry()
         registry.register(ZAIProvider())
+        registry.register(ClaudeCodeProvider())
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }
 

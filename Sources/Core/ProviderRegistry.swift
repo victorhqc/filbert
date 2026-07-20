@@ -18,14 +18,26 @@ public final class ProviderRegistry {
                 id: type(of: provider).providerId,
                 displayName: type(of: provider).providerName,
                 description: type(of: provider).providerDescription,
-                defaultBaseURL: type(of: provider).baseURL
+                defaultBaseURL: type(of: provider).baseURL,
+                authShape: type(of: provider).authShape
             )
         }
     }
 
-    /// Whether the given provider has a saved API key in the Keychain (ui 02 AC3/AC5).
+    /// Whether the given provider is ready to fetch (ui 02 AC3/AC5, core 03 AC5).
+    ///
+    /// For `.apiKey` providers this checks the Keychain. For `.apiKeyFree`
+    /// providers this delegates to the provider's own `isConfigured()` —
+    /// the provider owns what "configured" means for its auth shape.
     public func isConfigured(_ providerId: String) -> Bool {
-        (try? keychain.load(for: providerId)) != nil
+        guard let provider = providers[providerId] else { return false }
+        let shape = type(of: provider).authShape
+        switch shape {
+        case .apiKey:
+            return (try? keychain.load(for: providerId)) != nil
+        case .apiKeyFree:
+            return provider.isConfigured()
+        }
     }
 
     public func fetchAll() async -> [String: Result<ProviderQuota, Error>] {
@@ -37,15 +49,23 @@ public final class ProviderRegistry {
         ) { group in
             for (id, provider) in snapshot {
                 let providerId = id
+                let shape = type(of: provider).authShape
                 group.addTask {
                     do {
-                        let apiKey = try keychain.load(for: providerId)
+                        let auth: ProviderAuth
+                        switch shape {
+                        case .apiKey:
+                            let apiKey = try keychain.load(for: providerId)
+                            auth = .apiKey(apiKey)
+                        case .apiKeyFree:
+                            auth = .apiKeyFree
+                        }
                         // Core resolves the effective URL: user override when
                         // present and valid, else the provider's default (core 02 AC2/AC6).
                         let baseURL = ProviderOverrides.baseURL(for: providerId)
                             ?? type(of: provider).baseURL
                         let quota = try await provider.fetchQuota(
-                            apiKey: apiKey,
+                            auth: auth,
                             baseURL: baseURL
                         )
                         return (providerId, .success(quota))
@@ -61,5 +81,74 @@ public final class ProviderRegistry {
             }
             return results
         }
+    }
+
+    // MARK: - Setup state (core 03 AC6)
+
+    /// Fires `currentSetupState()` on every registered `.apiKeyFree` provider
+    /// concurrently. `.apiKey` providers are not called — their setup state
+    /// is always `nil` (core 03 AC6).
+    ///
+    /// The view model calls this at launch and after install/uninstall actions
+    /// to re-sync setup state without blocking the main actor.
+    public func refreshSetupStates() async -> [String: ProviderState] {
+        let snapshot = providers
+
+        return await withTaskGroup(
+            of: (String, ProviderState).self
+        ) { group in
+            for (id, provider) in snapshot {
+                let providerId = id
+                let shape = type(of: provider).authShape
+                guard shape == .apiKeyFree else { continue }
+                group.addTask {
+                    let state = await provider.currentSetupState() ?? .setup("Unknown state")
+                    return (providerId, state)
+                }
+            }
+
+            var results: [String: ProviderState] = [:]
+            for await (id, state) in group {
+                results[id] = state
+            }
+            return results
+        }
+    }
+
+    // MARK: - Helper management (ui 05)
+
+    /// Returns `true` when the provider's auth shape is `.apiKeyFree`
+    /// (ui 05 AC8). The popover uses this to suppress the "Clear Key" button.
+    public func isAPIKeyFree(_ providerId: String) -> Bool {
+        guard let provider = providers[providerId] else { return false }
+        return type(of: provider).authShape == .apiKeyFree
+    }
+
+    /// Returns `true` when the `.apiKeyFree` provider's helper can be
+    /// installed right now (binary is present). `.apiKey` providers always
+    /// return `false` — they have no helper (ui 05 AC3/AC4).
+    public func canInstallHelper(for providerId: String) -> Bool {
+        guard let provider = providers[providerId] else { return false }
+        return provider.canInstallHelper()
+    }
+
+    /// Delegates to the provider's `installHelper()`. Throws when the
+    /// provider is not registered or does not support helper installation
+    /// (ui 05 AC4).
+    public func installHelper(for providerId: String) async throws {
+        guard let provider = providers[providerId] else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.installHelper()
+    }
+
+    /// Delegates to the provider's `removeHelper()`. Throws when the
+    /// provider is not registered or does not support helper removal
+    /// (ui 05 AC5).
+    public func removeHelper(for providerId: String) async throws {
+        guard let provider = providers[providerId] else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.removeHelper()
     }
 }

@@ -30,7 +30,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         _ = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
 
@@ -51,7 +51,7 @@ final class ZAIProviderTests: XCTestCase {
         let proxy = try XCTUnwrap(URL(string: "https://proxy.example.com"))
 
         _ = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: proxy
         )
 
@@ -69,7 +69,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
 
@@ -84,7 +84,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         let fiveHour = quota.lines[0]
@@ -118,7 +118,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         let monthly = quota.lines[0]
@@ -142,7 +142,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         XCTAssertEqual(quota.lines.count, 1)
@@ -156,7 +156,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         let fiveHour = quota.lines[0]
@@ -174,7 +174,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         let fiveHour = quota.lines[0]
@@ -200,7 +200,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         XCTAssertNil(quota.lines[0].details)
@@ -213,7 +213,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
 
@@ -236,7 +236,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
 
@@ -257,7 +257,7 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
-            apiKey: "test-key",
+            auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
         XCTAssertEqual(quota.headline, "No data")
@@ -268,7 +268,7 @@ final class ZAIProviderTests: XCTestCase {
     func testFetchQuota_throwsMissingKeyForEmptyKey() async throws {
         do {
             _ = try await provider.fetchQuota(
-                apiKey: "",
+                auth: .apiKey(""),
                 baseURL: ZAIProvider.baseURL
             )
             XCTFail("Expected missingKey error")
@@ -283,7 +283,7 @@ final class ZAIProviderTests: XCTestCase {
 
         do {
             _ = try await provider.fetchQuota(
-                apiKey: "test-key",
+                auth: .apiKey("test-key"),
                 baseURL: ZAIProvider.baseURL
             )
             XCTFail("Expected http error")
@@ -297,7 +297,7 @@ final class ZAIProviderTests: XCTestCase {
 
         do {
             _ = try await provider.fetchQuota(
-                apiKey: "test-key",
+                auth: .apiKey("test-key"),
                 baseURL: ZAIProvider.baseURL
             )
             XCTFail("Expected network error")
@@ -316,7 +316,7 @@ final class ZAIProviderTests: XCTestCase {
 
         do {
             _ = try await provider.fetchQuota(
-                apiKey: "test-key",
+                auth: .apiKey("test-key"),
                 baseURL: ZAIProvider.baseURL
             )
             XCTFail("Expected decoding error")
@@ -327,6 +327,30 @@ final class ZAIProviderTests: XCTestCase {
                 XCTFail("Expected .decoding error, got \(error)")
             }
         }
+    }
+
+    // MARK: - core 03 AC3: internal-consistency assertion
+
+    func testFetchQuota_throwsInternalInconsistencyForApiKeyFree() async throws {
+        MockURLProtocol.responseData = validResponseJSON()
+        MockURLProtocol.responseStatusCode = 200
+
+        do {
+            _ = try await provider.fetchQuota(
+                auth: .apiKeyFree,
+                baseURL: ZAIProvider.baseURL
+            )
+            XCTFail("Expected internalInconsistency error")
+        } catch let error as ZAIError {
+            XCTAssertEqual(error, .internalInconsistency)
+        }
+    }
+
+    // MARK: - core 03 AC6: currentSetupState returns nil for .apiKey providers
+
+    func testCurrentSetupState_returnsNil() async {
+        let state = await provider.currentSetupState()
+        XCTAssertNil(state)
     }
 
     // MARK: - Helpers

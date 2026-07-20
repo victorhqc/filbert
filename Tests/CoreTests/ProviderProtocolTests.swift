@@ -63,4 +63,43 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(detail.label, "RPM")
         XCTAssertEqual(detail.value, "42 / 500")
     }
+
+    // MARK: - ProviderInfo (ui 05 AC1)
+
+    func testProviderInfo_includesAuthShape() throws {
+        let info = try ProviderInfo(
+            id: "test",
+            displayName: "Test",
+            description: "Desc",
+            defaultBaseURL: XCTUnwrap(URL(string: "https://example.com")),
+            authShape: .apiKeyFree
+        )
+        XCTAssertEqual(info.id, "test")
+        XCTAssertEqual(info.authShape, .apiKeyFree)
+    }
+
+    func testProviderInfo_authShapeDefaultsToApiKey_whenSetExplicitly() throws {
+        let info = try ProviderInfo(
+            id: "test",
+            displayName: "Test",
+            description: "Desc",
+            defaultBaseURL: XCTUnwrap(URL(string: "https://example.com")),
+            authShape: .apiKey
+        )
+        XCTAssertEqual(info.authShape, .apiKey)
+    }
+
+    // MARK: - ProviderSetupError (ui 05)
+
+    func testProviderSetupError_notSupported_isEquatable() {
+        XCTAssertEqual(
+            ProviderSetupError.notSupported,
+            ProviderSetupError.notSupported
+        )
+    }
+
+    func testProviderSetupError_notSupported_hasLocalizedDescription() {
+        let error = ProviderSetupError.notSupported
+        XCTAssertFalse(error.localizedDescription.isEmpty)
+    }
 }
