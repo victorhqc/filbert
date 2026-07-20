@@ -199,6 +199,48 @@ final class QuotaViewModel {
         performFetch(for: providerId)
     }
 
+    /// Manual-refresh entry point bound to the popover's Refresh button
+    /// (providers 03 AC3). Runs the provider's proactive refresh (if it
+    /// conforms to `ProactiveRefreshable`) before performing the cache read,
+    /// so a single click both spawns `claude -p` and re-reads the result.
+    ///
+    /// Auto-refresh and the initial app-launch fetch still call
+    /// `fetchQuota(for:)` directly — scheduling a proactive spawn is
+    /// deferred to a separate spec.
+    func manualRefresh(for providerId: String) {
+        guard registry.isConfigured(providerId) else {
+            log("manualRefresh: provider=\(providerId) not configured, skipping")
+            return
+        }
+        if case .loading = providerStates[providerId] {
+            log("manualRefresh: provider=\(providerId) already loading, skipping")
+            return
+        }
+        setState(.loading, for: providerId)
+        refreshDerived()
+
+        Task { [weak self] in
+            await self?.performManualRefresh(providerId: providerId)
+        }
+    }
+
+    /// Background half of `manualRefresh`. Awaits the proactive refresh
+    /// (catching `.notSupported` so non-conforming providers like ZAI fall
+    /// through to the standard fetch path) and then runs the fetch.
+    private func performManualRefresh(providerId: String) async {
+        do {
+            try await registry.proactiveRefresh(for: providerId)
+            log("performManualRefresh: provider=\(providerId) proactive refresh ok")
+        } catch ProviderSetupError.notSupported {
+            log("performManualRefresh: provider=\(providerId) does not support proactive refresh")
+        } catch {
+            log("performManualRefresh: provider=\(providerId) proactive refresh failed: \(error.localizedDescription)")
+        }
+        await MainActor.run { [weak self] in
+            self?.performFetch(for: providerId)
+        }
+    }
+
     func fetchAllQuotas() {
         log("fetchAllQuotas: starting")
         Task {

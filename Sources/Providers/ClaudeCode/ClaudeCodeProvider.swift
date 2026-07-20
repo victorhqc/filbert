@@ -65,15 +65,18 @@ public struct ClaudeCodeProvider: AIProvider {
     private let locator: ClaudeCodeLocator
     private let cacheStore: StatuslineCacheStore
     private let installer: StatuslineHelperInstaller
+    private let refresher: ClaudeCodeRefresher
 
     public init(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(),
         cacheStore: StatuslineCacheStore = StatuslineCacheStore(),
-        installer: StatuslineHelperInstaller = StatuslineHelperInstaller()
+        installer: StatuslineHelperInstaller = StatuslineHelperInstaller(),
+        refresher: ClaudeCodeRefresher = ClaudeCodeRefresher()
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
         self.installer = installer
+        self.refresher = refresher
     }
 
     // MARK: - Configuration (providers 02 AC3, core 03 AC5/AC6)
@@ -177,24 +180,12 @@ public struct ClaudeCodeProvider: AIProvider {
 
         // Map five-hour window when present (providers 02 AC5).
         if let fiveHour = cache.rateLimits?.fiveHour {
-            lines.append(
-                UsageLine(
-                    label: String(localized: "5-hour window"),
-                    percentage: fiveHour.usedPercentage,
-                    resetDate: Date(timeIntervalSince1970: fiveHour.resetsAt)
-                )
-            )
+            lines.append(usageLine(label: String(localized: "5-hour window"), window: fiveHour))
         }
 
         // Map seven-day window when present (providers 02 AC5).
         if let sevenDay = cache.rateLimits?.sevenDay {
-            lines.append(
-                UsageLine(
-                    label: String(localized: "Weekly"),
-                    percentage: sevenDay.usedPercentage,
-                    resetDate: Date(timeIntervalSince1970: sevenDay.resetsAt)
-                )
-            )
+            lines.append(usageLine(label: String(localized: "Weekly"), window: sevenDay))
         }
 
         let headline = computeHeadline(
@@ -219,22 +210,56 @@ public struct ClaudeCodeProvider: AIProvider {
         )
     }
 
+    /// Builds one usage line for a window: a percentage (rendered as a bar
+    /// when present) and a reset countdown (when the reset time is known).
+    private func usageLine(label: String, window: Window) -> UsageLine {
+        UsageLine(
+            label: label,
+            percentage: window.usedPercentage,
+            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) }
+        )
+    }
+
     /// Builds the headline using 5-hour → weekly priority
     /// (providers 02 AC6), reusing the shared `QuotaFormatting.countdown(to:)`
     /// helper so the countdown phrase is identical across providers
-    /// (providers 01 AC5).
+    /// (providers 01 AC5): `"35% · resets in 4 hours"`. Falls back to the
+    /// countdown alone if a window somehow has a reset but no percentage.
     private func computeHeadline(
         fiveHour: Window?,
         sevenDay: Window?
     ) -> String {
-        let primary = fiveHour ?? sevenDay
-
-        if let primary, primary.usedPercentage.isFinite {
-            let pctString = String(format: "%.0f%%", primary.usedPercentage)
-            let resetDate = Date(timeIntervalSince1970: primary.resetsAt)
-            return "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))"
+        guard let primary = fiveHour ?? sevenDay else {
+            return String(localized: "No data")
         }
 
-        return String(localized: "No data")
+        let countdown = primary.resetsAt.map {
+            QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
+        }
+
+        if let usedPercentage = primary.usedPercentage, usedPercentage.isFinite {
+            let pctString = String(format: "%.0f%%", usedPercentage)
+            if let countdown {
+                return "\(pctString) · \(countdown)"
+            }
+            return pctString
+        }
+
+        return countdown ?? String(localized: "No data")
+    }
+}
+
+// MARK: - ProactiveRefreshable (providers 03 AC3)
+
+extension ClaudeCodeProvider: ProactiveRefreshable {
+    /// Triggers a window-less `claude -p` spawn via the refresher before the
+    /// next `fetchQuota` call re-reads the cache (providers 03 AC3).
+    ///
+    /// The view model only invokes this on a manual Refresh click — the
+    /// auto-refresh loop still goes straight to `fetchQuota` and never
+    /// spawns `claude`.
+    public func proactiveRefresh() async throws {
+        ClaudeCodeLog.log("proactiveRefresh: delegating to refresher")
+        try await refresher.refresh()
     }
 }

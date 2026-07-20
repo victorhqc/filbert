@@ -283,9 +283,13 @@ No code is written until this spec is reviewed.
   a parse failure on write by re-reading (AC8 last bullet).
 - **Cache freshness depends on the user actually running Claude Code.** This
   is the core trade-off of Option 1′ and is surfaced honestly in the UI
-  (AC10). There is no workaround within ToS — refreshing the data requires
-  either an active Claude Code session or spending the user's quota on a
-  synthetic call, which we explicitly reject.
+  (AC10). The original stance here — that no workaround exists within ToS
+  and we explicitly reject spending the user's quota on a synthetic call —
+  was reversed by (providers 03), which spawns `claude --model haiku -p` on
+  manual Refresh click to repopulate the cache. (providers 03) owns the
+  quota-cost and debounce trade-offs; this spec's AC9/AC10 describe the
+  cache-only behavior that still applies on the auto-refresh path and on
+  providers that have not opted in to proactive refresh.
 - **`.apiKeyFree` providers break the popover's "Clear Key" affordance.**
   Today every configured provider's section ends with a "Clear Key" button
   (ui 04). That button is meaningless for Claude Code (no key exists). The

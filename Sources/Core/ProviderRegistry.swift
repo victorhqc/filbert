@@ -151,4 +151,22 @@ public final class ProviderRegistry {
         }
         try await provider.removeHelper()
     }
+
+    // MARK: - Proactive refresh (providers 03)
+
+    /// Triggers an out-of-band refresh on providers that conform to
+    /// `ProactiveRefreshable` (providers 03 AC3). Throws
+    /// `ProviderSetupError.notSupported` when the provider is not registered
+    /// or does not conform — the view model catches this and proceeds
+    /// straight to `fetchQuota`, so non-conforming providers behave
+    /// identically to before.
+    public func proactiveRefresh(for providerId: String) async throws {
+        guard let provider = providers[providerId] else {
+            throw ProviderSetupError.notSupported
+        }
+        guard let refreshable = provider as? ProactiveRefreshable else {
+            throw ProviderSetupError.notSupported
+        }
+        try await refreshable.proactiveRefresh()
+    }
 }
