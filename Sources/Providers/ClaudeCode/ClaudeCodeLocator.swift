@@ -7,7 +7,7 @@ import Foundation
 public struct ClaudeCodeLocator: Sendable {
     private let injected: Injected?
 
-    private enum Injected: Sendable {
+    private enum Injected {
         case found(String)
         case notFound
     }
