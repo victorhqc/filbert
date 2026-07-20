@@ -17,13 +17,13 @@ import Foundation
 /// doesn't match, that window is simply skipped rather than guessed.
 extension ClaudeCodeRefresher {
     /// Which cache slot a parsed line maps to.
-    enum WindowSlot: Sendable {
+    enum WindowSlot {
         case fiveHour
         case sevenDay
     }
 
     /// One usage window parsed out of the `/usage` text, tagged with its slot.
-    struct ParsedWindow: Sendable {
+    struct ParsedWindow {
         let slot: WindowSlot
         let window: Window
     }
