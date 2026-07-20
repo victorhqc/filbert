@@ -55,7 +55,9 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
 /// A minimal `AIProvider` that also conforms to `ProactiveRefreshable`, so
 /// the registry can route `proactiveRefresh(for:)` to it. `class` so the
 /// `refreshCalled` flag can mutate through the registry's stored reference.
-private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshable {
+private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshable,
+    @unchecked Sendable
+{
     static let providerId = "fake-refreshable"
     static let providerName = "Fake Refreshable"
     static let providerDescription = "Test fixture"

@@ -39,7 +39,10 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
         let provider = makeProvider()
         // The downcast must succeed so the registry can route manual refresh
         // clicks through `proactiveRefresh(for:)` (providers 03 AC7).
-        XCTAssert(provider is ProactiveRefreshable)
+        // Erase to `any AIProvider` so the compiler cannot statically prove
+        // the conformance — the test is about runtime behaviour.
+        let anyProvider: any AIProvider = provider
+        XCTAssert(anyProvider is ProactiveRefreshable)
     }
 
     // MARK: - AC3: proactiveRefresh delegates to the refresher
