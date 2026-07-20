@@ -1,139 +1,195 @@
 import Core
 import Foundation
 import Observation
-import ZAIProvider
 
 @MainActor
 @Observable
 final class QuotaViewModel {
     // MARK: - Configuration
 
-    private let providerId: String
     private let keychain: Keychain
     private let registry: ProviderRegistry
     private let refreshInterval: TimeInterval = 300
 
     // MARK: - State
 
-    private(set) var isConfigured: Bool = false
-    private(set) var isLoading: Bool = false
-    private(set) var quota: ProviderQuota?
-    private(set) var errorMessage: String?
+    /// Per-provider state map keyed by provider ID (ui 02 Plan 3).
+    ///
+    /// Must be assigned as a whole value — dictionary subscript mutation
+    /// does not trigger @Observable's setter. Use setState(_:for:) for all
+    /// mutations; it also refreshes the derived stored properties.
+    private(set) var providerStates: [String: ProviderState] = [:]
 
-    // MARK: - Auto-refresh (AC5: timer (ui 01))
+    /// Derived: provider IDs with a saved key, sorted by display name (ui 02 AC4).
+    private(set) var configuredProviderIds: [String] = []
 
-    private var refreshLoop: Task<Void, Never>?
+    /// Derived: whether any provider is configured (ui 02 AC3).
+    private(set) var hasAnyConfiguredProvider: Bool = false
+
+    // MARK: - Auto-refresh (AC7: per-provider 5-minute cadence (ui 02))
+
+    private var refreshLoops: [String: Task<Void, Never>] = [:]
 
     // MARK: - Init
 
     init(
-        providerId: String = "zai",
         keychain: Keychain = .shared,
         registry: ProviderRegistry
     ) {
-        self.providerId = providerId
         self.keychain = keychain
         self.registry = registry
-        isConfigured = (try? keychain.load(for: providerId)) != nil
 
-        if isConfigured {
-            startAutoRefresh()
-            fetchQuota()
+        for info in registry.registeredProviders {
+            let configured = registry.isConfigured(info.id)
+            log("init: provider=\(info.id) configured=\(configured)")
+            setState(configured ? .loading : .unconfigured, for: info.id)
+            if configured {
+                startAutoRefresh(for: info.id)
+            }
+        }
+
+        refreshDerived()
+        fetchAllQuotas()
+    }
+
+    // MARK: - Derived properties — public
+
+    /// All registered provider metadata, sorted by display name (ui 02 AC4).
+    var registeredProvidersSorted: [ProviderInfo] {
+        registry.registeredProviders.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+    }
+
+    // MARK: - Key management (AC3/AC5: save & clear per provider (ui 02))
+
+    func saveKey(_ key: String, for providerId: String) throws {
+        try keychain.save(key, for: providerId)
+        log("saveKey: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
+        startAutoRefresh(for: providerId)
+        performFetch(for: providerId)
+    }
+
+    func deleteKey(for providerId: String) throws {
+        try keychain.delete(for: providerId)
+        log("deleteKey: provider=\(providerId)")
+        setState(.unconfigured, for: providerId)
+        refreshDerived()
+        stopAutoRefresh(for: providerId)
+    }
+
+    // MARK: - Fetch (AC5: manual refresh (ui 02))
+
+    func fetchQuota(for providerId: String) {
+        guard registry.isConfigured(providerId) else {
+            log("fetchQuota: provider=\(providerId) not configured, skipping")
+            return
+        }
+        if case .loading = providerStates[providerId] {
+            log("fetchQuota: provider=\(providerId) already loading, skipping")
+            return
+        }
+        performFetch(for: providerId)
+    }
+
+    func fetchAllQuotas() {
+        log("fetchAllQuotas: starting")
+        Task {
+            let results = await registry.fetchAll()
+            applyResults(results)
         }
     }
 
-    // MARK: - Key management (AC1/AC2: save & clear (ui 01))
-
-    func saveKey(_ key: String) throws {
-        try keychain.save(key, for: providerId)
-        isConfigured = true
-        startAutoRefresh()
-        fetchQuota()
-    }
-
-    func deleteKey() throws {
-        try keychain.delete(for: providerId)
-        isConfigured = false
-        quota = nil
-        errorMessage = nil
-        stopAutoRefresh()
-    }
-
-    // MARK: - Fetch (AC5: manual refresh (ui 01))
-
-    func fetchQuota() {
-        guard isConfigured, !isLoading else { return }
-
-        isLoading = true
-        errorMessage = nil
+    private func performFetch(for providerId: String) {
+        log("performFetch: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
 
         Task {
             let results = await registry.fetchAll()
+            applyResults(results)
+        }
+    }
 
-            guard let result = results[providerId] else {
-                isLoading = false
-                return
+    // MARK: - Result processing (AC6: per-provider failure isolation (ui 02))
+
+    private func applyResults(_ results: [String: Result<ProviderQuota, Error>]) {
+        log("applyResults: got \(results.count) result(s)")
+        for (id, result) in results {
+            guard registry.isConfigured(id) else {
+                log("applyResults: provider=\(id) no longer configured, skipping")
+                continue
             }
 
             switch result {
-            case let .success(newQuota):
-                quota = newQuota
+            case let .success(quota):
+                log("applyResults: provider=\(id) success, headline=\(quota.headline)")
+                setState(.loaded(quota), for: id)
             case let .failure(error):
-                // If the key was removed externally, drop to unconfigured
+                log("applyResults: provider=\(id) failed: \(error.localizedDescription)")
                 if error is KeychainError {
-                    isConfigured = (try? keychain.load(for: providerId)) != nil
+                    setState(.unconfigured, for: id)
+                    stopAutoRefresh(for: id)
+                } else {
+                    setState(.error(error.localizedDescription), for: id)
                 }
-                errorMessage = classifyError(error)
-            }
-
-            isLoading = false
-        }
-    }
-
-    // MARK: - Error classification (AC6: error states (ui 01))
-
-    private func classifyError(_ error: Error) -> String {
-        if let zaiError = error as? ZAIError {
-            switch zaiError {
-            case .http(401):
-                return String(localized: "Authentication failed. Check your API key.")
-            case let .http(code) where code == 429:
-                return String(localized: "Rate limited. Try again later.")
-            case .network:
-                return String(localized: "Network error. Check your connection.")
-            case .decoding, .http:
-                return String(localized: "Unexpected response from server.")
-            case .missingKey:
-                return String(localized: "No API key configured.")
             }
         }
-
-        if error is KeychainError {
-            return String(localized: "Keychain access failed.")
-        }
-
-        return error.localizedDescription
+        refreshDerived()
     }
 
-    // MARK: - Auto-refresh loop (AC5: 5-minute interval (ui 01))
+    // MARK: - Auto-refresh loop (AC7: per-provider 5-minute loop (ui 02))
 
-    private func startAutoRefresh() {
-        stopAutoRefresh()
-        refreshLoop = Task { [weak self] in
+    private func startAutoRefresh(for providerId: String) {
+        stopAutoRefresh(for: providerId)
+        let interval = refreshInterval
+        refreshLoops[providerId] = Task { [weak self] in
             guard let self else { return }
-            let interval = refreshInterval
             while !Task.isCancelled {
                 try? await Task.sleep(for: .seconds(interval))
                 guard !Task.isCancelled else { break }
                 await MainActor.run { [weak self] in
-                    self?.fetchQuota()
+                    self?.fetchQuota(for: providerId)
                 }
             }
         }
     }
 
-    private func stopAutoRefresh() {
-        refreshLoop?.cancel()
-        refreshLoop = nil
+    private func stopAutoRefresh(for providerId: String) {
+        refreshLoops[providerId]?.cancel()
+        refreshLoops[providerId] = nil
+    }
+
+    // MARK: - Helpers
+
+    /// Mutate a single provider's state while triggering @Observable's setter.
+    ///
+    /// Dictionary subscript mutations only invoke the getter, so the UI would
+    /// never see the change. Copy-write-back forces the property setter to fire.
+    private func setState(_ state: ProviderState, for providerId: String) {
+        var copy = providerStates
+        copy[providerId] = state
+        providerStates = copy
+    }
+
+    /// Recompute stored derived properties from current state.
+    private func refreshDerived() {
+        let ids = registeredProvidersSorted
+            .filter { info in
+                if case .unconfigured = providerStates[info.id] {
+                    return false
+                }
+                return true
+            }
+            .map(\.id)
+        configuredProviderIds = ids
+        hasAnyConfiguredProvider = !ids.isEmpty
+        log("refreshDerived: configuredProviderIds=\(ids) hasAny=\(hasAnyConfiguredProvider)")
+    }
+
+    // MARK: - Diagnostic logging
+
+    private func log(_ message: @autoclosure () -> String) {
+        FileHandle.standardError.write(Data("[QuotaViewModel] \(message())\n".utf8))
     }
 }

@@ -31,6 +31,23 @@ public enum ZAIError: Error, Equatable, Sendable {
     }
 }
 
+extension ZAIError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingKey:
+            String(localized: "No API key configured.")
+        case .http(401):
+            String(localized: "Authentication failed. Check your API key.")
+        case let .http(code) where code == 429:
+            String(localized: "Rate limited. Try again later.")
+        case .network:
+            String(localized: "Network error. Check your connection.")
+        case .decoding, .http:
+            String(localized: "Unexpected response from server.")
+        }
+    }
+}
+
 // MARK: - Wire types (private to this module)
 
 private struct ZAIQuotaResponse: Decodable {
@@ -82,6 +99,7 @@ private struct ZAILimitLabel {
 public struct ZAIProvider: AIProvider {
     public static let providerId = "zai"
     public static let providerName = "z.ai"
+    public static let providerDescription = String(localized: "Monitor API usage and quotas")
 
     private let session: URLSession
 

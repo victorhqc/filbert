@@ -11,6 +11,22 @@ public final class ProviderRegistry {
         providers[id] = provider
     }
 
+    /// List of all registered providers with their metadata (ui 02 AC2/AC9).
+    public var registeredProviders: [ProviderInfo] {
+        providers.values.map { provider in
+            ProviderInfo(
+                id: type(of: provider).providerId,
+                displayName: type(of: provider).providerName,
+                description: type(of: provider).providerDescription
+            )
+        }
+    }
+
+    /// Whether the given provider has a saved API key in the Keychain (ui 02 AC3/AC5).
+    public func isConfigured(_ providerId: String) -> Bool {
+        (try? keychain.load(for: providerId)) != nil
+    }
+
     public func fetchAll() async -> [String: Result<ProviderQuota, Error>] {
         let snapshot = providers
         let keychain = keychain

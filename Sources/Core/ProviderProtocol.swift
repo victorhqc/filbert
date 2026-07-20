@@ -81,5 +81,28 @@ public struct UsageDetail: Sendable {
 public protocol AIProvider: Sendable {
     static var providerId: String { get }
     static var providerName: String { get }
+    /// Short, localized description shown in the Settings provider list (ui 02).
+    static var providerDescription: String { get }
     func fetchQuota(apiKey: String) async throws -> ProviderQuota
+}
+
+/// Metadata about a registered provider, surfaced by the registry (ui 02 Plan 1).
+public struct ProviderInfo: Sendable, Identifiable {
+    public let id: String
+    public let displayName: String
+    public let description: String
+
+    public init(id: String, displayName: String, description: String) {
+        self.id = id
+        self.displayName = displayName
+        self.description = description
+    }
+}
+
+/// Per-provider state the view model tracks (ui 02 Plan 2).
+public enum ProviderState: Sendable {
+    case unconfigured
+    case loading
+    case loaded(ProviderQuota)
+    case error(String)
 }
