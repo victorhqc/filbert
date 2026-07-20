@@ -70,12 +70,21 @@ public struct StatuslineCacheStore: Sendable {
     /// absent or unparseable — a missing cache is a data state, not an error
     /// (providers 02 AC10).
     func read() -> StatuslineCache? {
-        guard FileManager.default.fileExists(atPath: cacheURL.path),
-              let data = try? Data(contentsOf: cacheURL),
-              let cache = try? JSONDecoder().decode(StatuslineCache.self, from: data)
-        else {
+        let path = cacheURL.path
+        guard FileManager.default.fileExists(atPath: path) else {
+            ClaudeCodeLog.log("read: cache file missing at \(path)")
             return nil
         }
+        guard let data = try? Data(contentsOf: cacheURL) else {
+            ClaudeCodeLog.log("read: failed to read \(path)")
+            return nil
+        }
+        guard let cache = try? JSONDecoder().decode(StatuslineCache.self, from: data) else {
+            let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<binary>"
+            ClaudeCodeLog.log("read: failed to decode \(path) bytes=\(data.count) preview=\(preview)")
+            return nil
+        }
+        ClaudeCodeLog.log("read: ok path=\(path) writtenAt=\(cache.writtenAt) hasRateLimits=\(cache.rateLimits != nil)")
         return cache
     }
 

@@ -23,6 +23,22 @@ let rawInput = FileHandle.standardInput.readDataToEndOfFile()
 
 let writtenAt = Date().timeIntervalSince1970
 
+// Diagnostic log: every invocation lands here so we can confirm Claude
+// Code is actually spawning the helper. Writes to a sibling file next to
+// the cache so it never interferes with stdout (which Claude Code captures).
+let debugLogURL = cacheDir.appendingPathComponent("claude-code.helper.log")
+let debugLine = "\(Date()) invoked pid=\(ProcessInfo.processInfo.processIdentifier) bytes=\(rawInput.count)\n"
+if let debugData = debugLine.data(using: .utf8) {
+    if FileManager.default.fileExists(atPath: debugLogURL.path),
+       let handle = try? FileHandle(forWritingTo: debugLogURL) {
+        defer { try? handle.close() }
+        _ = try? handle.seekToEnd()
+        try? handle.write(contentsOf: debugData)
+    } else {
+        try? debugData.write(to: debugLogURL, options: .atomic)
+    }
+}
+
 guard !rawInput.isEmpty,
       let root = try? JSONSerialization.jsonObject(with: rawInput) as? [String: Any]
 else {

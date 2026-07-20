@@ -67,8 +67,9 @@ final class StatuslineHelperInstallerTests: XCTestCase {
 
         let settings = try readSettingsJSON()
         let statusLine = settings["statusLine"] as? [String: Any]
-        let command = statusLine?["command"] as? String
-        XCTAssertEqual(command, helperURL.path)
+        XCTAssertEqual(statusLine?["command"] as? String, helperURL.path)
+        // Claude Code requires `type: "command"` to invoke the statusLine.
+        XCTAssertEqual(statusLine?["type"] as? String, "command")
     }
 
     func testInstall_setsStatusLine_whenSettingsHasOtherKeys() throws {
@@ -79,8 +80,47 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         let settings = try readSettingsJSON()
         XCTAssertEqual(settings["otherKey"] as? String, "value")
         let statusLine = settings["statusLine"] as? [String: Any]
-        let command = statusLine?["command"] as? String
-        XCTAssertEqual(command, helperURL.path)
+        XCTAssertEqual(statusLine?["command"] as? String, helperURL.path)
+        XCTAssertEqual(statusLine?["type"] as? String, "command")
+    }
+
+    // MARK: - AC8: install preserves existing statusLine sibling keys
+
+    func testInstall_preservesStatusLineSiblingKeys() throws {
+        // A user may have `padding` or `refreshInterval` configured alongside
+        // their `command`. Install must not drop them.
+        try writeSettingsJSON([
+            "statusLine": [
+                "command": "ccstatusline",
+                "padding": 2,
+                "refreshInterval": 5,
+            ],
+        ])
+        try createHelperBinary()
+        try installer.installSettingsOnly()
+
+        let settings = try readSettingsJSON()
+        let statusLine = settings["statusLine"] as? [String: Any]
+        XCTAssertEqual(statusLine?["padding"] as? Int, 2)
+        XCTAssertEqual(statusLine?["refreshInterval"] as? Int, 5)
+        XCTAssertEqual(statusLine?["type"] as? String, "command")
+        // Command is now chained, but the original must still be present.
+        let command = statusLine?["command"] as? String ?? ""
+        XCTAssertTrue(command.contains("ccstatusline"))
+        XCTAssertTrue(command.contains(helperURL.path))
+    }
+
+    func testInstall_normalizesBareStringStatusLine_toObjectType() throws {
+        // Claude Code accepts a bare string for statusLine, but our installer
+        // should normalize it to the documented object form with `type`.
+        try writeSettingsJSON(["statusLine": "original-cmd"])
+        try createHelperBinary()
+        try installer.installSettingsOnly()
+
+        let settings = try readSettingsJSON()
+        let statusLine = settings["statusLine"] as? [String: Any]
+        XCTAssertNotNil(statusLine, "statusLine should be an object after install")
+        XCTAssertEqual(statusLine?["type"] as? String, "command")
     }
 
     // MARK: - AC8: install chains existing statusLine.command

@@ -81,7 +81,10 @@ public struct ClaudeCodeProvider: AIProvider {
     /// Returns `true` when the `claude` binary is locatable and the helper
     /// is installed (providers 02 AC1, AC7, AC8).
     public func isConfigured() -> Bool {
-        locator.resolve() != nil && installer.isHelperInstalled()
+        let binaryPath = locator.resolve()
+        let helperInstalled = installer.isHelperInstalled()
+        ClaudeCodeLog.log("isConfigured: binary=\(binaryPath ?? "nil") helperInstalled=\(helperInstalled)")
+        return binaryPath != nil && helperInstalled
     }
 
     /// Reports the current setup state so the Settings row can show why
@@ -112,9 +115,13 @@ public struct ClaudeCodeProvider: AIProvider {
             forResource: "statusline_helper",
             withExtension: "swift"
         ) else {
+            ClaudeCodeLog.log("installHelper: helper source not found in bundle")
             throw InstallerError.helperSourceNotFound
         }
+        let binaryPath = locator.resolve()
+        ClaudeCodeLog.log("installHelper: binary=\(binaryPath ?? "nil") source=\(sourceURL.path)")
         try installer.install(helperSourceURL: sourceURL)
+        ClaudeCodeLog.log("installHelper: install ok, helperInstalled=\(installer.isHelperInstalled())")
     }
 
     /// Removes the helper binary, unwraps the chain from
@@ -132,14 +139,18 @@ public struct ClaudeCodeProvider: AIProvider {
     ) async throws -> ProviderQuota {
         // Only .apiKeyFree should reach us (providers 02 AC2).
         guard case .apiKeyFree = auth else {
+            ClaudeCodeLog.log("fetchQuota: rejected non-apiKeyFree auth")
             throw ClaudeCodeError.internalInconsistency
         }
+
+        ClaudeCodeLog.log("fetchQuota: start configured=\(isConfigured())")
 
         // Read the cache file — this provider never touches the network
         // (providers 02 AC4).
         guard let cache = cacheStore.read() else {
             // No cache file yet: the provider is configured but has no data.
             // Surface as a data-level error per (providers 02 AC10).
+            ClaudeCodeLog.log("fetchQuota: no cache — returning No data")
             return ProviderQuota(
                 providerId: Self.providerId,
                 providerName: Self.providerName,
@@ -152,7 +163,9 @@ public struct ClaudeCodeProvider: AIProvider {
             )
         }
 
-        return map(cache: cache)
+        let quota = map(cache: cache)
+        ClaudeCodeLog.log("fetchQuota: mapped headline=\(quota.headline) lines=\(quota.lines.count) isStale=\(quota.isStale)")
+        return quota
     }
 
     // MARK: - Mapping (providers 02 AC5, AC5b, AC6)

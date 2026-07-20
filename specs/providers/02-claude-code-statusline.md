@@ -133,6 +133,12 @@ Keychain entry.
   stdout, then pipes the original JSON into our helper
 - **And** an existing `ai-usage` chain entry is detected and replaced in
   place (no double-wrapping on reinstall)
+- **And** the written `statusLine` object always includes `"type": "command"`,
+  which Claude Code requires to invoke the command at all (see
+  https://code.claude.com/docs/en/statusline). Without it, the helper is
+  never spawned and the cache file is never written.
+- **And** any sibling keys on an existing `statusLine` object (e.g.
+  `padding`, `refreshInterval`) are preserved across install and reinstall
 - **And** if settings.json does not parse as JSON, the install aborts and
   surfaces the error — it never writes a settings file it cannot read back
 

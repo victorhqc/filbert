@@ -221,6 +221,9 @@ public struct StatuslineHelperInstaller: Sendable {
 
     private func updateSettingsForInstall() throws {
         var settings = try readSettings() ?? [:]
+        // Preserve any existing statusLine keys (padding, refreshInterval, ...)
+        // so we only rewrite `command` and ensure `type` is set.
+        var statusLineDict = (settings["statusLine"] as? [String: Any]) ?? [:]
         let existingCommand = commandFromStatusLine(settings["statusLine"])
 
         let newCommand: String
@@ -241,7 +244,12 @@ public struct StatuslineHelperInstaller: Sendable {
             newCommand = helperDestURL.path
         }
 
-        settings["statusLine"] = ["command": newCommand]
+        // Claude Code requires `type: "command"` to invoke the statusLine
+        // (https://code.claude.com/docs/en/statusline). Always set it on
+        // install so the helper is actually spawned.
+        statusLineDict["type"] = "command"
+        statusLineDict["command"] = newCommand
+        settings["statusLine"] = statusLineDict
         try writeSettings(settings)
     }
 
