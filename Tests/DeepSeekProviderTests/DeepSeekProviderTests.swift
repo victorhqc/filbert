@@ -124,10 +124,17 @@ final class DeepSeekProviderTests: XCTestCase {
     func testFetchQuota_headlineFormatsTotalBalanceWithCurrencySymbol() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
 
-        // CNY in en-US renders with a "CN¥" prefix; we only assert the
-        // structure — the OS owns the exact symbol/decimals.
+        // The exact output of NumberFormatter.currency is locale- and OS-
+        // dependent. We verify structure: the headline must end with " left"
+        // and the amount portion must not be a bare Double description
+        // (which would mean the formatter wasn't used).
         XCTAssertTrue(quota.headline.hasSuffix(" left"), "headline was: \(quota.headline)")
-        XCTAssertFalse(quota.headline.contains("110.0"), "raw number leaked: \(quota.headline)")
+
+        let amountPart = String(quota.headline.dropLast(" left".count))
+        XCTAssertNotEqual(
+            amountPart, "110.0",
+            "currency formatter must be used, not bare Double: \(amountPart)"
+        )
     }
 
     func testFetchQuota_headlineFallsBackToNoDataWhenBalanceInfosEmpty() async throws {
