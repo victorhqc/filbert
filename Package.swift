@@ -19,7 +19,8 @@ let package = Package(
         .target(
             name: "ClaudeCodeProvider",
             dependencies: ["Core"],
-            path: "Sources/Providers/ClaudeCode"
+            path: "Sources/Providers/ClaudeCode",
+            resources: [.process("Resources")]
         ),
         .executableTarget(
             name: "App",

@@ -64,25 +64,24 @@ public struct ClaudeCodeProvider: AIProvider {
 
     private let locator: ClaudeCodeLocator
     private let cacheStore: StatuslineCacheStore
+    private let installer: StatuslineHelperInstaller
 
     public init(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(),
-        cacheStore: StatuslineCacheStore = StatuslineCacheStore()
+        cacheStore: StatuslineCacheStore = StatuslineCacheStore(),
+        installer: StatuslineHelperInstaller = StatuslineHelperInstaller()
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
+        self.installer = installer
     }
 
     // MARK: - Configuration (providers 02 AC3, core 03 AC5/AC6)
 
-    /// Returns `true` when the `claude` binary is locatable.
-    ///
-    /// The helper-installed check (providers 02 AC7/AC8) is deferred to the
-    /// helper-installer slice; without it the cache will simply be absent,
-    /// which surfaces as a data-level "no data" error rather than an
-    /// unconfigured state (providers 02 AC10).
+    /// Returns `true` when the `claude` binary is locatable and the helper
+    /// is installed (providers 02 AC1, AC7, AC8).
     public func isConfigured() -> Bool {
-        locator.resolve() != nil
+        locator.resolve() != nil && installer.isHelperInstalled()
     }
 
     /// Reports the current setup state so the Settings row can show why
@@ -91,7 +90,9 @@ public struct ClaudeCodeProvider: AIProvider {
         if locator.resolve() == nil {
             return .setup(String(localized: "Claude Code not found"))
         }
-        // Helper-installed check deferred to installer slice.
+        if !installer.isHelperInstalled() {
+            return .setup(String(localized: "Helper not installed"))
+        }
         return nil
     }
 

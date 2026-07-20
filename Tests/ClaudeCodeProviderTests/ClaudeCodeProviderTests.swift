@@ -41,23 +41,33 @@ final class ClaudeCodeProviderTests: XCTestCase {
 
     // MARK: - AC3: isConfigured does not touch Keychain
 
-    func testIsConfigured_trueWhenBinaryFound() {
+    func testIsConfigured_trueWhenBinaryFoundAndHelperInstalled() {
         let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
-        let provider = makeProvider(locator: locator)
+        let installer = makeInstaller(helperInstalled: true)
+        let provider = makeProvider(locator: locator, installer: installer)
         XCTAssertTrue(provider.isConfigured())
     }
 
     func testIsConfigured_falseWhenBinaryNotFound() {
         let locator = ClaudeCodeLocator(injectedPath: nil)
-        let provider = makeProvider(locator: locator)
+        let installer = makeInstaller(helperInstalled: true)
+        let provider = makeProvider(locator: locator, installer: installer)
         XCTAssertFalse(provider.isConfigured())
     }
 
-    // MARK: - AC3: currentSetupState reports binary status
+    func testIsConfigured_falseWhenHelperNotInstalled() {
+        let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
+        let installer = makeInstaller(helperInstalled: false)
+        let provider = makeProvider(locator: locator, installer: installer)
+        XCTAssertFalse(provider.isConfigured())
+    }
+
+    // MARK: - AC3: currentSetupState reports binary and helper status
 
     func testCurrentSetupState_setupReasonWhenBinaryMissing() async {
         let locator = ClaudeCodeLocator(injectedPath: nil)
-        let provider = makeProvider(locator: locator)
+        let installer = makeInstaller(helperInstalled: true)
+        let provider = makeProvider(locator: locator, installer: installer)
         let state = await provider.currentSetupState()
         guard case let .setup(reason) = state else {
             XCTFail("Expected .setup, got \(String(describing: state))")
@@ -66,9 +76,22 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertTrue(reason.contains("not found"))
     }
 
-    func testCurrentSetupState_nilWhenBinaryFound() async {
+    func testCurrentSetupState_setupReasonWhenHelperNotInstalled() async {
         let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
-        let provider = makeProvider(locator: locator)
+        let installer = makeInstaller(helperInstalled: false)
+        let provider = makeProvider(locator: locator, installer: installer)
+        let state = await provider.currentSetupState()
+        guard case let .setup(reason) = state else {
+            XCTFail("Expected .setup, got \(String(describing: state))")
+            return
+        }
+        XCTAssertTrue(reason.contains("not installed"))
+    }
+
+    func testCurrentSetupState_nilWhenBinaryFoundAndHelperInstalled() async {
+        let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
+        let installer = makeInstaller(helperInstalled: true)
+        let provider = makeProvider(locator: locator, installer: installer)
         let state = await provider.currentSetupState()
         XCTAssertNil(state)
     }
@@ -327,11 +350,30 @@ final class ClaudeCodeProviderTests: XCTestCase {
     private func makeProvider(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(
             injectedPath: "/usr/local/bin/claude"
-        )
+        ),
+        installer: StatuslineHelperInstaller? = nil
     ) -> ClaudeCodeProvider {
         ClaudeCodeProvider(
             locator: locator,
-            cacheStore: StatuslineCacheStore(cacheURL: cacheURL)
+            cacheStore: StatuslineCacheStore(cacheURL: cacheURL),
+            installer: installer ?? makeInstaller(helperInstalled: true)
+        )
+    }
+
+    /// Creates an installer pointed at temp paths. When `helperInstalled` is
+    /// `false` the helper destination is a nonexistent path so
+    /// `isHelperInstalled()` returns `false`.
+    private func makeInstaller(helperInstalled: Bool) -> StatuslineHelperInstaller {
+        let helperURL: URL = if helperInstalled {
+            // Use a known executable so isHelperInstalled() returns true.
+            URL(fileURLWithPath: "/bin/sh")
+        } else {
+            tmpDir.appendingPathComponent("nonexistent-helper")
+        }
+        return StatuslineHelperInstaller(
+            settingsURL: tmpDir.appendingPathComponent("settings.json"),
+            helperDestURL: helperURL,
+            cacheURL: cacheURL
         )
     }
 
