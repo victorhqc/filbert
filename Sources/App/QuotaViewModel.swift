@@ -42,21 +42,36 @@ final class QuotaViewModel {
         for info in registry.registeredProviders {
             let configured = registry.isConfigured(info.id)
             log("init: provider=\(info.id) configured=\(configured)")
-            setState(configured ? .loading : .unconfigured, for: info.id)
-            if configured {
-                startAutoRefresh(for: info.id)
+
+            switch info.authShape {
+            case .apiKey:
+                setState(configured ? .loading : .unconfigured, for: info.id)
+                if configured {
+                    startAutoRefresh(for: info.id)
+                }
+            case .apiKeyFree:
+                if configured {
+                    setState(.loading, for: info.id)
+                    startAutoRefresh(for: info.id)
+                } else {
+                    // Setup state will be filled by refreshAllSetupStates().
+                    setState(.unconfigured, for: info.id)
+                }
             }
         }
 
         refreshDerived()
         fetchAllQuotas()
+        refreshAllSetupStates()
     }
 
     // MARK: - Derived properties — public
 
     /// All registered provider metadata, sorted by display name (ui 02 AC4).
     var registeredProvidersSorted: [ProviderInfo] {
-        registry.registeredProviders.sorted { $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending }
+        registry.registeredProviders.sorted {
+            $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+        }
     }
 
     // MARK: - Key management (AC3/AC5: save & clear per provider (ui 02))
@@ -90,10 +105,83 @@ final class QuotaViewModel {
     /// (ui 03 AC3). When the provider is already configured, triggers an
     /// immediate re-fetch so the user sees the proxy take effect (ui 03 AC4).
     func saveOverrideURL(_ url: URL?, for providerId: String) throws {
+        guard !registry.isAPIKeyFree(providerId) else { return }
         try ProviderOverrides.setBaseURL(url, for: providerId)
         log("saveOverrideURL: provider=\(providerId) url=\(url?.absoluteString ?? "nil")")
         if registry.isConfigured(providerId) {
             performFetch(for: providerId)
+        }
+    }
+
+    // MARK: - Auth shape helpers (ui 05 AC8)
+
+    /// Returns `true` when the provider uses `.apiKeyFree` auth, so the popover
+    /// can suppress the "Clear Key" button (ui 05 AC8).
+    func isAPIKeyFree(_ providerId: String) -> Bool {
+        registry.isAPIKeyFree(providerId)
+    }
+
+    /// Returns `true` when the provider's helper can be installed right now
+    /// (binary present, helper not yet installed) (ui 05 AC3/AC4).
+    func canInstallHelper(for providerId: String) -> Bool {
+        registry.canInstallHelper(for: providerId)
+    }
+
+    // MARK: - Helper management (ui 05 AC4/AC5)
+
+    /// Installs the provider's helper, updates state to `.loading` during the
+    /// operation, and starts auto-refresh + fetch on success (ui 05 AC4).
+    func installHelper(for providerId: String) async {
+        log("installHelper: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
+        do {
+            try await registry.installHelper(for: providerId)
+            log("installHelper: provider=\(providerId) success")
+            startAutoRefresh(for: providerId)
+            performFetch(for: providerId)
+        } catch {
+            log("installHelper: provider=\(providerId) failed: \(error.localizedDescription)")
+            setState(.error(error.localizedDescription), for: providerId)
+            refreshDerived()
+        }
+    }
+
+    /// Removes the provider's helper, stops auto-refresh, and re-checks the
+    /// setup state (ui 05 AC5).
+    func removeHelper(for providerId: String) async {
+        log("removeHelper: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
+        do {
+            try await registry.removeHelper(for: providerId)
+            log("removeHelper: provider=\(providerId) success")
+            stopAutoRefresh(for: providerId)
+            // Re-check setup state so the row shows the right post-removal state.
+            let states = await registry.refreshSetupStates()
+            if let newState = states[providerId] {
+                setState(newState, for: providerId)
+            } else {
+                setState(.setup(String(localized: "Helper removed")), for: providerId)
+            }
+        } catch {
+            log("removeHelper: provider=\(providerId) failed: \(error.localizedDescription)")
+            setState(.error(error.localizedDescription), for: providerId)
+        }
+        refreshDerived()
+    }
+
+    // MARK: - Setup state refresh
+
+    /// Fires `refreshSetupStates()` on the registry and merges the results
+    /// into `providerStates` for every `.apiKeyFree` provider (ui 05 AC10).
+    private func refreshAllSetupStates() {
+        Task {
+            let states = await registry.refreshSetupStates()
+            for (id, state) in states {
+                setState(state, for: id)
+            }
+            refreshDerived()
         }
     }
 
@@ -195,10 +283,13 @@ final class QuotaViewModel {
     private func refreshDerived() {
         let ids = registeredProvidersSorted
             .filter { info in
-                if case .unconfigured = providerStates[info.id] {
+                guard let state = providerStates[info.id] else { return false }
+                switch state {
+                case .unconfigured, .setup:
                     return false
+                case .loading, .loaded, .error:
+                    return true
                 }
-                return true
             }
             .map(\.id)
         configuredProviderIds = ids

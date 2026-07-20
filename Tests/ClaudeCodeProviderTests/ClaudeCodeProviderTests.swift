@@ -96,6 +96,29 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertNil(state)
     }
 
+    // MARK: - AC3/AC4: canInstallHelper gating logic (ui 05)
+
+    func testCanInstallHelper_trueWhenBinaryFoundAndHelperNotInstalled() {
+        let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
+        let installer = makeInstaller(helperInstalled: false)
+        let provider = makeProvider(locator: locator, installer: installer)
+        XCTAssertTrue(provider.canInstallHelper())
+    }
+
+    func testCanInstallHelper_falseWhenBinaryMissing() {
+        let locator = ClaudeCodeLocator(injectedPath: nil)
+        let installer = makeInstaller(helperInstalled: false)
+        let provider = makeProvider(locator: locator, installer: installer)
+        XCTAssertFalse(provider.canInstallHelper())
+    }
+
+    func testCanInstallHelper_falseWhenHelperAlreadyInstalled() {
+        let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
+        let installer = makeInstaller(helperInstalled: true)
+        let provider = makeProvider(locator: locator, installer: installer)
+        XCTAssertFalse(provider.canInstallHelper())
+    }
+
     // MARK: - AC2: internal-consistency assertion
 
     func testFetchQuota_throwsInternalInconsistencyForApiKey() async throws {

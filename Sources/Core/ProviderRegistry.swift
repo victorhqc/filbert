@@ -18,7 +18,8 @@ public final class ProviderRegistry {
                 id: type(of: provider).providerId,
                 displayName: type(of: provider).providerName,
                 description: type(of: provider).providerDescription,
-                defaultBaseURL: type(of: provider).baseURL
+                defaultBaseURL: type(of: provider).baseURL,
+                authShape: type(of: provider).authShape
             )
         }
     }
@@ -112,5 +113,42 @@ public final class ProviderRegistry {
             }
             return results
         }
+    }
+
+    // MARK: - Helper management (ui 05)
+
+    /// Returns `true` when the provider's auth shape is `.apiKeyFree`
+    /// (ui 05 AC8). The popover uses this to suppress the "Clear Key" button.
+    public func isAPIKeyFree(_ providerId: String) -> Bool {
+        guard let provider = providers[providerId] else { return false }
+        return type(of: provider).authShape == .apiKeyFree
+    }
+
+    /// Returns `true` when the `.apiKeyFree` provider's helper can be
+    /// installed right now (binary is present). `.apiKey` providers always
+    /// return `false` — they have no helper (ui 05 AC3/AC4).
+    public func canInstallHelper(for providerId: String) -> Bool {
+        guard let provider = providers[providerId] else { return false }
+        return provider.canInstallHelper()
+    }
+
+    /// Delegates to the provider's `installHelper()`. Throws when the
+    /// provider is not registered or does not support helper installation
+    /// (ui 05 AC4).
+    public func installHelper(for providerId: String) async throws {
+        guard let provider = providers[providerId] else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.installHelper()
+    }
+
+    /// Delegates to the provider's `removeHelper()`. Throws when the
+    /// provider is not registered or does not support helper removal
+    /// (ui 05 AC5).
+    public func removeHelper(for providerId: String) async throws {
+        guard let provider = providers[providerId] else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.removeHelper()
     }
 }

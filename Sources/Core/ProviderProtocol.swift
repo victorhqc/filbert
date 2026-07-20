@@ -149,6 +149,22 @@ public protocol AIProvider: Sendable {
     /// provider is not ready. `.apiKey` providers never need this — the
     /// registry never calls it for them (core 03 AC6).
     func currentSetupState() async -> ProviderState?
+
+    // MARK: - Helper management (ui 05 AC4/AC5)
+
+    /// Installs the provider's helper (binary, config file, etc.). Only
+    /// `.apiKeyFree` providers that require a local helper override this;
+    /// the default throws `ProviderSetupError.notSupported` (ui 05 Plan 2).
+    func installHelper() async throws
+
+    /// Removes the provider's helper and restores any configuration the
+    /// install touched. Only `.apiKeyFree` providers override this (ui 05 AC5).
+    func removeHelper() async throws
+
+    /// Whether the helper can currently be installed (binary present, etc.).
+    /// Returns `false` for `.apiKey` providers and for `.apiKeyFree` providers
+    /// whose binary is missing (ui 05 AC3/AC4).
+    func canInstallHelper() -> Bool
 }
 
 // MARK: - AIProvider defaults (core 03 AC3/AC5/AC6)
@@ -172,6 +188,22 @@ public extension AIProvider {
     func currentSetupState() async -> ProviderState? {
         nil
     }
+
+    /// Default throws — `.apiKey` providers don't support helper installation.
+    func installHelper() async throws {
+        throw ProviderSetupError.notSupported
+    }
+
+    /// Default throws — `.apiKey` providers don't support helper removal.
+    func removeHelper() async throws {
+        throw ProviderSetupError.notSupported
+    }
+
+    /// Default returns `false` — only `.apiKeyFree` providers with an
+    /// installable helper override this.
+    func canInstallHelper() -> Bool {
+        false
+    }
 }
 
 /// Metadata about a registered provider, surfaced by the registry (ui 02 Plan 1).
@@ -183,17 +215,22 @@ public struct ProviderInfo: Sendable, Identifiable {
     /// Surfaced so the Settings UI can show what the user would be overriding
     /// (ui 03 Plan 3).
     public let defaultBaseURL: URL
+    /// Payload-free discriminator so the App layer can dispatch row variants
+    /// without inspecting a provider ID string (ui 05 AC1).
+    public let authShape: ProviderAuth.Shape
 
     public init(
         id: String,
         displayName: String,
         description: String,
-        defaultBaseURL: URL
+        defaultBaseURL: URL,
+        authShape: ProviderAuth.Shape
     ) {
         self.id = id
         self.displayName = displayName
         self.description = description
         self.defaultBaseURL = defaultBaseURL
+        self.authShape = authShape
     }
 }
 
@@ -206,4 +243,23 @@ public enum ProviderState: Sendable {
     case loading
     case loaded(ProviderQuota)
     case error(String)
+}
+
+// MARK: - ProviderSetupError (ui 05 Plan 2)
+
+/// Thrown by `AIProvider.installHelper()` / `removeHelper()` default
+/// implementations when called on a provider that does not support helper
+/// management (e.g. `.apiKey` providers, or `.apiKeyFree` providers whose
+/// setup mechanism does not involve a local helper).
+public enum ProviderSetupError: Error, Equatable, Sendable {
+    case notSupported
+}
+
+extension ProviderSetupError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .notSupported:
+            String(localized: "This provider does not support helper installation.")
+        }
+    }
 }

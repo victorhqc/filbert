@@ -9,20 +9,35 @@ struct SettingsView: View {
 
     var body: some View {
         List(viewModel.registeredProvidersSorted) { provider in
-            ProviderSettingsRow(
-                provider: provider,
-                isConfigured: viewModelIsConfigured(provider.id),
-                overrideURL: viewModel.overrideURL(for: provider.id),
-                onSaveKey: { key in
-                    try? viewModel.saveKey(key, for: provider.id)
-                },
-                onClearKey: {
-                    try? viewModel.deleteKey(for: provider.id)
-                },
-                onSaveOverride: { url in
-                    try viewModel.saveOverrideURL(url, for: provider.id)
-                }
-            )
+            switch provider.authShape {
+            case .apiKey:
+                ProviderSettingsRow(
+                    provider: provider,
+                    isConfigured: viewModelIsConfigured(provider.id),
+                    overrideURL: viewModel.overrideURL(for: provider.id),
+                    onSaveKey: { key in
+                        try? viewModel.saveKey(key, for: provider.id)
+                    },
+                    onClearKey: {
+                        try? viewModel.deleteKey(for: provider.id)
+                    },
+                    onSaveOverride: { url in
+                        try viewModel.saveOverrideURL(url, for: provider.id)
+                    }
+                )
+            case .apiKeyFree:
+                APIKeyFreeSettingsRow(
+                    provider: provider,
+                    state: viewModel.providerStates[provider.id] ?? .unconfigured,
+                    canInstall: viewModel.canInstallHelper(for: provider.id),
+                    onInstall: {
+                        Task { await viewModel.installHelper(for: provider.id) }
+                    },
+                    onRemove: {
+                        Task { await viewModel.removeHelper(for: provider.id) }
+                    }
+                )
+            }
         }
         .navigationTitle(String(localized: "Providers"))
         .onAppear {
@@ -34,10 +49,13 @@ struct SettingsView: View {
     }
 
     private func viewModelIsConfigured(_ providerId: String) -> Bool {
-        if case .unconfigured = viewModel.providerStates[providerId] {
+        guard let state = viewModel.providerStates[providerId] else { return false }
+        switch state {
+        case .unconfigured, .setup:
             return false
+        case .loading, .loaded, .error:
+            return true
         }
-        return true
     }
 }
 
@@ -265,5 +283,167 @@ private struct ProviderSettingsRow: View {
     private func refreshOverrideInput() {
         overrideInput = overrideURL?.absoluteString ?? ""
         overrideErrorMessage = nil
+    }
+}
+
+// MARK: - API-key-free provider row (ui 05 AC2–AC7)
+
+/// Settings row for `.apiKeyFree` providers (today: Claude Code). Replaces the
+/// API-key field and Advanced disclosure with an install/remove control for the
+/// provider's local helper, and surfaces setup state through the same badge
+/// conventions used by `.apiKey` rows (ui 05 AC2).
+@MainActor
+private struct APIKeyFreeSettingsRow: View {
+    let provider: ProviderInfo
+    let state: ProviderState
+    let canInstall: Bool
+    let onInstall: () -> Void
+    let onRemove: () -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            headerRow
+
+            switch state {
+            case .loading:
+                HStack(spacing: 6) {
+                    ProgressView()
+                        .scaleEffect(0.8)
+                    Text(String(localized: "Working…"))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            case let .setup(reason):
+                if canInstall {
+                    // AC4: binary present, helper not installed.
+                    installPromptView(reason: reason)
+                } else {
+                    // AC3: binary missing — show actionable message, no button.
+                    Text(reason)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            case .loaded:
+                // AC5: helper installed.
+                removeHelperView
+            case let .error(message):
+                Text(message)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            case .unconfigured:
+                Text(String(localized: "Not configured"))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Header (ui 05 AC2)
+
+    private var headerRow: some View {
+        HStack {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(provider.displayName)
+                    .font(.headline)
+                Text(provider.description)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+
+            Spacer()
+
+            badge
+        }
+    }
+
+    private var badge: some View {
+        switch state {
+        case .loaded:
+            Text(String(localized: "Ready"))
+                .font(.caption.monospaced())
+                .foregroundColor(.green)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.green.opacity(0.15))
+                )
+        case .setup:
+            Text(String(localized: "Setup needed"))
+                .font(.caption.monospaced())
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.secondary.opacity(0.15))
+                )
+        case .loading:
+            Text(String(localized: "Working…"))
+                .font(.caption.monospaced())
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.secondary.opacity(0.15))
+                )
+        case .error:
+            Text(String(localized: "Error"))
+                .font(.caption.monospaced())
+                .foregroundColor(.red)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.red.opacity(0.15))
+                )
+        case .unconfigured:
+            Text(String(localized: "Unconfigured"))
+                .font(.caption.monospaced())
+                .foregroundColor(.secondary)
+                .padding(.horizontal, 6)
+                .padding(.vertical, 2)
+                .background(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(Color.secondary.opacity(0.15))
+                )
+        }
+    }
+
+    // MARK: - Install prompt (ui 05 AC4)
+
+    private func installPromptView(reason: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(reason)
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Text(String(localized: "AI Usage reads your Claude Code usage by hooking into its status line."))
+                .font(.caption)
+                .foregroundColor(.secondary)
+            Text(String(localized: "This adds a small helper script to ~/.claude/."))
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Button(String(localized: "Install Helper")) {
+                onInstall()
+            }
+        }
+    }
+
+    // MARK: - Remove helper (ui 05 AC5)
+
+    private var removeHelperView: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(String(localized: "Helper installed and active."))
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Button(String(localized: "Remove Helper")) {
+                onRemove()
+            }
+        }
     }
 }

@@ -96,6 +96,34 @@ public struct ClaudeCodeProvider: AIProvider {
         return nil
     }
 
+    // MARK: - Helper management (ui 05 AC4/AC5)
+
+    /// Returns `true` when the `claude` binary is present but the helper is
+    /// not yet installed — the Settings row uses this to decide whether to
+    /// show the "Install Helper" button (ui 05 AC3/AC4).
+    public func canInstallHelper() -> Bool {
+        locator.resolve() != nil && !installer.isHelperInstalled()
+    }
+
+    /// Compiles the helper binary and chains it into
+    /// `~/.claude/settings.json` (providers 02 AC7, ui 05 AC4).
+    public func installHelper() async throws {
+        guard let sourceURL = Bundle.module.url(
+            forResource: "statusline_helper",
+            withExtension: "swift"
+        ) else {
+            throw InstallerError.helperSourceNotFound
+        }
+        try installer.install(helperSourceURL: sourceURL)
+    }
+
+    /// Removes the helper binary, unwraps the chain from
+    /// `~/.claude/settings.json`, and deletes the cache file
+    /// (providers 02 AC11, ui 05 AC5).
+    public func removeHelper() async throws {
+        try installer.uninstall()
+    }
+
     // MARK: - Quota fetch (providers 02 AC2, AC4–AC6, AC10)
 
     public func fetchQuota(

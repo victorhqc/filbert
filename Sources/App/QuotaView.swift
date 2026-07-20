@@ -128,6 +128,11 @@ struct QuotaView: View {
                     .padding(.top, 2)
             }
 
+            // AC9: stale-cache hint for providers that set isStale (ui 05).
+            if quota.isStale {
+                staleCacheHint(quota)
+            }
+
             Divider()
             HStack {
                 lastUpdatedLabel(quota)
@@ -145,10 +150,13 @@ struct QuotaView: View {
                 .help(String(localized: "Refresh"))
                 .disabled(ifLoadingState(providerId))
 
-                Button(String(localized: "Clear Key")) {
-                    try? viewModel.deleteKey(for: providerId)
+                // AC8: suppress "Clear Key" for .apiKeyFree providers (ui 05).
+                if !viewModel.isAPIKeyFree(providerId) {
+                    Button(String(localized: "Clear Key")) {
+                        try? viewModel.deleteKey(for: providerId)
+                    }
+                    .font(.caption)
                 }
-                .font(.caption)
             }
         }
         .padding(.bottom, 4)
@@ -233,6 +241,24 @@ struct QuotaView: View {
         Text(String(localized: "Last updated: \(relative)"))
             .font(.caption)
             .foregroundColor(.secondary)
+    }
+
+    // MARK: - Stale-cache hint (ui 05 AC9)
+
+    /// Renders two muted lines when the provider flagged its data as stale.
+    /// The UI never computes freshness — it reads the flag the provider set
+    /// (ui 05 AC9).
+    @ViewBuilder
+    private func staleCacheHint(_ quota: ProviderQuota) -> some View {
+        let relative = quota.lastUpdated.formatted(.relative(presentation: .named))
+        VStack(alignment: .leading, spacing: 2) {
+            Text(String(localized: "Last updated by \(quota.providerName): \(relative)"))
+                .font(.caption2)
+                .foregroundColor(.secondary)
+            Text(String(localized: "Open \(quota.providerName) to refresh"))
+                .font(.caption2)
+                .foregroundColor(.secondary)
+        }
     }
 
     // MARK: - Helpers
