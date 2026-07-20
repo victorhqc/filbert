@@ -114,11 +114,26 @@ struct QuotaView: View {
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
 
-            Text(quota.headline)
-                .font(.headline)
-                .padding(.bottom, 2)
+            // AC3: headline gains a tier-indicator Circle for balance-only
+            // providers; the dot reflects the first balance line's amount
+            // (ui 08). Percentage-based providers have no balance line, so no
+            // Circle is drawn.
+            HStack(spacing: 4) {
+                Text(quota.headline)
+                    .font(.headline)
+                if let color = headlineBalanceColor(for: quota) {
+                    Circle()
+                        .fill(color)
+                        .frame(width: 8, height: 8)
+                }
+            }
+            .padding(.bottom, 2)
 
-            ForEach(quota.lines, id: \.label) { line in
+            // AC1: balance-only lines with non-positive or duplicate totals are
+            // filtered out before ForEach so SwiftUI sees a stable list (ui 08).
+            // The headline still surfaces the total, so a true zero balance is
+            // never hidden from the user.
+            ForEach(renderedLines(quota.lines), id: \.label) { line in
                 usageLineRow(line)
             }
 
@@ -175,10 +190,16 @@ struct QuotaView: View {
                     Text(String(format: "%.0f%%", pct))
                         .font(.subheadline.monospacedDigit())
                         .foregroundColor(percentageColor(pct))
+                } else if let amount = amountText(for: line) {
+                    // AC3: balance-only row renders only the amount text; the
+                    // tier Circle lives on the headline, not on rows (ui 08).
+                    Text(amount)
+                        .font(.subheadline.monospacedDigit())
                 }
             }
 
             // AC1: horizontal usage bar beneath the label row (ui 04).
+            // Balance-only rows get no bar (ui 08 AC3).
             if let pct = percentage(for: line) {
                 UsageBar(percentage: pct, color: percentageColor(pct))
             }
@@ -281,10 +302,89 @@ struct QuotaView: View {
         return min(max(used / total * 100, 0), 100)
     }
 
+    /// Filters the provider's lines for display (ui 08 AC1), delegating to
+    /// the file-level helper that implements the dedup + non-positive rules.
+    private func renderedLines(_ lines: [UsageLine]) -> [UsageLine] {
+        filteredBalanceLines(lines, isPercentageLine: { percentage(for: $0) != nil })
+    }
+
+    /// Tier color for the headline (ui 08 AC3). Derived from the first
+    /// balance-only line's total — the amount the headline summarizes.
+    /// Returns nil when the provider has no balance data (percentage-based
+    /// providers), so no Circle is drawn.
+    private func headlineBalanceColor(for quota: ProviderQuota) -> Color? {
+        guard let line = quota.lines.first(where: { percentage(for: $0) == nil }),
+              let total = line.total
+        else {
+            return nil
+        }
+        return balanceTierColor(total)
+    }
+
+    /// Currency-formatted amount for a balance-only line, using the line's
+    /// `unit` as the currency code (e.g. "USD", "CNY"). Returns nil when the
+    /// line has no positive total to format (ui 08 AC3).
+    private func amountText(for line: UsageLine) -> String? {
+        guard let total = line.total, total > 0 else { return nil }
+        let formatter = NumberFormatter()
+        formatter.numberStyle = .currency
+        if let currency = line.unit, !currency.isEmpty {
+            formatter.currencyCode = currency
+        }
+        return formatter.string(from: NSNumber(value: total))
+    }
+
     /// The peak-hours block is z.ai-specific; gated by `providerId` so any
     /// future provider is unaffected (ui 04 AC3/AC7).
     private func showsPeakHoursBlock(for quota: ProviderQuota) -> Bool {
         quota.providerId == ZAIProvider.providerId
+    }
+}
+
+// MARK: - Balance tier color (ui 08 AC3)
+
+/// Red / orange / green tier for a balance amount, using the user-configured
+/// low/ok thresholds. Red below `low` (almost gone or gone), orange in
+/// `[low, ok)` (decreasing), green at or above `ok` (healthy).
+private func balanceTierColor(_ total: Double) -> Color {
+    switch total {
+    case ..<BalanceThresholds.low: .red
+    case BalanceThresholds.low ..< BalanceThresholds.ok: .orange
+    default: .green
+    }
+}
+
+/// Filters lines for display (ui 08 AC1). Drops balance-only lines (those for
+/// which `isPercentageLine` returns false) with nil or non-positive `total`.
+/// When two balance rows share the same positive amount, only the first (the
+/// Total balance in DeepSeek's ordering) survives — duplicate amounts are
+/// visually confusing and carry no extra information. Percentage rows always
+/// pass.
+private func filteredBalanceLines(
+    _ lines: [UsageLine],
+    isPercentageLine: (UsageLine) -> Bool
+) -> [UsageLine] {
+    let positiveBalanceTotals = lines.compactMap { line -> Double? in
+        guard !isPercentageLine(line) else { return nil }
+        guard let total = line.total, total > 0 else { return nil }
+        return total
+    }
+    let cents = positiveBalanceTotals.map { Int(($0 * 100).rounded()) }
+    let hasDuplicates = Set(cents).count < cents.count
+
+    var firstBalanceKept = false
+    return lines.filter { line in
+        guard !isPercentageLine(line) else { return true }
+        guard let total = line.total, total > 0 else { return false }
+        if hasDuplicates {
+            // Keep only the first positive balance line (Total balance).
+            if firstBalanceKept {
+                return false
+            }
+            firstBalanceKept = true
+            return true
+        }
+        return true
     }
 }
 
