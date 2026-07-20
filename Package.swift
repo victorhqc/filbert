@@ -22,9 +22,15 @@ let package = Package(
             path: "Sources/Providers/ClaudeCode",
             resources: [.process("Resources")]
         ),
+        .target(
+            name: "DeepSeekProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/DeepSeek",
+            resources: [.process("Resources")]
+        ),
         .executableTarget(
             name: "App",
-            dependencies: ["Core", "ZAIProvider", "ClaudeCodeProvider"],
+            dependencies: ["Core", "ZAIProvider", "ClaudeCodeProvider", "DeepSeekProvider"],
             resources: [.process("Resources")]
         ),
         .testTarget(
@@ -40,6 +46,11 @@ let package = Package(
             name: "ClaudeCodeProviderTests",
             dependencies: ["ClaudeCodeProvider"],
             path: "Tests/ClaudeCodeProviderTests"
+        ),
+        .testTarget(
+            name: "DeepSeekProviderTests",
+            dependencies: ["DeepSeekProvider"],
+            path: "Tests/DeepSeekProviderTests"
         ),
     ]
 )

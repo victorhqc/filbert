@@ -1,5 +1,6 @@
 import ClaudeCodeProvider
 import Core
+import DeepSeekProvider
 import SwiftUI
 import ZAIProvider
 
@@ -13,6 +14,7 @@ struct AppMain: App {
         let registry = ProviderRegistry()
         registry.register(ZAIProvider())
         registry.register(ClaudeCodeProvider())
+        registry.register(DeepSeekProvider())
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }
 
