@@ -16,6 +16,11 @@ let package = Package(
             path: "Sources/Providers/ZAI",
             resources: [.process("Resources")]
         ),
+        .target(
+            name: "ClaudeCodeProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/ClaudeCode"
+        ),
         .executableTarget(
             name: "App",
             dependencies: ["Core", "ZAIProvider"],
@@ -29,6 +34,11 @@ let package = Package(
             name: "ZAIProviderTests",
             dependencies: ["ZAIProvider"],
             path: "Tests/ZAIProviderTests"
+        ),
+        .testTarget(
+            name: "ClaudeCodeProviderTests",
+            dependencies: ["ClaudeCodeProvider"],
+            path: "Tests/ClaudeCodeProviderTests"
         ),
     ]
 )

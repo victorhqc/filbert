@@ -83,7 +83,7 @@ struct QuotaView: View {
 
     // MARK: - Setup (core 03 AC6: setup reason for .apiKeyFree providers)
 
-    private func setupContent(_ reason: String, providerId: String) -> some View {
+    private func setupContent(_ reason: String, providerId _: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
             Text(reason)
                 .font(.subheadline)

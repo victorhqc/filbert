@@ -12,6 +12,10 @@ public struct ProviderQuota: Sendable {
     public let lines: [UsageLine]
     public let lastUpdated: Date
     public let error: String?
+    /// Provider-set flag indicating the data is beyond its freshness window.
+    /// Defaults to `false`; the provider is solely responsible for setting it
+    /// (providers 02 AC5b).
+    public let isStale: Bool
 
     public init(
         providerId: String,
@@ -19,7 +23,8 @@ public struct ProviderQuota: Sendable {
         headline: String,
         lines: [UsageLine],
         lastUpdated: Date,
-        error: String? = nil
+        error: String? = nil,
+        isStale: Bool = false
     ) {
         self.providerId = providerId
         self.providerName = providerName
@@ -27,6 +32,7 @@ public struct ProviderQuota: Sendable {
         self.lines = lines
         self.lastUpdated = lastUpdated
         self.error = error
+        self.isStale = isStale
     }
 }
 
@@ -150,16 +156,22 @@ public protocol AIProvider: Sendable {
 public extension AIProvider {
     /// Defaults to `.apiKey` so existing providers need zero changes beyond
     /// the `fetchQuota` signature (core 03 Plan 2/3).
-    static var authShape: ProviderAuth.Shape { .apiKey }
+    static var authShape: ProviderAuth.Shape {
+        .apiKey
+    }
 
     /// Defaults to `true` — only correct for `.apiKey` providers. The
     /// registry routes `.apiKey` providers through the Keychain path and
     /// never calls this (core 03 AC5).
-    func isConfigured() -> Bool { true }
+    func isConfigured() -> Bool {
+        true
+    }
 
     /// Defaults to `nil` — `.apiKey` providers are never asked for setup
     /// state (core 03 AC6).
-    func currentSetupState() async -> ProviderState? { nil }
+    func currentSetupState() async -> ProviderState? {
+        nil
+    }
 }
 
 /// Metadata about a registered provider, surfaced by the registry (ui 02 Plan 1).
