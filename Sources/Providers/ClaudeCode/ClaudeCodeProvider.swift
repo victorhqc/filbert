@@ -65,15 +65,18 @@ public struct ClaudeCodeProvider: AIProvider {
     private let locator: ClaudeCodeLocator
     private let cacheStore: StatuslineCacheStore
     private let installer: StatuslineHelperInstaller
+    private let refresher: ClaudeCodeRefresher
 
     public init(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(),
         cacheStore: StatuslineCacheStore = StatuslineCacheStore(),
-        installer: StatuslineHelperInstaller = StatuslineHelperInstaller()
+        installer: StatuslineHelperInstaller = StatuslineHelperInstaller(),
+        refresher: ClaudeCodeRefresher = ClaudeCodeRefresher()
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
         self.installer = installer
+        self.refresher = refresher
     }
 
     // MARK: - Configuration (providers 02 AC3, core 03 AC5/AC6)
@@ -236,5 +239,20 @@ public struct ClaudeCodeProvider: AIProvider {
         }
 
         return String(localized: "No data")
+    }
+}
+
+// MARK: - ProactiveRefreshable (providers 03 AC3)
+
+extension ClaudeCodeProvider: ProactiveRefreshable {
+    /// Triggers a window-less `claude -p` spawn via the refresher before the
+    /// next `fetchQuota` call re-reads the cache (providers 03 AC3).
+    ///
+    /// The view model only invokes this on a manual Refresh click — the
+    /// auto-refresh loop still goes straight to `fetchQuota` and never
+    /// spawns `claude`.
+    public func proactiveRefresh() async throws {
+        ClaudeCodeLog.log("proactiveRefresh: delegating to refresher")
+        try await refresher.refresh()
     }
 }

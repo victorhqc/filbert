@@ -263,3 +263,26 @@ extension ProviderSetupError: LocalizedError {
         }
     }
 }
+
+// MARK: - ProactiveRefreshable (providers 03)
+
+/// Opt-in capability for providers that can refresh their data on demand
+/// before the next `fetchQuota` call (providers 03 AC3).
+///
+/// Conformance is optional: providers that derive their data purely from
+/// the network on every fetch (e.g. `.apiKey` providers like ZAI) never
+/// conform, and the registry reports `ProviderSetupError.notSupported` for
+/// them. Providers whose data comes from a side channel that an external
+/// action can refresh (e.g. Claude Code's statusline cache) conform and
+/// implement `proactiveRefresh()` to trigger that action.
+public protocol ProactiveRefreshable: AIProvider {
+    /// Trigger an out-of-band refresh of the provider's data source.
+    ///
+    /// Implementations should block until the refresh is observably complete
+    /// (e.g. the cache file has been rewritten) or a bounded timeout elapses,
+    /// so the caller's subsequent `fetchQuota` reads fresh data. Failures
+    /// should throw; the view model catches them and proceeds to
+    /// `fetchQuota` regardless, surfacing whatever cached data is available
+    /// (providers 03 AC3).
+    func proactiveRefresh() async throws
+}

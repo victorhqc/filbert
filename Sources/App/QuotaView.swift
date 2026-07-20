@@ -140,7 +140,7 @@ struct QuotaView: View {
                 Spacer()
 
                 Button {
-                    viewModel.fetchQuota(for: providerId)
+                    viewModel.manualRefresh(for: providerId)
                 } label: {
                     // AC5: icon-only Refresh control; tooltip carries the label (ui 04).
                     Image(systemName: "arrow.clockwise")
@@ -227,7 +227,7 @@ struct QuotaView: View {
             }
 
             Button(String(localized: "Retry")) {
-                viewModel.fetchQuota(for: providerId)
+                viewModel.manualRefresh(for: providerId)
             }
         }
         .padding(.vertical, 4)
