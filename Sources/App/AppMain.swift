@@ -15,26 +15,17 @@ struct AppMain: App {
     }
 
     var body: some Scene {
+        // AC1: Menu Bar popover (ui 02)
         MenuBarExtra(String(localized: "AI Usage"), systemImage: "brain.head.profile") {
-            VStack(alignment: .leading, spacing: 8) {
-                // AC3: unconfigured prompt (ui 01)
-                if !viewModel.isConfigured {
-                    SettingsView(viewModel: viewModel)
-                } else {
-                    // AC4/AC6: quota display with loading/error states (ui 01)
-                    QuotaView(viewModel: viewModel)
-                }
-
-                Divider()
-                Button(String(localized: "Quit")) {
-                    NSApplication.shared.terminate(nil)
-                }
-                .keyboardShortcut("q")
-            }
-            .padding()
-            .frame(width: 280)
+            QuotaView(viewModel: viewModel)
+                .frame(width: 280)
         }
         .menuBarExtraStyle(.window)
+
+        // AC1: Standalone Settings scene (ui 02)
+        Settings {
+            SettingsView(viewModel: viewModel)
+        }
     }
 }
 

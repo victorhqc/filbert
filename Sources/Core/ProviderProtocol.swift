@@ -78,8 +78,51 @@ public struct UsageDetail: Sendable {
 ///
 /// Each provider is responsible for formatting its own headline string —
 /// the Core layer never interprets it.
+///
+/// The effective base URL is resolved by Core (default vs. per-provider
+/// override) and passed into `fetchQuota` so providers never read the
+/// override themselves (core 02).
 public protocol AIProvider: Sendable {
     static var providerId: String { get }
     static var providerName: String { get }
-    func fetchQuota(apiKey: String) async throws -> ProviderQuota
+    /// Short, localized description shown in the Settings provider list (ui 02).
+    static var providerDescription: String { get }
+    /// Production host root for this provider, e.g.
+    /// `URL(string: "https://api.z.ai")!` (core 02 AC1). Path segments stay
+    /// inside `fetchQuota`.
+    static var baseURL: URL { get }
+    /// Fetches the provider's current quota, hitting `<baseURL>` resolved by
+    /// the registry (core 02 AC2).
+    func fetchQuota(apiKey: String, baseURL: URL) async throws -> ProviderQuota
+}
+
+/// Metadata about a registered provider, surfaced by the registry (ui 02 Plan 1).
+public struct ProviderInfo: Sendable, Identifiable {
+    public let id: String
+    public let displayName: String
+    public let description: String
+    /// Production host root the provider hits when no override is set (core 02).
+    /// Surfaced so the Settings UI can show what the user would be overriding
+    /// (ui 03 Plan 3).
+    public let defaultBaseURL: URL
+
+    public init(
+        id: String,
+        displayName: String,
+        description: String,
+        defaultBaseURL: URL
+    ) {
+        self.id = id
+        self.displayName = displayName
+        self.description = description
+        self.defaultBaseURL = defaultBaseURL
+    }
+}
+
+/// Per-provider state the view model tracks (ui 02 Plan 2).
+public enum ProviderState: Sendable {
+    case unconfigured
+    case loading
+    case loaded(ProviderQuota)
+    case error(String)
 }

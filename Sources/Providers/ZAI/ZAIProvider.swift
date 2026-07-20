@@ -31,6 +31,23 @@ public enum ZAIError: Error, Equatable, Sendable {
     }
 }
 
+extension ZAIError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .missingKey:
+            String(localized: "No API key configured.")
+        case .http(401):
+            String(localized: "Authentication failed. Check your API key.")
+        case let .http(code) where code == 429:
+            String(localized: "Rate limited. Try again later.")
+        case .network:
+            String(localized: "Network error. Check your connection.")
+        case .decoding, .http:
+            String(localized: "Unexpected response from server.")
+        }
+    }
+}
+
 // MARK: - Wire types (private to this module)
 
 private struct ZAIQuotaResponse: Decodable {
@@ -82,6 +99,9 @@ private struct ZAILimitLabel {
 public struct ZAIProvider: AIProvider {
     public static let providerId = "zai"
     public static let providerName = "z.ai"
+    public static let providerDescription = String(localized: "Monitor API usage and quotas")
+    /// Host root for z.ai requests; path segments live in `fetchQuota` (core 02 AC1/AC8).
+    public static let baseURL = URL(string: "https://api.z.ai")!
 
     private let session: URLSession
 
@@ -89,12 +109,19 @@ public struct ZAIProvider: AIProvider {
         self.session = session
     }
 
-    public func fetchQuota(apiKey: String) async throws -> ProviderQuota {
+    public func fetchQuota(apiKey: String, baseURL: URL) async throws -> ProviderQuota {
         guard !apiKey.isEmpty else {
             throw ZAIError.missingKey
         }
 
-        var request = URLRequest(url: URL(string: "https://api.z.ai/api/monitor/usage/quota/limit")!)
+        // Path is plan-agnostic; only the host comes from `baseURL` (core 02 AC8).
+        let endpoint = baseURL
+            .appendingPathComponent("api")
+            .appendingPathComponent("monitor")
+            .appendingPathComponent("usage")
+            .appendingPathComponent("quota")
+            .appendingPathComponent("limit")
+        var request = URLRequest(url: endpoint)
         request.httpMethod = "GET"
         // z.ai's monitor endpoint expects the raw token, NOT an "Authorization: Bearer …"
         // scheme. Sending a "Bearer " prefix is rejected as unauthenticated. This holds
