@@ -113,13 +113,7 @@ final class QuotaViewModel {
         }
     }
 
-    // MARK: - Auth shape helpers (ui 05 AC8)
-
-    /// Returns `true` when the provider uses `.apiKeyFree` auth, so the popover
-    /// can suppress the "Clear Key" button (ui 05 AC8).
-    func isAPIKeyFree(_ providerId: String) -> Bool {
-        registry.isAPIKeyFree(providerId)
-    }
+    // MARK: - Auth shape helpers (ui 05 AC3/AC4)
 
     /// Returns `true` when the provider's helper can be installed right now
     /// (binary present, helper not yet installed) (ui 05 AC3/AC4).

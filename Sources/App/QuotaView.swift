@@ -149,14 +149,6 @@ struct QuotaView: View {
                 .font(.caption)
                 .help(String(localized: "Refresh"))
                 .disabled(ifLoadingState(providerId))
-
-                // AC8: suppress "Clear Key" for .apiKeyFree providers (ui 05).
-                if !viewModel.isAPIKeyFree(providerId) {
-                    Button(String(localized: "Clear Key")) {
-                        try? viewModel.deleteKey(for: providerId)
-                    }
-                    .font(.caption)
-                }
             }
         }
         .padding(.bottom, 4)
