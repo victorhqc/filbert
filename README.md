@@ -39,11 +39,14 @@ without opening four browser tabs.
 
 | Provider    | Status      | What it tracks                                    |
 |-------------|-------------|---------------------------------------------------|
-| z.ai        | Planned     | GLM Coding Plan quota, token window, peak hours   |
+| z.ai        | ✅ Done     | GLM Coding Plan quota, token window, peak hours   |
+| Claude      | ✅ Done¹   | Claude Code plan usage via `claude --debug`       |
 | DeepSeek    | Planned     | API usage, token consumption, balance             |
-| Claude      | Planned     | Anthropic API usage, token spend, rate limits     |
 | OpenAI      | Planned     | API usage, token spend, billing                   |
 | Moonshot    | Planned     | API usage, token consumption                      |
+
+> ¹ Claude integration reads usage data from the **Claude Code CLI** — see
+> [Claude Code setup](#claude-code) below.
 
 Providers are **pluggable**. Each one is an independent module behind a shared
 protocol — add or remove any provider without touching the others or the core
@@ -126,13 +129,18 @@ click **Install Helper**. The helper chains into Claude Code's
 `statusLine.command` and writes a small cache file that AI Usage reads on
 refresh.
 
+> **First-time data:** Run `claude --debug` at least once to confirm Claude
+> Code is working and generating the output that the helper captures. AI
+> Usage refreshes by re-invoking this command periodically — make sure the
+> CLI stays on your `PATH`.
+
 ## Status
 
-**Early development.** The Core protocol, Keychain wrapper, and a stub z.ai
-provider are in place. The app builds and runs as a menu-bar item. Real provider
-integrations and widgets are next.
+**Early development.** The Core protocol, Keychain wrapper, the z.ai provider,
+and the Claude provider are in place. The app builds and runs as a menu-bar
+item. Additional provider integrations and widgets are next.
 
-See [`specs/`](specs/) for the spec files that will drive implementation.
+See [`specs/`](specs/) for the spec files that drive implementation.
 
 ## Development
 
