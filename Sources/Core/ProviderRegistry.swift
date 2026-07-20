@@ -17,7 +17,8 @@ public final class ProviderRegistry {
             ProviderInfo(
                 id: type(of: provider).providerId,
                 displayName: type(of: provider).providerName,
-                description: type(of: provider).providerDescription
+                description: type(of: provider).providerDescription,
+                defaultBaseURL: type(of: provider).baseURL
             )
         }
     }
@@ -39,7 +40,14 @@ public final class ProviderRegistry {
                 group.addTask {
                     do {
                         let apiKey = try keychain.load(for: providerId)
-                        let quota = try await provider.fetchQuota(apiKey: apiKey)
+                        // Core resolves the effective URL: user override when
+                        // present and valid, else the provider's default (core 02 AC2/AC6).
+                        let baseURL = ProviderOverrides.baseURL(for: providerId)
+                            ?? type(of: provider).baseURL
+                        let quota = try await provider.fetchQuota(
+                            apiKey: apiKey,
+                            baseURL: baseURL
+                        )
                         return (providerId, .success(quota))
                     } catch {
                         return (providerId, .failure(error))

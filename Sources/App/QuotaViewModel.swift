@@ -78,6 +78,25 @@ final class QuotaViewModel {
         stopAutoRefresh(for: providerId)
     }
 
+    // MARK: - Base-URL override (ui 03)
+
+    /// Current override URL for a provider, or `nil` if none is saved (ui 03 Plan 2).
+    func overrideURL(for providerId: String) -> URL? {
+        ProviderOverrides.baseURL(for: providerId)
+    }
+
+    /// Saves a base-URL override for a provider. Throws `ProviderOverrideError`
+    /// for non-`https` / empty-host URLs so the view can show an inline error
+    /// (ui 03 AC3). When the provider is already configured, triggers an
+    /// immediate re-fetch so the user sees the proxy take effect (ui 03 AC4).
+    func saveOverrideURL(_ url: URL?, for providerId: String) throws {
+        try ProviderOverrides.setBaseURL(url, for: providerId)
+        log("saveOverrideURL: provider=\(providerId) url=\(url?.absoluteString ?? "nil")")
+        if registry.isConfigured(providerId) {
+            performFetch(for: providerId)
+        }
+    }
+
     // MARK: - Fetch (AC5: manual refresh (ui 02))
 
     func fetchQuota(for providerId: String) {

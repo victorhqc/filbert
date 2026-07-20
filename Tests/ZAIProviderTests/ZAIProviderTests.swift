@@ -29,7 +29,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
-        _ = try await provider.fetchQuota(apiKey: "test-key")
+        _ = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
 
         let request = MockURLProtocol.lastRequest
         XCTAssertEqual(request?.url?.absoluteString, "https://api.z.ai/api/monitor/usage/quota/limit")
@@ -39,13 +42,36 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(request?.value(forHTTPHeaderField: "Accept"), "application/json")
     }
 
+    // MARK: - AC8: custom base URL (proxy) is honored (core 02)
+
+    func testFetchQuota_usesCustomBaseURLWhenProvided() async throws {
+        MockURLProtocol.responseData = validResponseJSON()
+        MockURLProtocol.responseStatusCode = 200
+
+        let proxy = try XCTUnwrap(URL(string: "https://proxy.example.com"))
+
+        _ = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: proxy
+        )
+
+        let request = MockURLProtocol.lastRequest
+        XCTAssertEqual(
+            request?.url?.absoluteString,
+            "https://proxy.example.com/api/monitor/usage/quota/limit"
+        )
+    }
+
     // MARK: - AC2: Known (type, unit) → labelled UsageLine
 
     func testFetchQuota_mapsKnownTypeUnitPairs() async throws {
         MockURLProtocol.responseData = validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
 
         XCTAssertEqual(quota.lines.count, 3)
         XCTAssertEqual(quota.lines[0].label, "5-hour window")
@@ -57,7 +83,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         let fiveHour = quota.lines[0]
 
         XCTAssertEqual(fiveHour.percentage, 42)
@@ -88,7 +117,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         let monthly = quota.lines[0]
         XCTAssertEqual(monthly.used, 0)
         XCTAssertEqual(monthly.total, 1000)
@@ -109,7 +141,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         XCTAssertEqual(quota.lines.count, 1)
         XCTAssertEqual(quota.lines[0].label, "5-hour window")
     }
@@ -120,7 +155,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         let fiveHour = quota.lines[0]
 
         XCTAssertNotNil(fiveHour.resetDate)
@@ -135,7 +173,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         let fiveHour = quota.lines[0]
 
         XCTAssertNotNil(fiveHour.details)
@@ -158,7 +199,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         XCTAssertNil(quota.lines[0].details)
     }
 
@@ -168,7 +212,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
 
         XCTAssertTrue(quota.headline.hasPrefix("42%"))
         XCTAssertTrue(quota.headline.contains("·"))
@@ -188,7 +235,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
 
         XCTAssertTrue(quota.headline.hasPrefix("75%"))
         XCTAssertTrue(quota.headline.contains("·"))
@@ -206,7 +256,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = json
         MockURLProtocol.responseStatusCode = 200
 
-        let quota = try await provider.fetchQuota(apiKey: "test-key")
+        let quota = try await provider.fetchQuota(
+            apiKey: "test-key",
+            baseURL: ZAIProvider.baseURL
+        )
         XCTAssertEqual(quota.headline, "No data")
     }
 
@@ -214,7 +267,10 @@ final class ZAIProviderTests: XCTestCase {
 
     func testFetchQuota_throwsMissingKeyForEmptyKey() async throws {
         do {
-            _ = try await provider.fetchQuota(apiKey: "")
+            _ = try await provider.fetchQuota(
+                apiKey: "",
+                baseURL: ZAIProvider.baseURL
+            )
             XCTFail("Expected missingKey error")
         } catch let error as ZAIError {
             XCTAssertEqual(error, .missingKey)
@@ -226,7 +282,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 401
 
         do {
-            _ = try await provider.fetchQuota(apiKey: "test-key")
+            _ = try await provider.fetchQuota(
+                apiKey: "test-key",
+                baseURL: ZAIProvider.baseURL
+            )
             XCTFail("Expected http error")
         } catch let error as ZAIError {
             XCTAssertEqual(error, .http(401))
@@ -237,7 +296,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseError = URLError(.notConnectedToInternet)
 
         do {
-            _ = try await provider.fetchQuota(apiKey: "test-key")
+            _ = try await provider.fetchQuota(
+                apiKey: "test-key",
+                baseURL: ZAIProvider.baseURL
+            )
             XCTFail("Expected network error")
         } catch let error as ZAIError {
             if case .network = error {
@@ -253,7 +315,10 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseStatusCode = 200
 
         do {
-            _ = try await provider.fetchQuota(apiKey: "test-key")
+            _ = try await provider.fetchQuota(
+                apiKey: "test-key",
+                baseURL: ZAIProvider.baseURL
+            )
             XCTFail("Expected decoding error")
         } catch let error as ZAIError {
             if case .decoding = error {
