@@ -8,35 +8,44 @@ struct SettingsView: View {
     let viewModel: QuotaViewModel
 
     var body: some View {
-        List(viewModel.registeredProvidersSorted) { provider in
-            switch provider.authShape {
-            case .apiKey:
-                ProviderSettingsRow(
-                    provider: provider,
-                    isConfigured: viewModelIsConfigured(provider.id),
-                    overrideURL: viewModel.overrideURL(for: provider.id),
-                    onSaveKey: { key in
-                        try? viewModel.saveKey(key, for: provider.id)
-                    },
-                    onClearKey: {
-                        try? viewModel.deleteKey(for: provider.id)
-                    },
-                    onSaveOverride: { url in
-                        try viewModel.saveOverrideURL(url, for: provider.id)
-                    }
-                )
-            case .apiKeyFree:
-                APIKeyFreeSettingsRow(
-                    provider: provider,
-                    state: viewModel.providerStates[provider.id] ?? .unconfigured,
-                    canInstall: viewModel.canInstallHelper(for: provider.id),
-                    onInstall: {
-                        Task { await viewModel.installHelper(for: provider.id) }
-                    },
-                    onRemove: {
-                        Task { await viewModel.removeHelper(for: provider.id) }
-                    }
-                )
+        List {
+            ForEach(viewModel.registeredProvidersSorted) { provider in
+                switch provider.authShape {
+                case .apiKey:
+                    ProviderSettingsRow(
+                        provider: provider,
+                        isConfigured: viewModelIsConfigured(provider.id),
+                        overrideURL: viewModel.overrideURL(for: provider.id),
+                        onSaveKey: { key in
+                            try? viewModel.saveKey(key, for: provider.id)
+                        },
+                        onClearKey: {
+                            try? viewModel.deleteKey(for: provider.id)
+                        },
+                        onSaveOverride: { url in
+                            try viewModel.saveOverrideURL(url, for: provider.id)
+                        }
+                    )
+                case .apiKeyFree:
+                    APIKeyFreeSettingsRow(
+                        provider: provider,
+                        state: viewModel.providerStates[provider.id] ?? .unconfigured,
+                        canInstall: viewModel.canInstallHelper(for: provider.id),
+                        onInstall: {
+                            Task { await viewModel.installHelper(for: provider.id) }
+                        },
+                        onRemove: {
+                            Task { await viewModel.removeHelper(for: provider.id) }
+                        }
+                    )
+                }
+            }
+
+            // AC4: Balance thresholds section lives below the provider list (ui 08).
+            Section {
+                BalanceThresholdsSettingsRow()
+            } header: {
+                Text(String(localized: "Balance thresholds"))
             }
         }
         .navigationTitle(String(localized: "Providers"))
@@ -445,5 +454,112 @@ private struct APIKeyFreeSettingsRow: View {
                 onRemove()
             }
         }
+    }
+}
+
+// MARK: - Balance thresholds section (ui 08 AC4)
+
+/// Settings row exposing the user-configurable low/ok balance thresholds.
+/// The stepper lower bound for "OK above" tracks the current "Low below" so
+/// the user cannot enter an impossible pairing from the UI; `BalanceThresholds.set`
+/// additionally clamps on write as a safety net (ui 08 AC2).
+@MainActor
+private struct BalanceThresholdsSettingsRow: View {
+    @State private var lowInput: Double = BalanceThresholds.low
+    @State private var okInput: Double = BalanceThresholds.ok
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            lowStepper
+            okStepper
+            tierPreview
+            hint
+        }
+        .padding(.vertical, 4)
+    }
+
+    // MARK: - Steppers
+
+    private var lowStepper: some View {
+        stepperRow(
+            label: String(localized: "Low below"),
+            value: $lowInput,
+            range: 0 ... 1000
+        )
+        .onChange(of: lowInput) { _, newLow in
+            // Keep ok strictly above low; otherwise the ok stepper's lower
+            // bound would be below its current value, which SwiftUI clamps
+            // silently and the two inputs could drift apart.
+            if okInput <= newLow {
+                okInput = newLow + 1
+            }
+            persist()
+        }
+    }
+
+    private var okStepper: some View {
+        stepperRow(
+            label: String(localized: "OK above"),
+            value: $okInput,
+            range: (lowInput + 1) ... 1000
+        )
+        .onChange(of: okInput) { _, _ in
+            persist()
+        }
+    }
+
+    private func stepperRow(
+        label: String,
+        value: Binding<Double>,
+        range: ClosedRange<Double>
+    ) -> some View {
+        Stepper(value: value, in: range, step: 1) {
+            HStack {
+                Text(label)
+                Spacer()
+                Text(value.wrappedValue, format: .number)
+                    .monospacedDigit()
+                    .foregroundColor(.secondary)
+            }
+        }
+    }
+
+    // MARK: - Tier preview (ui 08 AC4)
+
+    /// Three Circle swatches matching the popover's balance-row indicator,
+    /// with captions showing the resulting ranges. Uses the same Circle size
+    /// as the popover so Settings and popover stay visually identical.
+    private var tierPreview: some View {
+        let lowInt = Int(lowInput)
+        let okInt = Int(okInput)
+        return VStack(alignment: .leading, spacing: 4) {
+            swatchRow(color: .red, caption: String(localized: "under \(lowInt)"))
+            swatchRow(color: .orange, caption: String(localized: "\(lowInt)–\(okInt)"))
+            swatchRow(color: .green, caption: String(localized: "\(okInt) and up"))
+        }
+        .padding(.top, 2)
+    }
+
+    private func swatchRow(color: Color, caption: String) -> some View {
+        HStack(spacing: 6) {
+            Circle()
+                .fill(color)
+                .frame(width: 6, height: 6)
+            Text(caption)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    // MARK: - Hint (ui 08 AC4)
+
+    private var hint: some View {
+        Text(String(localized: "Applies to every provider currency (USD, CNY, …)."))
+            .font(.caption2)
+            .foregroundColor(.secondary)
+    }
+
+    private func persist() {
+        BalanceThresholds.set(low: lowInput, ok: okInput)
     }
 }
