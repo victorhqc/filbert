@@ -253,6 +253,72 @@
           }
         }
       }
+    },
+    "Peak hours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Peak hours"
+          }
+        }
+      }
+    },
+    "In peak" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "In peak"
+          }
+        }
+      }
+    },
+    "Off peak" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Off peak"
+          }
+        }
+      }
+    },
+    "%lld× multiplier" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld× multiplier"
+          }
+        }
+      }
+    },
+    "%@–%@ (your time)" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@–%2$@ (your time)"
+          }
+        }
+      }
+    },
+    "Usage: %lld%%" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Usage: %1$lld%%"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
