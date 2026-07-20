@@ -26,6 +26,16 @@ final class QuotaViewModel {
     /// Derived: whether any provider is configured (ui 02 AC3).
     private(set) var hasAnyConfiguredProvider: Bool = false
 
+    // MARK: - Quiet refresh (ui 07)
+
+    /// Per-provider flag set while a refresh is in flight and last-known data
+    /// stays visible. Drives the Refresh icon's rotation + click-debounce (ui 07 AC3/AC4).
+    private(set) var isRefreshing: [String: Bool] = [:]
+
+    /// Per-provider error from the most recent refresh that failed while last-known
+    /// data was retained. Shown as a non-blocking indicator; cleared on next success (ui 07 AC6).
+    private(set) var refreshErrors: [String: String] = [:]
+
     // MARK: - Auto-refresh (AC7: per-provider 5-minute cadence (ui 02))
 
     private var refreshLoops: [String: Task<Void, Never>] = [:]
@@ -113,13 +123,7 @@ final class QuotaViewModel {
         }
     }
 
-    // MARK: - Auth shape helpers (ui 05 AC8)
-
-    /// Returns `true` when the provider uses `.apiKeyFree` auth, so the popover
-    /// can suppress the "Clear Key" button (ui 05 AC8).
-    func isAPIKeyFree(_ providerId: String) -> Bool {
-        registry.isAPIKeyFree(providerId)
-    }
+    // MARK: - Auth shape helpers (ui 05 AC3/AC4)
 
     /// Returns `true` when the provider's helper can be installed right now
     /// (binary present, helper not yet installed) (ui 05 AC3/AC4).
@@ -196,6 +200,11 @@ final class QuotaViewModel {
             log("fetchQuota: provider=\(providerId) already loading, skipping")
             return
         }
+        // AC7: debounce — same guard as manual refresh (ui 07).
+        if isRefreshing[providerId] == true {
+            log("fetchQuota: provider=\(providerId) already refreshing, skipping")
+            return
+        }
         performFetch(for: providerId)
     }
 
@@ -216,9 +225,20 @@ final class QuotaViewModel {
             log("manualRefresh: provider=\(providerId) already loading, skipping")
             return
         }
-        setState(.loading, for: providerId)
-        refreshDerived()
+        // AC1/AC4: debounce while refreshing; keep last-known data visible (.loaded/.error);
+        // first-ever fetch still uses .loading (ui 07).
+        if isRefreshing[providerId] == true {
+            log("manualRefresh: provider=\(providerId) already refreshing, skipping")
+            return
+        }
 
+        switch providerStates[providerId] {
+        case .loaded, .error:
+            setRefreshing(true, for: providerId)
+        default:
+            setState(.loading, for: providerId)
+            refreshDerived()
+        }
         Task { [weak self] in
             await self?.performManualRefresh(providerId: providerId)
         }
@@ -251,40 +271,18 @@ final class QuotaViewModel {
 
     private func performFetch(for providerId: String) {
         log("performFetch: provider=\(providerId)")
-        setState(.loading, for: providerId)
-        refreshDerived()
-
+        // AC1/AC7: pick the quiet path when last-known data exists (ui 07).
+        switch providerStates[providerId] {
+        case .loaded, .error:
+            setRefreshing(true, for: providerId)
+        default:
+            setState(.loading, for: providerId)
+            refreshDerived()
+        }
         Task {
             let results = await registry.fetchAll()
             applyResults(results)
         }
-    }
-
-    // MARK: - Result processing (AC6: per-provider failure isolation (ui 02))
-
-    private func applyResults(_ results: [String: Result<ProviderQuota, Error>]) {
-        log("applyResults: got \(results.count) result(s)")
-        for (id, result) in results {
-            guard registry.isConfigured(id) else {
-                log("applyResults: provider=\(id) no longer configured, skipping")
-                continue
-            }
-
-            switch result {
-            case let .success(quota):
-                log("applyResults: provider=\(id) success, headline=\(quota.headline)")
-                setState(.loaded(quota), for: id)
-            case let .failure(error):
-                log("applyResults: provider=\(id) failed: \(error.localizedDescription)")
-                if error is KeychainError {
-                    setState(.unconfigured, for: id)
-                    stopAutoRefresh(for: id)
-                } else {
-                    setState(.error(error.localizedDescription), for: id)
-                }
-            }
-        }
-        refreshDerived()
     }
 
     // MARK: - Auto-refresh loop (AC7: per-provider 5-minute loop (ui 02))
@@ -343,5 +341,60 @@ final class QuotaViewModel {
 
     private func log(_ message: @autoclosure () -> String) {
         FileHandle.standardError.write(Data("[QuotaViewModel] \(message())\n".utf8))
+    }
+}
+
+// MARK: - Quiet-refresh state mutation + result processing (ui 07)
+
+private extension QuotaViewModel {
+    func setRefreshing(_ refreshing: Bool, for providerId: String) {
+        var copy = isRefreshing
+        copy[providerId] = refreshing
+        isRefreshing = copy
+    }
+
+    func setRefreshError(_ message: String?, for providerId: String) {
+        var copy = refreshErrors
+        if let message {
+            copy[providerId] = message
+        } else {
+            copy.removeValue(forKey: providerId)
+        }
+        refreshErrors = copy
+    }
+
+    func applyResults(_ results: [String: Result<ProviderQuota, Error>]) {
+        log("applyResults: got \(results.count) result(s)")
+        for (id, result) in results {
+            guard registry.isConfigured(id) else {
+                log("applyResults: provider=\(id) no longer configured, skipping")
+                continue
+            }
+            // Every resolved result clears the in-flight flag (ui 07 AC5).
+            setRefreshing(false, for: id)
+
+            switch result {
+            case let .success(quota):
+                log("applyResults: provider=\(id) success, headline=\(quota.headline)")
+                setRefreshError(nil, for: id)
+                setState(.loaded(quota), for: id)
+            case let .failure(error):
+                log("applyResults: provider=\(id) failed: \(error.localizedDescription)")
+                if error is KeychainError {
+                    // Key deleted externally — genuine state change (ui 07 AC6).
+                    setRefreshError(nil, for: id)
+                    setState(.unconfigured, for: id)
+                    stopAutoRefresh(for: id)
+                } else if case .loaded = providerStates[id] {
+                    // AC6: retain last-known quota; surface failure as indicator (ui 07).
+                    setRefreshError(error.localizedDescription, for: id)
+                } else {
+                    // AC6 fall-through: no data to retain (ui 07).
+                    setRefreshError(nil, for: id)
+                    setState(.error(error.localizedDescription), for: id)
+                }
+            }
+        }
+        refreshDerived()
     }
 }

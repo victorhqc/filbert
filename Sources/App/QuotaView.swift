@@ -136,6 +136,14 @@ struct QuotaView: View {
             Divider()
             HStack {
                 lastUpdatedLabel(quota)
+                // AC6: non-blocking indicator surfacing the most recent
+                // refresh failure while last-known data is still shown (ui 07).
+                if let message = viewModel.refreshErrors[providerId] {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.yellow)
+                        .font(.caption2)
+                        .help(message)
+                }
 
                 Spacer()
 
@@ -143,30 +151,17 @@ struct QuotaView: View {
                     viewModel.manualRefresh(for: providerId)
                 } label: {
                     // AC5: icon-only Refresh control; tooltip carries the label (ui 04).
-                    Image(systemName: "arrow.clockwise")
+                    // AC3/AC4: glyph rotates while the refresh is in flight and the
+                    // control is disabled — debounce follows the new flag (ui 07).
+                    RefreshIcon(isRefreshing: viewModel.isRefreshing[providerId] ?? false)
                 }
                 .buttonStyle(.borderless)
                 .font(.caption)
                 .help(String(localized: "Refresh"))
-                .disabled(ifLoadingState(providerId))
-
-                // AC8: suppress "Clear Key" for .apiKeyFree providers (ui 05).
-                if !viewModel.isAPIKeyFree(providerId) {
-                    Button(String(localized: "Clear Key")) {
-                        try? viewModel.deleteKey(for: providerId)
-                    }
-                    .font(.caption)
-                }
+                .disabled(viewModel.isRefreshing[providerId] ?? false)
             }
         }
         .padding(.bottom, 4)
-    }
-
-    private func ifLoadingState(_ providerId: String) -> Bool {
-        if case .loading = viewModel.providerStates[providerId] {
-            return true
-        }
-        return false
     }
 
     private func usageLineRow(_ line: UsageLine) -> some View {

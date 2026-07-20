@@ -47,6 +47,9 @@ Write for a teammate who knows the codebase but has not seen this branch yet.
 Fill in each section. Drop a section if it has nothing to say. Do not pad.
 
 ```markdown
+## Title
+<One sentence. What this branch does.>
+
 ## Summary
 
 <One to three sentences. What does this branch add or change in main?>
