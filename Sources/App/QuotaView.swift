@@ -70,6 +70,8 @@ struct QuotaView: View {
         switch state {
         case .unconfigured:
             EmptyView()
+        case let .setup(reason):
+            setupContent(reason, providerId: providerId)
         case .loading:
             loadingContent
         case let .loaded(quota):
@@ -77,6 +79,17 @@ struct QuotaView: View {
         case let .error(message):
             errorContent(message, providerId: providerId)
         }
+    }
+
+    // MARK: - Setup (core 03 AC6: setup reason for .apiKeyFree providers)
+
+    private func setupContent(_ reason: String, providerId: String) -> some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(reason)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+        }
+        .padding(.vertical, 4)
     }
 
     // MARK: - Loading (AC6: loading indicator (ui 01))

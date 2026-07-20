@@ -19,10 +19,14 @@ public enum ZAIError: Error, Equatable, Sendable {
     case http(Int)
     case network(Error)
     case decoding(Error)
+    /// The registry routed `.apiKeyFree` auth to this provider, which is a
+    /// contract-integrity violation — z.ai always expects an API key (core 03 AC3).
+    case internalInconsistency
 
     public static func == (lhs: ZAIError, rhs: ZAIError) -> Bool {
         switch (lhs, rhs) {
         case (.missingKey, .missingKey): true
+        case (.internalInconsistency, .internalInconsistency): true
         case let (.http(lhsVal), .http(rhsVal)): lhsVal == rhsVal
         case let (.network(lhsVal), .network(rhsVal)): lhsVal.localizedDescription == rhsVal.localizedDescription
         case let (.decoding(lhsVal), .decoding(rhsVal)): lhsVal.localizedDescription == rhsVal.localizedDescription
@@ -42,6 +46,8 @@ extension ZAIError: LocalizedError {
             String(localized: "Rate limited. Try again later.")
         case .network:
             String(localized: "Network error. Check your connection.")
+        case .internalInconsistency:
+            String(localized: "Internal error: unexpected auth shape.")
         case .decoding, .http:
             String(localized: "Unexpected response from server.")
         }
@@ -109,7 +115,17 @@ public struct ZAIProvider: AIProvider {
         self.session = session
     }
 
-    public func fetchQuota(apiKey: String, baseURL: URL) async throws -> ProviderQuota {
+    public func fetchQuota(auth: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
+        let apiKey: String
+        switch auth {
+        case let .apiKey(key):
+            apiKey = key
+        case .apiKeyFree:
+            // The registry never routes .apiKeyFree to ZAI — this is a
+            // contract-integrity assertion (core 03 AC3).
+            throw ZAIError.internalInconsistency
+        }
+
         guard !apiKey.isEmpty else {
             throw ZAIError.missingKey
         }
