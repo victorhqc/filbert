@@ -164,7 +164,9 @@ public struct ClaudeCodeProvider: AIProvider {
         }
 
         let quota = map(cache: cache)
-        ClaudeCodeLog.log("fetchQuota: mapped headline=\(quota.headline) lines=\(quota.lines.count) isStale=\(quota.isStale)")
+        ClaudeCodeLog.log(
+            "fetchQuota: mapped headline=\(quota.headline) lines=\(quota.lines.count) isStale=\(quota.isStale)"
+        )
         return quota
     }
 

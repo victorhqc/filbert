@@ -28,16 +28,7 @@ let writtenAt = Date().timeIntervalSince1970
 // the cache so it never interferes with stdout (which Claude Code captures).
 let debugLogURL = cacheDir.appendingPathComponent("claude-code.helper.log")
 let debugLine = "\(Date()) invoked pid=\(ProcessInfo.processInfo.processIdentifier) bytes=\(rawInput.count)\n"
-if let debugData = debugLine.data(using: .utf8) {
-    if FileManager.default.fileExists(atPath: debugLogURL.path),
-       let handle = try? FileHandle(forWritingTo: debugLogURL) {
-        defer { try? handle.close() }
-        _ = try? handle.seekToEnd()
-        try? handle.write(contentsOf: debugData)
-    } else {
-        try? debugData.write(to: debugLogURL, options: .atomic)
-    }
-}
+appendDiagnosticLine(debugLine, to: debugLogURL)
 
 guard !rawInput.isEmpty,
       let root = try? JSONSerialization.jsonObject(with: rawInput) as? [String: Any]
@@ -97,4 +88,25 @@ func writeCache(_ dict: [String: Any]) {
         withItemAt: tempURL,
         backupItemName: nil
     )
+}
+
+// MARK: - Diagnostic log
+
+/// Appends `line` to `logURL`, creating the file on first write. Best-effort:
+/// any I/O failure is silently dropped so diagnostics never break the cache
+/// write path.
+func appendDiagnosticLine(_ line: String, to logURL: URL) {
+    guard let data = line.data(using: .utf8) else { return }
+    if FileManager.default.fileExists(atPath: logURL.path) {
+        guard let handle = try? FileHandle(forWritingTo: logURL) else { return }
+        defer { try? handle.close() }
+        _ = try? handle.seekToEnd()
+        try? handle.write(contentsOf: data)
+    } else {
+        try? FileManager.default.createDirectory(
+            at: logURL.deletingLastPathComponent(),
+            withIntermediateDirectories: true
+        )
+        try? data.write(to: logURL, options: .atomic)
+    }
 }
