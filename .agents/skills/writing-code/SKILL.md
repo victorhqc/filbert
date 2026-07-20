@@ -82,8 +82,10 @@ For each spec item, in order:
 1. **Sync** — re-read the spec file; the user may have edited it.
 2. **Execute** — perform the next unchecked item, only that item.
 3. **Record** — mark the item `[x]` in the spec and log any new findings.
-4. **Validate** — run the full validation gate (below) before notifying the
-   user.
+4. **Validate** — run the **full** validation gate (below), every step, in
+   order. Do not subset it. Build + test alone is not enough — CI runs
+   `swiftformat --lint .`, `swiftlint`, a release build, and tests; so must
+   you. If any step fails, fix and restart from step 1.
 5. **Self-review** — after the gate passes, review your own work (below).
 
 Do not commit, push, or otherwise touch git on your own. Hand the git commands
@@ -91,25 +93,47 @@ to the user to run.
 
 ## 4. Validation gate
 
-These commands mirror the CI workflow. Run all of them from the workspace root
-— every one must pass before you notify the user.
+**This is the single most important step in the loop.** The commands below are
+the *exact* commands CI runs in `.github/workflows/ci.yml`. Run all of them,
+in order, from the workspace root — **every one must pass before you notify
+the user.** Running only `swift build` + `swift test` is not enough: CI also
+runs `swiftformat --lint .` and a release build, so any of those failing on CI
+is a regression you shipped. Keep the gate in sync with `ci.yml` — if a step
+is added there, add it here.
+
+Treat the gate as a literal checklist. Run each command, read its full output,
+and only move to the next when the previous is green. If any step fails, fix
+the code and **restart the gate from step 1** — earlier steps can regress
+when you edit to fix a later one.
 
 ```sh
-# 1. Format (install: brew install swiftformat)
+# 1. Format — CI step "SwiftFormat (lint)" (install: brew install swiftformat)
 swiftformat --lint .
 
-# 2. Lint (install: brew install swiftlint)
+# 2. Lint — CI step "SwiftLint" (install: brew install swiftlint)
 swiftlint
 
-# 3. Build — debug configuration, all targets
+# 3. Build — CI step "Build (debug)"
 swift build
 
-# 4. Build — release configuration (catches optimization-only issues)
+# 4. Build — CI step "Build (release)" — catches optimizer-only failures
 swift build -c release
 
-# 5. Tests
+# 5. Tests — CI step "Test"
 swift test
 ```
+
+### What counts as "passing"
+
+- **`swiftformat --lint .`** must print `0/N files require formatting`. Any
+  `error:` line is a failure — fix the formatting in the file, do not silence
+  the rule.
+- **`swiftlint`** must report `0 serious` violations. **Warnings** are not
+  failures, but if a warning appears in a file you changed, fix it. Pre-existing
+  warnings in untouched files are out of scope — note them but don't fix.
+- **`swift build`** and **`swift build -c release`** must end with
+  `Build complete!`.
+- **`swift test`** must show `0 failures`.
 
 ### When a tool isn't installed
 
