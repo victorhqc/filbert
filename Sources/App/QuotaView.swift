@@ -331,8 +331,8 @@ private struct PeakHoursBlock: View {
                     .fill(inPeak ? Color.orange : Color.green)
                     .frame(width: 6, height: 6)
                 Text(inPeak
-                     ? String(localized: "In peak")
-                     : String(localized: "Off peak"))
+                    ? String(localized: "In peak")
+                    : String(localized: "Off peak"))
                     .font(.caption2)
                     .fontWeight(.medium)
                 Spacer()
@@ -375,7 +375,9 @@ private struct PeakHoursBlock: View {
 
     /// 3× in peak; else 1× while the promo is active, 2× afterwards.
     private func multiplier(at date: Date, inPeak: Bool) -> Int {
-        if inPeak { return 3 }
+        if inPeak {
+            return 3
+        }
         return date < promoEndDate ? 1 : 2
     }
 
