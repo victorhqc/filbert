@@ -443,7 +443,7 @@ write_release_notes() {
 
     if [[ "$LANE" == "signed" ]]; then
         cat > "$notes_path" <<EOF
-# AI Usage $VERSION
+## AI Usage $VERSION
 
 Signed and notarized macOS build (Apple Silicon).
 
@@ -455,7 +455,7 @@ it launches with no Gatekeeper warning.
 EOF
     else
         cat > "$notes_path" <<EOF
-# AI Usage $VERSION
+## AI Usage $VERSION
 
 Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
 
