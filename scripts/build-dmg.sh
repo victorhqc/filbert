@@ -129,12 +129,94 @@ build_release() {
     )
     [[ -x "$BUILD_DIR/App" ]] || fatal "Build produced no executable at $BUILD_DIR/App"
     ok "Release build complete"
+
+    # SPM's generated Bundle.module accessor looks up resources at
+    # Bundle.main.bundleURL (the .app top level). assemble_bundle places
+    # the bundles at Contents/Resources/ instead, because that is the
+    # only layout macOS code sealing accepts. Patch the accessor and
+    # relink so Bundle.module resolves against Contents/Resources/ at
+    # runtime (ci 03).
+    patch_resource_bundle_accessors
+}
+
+# ─── Resource accessor patch (ci 03) ─────────────────────────────────────────
+
+# Rewrites SPM's generated resource_bundle_accessor.swift so Bundle.module
+# resolves resource bundles from the host .app's Contents/Resources/, where
+# assemble_bundle places them and macOS code sealing allows them to live.
+#
+# SPM's template (Swift 5.3+) generates:
+#   let mainPath = Bundle.main.bundleURL
+#       .appendingPathComponent("<module>.bundle").path
+# which looks at the .app top level — not Contents/Resources/. macOS code
+# sealing rejects bundles at the .app root ("unsealed contents"), so we
+# cannot place them there. Instead we keep the signable layout and teach
+# the accessor to look in the right place via Bundle.main.resourceURL
+# (which points at Contents/Resources/ in a packaged .app). The
+# `?? Bundle.main.bundleURL` fallback preserves dev-tree lookup when
+# resourceURL is nil (e.g. running tests against the test runner bundle).
+#
+# AC1: every accessor under .build/<arch>-apple-macosx/release/ is patched,
+# the executable is relinked against the patched accessors, and no
+# original-form line survives. If a future Swift changes the template, the
+# post-rebuild assertion fails loudly rather than shipping a broken app.
+patch_resource_bundle_accessors() {
+    local release_tree="$REPO_ROOT/.build/$ARCH-apple-macosx/release"
+    local original='Bundle\.main\.bundleURL\.appendingPathComponent'
+    local patched='(Bundle.main.resourceURL ?? Bundle.main.bundleURL).appendingPathComponent'
+
+    # Collect every generated accessor (one per module with resources:
+    # App, Core, ClaudeCodeProvider, DeepSeekProvider, ZAIProvider).
+    local accessors=()
+    while IFS= read -r accessor; do
+        accessors+=("$accessor")
+    done < <(find "$release_tree" \
+        -path '*/DerivedSources/resource_bundle_accessor.swift' \
+        -type f)
+    [[ ${#accessors[@]} -gt 0 ]] \
+        || fatal "No resource_bundle_accessor.swift under $release_tree"
+
+    info "Patching ${#accessors[@]} resource_bundle_accessor.swift file(s)…"
+    for accessor in "${accessors[@]}"; do
+        sed -i '' "s|$original|$patched|g" "$accessor"
+    done
+
+    # Relink the executable against the patched accessors. SPM regenerates
+    # the accessor from its template only when its inputs (Package.swift
+    # resource declarations) change; a second no-op build treats the
+    # accessor as a regular source edit and recompiles only the affected
+    # modules.
+    (
+        cd "$REPO_ROOT"
+        swift build -c release --arch arm64
+    )
+    [[ -x "$BUILD_DIR/App" ]] \
+        || fatal "Relink produced no executable at $BUILD_DIR/App"
+
+    # Assert the patch survived the relink. If SPM regenerated the
+    # accessor from its template (template drift), the original form
+    # reappears and we fail loudly per ci 03 AC1 / Risks.
+    local unpatched=()
+    local still_present=()
+    while IFS= read -r accessor; do
+        still_present+=("$accessor")
+        grep -q "$original" "$accessor" && unpatched+=("$accessor")
+    done < <(find "$release_tree" \
+        -path '*/DerivedSources/resource_bundle_accessor.swift' \
+        -type f)
+
+    [[ ${#still_present[@]} -eq ${#accessors[@]} ]] \
+        || fatal "Accessor count changed across rebuild (before=${#accessors[@]}, after=${#still_present[@]})"
+    [[ ${#unpatched[@]} -eq 0 ]] \
+        || fatal "Unpatched resource_bundle_accessor.swift after rebuild (SPM template drift?): ${unpatched[*]}"
+
+    ok "Patched and relinked ${#accessors[@]} resource_bundle_accessor.swift file(s)"
 }
 
 # ─── Bundle assembly (ci 02 AC1, Plan §1B) ──────────────────────────────────
 
 # Assembles AI Usage.app into the passed staging dir and echoes its path.
-# Layout (ci 02 AC1):
+# Layout (ci 02 AC1, ci 03 AC2):
 #   AI Usage.app/
 #     Contents/
 #       Info.plist                            (generated from template)
@@ -146,6 +228,7 @@ build_release() {
 #         ai-usage_DeepSeekProvider.bundle/
 #         ai-usage_ZAIProvider.bundle/
 #         AppIcon.icns                        (for Finder/Dock pre-launch)
+#
 assemble_bundle() {
     local stage_dir="$1"
     local app_dir="$stage_dir/$APP_NAME.app"
@@ -156,9 +239,14 @@ assemble_bundle() {
     cp "$BUILD_DIR/App" "$app_dir/Contents/MacOS/$APP_NAME"
     chmod +x "$app_dir/Contents/MacOS/$APP_NAME"
 
-    # SPM resource bundles. Bundle.module resolves against Contents/Resources,
-    # so these must be present or statusline_helper.swift (providers 02 §5)
-    # and AppIcon/Localizable lookups will fail at runtime.
+    # SPM resource bundles live at Contents/Resources/ because that is the
+    # only layout macOS code sealing accepts. Bundle.module does NOT
+    # natively resolve against Contents/Resources/ — SPM's generated
+    # accessor looks at Bundle.main.bundleURL (the .app top level).
+    # patch_resource_bundle_accessors (called from build_release) rewrites
+    # the accessor to look here via Bundle.main.resourceURL (ci 03 AC2).
+    # If either piece is missing, statusline_helper.swift (providers 02 §5)
+    # and AppIcon/Localizable lookups fail at runtime.
     local bundle_count=0
     while IFS= read -r bundle; do
         cp -R "$bundle" "$app_dir/Contents/Resources/"
@@ -355,7 +443,7 @@ write_release_notes() {
 
     if [[ "$LANE" == "signed" ]]; then
         cat > "$notes_path" <<EOF
-# AI Usage $VERSION
+## AI Usage $VERSION
 
 Signed and notarized macOS build (Apple Silicon).
 
@@ -367,7 +455,7 @@ it launches with no Gatekeeper warning.
 EOF
     else
         cat > "$notes_path" <<EOF
-# AI Usage $VERSION
+## AI Usage $VERSION
 
 Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
 
