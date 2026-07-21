@@ -1,15 +1,41 @@
 import Core
 import SwiftUI
 
-// MARK: - Settings scene content (AC2: provider list (ui 02))
+// MARK: - Settings scene content (AC1: tabbed layout (ui 09))
 
 @MainActor
 struct SettingsView: View {
     let viewModel: QuotaViewModel
 
     var body: some View {
+        TabView {
+            // AC1: credentials and per-provider settings stay here (ui 02/03/05/08).
+            providersTab
+                .tabItem {
+                    Label(String(localized: "Providers"), systemImage: "key.fill")
+                }
+
+            // AC1: ordering lives on its own tab so credentials never mix
+            // with appearance settings (ui 09).
+            AppearanceTab(viewModel: viewModel)
+                .tabItem {
+                    Label(String(localized: "Appearance"), systemImage: "list.bullet.indent")
+                }
+        }
+        .onAppear {
+            // MenuBarExtra apps run as accessory apps and don't grab focus by
+            // default; without this, the Settings window can appear behind
+            // whatever app was previously frontmost.
+            NSApp.activate(ignoringOtherApps: true)
+        }
+    }
+
+    /// Tab 1 — provider credentials, base-URL overrides, and balance
+    /// thresholds. Content is unchanged from (ui 02/03/05/08); only nested
+    /// under the tab (ui 09 AC1).
+    private var providersTab: some View {
         List {
-            ForEach(viewModel.registeredProvidersSorted) { provider in
+            ForEach(viewModel.registeredProvidersOrdered) { provider in
                 switch provider.authShape {
                 case .apiKey:
                     ProviderSettingsRow(
@@ -49,12 +75,6 @@ struct SettingsView: View {
             }
         }
         .navigationTitle(String(localized: "Providers"))
-        .onAppear {
-            // MenuBarExtra apps run as accessory apps and don't grab focus by
-            // default; without this, the Settings window can appear behind
-            // whatever app was previously frontmost.
-            NSApp.activate(ignoringOtherApps: true)
-        }
     }
 
     private func viewModelIsConfigured(_ providerId: String) -> Bool {
@@ -65,6 +85,35 @@ struct SettingsView: View {
         case .loading, .loaded, .error:
             return true
         }
+    }
+}
+
+// MARK: - Appearance tab (AC2/AC3: provider ordering (ui 09))
+
+@MainActor
+private struct AppearanceTab: View {
+    let viewModel: QuotaViewModel
+
+    var body: some View {
+        List {
+            // AC2: one row per registered provider, display name only.
+            Section {
+                ForEach(viewModel.registeredProvidersOrdered) { provider in
+                    Text(provider.displayName)
+                }
+                .onMove { source, destination in
+                    // AC3: drag-and-drop re-order. The view model persists the
+                    // new order and refreshes derived state so the popover
+                    // re-renders live (ui 09 AC7).
+                    viewModel.moveProvider(from: source, to: destination)
+                }
+            } header: {
+                Text(String(localized: "Provider order"))
+            } footer: {
+                Text(String(localized: "Drag rows to reorder providers in the menu bar."))
+            }
+        }
+        .navigationTitle(String(localized: "Appearance"))
     }
 }
 
