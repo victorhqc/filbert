@@ -4,6 +4,8 @@
 # Builds AI Usage.app and packages it into an arm64 DMG.
 # Single entry point for local and CI builds (ci 02 AC8).
 #
+# Requires: create-dmg (brew install create-dmg) for DMG packaging.
+#
 # Usage:
 #   scripts/build-dmg.sh --version <semver> [--output <dir>] [--no-sign]
 #
@@ -276,56 +278,39 @@ notarize_and_staple() {
 }
 
 # ─── DMG packaging (ci 02 AC4) ──────────────────────────────────────────────
-
+#
+# create-dmg (https://github.com/create-dmg/create-dmg) is a hard dependency.
+# It produces the conventional drag-to-/Applications presentation that AC4
+# calls for: fixed window size, icon positioning, and the Applications
+# drop-link. Rolling this by hand would mean reimplementing its AppleScript
+# and .DS_Store logic for no gain — create-dmg is the community standard.
+#
+# We do NOT use create-dmg's --codesign/--notarize flags: those use
+# notarytool's --keychain-profile flow, which diverges from the spec's
+# --apple-id/--team-id/--password env-secret flow (ci 02 Plan §8). Keeping
+# one auth path for both the .app and the DMG is simpler and matches AC6.
 create_dmg() {
     local stage_dir="$1"
     local dmg_path="$2"
 
+    command -v create-dmg >/dev/null 2>&1 \
+        || fatal "create-dmg not found. Install with: brew install create-dmg"
+
     mkdir -p "$(dirname "$dmg_path")"
 
-    if command -v create-dmg >/dev/null 2>&1; then
-        create_dmg_with_tool "$stage_dir" "$dmg_path"
-    else
-        warn "create-dmg not found; falling back to hdiutil."
-        create_dmg_with_hdiutil "$stage_dir" "$dmg_path"
-    fi
-}
-
-# create-dmg path: the conventional drag-to-/Applications presentation.
-create_dmg_with_tool() {
-    local stage_dir="$1"
-    local dmg_path="$2"
+    # --no-internet-enable: deprecated macOS feature that auto-mounted and
+    # copied DMG contents on download. Modern macOS ignores it; passing the
+    # flag silences create-dmg's warning.
     create-dmg \
         --volname "$APP_NAME $VERSION" \
         --window-pos 200 120 \
         --window-size 600 400 \
         --icon-size 100 \
         --icon "$APP_NAME.app" 175 190 \
-        --app-drop-def 425 190 \
+        --app-drop-link 425 190 \
         --no-internet-enable \
         "$dmg_path" \
         "$stage_dir"
-}
-
-# hdiutil fallback: same drag-to-/Applications affordance, no custom layout.
-create_dmg_with_hdiutil() {
-    local stage_dir="$1"
-    local dmg_path="$2"
-    local dmg_staging
-    dmg_staging="$(mktemp -d)"
-    cp -R "$stage_dir/$APP_NAME.app" "$dmg_staging/"
-    ln -s /Applications "$dmg_staging/Applications"
-
-    # UDZO = UDIF zlib-compressed read-only. zlib-level=9 for size.
-    hdiutil create \
-        -volname "$APP_NAME $VERSION" \
-        -fs HFS+ \
-        -srcfolder "$dmg_staging" \
-        -format UDZO \
-        -imagekey zlib-level=9 \
-        "$dmg_path" >/dev/null
-
-    rm -rf "$dmg_staging"
 }
 
 # ─── Verification (ci 02 AC5) ───────────────────────────────────────────────

@@ -181,9 +181,10 @@ cd ai-usage
 swift run
 ```
 
-To produce a DMG locally (mirrors what CI does):
+To produce a DMG locally (mirrors what CI does), install `create-dmg` first:
 
 ```sh
+brew install create-dmg
 scripts/build-dmg.sh --version 0.1.0 --no-sign
 # → dist/AI-Usage-0.1.0-arm64.dmg
 ```
