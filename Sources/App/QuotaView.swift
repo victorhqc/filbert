@@ -1,6 +1,5 @@
 import Core
 import SwiftUI
-import ZAIProvider
 
 // MARK: - Multi-provider quota popover (AC4: per-provider sections (ui 02))
 
@@ -137,12 +136,12 @@ struct QuotaView: View {
                 usageLineRow(line)
             }
 
-            // AC3: peak-hours block only for the z.ai provider (ui 04).
+            // AC3: peak-hours block for providers that supply a config (ui 04).
             // Passing lastUpdated ensures SwiftUI re-evaluates the block's
             // body on every refresh so the in-peak / off-peak status always
             // uses the current time.
-            if showsPeakHoursBlock(for: quota) {
-                PeakHoursBlock(lastUpdated: quota.lastUpdated)
+            if let peakConfig = quota.peakHoursConfig {
+                PeakHoursBlock(config: peakConfig, lastUpdated: quota.lastUpdated)
                     .padding(.top, 2)
             }
 
@@ -336,12 +335,6 @@ struct QuotaView: View {
         }
         return formatter.string(from: NSNumber(value: total))
     }
-
-    /// The peak-hours block is z.ai-specific; gated by `providerId` so any
-    /// future provider is unaffected (ui 04 AC3/AC7).
-    private func showsPeakHoursBlock(for quota: ProviderQuota) -> Bool {
-        quota.providerId == ZAIProvider.providerId
-    }
 }
 
 // MARK: - Balance tier color (ui 08 AC3)
@@ -424,42 +417,26 @@ private struct UsageBar: View {
     }
 }
 
-// MARK: - Peak-hours block (ui 04 AC3/AC4) — z.ai only
+// MARK: - Peak-hours block (ui 04 AC3/AC4)
 
-/// Surfaces the GLM Coding Plan's daily peak window (14:00–18:00 UTC+8) in
-/// the user's local time, whether they're currently in peak, and the current
-/// advanced-model (GLM-5.2 / GLM-5-Turbo) multiplier.
+/// Renders a provider-agnostic peak-hours status block — the peak window
+/// converted to local time, a live in-peak / off-peak indicator, and the
+/// current multiplier.
 ///
-/// Rules per zai-bar's published README:
-///   - Peak: 14:00–18:00 in Asia/Shanghai (CST, no DST) → 3× multiplier.
-///   - Off-peak: 1× until 2026-10-01 (limited-time promo), 2× after.
-///
-/// Computed from `Date()` on each render so the popover stays correct while
-/// open (ui 04 AC4).
+/// All pricing rules come from the `config` parameter; the view has zero
+/// knowledge of any specific provider. Computed from `Date()` on each
+/// render so the popover stays correct while open (ui 04 AC4).
 private struct PeakHoursBlock: View {
+    let config: PeakHoursConfig
+
     /// The last time the provider quota was refreshed. SwiftUI uses this to
     /// decide whether to re-evaluate the block's body — a new value on each
     /// refresh guarantees `Date()` inside `body` is fresh.
     let lastUpdated: Date
 
-    // Asia/Shanghai is IANA's name for China Standard Time (UTC+8, no DST).
-    private let shanghai = TimeZone(identifier: "Asia/Shanghai")
-    private let peakStartHour = 14
-    private let peakEndHour = 18
-    private let promoEndDate: Date = {
-        var components = DateComponents()
-        components.year = 2026
-        components.month = 10
-        components.day = 1
-        components.hour = 0
-        components.minute = 0
-        components.timeZone = TimeZone(identifier: "Asia/Shanghai")
-        return Calendar(identifier: .gregorian).date(from: components) ?? .distantFuture
-    }()
-
     var body: some View {
         let now = Date()
-        let inPeak = isInPeak(at: now)
+        let inPeak = config.isInPeak(at: now)
         VStack(alignment: .leading, spacing: 2) {
             Text(String(localized: "Peak hours"))
                 .font(.caption)
@@ -478,7 +455,7 @@ private struct PeakHoursBlock: View {
                     .font(.caption2)
                     .fontWeight(.medium)
                 Spacer()
-                Text(String(localized: "\(multiplier(at: now, inPeak: inPeak))× multiplier"))
+                Text(String(localized: "\(config.multiplier(at: now))× multiplier"))
                     .font(.caption2.monospacedDigit())
                     .foregroundColor(.secondary)
             }
@@ -490,45 +467,28 @@ private struct PeakHoursBlock: View {
 
     // MARK: - Derived values
 
-    /// "08:00–12:00 (your time)" for Berlin, etc. — builds a Date for today
-    /// at the given hour in Shanghai time (UTC+8), then formats it in the
-    /// user's local time zone so the converted time is displayed correctly.
+    /// Builds a "start–end (your time)" label by computing today's peak window
+    /// boundaries in the config's time zone and formatting them locally.
     private var localWindowLabel: String {
         let formatter = DateFormatter()
         formatter.timeZone = .current
         formatter.dateStyle = .none
         formatter.timeStyle = .short
 
-        let localStart = shanghaiBoundary(hour: peakStartHour)
-        let localEnd = shanghaiBoundary(hour: peakEndHour)
+        let localStart = peakWindowBoundary(hour: config.peakStartHour)
+        let localEnd = peakWindowBoundary(hour: config.peakEndHour)
         let start = formatter.string(from: localStart)
         let end = formatter.string(from: localEnd)
         return String(localized: "\(start)–\(end) (your time)")
     }
 
-    /// True iff `date`, interpreted in Asia/Shanghai, falls in `[14:00, 18:00)`.
-    private func isInPeak(at date: Date) -> Bool {
-        guard let shanghai else { return false }
+    /// Today at `hour:00` in the config's time zone — an absolute instant
+    /// that, when formatted with the user's local time zone, shows the
+    /// converted time.
+    private func peakWindowBoundary(hour: Int) -> Date {
+        guard let tz = config.timeZone else { return Date() }
         var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = shanghai
-        let hour = cal.component(.hour, from: date)
-        return hour >= peakStartHour && hour < peakEndHour
-    }
-
-    /// 3× in peak; else 1× while the promo is active, 2× afterwards.
-    private func multiplier(at date: Date, inPeak: Bool) -> Int {
-        if inPeak {
-            return 3
-        }
-        return date < promoEndDate ? 1 : 2
-    }
-
-    /// Today at `hour:00` in Asia/Shanghai — an absolute instant that, when
-    /// formatted with the user's local time zone, shows the converted time.
-    private func shanghaiBoundary(hour: Int) -> Date {
-        guard let shanghai else { return Date() }
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = shanghai
+        cal.timeZone = tz
         let today = cal.dateComponents([.year, .month, .day], from: Date())
         var components = DateComponents()
         components.year = today.year
@@ -536,7 +496,7 @@ private struct PeakHoursBlock: View {
         components.day = today.day
         components.hour = hour
         components.minute = 0
-        components.timeZone = shanghai
+        components.timeZone = tz
         return cal.date(from: components) ?? Date()
     }
 }
