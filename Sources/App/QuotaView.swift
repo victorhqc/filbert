@@ -482,17 +482,17 @@ private struct PeakHoursBlock: View {
 
     // MARK: - Derived values
 
-    /// "14:00–18:00 (local times)" — converts the UTC+8 boundaries to the
-    /// user's local zone and formats with `.hourMinute` so it follows the
-    /// system locale.
+    /// "08:00–12:00 (your time)" for Berlin, etc. — builds a Date for today
+    /// at the given hour in Shanghai time (UTC+8), then formats it in the
+    /// user's local time zone so the converted time is displayed correctly.
     private var localWindowLabel: String {
         let formatter = DateFormatter()
         formatter.timeZone = .current
         formatter.dateStyle = .none
         formatter.timeStyle = .short
 
-        let localStart = localBoundary(hour: peakStartHour)
-        let localEnd = localBoundary(hour: peakEndHour)
+        let localStart = shanghaiBoundary(hour: peakStartHour)
+        let localEnd = shanghaiBoundary(hour: peakEndHour)
         let start = formatter.string(from: localStart)
         let end = formatter.string(from: localEnd)
         return String(localized: "\(start)–\(end) (your time)")
@@ -515,14 +515,20 @@ private struct PeakHoursBlock: View {
         return date < promoEndDate ? 1 : 2
     }
 
-    /// Today's local-date instant at `hour:00` (e.g. today at 14:00 in the
-    /// user's zone). Used purely to format the local-time window label.
-    private func localBoundary(hour: Int) -> Date {
+    /// Today at `hour:00` in Asia/Shanghai — an absolute instant that, when
+    /// formatted with the user's local time zone, shows the converted time.
+    private func shanghaiBoundary(hour: Int) -> Date {
+        guard let shanghai else { return Date() }
         var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = .current
-        var components = cal.dateComponents([.year, .month, .day], from: Date())
+        cal.timeZone = shanghai
+        let today = cal.dateComponents([.year, .month, .day], from: Date())
+        var components = DateComponents()
+        components.year = today.year
+        components.month = today.month
+        components.day = today.day
         components.hour = hour
         components.minute = 0
+        components.timeZone = shanghai
         return cal.date(from: components) ?? Date()
     }
 }
