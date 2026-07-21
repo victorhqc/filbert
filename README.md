@@ -140,6 +140,55 @@ command and writes a small cache file that AI Usage reads on refresh.
 > editor and never open its status line. During interactive Claude Code
 > sessions, the status-line helper keeps the cache fresh on its own.
 
+## Installation
+
+Pre-built builds live on the [GitHub Releases page](https://github.com/victorhqc/ai-usage/releases).
+Download the `AI-Usage-<version>-arm64.dmg` for the release you want, then:
+
+1. **Mount the DMG** by double-clicking it.
+2. **Drag AI Usage to /Applications** (use the `/Applications` shortcut inside
+   the DMG window).
+3. **Launch from /Applications.** The app lives in the menu bar — there is no
+   Dock icon.
+
+### First launch (unsigned builds)
+
+Current releases are **unsigned** (ad-hoc signed). macOS Gatekeeper will block
+the app on first launch. This is a transitional state — the moment an Apple
+Developer Program membership is configured, releases automatically become
+signed and notarized with no action on your part.
+
+To open an unsigned build, do **one** of:
+
+- **Right-click** AI Usage in /Applications → **Open** → confirm the prompt.
+  Only needed once; subsequent launches work by double-clicking.
+- Or clear the quarantine flag from the terminal:
+
+  ```sh
+  xattr -cr '/Applications/AI Usage.app'
+  ```
+
+Signed + notarized builds (when available) launch with no Gatekeeper warning
+and need none of the above.
+
+### Build from source
+
+If you're on Intel, want the latest `main`, or prefer to build yourself:
+
+```bash
+git clone https://github.com/victorhqc/ai-usage.git
+cd ai-usage
+swift run
+```
+
+To produce a DMG locally (mirrors what CI does), install `create-dmg` first:
+
+```sh
+brew install create-dmg
+scripts/build-dmg.sh --version 0.1.0 --no-sign
+# → dist/AI-Usage-0.1.0-arm64.dmg
+```
+
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
@@ -157,11 +206,15 @@ guide lives in [`AGENTS.md`](AGENTS.md).
 
 ### Quick start
 
+Clone the repo and run the app:
+
 ```bash
 git clone https://github.com/victorhqc/ai-usage.git
 cd ai-usage
 swift run
 ```
+
+See [Installation](#build-from-source) for producing a DMG locally.
 
 ## Security
 
