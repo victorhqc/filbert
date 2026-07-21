@@ -100,6 +100,47 @@ private struct ZAILimitLabel {
     }
 }
 
+// MARK: - Peak-hours metadata (ui 04 AC3/AC4)
+
+/// GLM Coding Plan peak-hours rules sourced from zai-bar's README.
+/// Last verified: 2026-07-21.
+///
+/// These are provider-level constants — the view layer reads them so
+/// pricing rules aren't buried in UI-only code. When z.ai announces
+/// a change (extended promo, new multiplier, different peak window),
+/// updating this single location is sufficient.
+public enum ZAIPeakHours {
+    /// China Standard Time (UTC+8, no DST).
+    public static let timeZone = TimeZone(identifier: "Asia/Shanghai")
+
+    /// Peak window: 14:00–18:00 in Asia/Shanghai.
+    public static let peakStartHour = 14
+    public static let peakEndHour = 18
+
+    /// Advanced-model (GLM-5.2 / GLM-5-Turbo) multiplier during peak hours.
+    public static let peakMultiplier = 3
+
+    /// Off-peak multiplier after the limited-time promo ends.
+    public static let offPeakMultiplier = 2
+
+    /// Off-peak multiplier while the limited-time promo is active.
+    public static let promoMultiplier = 1
+
+    /// Limited-time promo cutoff: 2026-10-01 00:00 Asia/Shanghai.
+    /// After this date the off-peak multiplier flips from
+    /// `promoMultiplier` to `offPeakMultiplier`.
+    public static let promoEndDate: Date = {
+        var components = DateComponents()
+        components.year = 2026
+        components.month = 10
+        components.day = 1
+        components.hour = 0
+        components.minute = 0
+        components.timeZone = timeZone
+        return Calendar(identifier: .gregorian).date(from: components) ?? .distantFuture
+    }()
+}
+
 // MARK: - Provider
 
 public struct ZAIProvider: AIProvider {
@@ -108,6 +149,18 @@ public struct ZAIProvider: AIProvider {
     public static let providerDescription = String(localized: "Monitor API usage and quotas")
     /// Host root for z.ai requests; path segments live in `fetchQuota` (core 02 AC1/AC8).
     public static let baseURL = URL(string: "https://api.z.ai")!
+
+    /// Provider-agnostic config the view layer reads for the peak-hours block.
+    /// Sourced from `ZAIPeakHours` (zai-bar README).
+    public static let peakHoursConfig = PeakHoursConfig(
+        timeZone: ZAIPeakHours.timeZone,
+        peakStartHour: ZAIPeakHours.peakStartHour,
+        peakEndHour: ZAIPeakHours.peakEndHour,
+        peakMultiplier: ZAIPeakHours.peakMultiplier,
+        offPeakMultiplier: ZAIPeakHours.offPeakMultiplier,
+        promoMultiplier: ZAIPeakHours.promoMultiplier,
+        promoEndDate: ZAIPeakHours.promoEndDate
+    )
 
     private let session: URLSession
 
@@ -209,7 +262,8 @@ public struct ZAIProvider: AIProvider {
             providerName: Self.providerName,
             headline: headline,
             lines: lines,
-            lastUpdated: Date()
+            lastUpdated: Date(),
+            peakHoursConfig: Self.peakHoursConfig
         )
     }
 

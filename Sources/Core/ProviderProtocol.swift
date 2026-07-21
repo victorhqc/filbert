@@ -16,6 +16,10 @@ public struct ProviderQuota: Sendable {
     /// Defaults to `false`; the provider is solely responsible for setting it
     /// (providers 02 AC5b).
     public let isStale: Bool
+    /// Optional peak-hours pricing config. Providers that have time-based
+    /// multipliers (e.g. z.ai's GLM Coding Plan) populate this so the view
+    /// can render a peak/off-peak block without any provider-specific code.
+    public let peakHoursConfig: PeakHoursConfig?
 
     public init(
         providerId: String,
@@ -24,7 +28,8 @@ public struct ProviderQuota: Sendable {
         lines: [UsageLine],
         lastUpdated: Date,
         error: String? = nil,
-        isStale: Bool = false
+        isStale: Bool = false,
+        peakHoursConfig: PeakHoursConfig? = nil
     ) {
         self.providerId = providerId
         self.providerName = providerName
@@ -33,6 +38,82 @@ public struct ProviderQuota: Sendable {
         self.lastUpdated = lastUpdated
         self.error = error
         self.isStale = isStale
+        self.peakHoursConfig = peakHoursConfig
+    }
+}
+
+// MARK: - Peak-hours config
+
+/// Provider-agnostic peak-hours pricing configuration.
+///
+/// Providers with time-based tiers (peak/off-peak multipliers) populate this
+/// on their `ProviderQuota`. The view layer renders it generically — adding a
+/// new provider with peak hours requires no changes to `QuotaView.swift`.
+public struct PeakHoursConfig: Sendable {
+    /// The time zone the peak window is defined in (e.g. Asia/Shanghai).
+    public let timeZone: TimeZone?
+
+    /// Peak window: `[peakStartHour, peakEndHour)` in `timeZone`.
+    public let peakStartHour: Int
+    public let peakEndHour: Int
+
+    /// Multiplier while inside the peak window.
+    public let peakMultiplier: Int
+
+    /// Multiplier outside the peak window (used when no promo is active).
+    public let offPeakMultiplier: Int
+
+    /// Optional promotional off-peak multiplier, valid until `promoEndDate`.
+    /// When non-nil and the date hasn't passed, this replaces
+    /// `offPeakMultiplier` for off-peak hours.
+    public let promoMultiplier: Int?
+
+    /// End date of the promotional multiplier, if any. After this date
+    /// the off-peak multiplier reverts to `offPeakMultiplier`.
+    public let promoEndDate: Date?
+
+    public init(
+        timeZone: TimeZone?,
+        peakStartHour: Int,
+        peakEndHour: Int,
+        peakMultiplier: Int,
+        offPeakMultiplier: Int,
+        promoMultiplier: Int? = nil,
+        promoEndDate: Date? = nil
+    ) {
+        self.timeZone = timeZone
+        self.peakStartHour = peakStartHour
+        self.peakEndHour = peakEndHour
+        self.peakMultiplier = peakMultiplier
+        self.offPeakMultiplier = offPeakMultiplier
+        self.promoMultiplier = promoMultiplier
+        self.promoEndDate = promoEndDate
+    }
+
+    // MARK: - Queries
+
+    /// True iff `date`, interpreted in `timeZone`, falls in
+    /// `[peakStartHour, peakEndHour)`.
+    public func isInPeak(at date: Date) -> Bool {
+        guard let tz = timeZone else { return false }
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = tz
+        let hour = cal.component(.hour, from: date)
+        return hour >= peakStartHour && hour < peakEndHour
+    }
+
+    /// The current multiplier at `date`:
+    /// - `peakMultiplier` inside the peak window,
+    /// - `promoMultiplier` off-peak while the promo is active,
+    /// - `offPeakMultiplier` otherwise.
+    public func multiplier(at date: Date) -> Int {
+        if isInPeak(at: date) {
+            return peakMultiplier
+        }
+        if let promoEnd = promoEndDate, date < promoEnd {
+            return promoMultiplier ?? offPeakMultiplier
+        }
+        return offPeakMultiplier
     }
 }
 
