@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!--
+  Entitlements for AI Usage.app direct distribution (ci 02 Plan §2).
+  No App Sandbox — the app spawns subprocesses (claude, swiftc) and reads
+  Keychain items it creates at runtime, both incompatible with sandbox.
+  The same file is used for ad-hoc (AC0) and Developer ID (AC2) builds so
+  the keychain default access group stays stable across dev and release
+  (ci 02 Risks §8).
+-->
+<plist version="1.0">
+<dict>
+</dict>
+</plist>
