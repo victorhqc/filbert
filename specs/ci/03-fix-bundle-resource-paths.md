@@ -110,12 +110,20 @@ Single-file change to `scripts/build-dmg.sh`:
      `(Bundle.main.resourceURL ?? Bundle.main.bundleURL).appendingPathComponent`.
      The `?? bundleURL` fallback preserves the dev-tree lookup when
      `resourceURL` is nil (e.g. running tests against the test runner bundle).
-   - Re-runs `swift build -c release --arch arm64` so SPM recompiles the
-     patched accessors and relinks the executable. SPM's incremental build
-     detects the accessor file changes and rebuilds only the affected modules.
+   - **Replays** SPM's recorded compile + link commands instead of re-running
+     `swift build`. SPM regenerates the accessor from its template during the
+     "Write sources" plan phase of *every* `swift build`, so a second build
+     reverts the patch before swiftc reads it; blocking the regeneration
+     (immutable/read-only file) is not portable — it makes llbuild's "Write
+     sources" fail on some runners (observed as an I/O error on GitHub's macOS
+     runner). Instead, `replay_release_relink` parses `.build/release.yaml`
+     (llbuild's manifest), extracts the exact `swiftc` compile command for each
+     patched module and the `swiftc` link command for `App`, and runs them
+     directly. Those commands read the patched accessor and never regenerate
+     it, so the patch lands in the linked executable deterministically.
    - Asserts the patch took effect on every accessor (grep for the original
      form must return zero hits) and `fatal`s if any accessor is unpatched or
-     missing.
+     missing, or if the manifest lacks a compile/link command for a module.
 
 2. **`assemble_bundle`** — unchanged in behavior (bundles still go to
    `Contents/Resources/`, `AppIcon.icns` still at `Contents/Resources/`).
@@ -138,9 +146,17 @@ time rather than silently producing a broken app.
   accessor's shape, the sed patch may no longer match. Mitigation: AC1's
   post-patch assertion fails the build loudly if any accessor is unpatched;
   the fix is a one-line update to the sed pattern.
-- **Double link.** The release build links twice (once before the patch, once
-  after). The second link is incremental and fast (only the accessor files
-  recompile, ~1s observed). Acceptable for a release-only path.
+- **Manifest format drift.** `replay_release_relink` parses `.build/release.yaml`
+  and assumes each command node's `args` is a JSON array on one line, that the
+  patched modules' compile nodes carry `-emit-module` + `-module-name`, and that
+  the `App` link node carries `-emit-executable` + `-o <exe>`. If a future SPM
+  changes this manifest shape, the replay `fatal`s (missing compile/link
+  command) rather than shipping a broken app. Requires `python3` (present on the
+  macOS runners and in dev).
+- **Double compile.** The release path compiles the resource modules twice: once
+  during the initial `swift build`, once during the replay after the patch. The
+  replay recompiles only the ~5 patched modules and relinks `App` (a few seconds).
+  Acceptable for a release-only path.
 - **Existing v0.1.0 installers/users.** Anyone who downloaded v0.1.0 has a
   crashing `.app`. The fix ships in the next release; recommend cutting
   `v0.1.1` once this lands and pointing users at it.

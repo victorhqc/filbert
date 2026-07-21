@@ -157,27 +157,42 @@ build_release() {
 # resourceURL is nil (e.g. running tests against the test runner bundle).
 #
 # CRUCIAL: SPM regenerates this accessor from its template during the
-# "Write sources" plan phase of EVERY build — a plain patch + `swift build`
-# relink silently reverts the patch before swiftc ever sees it. To make the
-# patch stick we mark each patched accessor user-immutable (chflags uchg)
-# before the relink; "Write sources" then cannot overwrite it, so swiftc
-# compiles the patched source. The flag is cleared afterwards so .build
-# stays cleanable.
+# "Write sources" plan phase of EVERY `swift build`. A plain patch + a
+# second `swift build` therefore reverts the patch before swiftc reads it.
+# Blocking the regeneration (making the file immutable/read-only) is not
+# portable — it makes llbuild's "Write sources" fail on some runners.
+# Instead we let the first build regenerate freely, patch the accessors,
+# and then REPLAY the exact swiftc compile + link commands SPM recorded in
+# its llbuild manifest (.build/release.yaml), bypassing `swift build`
+# entirely. Those commands read the patched accessor and never regenerate
+# it, so the patch lands in the linked executable deterministically.
 #
 # AC1: every accessor under .build/<arch>-apple-macosx/release/ is patched,
 # the executable is relinked against the patched accessors, and no
 # original-form line survives. If a future Swift changes the template, the
-# post-rebuild assertion fails loudly rather than shipping a broken app.
+# post-relink assertion fails loudly rather than shipping a broken app.
 patch_resource_bundle_accessors() {
     local release_tree="$REPO_ROOT/.build/$ARCH-apple-macosx/release"
+    local manifest="$REPO_ROOT/.build/release.yaml"
     local original='Bundle\.main\.bundleURL\.appendingPathComponent'
     local patched='(Bundle.main.resourceURL ?? Bundle.main.bundleURL).appendingPathComponent'
 
-    # Collect every generated accessor (one per module with resources:
-    # App, Core, ClaudeCodeProvider, DeepSeekProvider, ZAIProvider).
+    [[ -f "$manifest" ]] \
+        || fatal "Missing llbuild manifest at $manifest — cannot replay relink"
+    command -v python3 >/dev/null \
+        || fatal "python3 is required to replay the SPM build commands"
+
+    # Collect every generated accessor and its owning module name (from the
+    # <Module>.build/ path). One per module with resources: App, Core,
+    # ClaudeCodeProvider, DeepSeekProvider, ZAIProvider.
     local accessors=()
+    local modules=()
     while IFS= read -r accessor; do
         accessors+=("$accessor")
+        # .../release/<Module>.build/DerivedSources/resource_bundle_accessor.swift
+        local mod="${accessor#"$release_tree"/}"
+        mod="${mod%%.build/*}"
+        modules+=("$mod")
     done < <(find "$release_tree" \
         -path '*/DerivedSources/resource_bundle_accessor.swift' \
         -type f)
@@ -187,48 +202,84 @@ patch_resource_bundle_accessors() {
     info "Patching ${#accessors[@]} resource_bundle_accessor.swift file(s)…"
     for accessor in "${accessors[@]}"; do
         sed -i '' "s|$original|$patched|g" "$accessor"
-        # Freeze the patched file so the relink's "Write sources" phase
-        # cannot regenerate it from SPM's template (see block comment above).
-        chflags uchg "$accessor"
     done
 
-    # Relink the executable against the patched (frozen) accessors. Capture
-    # the exit code so the immutable flag is always cleared afterwards, even
-    # on failure — otherwise .build would be left un-removable.
-    local build_rc=0
-    (
-        cd "$REPO_ROOT"
-        swift build -c release --arch arm64
-    ) || build_rc=$?
+    # Replay SPM's recorded compile + link commands so the patch is compiled
+    # in without a `swift build` regenerating the accessor (see block comment).
+    info "Recompiling ${#modules[@]} module(s) and relinking against patched accessors…"
+    replay_release_relink "$manifest" "$BUILD_DIR/App" "${modules[@]}"
 
-    for accessor in "${accessors[@]}"; do
-        chflags nouchg "$accessor" 2>/dev/null || true
-    done
-
-    [[ $build_rc -eq 0 ]] \
-        || fatal "Relink failed (swift build exit $build_rc)"
     [[ -x "$BUILD_DIR/App" ]] \
         || fatal "Relink produced no executable at $BUILD_DIR/App"
 
-    # Assert the patch survived the relink. If SPM regenerated the
-    # accessor from its template (template drift, or the immutable flag no
-    # longer blocks "Write sources"), the original form reappears and we
-    # fail loudly per ci 03 AC1 / Risks.
+    # Assert the patch is in the on-disk accessors (they are not regenerated
+    # by the replay, so the patched form must survive). If a future SPM
+    # template no longer matches the sed anchor, the original form persists
+    # and we fail loudly per ci 03 AC1 / Risks.
     local unpatched=()
-    local still_present=()
-    while IFS= read -r accessor; do
-        still_present+=("$accessor")
+    for accessor in "${accessors[@]}"; do
         grep -q "$original" "$accessor" && unpatched+=("$accessor")
-    done < <(find "$release_tree" \
-        -path '*/DerivedSources/resource_bundle_accessor.swift' \
-        -type f)
-
-    [[ ${#still_present[@]} -eq ${#accessors[@]} ]] \
-        || fatal "Accessor count changed across rebuild (before=${#accessors[@]}, after=${#still_present[@]})"
+    done
     [[ ${#unpatched[@]} -eq 0 ]] \
-        || fatal "Unpatched resource_bundle_accessor.swift after rebuild (SPM template drift?): ${unpatched[*]}"
+        || fatal "Unpatched resource_bundle_accessor.swift after patch (SPM template drift?): ${unpatched[*]}"
 
     ok "Patched and relinked ${#accessors[@]} resource_bundle_accessor.swift file(s)"
+}
+
+# Replays the swiftc compile commands for the given modules and the App link
+# command, exactly as SPM recorded them in the llbuild manifest. Args:
+#   $1  path to .build/release.yaml
+#   $2  path to the expected linked executable (BUILD_DIR/App)
+#   $3… module names to recompile
+# swiftc is invoked with SPM's own flags (which include -parseable-output);
+# its noisy JSON stdout is suppressed unless a command fails.
+replay_release_relink() {
+    local manifest="$1" exe_path="$2"
+    shift 2
+    local modules=("$@")
+
+    MANIFEST="$manifest" EXE_PATH="$exe_path" MODULES="${modules[*]}" \
+        python3 <<'PY' || fatal "Replay of SPM compile/link commands failed"
+import json, os, re, subprocess, sys
+
+manifest = os.environ["MANIFEST"]
+exe_path = os.environ["EXE_PATH"]
+wanted = set(os.environ["MODULES"].split())
+
+compiles = {}
+link = None
+for line in open(manifest):
+    m = re.match(r'\s*args:\s*(\[.*\])\s*$', line)
+    if not m:
+        continue
+    args = json.loads(m.group(1))
+    if "-emit-executable" in args and "-o" in args \
+            and args[args.index("-o") + 1] == exe_path:
+        link = args
+    elif "-emit-module" in args and "-module-name" in args:
+        name = args[args.index("-module-name") + 1]
+        if name in wanted:
+            compiles[name] = args
+
+missing = wanted - set(compiles)
+if missing:
+    sys.exit(f"no compile command in manifest for module(s): {sorted(missing)}")
+if link is None:
+    sys.exit(f"no link command in manifest for executable: {exe_path}")
+
+def run(label, args):
+    p = subprocess.run(args, stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT, text=True)
+    if p.returncode != 0:
+        sys.stdout.write(p.stdout)
+        sys.exit(f"{label} failed (exit {p.returncode})")
+
+# Recompile every patched module (order is irrelevant — the patch is internal
+# and does not change any module's public interface), then relink.
+for name in sorted(compiles):
+    run(f"compile {name}", compiles[name])
+run("link App", link)
+PY
 }
 
 # ─── Bundle assembly (ci 02 AC1, Plan §1B) ──────────────────────────────────
