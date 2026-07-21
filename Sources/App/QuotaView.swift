@@ -291,17 +291,10 @@ struct QuotaView: View {
         }
     }
 
-    /// Returns the line's percentage, deriving it from `used / total` when
-    /// `percentage` is missing (e.g. monthly web-tool calls). Nil when there
-    /// is no usable percentage data — the row then renders text-only (ui 04 AC1).
+    /// Forwards to the shared resolver so the popover rows and the menu-bar
+    /// icon share one percentage derivation (ui 10 AC3, ui 04 AC1).
     private func percentage(for line: UsageLine) -> Double? {
-        if let pct = line.percentage {
-            return pct
-        }
-        guard let used = line.used, let total = line.total, total > 0 else {
-            return nil
-        }
-        return min(max(used / total * 100, 0), 100)
+        QuotaStatusResolver.percentage(for: line)
     }
 
     /// Filters the provider's lines for display (ui 08 AC1), delegating to
@@ -323,17 +316,10 @@ struct QuotaView: View {
         return balanceTierColor(total)
     }
 
-    /// Currency-formatted amount for a balance-only line, using the line's
-    /// `unit` as the currency code (e.g. "USD", "CNY"). Returns nil when the
-    /// line has no positive total to format (ui 08 AC3).
+    /// Forwards to the shared resolver so the popover rows and the menu-bar
+    /// icon share one currency formatter (ui 10 AC4, ui 08 AC3).
     private func amountText(for line: UsageLine) -> String? {
-        guard let total = line.total, total > 0 else { return nil }
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        if let currency = line.unit, !currency.isEmpty {
-            formatter.currencyCode = currency
-        }
-        return formatter.string(from: NSNumber(value: total))
+        QuotaStatusResolver.amountText(for: line)
     }
 }
 
@@ -388,23 +374,25 @@ private func filteredBalanceLines(
 
 /// Thin horizontal progress bar colored by usage tier. Takes the full width
 /// its parent gives it, so it auto-fits the popover (ui 04 AC6).
+///
+/// Avoids `GeometryReader` — inside the `MenuBarExtra` popover it collapses to
+/// zero width because the parent `VStack` doesn't propagate a concrete width
+/// before sizing the bar. The fill is a full-width `Capsule` scaled to the
+/// used fraction with `scaleEffect`, so it tracks whatever width the popover
+/// gives the row without measuring it explicitly.
 private struct UsageBar: View {
     let percentage: Double
     let color: Color
 
     var body: some View {
-        GeometryReader { proxy in
-            let fillWidth = max(proxy.size.width * clampedFraction, 2)
-            ZStack(alignment: .leading) {
-                // Track
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
-                    .fill(Color.secondary.opacity(0.15))
-                // Fill
-                RoundedRectangle(cornerRadius: 2, style: .continuous)
-                    .fill(color)
-                    .frame(width: fillWidth)
-            }
+        ZStack(alignment: .leading) {
+            Capsule().fill(Color.secondary.opacity(0.15))
+            Capsule()
+                .fill(color)
+                .scaleEffect(x: clampedFraction, anchor: .leading)
+                .opacity(clampedFraction <= 0 ? 0 : 1)
         }
+        .frame(maxWidth: .infinity)
         .frame(height: 4)
         .accessibilityElement()
         .accessibilityLabel(
