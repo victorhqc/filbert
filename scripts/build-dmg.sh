@@ -156,6 +156,14 @@ build_release() {
 # `?? Bundle.main.bundleURL` fallback preserves dev-tree lookup when
 # resourceURL is nil (e.g. running tests against the test runner bundle).
 #
+# CRUCIAL: SPM regenerates this accessor from its template during the
+# "Write sources" plan phase of EVERY build — a plain patch + `swift build`
+# relink silently reverts the patch before swiftc ever sees it. To make the
+# patch stick we mark each patched accessor user-immutable (chflags uchg)
+# before the relink; "Write sources" then cannot overwrite it, so swiftc
+# compiles the patched source. The flag is cleared afterwards so .build
+# stays cleanable.
+#
 # AC1: every accessor under .build/<arch>-apple-macosx/release/ is patched,
 # the executable is relinked against the patched accessors, and no
 # original-form line survives. If a future Swift changes the template, the
@@ -179,23 +187,33 @@ patch_resource_bundle_accessors() {
     info "Patching ${#accessors[@]} resource_bundle_accessor.swift file(s)…"
     for accessor in "${accessors[@]}"; do
         sed -i '' "s|$original|$patched|g" "$accessor"
+        # Freeze the patched file so the relink's "Write sources" phase
+        # cannot regenerate it from SPM's template (see block comment above).
+        chflags uchg "$accessor"
     done
 
-    # Relink the executable against the patched accessors. SPM regenerates
-    # the accessor from its template only when its inputs (Package.swift
-    # resource declarations) change; a second no-op build treats the
-    # accessor as a regular source edit and recompiles only the affected
-    # modules.
+    # Relink the executable against the patched (frozen) accessors. Capture
+    # the exit code so the immutable flag is always cleared afterwards, even
+    # on failure — otherwise .build would be left un-removable.
+    local build_rc=0
     (
         cd "$REPO_ROOT"
         swift build -c release --arch arm64
-    )
+    ) || build_rc=$?
+
+    for accessor in "${accessors[@]}"; do
+        chflags nouchg "$accessor" 2>/dev/null || true
+    done
+
+    [[ $build_rc -eq 0 ]] \
+        || fatal "Relink failed (swift build exit $build_rc)"
     [[ -x "$BUILD_DIR/App" ]] \
         || fatal "Relink produced no executable at $BUILD_DIR/App"
 
     # Assert the patch survived the relink. If SPM regenerated the
-    # accessor from its template (template drift), the original form
-    # reappears and we fail loudly per ci 03 AC1 / Risks.
+    # accessor from its template (template drift, or the immutable flag no
+    # longer blocks "Write sources"), the original form reappears and we
+    # fail loudly per ci 03 AC1 / Risks.
     local unpatched=()
     local still_present=()
     while IFS= read -r accessor; do
