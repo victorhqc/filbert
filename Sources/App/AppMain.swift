@@ -19,10 +19,16 @@ struct AppMain: App {
     }
 
     var body: some Scene {
-        // AC1: Menu Bar popover (ui 02)
-        MenuBarExtra(String(localized: "AI Usage"), systemImage: "brain.head.profile") {
+        // AC1: Menu Bar popover (ui 02). The visible menu-bar content is the
+        // `label:` view — a live status ring (ui 10). The `MenuBarStatusIcon`
+        // carries its own accessibility label: a per-state sentence for
+        // window/balance modes (ui 10 AC9), and "AI Usage" for the fallback,
+        // preserving the original menu-bar announcement.
+        MenuBarExtra {
             QuotaView(viewModel: viewModel)
                 .frame(width: 280)
+        } label: {
+            MenuBarStatusIcon(viewModel: viewModel)
         }
         .menuBarExtraStyle(.window)
 
