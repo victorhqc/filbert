@@ -43,5 +43,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = notification
         NSApplication.shared.setActivationPolicy(.accessory)
+
+        // The app runs as a SwiftPM executable without a full `.app` bundle, so
+        // set the application icon programmatically from the bundled `.icns`.
+        // This is what Notification Center widgets and any window chrome pick up.
+        if let iconURL = Bundle.module.url(forResource: "AppIcon", withExtension: "icns"),
+           let icon = NSImage(contentsOf: iconURL)
+        {
+            NSApplication.shared.applicationIconImage = icon
+        }
     }
 }
