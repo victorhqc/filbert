@@ -109,13 +109,13 @@ installer step.
   `codesign --deep --options runtime --entitlements <file> -s "Developer
   ID Application: <Name>"` is invoked against the bundle
 - **And** `codesign --verify --verbose=4 "AI Usage.app"` succeeds
-- **And** an entitlements file is checked in (e.g.
-  `Sources/App/Resources/AIUsage.entitlements`) listing only what the app
-  actually needs (Keychain access via
-  `com.apple.security.application-groups` or per-item access groups; no
-  App Sandbox entitlement — this is direct distribution, not MAS)
-- **And** the Keychain access group matches the one used by the Core
-  Keychain wrapper so existing keys continue to read after an upgrade
+- **And** an entitlements file is checked in at
+  `packaging/AIUsage.entitlements` (see Plan §2) listing only what the
+  app actually needs. No App Sandbox entitlement — this is direct
+  distribution, not MAS. No Keychain access group either: the Core
+  Keychain wrapper uses `kSecAttrService`/`kSecAttrAccount` only, so
+  there is no group to pin (see the "Keychain access group stability"
+  risk for why this is safe today and what would force a change).
 - **And** if any of the three signing secrets is **missing**, this step is
   skipped and the pipeline falls through to AC0's ad-hoc signing
 
@@ -141,7 +141,7 @@ installer step.
 - **Given** the bundle from AC3 (signed + notarized) or AC0 (ad-hoc signed)
 - **When** the DMG step runs
 - **Then** a read-only DMG named `AI-Usage-<version>-arm64.dmg` is
-  produced via `create-dmg` (or `hdiutil` with equivalent presentation)
+  produced via `create-dmg` (a hard dependency — see Plan §4)
 - **And** the DMG presents the conventional "drag to /Applications"
   layout: `AI Usage.app` alongside an `/Applications` symlink
 - **And** when signing + notarization secrets are present, the DMG itself
@@ -196,9 +196,10 @@ installer step.
 ### AC8: Local reproducibility — a maintainer can produce an equivalent DMG
 
 - **Given** the signing/notarization secrets are available locally (or
-  `--skip-signing` is documented for unsigned local builds)
+  `--no-sign` is documented for unsigned local builds)
 - **When** the maintainer runs the documented build script
-  (`scripts/build-dmg.sh` or equivalent, checked into the repo)
+  (`scripts/build-dmg.sh`, checked into the repo; requires
+  `brew install create-dmg`)
 - **Then** the same sequence — `swift build -c release`, `assemble-bundle`,
   `codesign`, `notarytool submit`, `stapler staple`, `create-dmg` — runs
   end-to-end
@@ -251,31 +252,62 @@ installer step.
      Xcode project file, but every bundle detail
      (`LSApplicationCategoryType`, embedded Swift runtime on older OSes,
      helper source discovery via `Bundle.module`) must be wired by hand.
-   - **Recommendation: start with (B).** The app is small, the SPM
-     `Bundle.module` resource layout is already correct, and avoiding a
-     second Xcode project keeps (ci 01)'s "SPM is the source of truth"
-     stance intact. Move to (A) only if (B) blocks notarization or hits a
-     runtime issue we can't fix in shell.
-2. **Entitlements.** Author `Sources/App/Resources/AIUsage.entitlements`
-   with the minimal set — `com.apple.security.cs.allow-unsigned-executable-memory`
-   only if Swift's runtime demands it; no sandbox. The Claude Code
-   subprocess spawn and Keychain access are unrestricted on direct
-   distribution, which is why we are not on the MAS. The same file is
-   used for ad-hoc-signed local builds (AC0) and Developer ID builds
-   (AC2).
+   - **Decision: (B), as implemented in `scripts/build-dmg.sh`.** The
+     actual assembly copies the SPM-generated resource bundles
+     (`ai-usage_App.bundle`, `ai-usage_ClaudeCodeProvider.bundle`,
+     `ai-usage_Core.bundle`, `ai-usage_DeepSeekProvider.bundle`,
+     `ai-usage_ZAIProvider.bundle`) verbatim into `Contents/Resources/`,
+     because `Bundle.module` resolves against those bundle names —
+     flattening the resources would break `forResource:withExtension:`
+     lookups (providers 02 §5, AC9). The `AppIcon.icns` is also copied to
+     the top of `Contents/Resources/` so Finder/Dock show the icon
+     before launch (the app also sets it at runtime via `Bundle.module`,
+     per `AppMain.swift`). Avoiding a second Xcode project keeps (ci 01)'s
+     "SPM is the source of truth" stance intact. Move to (A) only if (B)
+     blocks notarization or hits a runtime issue we can't fix in shell.
+2. **Entitlements and Info.plist.** Both live under `packaging/`, not
+   `Sources/App/Resources/`, because they are build metadata rather than
+   app resources — keeping them out of `Sources/App/Resources/` prevents
+   SPM from bundling the entitlements file inside the shipped app and
+   keeps the Info.plist template from confusing SPM's resource
+   processing. `packaging/AIUsage.entitlements` carries the minimal set
+   — no sandbox, no keychain access group (the Core Keychain wrapper
+   uses `kSecAttrService`/`kSecAttrAccount` only, no
+   `kSecAttrAccessGroup`, so there is nothing to pin — see the
+   "Keychain access group stability" risk below). The same file is used
+   for ad-hoc-signed local builds (AC0) and Developer ID builds (AC2).
+   `packaging/Info.plist` is a template with an `@VERSION@` placeholder
+   that `scripts/build-dmg.sh` substitutes; it declares
+   `LSUIElement=true`, `CFBundleIdentifier`, and the macOS 14 deployment
+   target (AC1).
 3. **Conditional signing + notarization.** The release script probes for
-   the secrets documented in Risks §8. **All six present** → full path:
+   the secrets documented in Plan §8. **All six present** → full path:
    `codesign --deep --options runtime --entitlements ... -s "Developer
    ID Application: ..."`, then `notarytool submit --wait`, then
    `stapler staple`, applied to both the `.app` and the final `.dmg`.
    **Any missing** → ad-hoc sign (`codesign -s -`) and skip
    notarization, per AC0. The probe is a single `if` in the script, not
    duplicated per step.
-4. **DMG packaging.** `create-dmg` (Homebrew) with a background image
-   and the standard `/Applications` symlink. Output filename is always
-   `AI-Usage-<version>-arm64.dmg` (arm64-only, per the architecture
-   scope above). Sign + notarize + staple the DMG only on the signed
-   lane.
+   - **Notarization credentials flow.** We pass `--apple-id`/
+     `--team-id`/`--password` to `xcrun notarytool submit` directly from
+     environment secrets (AC6). We deliberately do **not** use
+     create-dmg's `--codesign`/`--notarize` flags: those rely on
+     `notarytool --keychain-profile` (pre-stored credentials), which
+     would mean two different auth flows in the same pipeline — one for
+     the `.app`, one for the DMG. Keeping one explicit `notarytool` path
+     for both artifacts is simpler and matches the spec's env-secret
+     model.
+4. **DMG packaging.** `create-dmg` (create-dmg/create-dmg on GitHub,
+   `brew install create-dmg`) is a **hard dependency** for both local and
+   CI builds. It produces the conventional drag-to-/Applications DMG that
+   AC4 calls for — fixed window size, icon positioning, Applications
+   drop-link — via a `.DS_Store` it synthesizes. There is no `hdiutil`
+   fallback: reimplementing the `.DS_Store`/AppleScript layout logic by
+   hand is not worth the maintenance, and `create-dmg` is the community
+   standard. Output filename is always `AI-Usage-<version>-arm64.dmg`
+   (arm64-only, per the architecture scope above). The DMG is
+   signed/notarized/stapled by the script's own `notarytool` calls (see
+   Plan §3), not by create-dmg's `--codesign`/`--notarize` flags.
 5. **Build script.** `scripts/build-dmg.sh` runs the entire pipeline.
    Flags: `--version <semver>`, `--output <dir>`, `--no-sign` (forces
    the AC0 path even when secrets are present, useful for local test
@@ -372,13 +404,23 @@ No code is written until this spec is reviewed.
   the signed-and-stapled bundle identity can be reported as "damaged" on
   some macOS versions). The drag-to-/Applications DMG layout (AC4) is
   the standard mitigation; we do not need a postinstall step.
-- **Keychain access group stability.** AC2 requires the release
-  entitlements' Keychain access group to match what the app used in
-  development. If a user already stored a ZAI API key under the dev group
-  and the release build uses a different group, the key becomes
-  invisible. Mitigation: pin the access group string in the spec's
-  implementation note and reuse the same entitlements file for dev and
-  release.
+- **Keychain access group stability.** The Core Keychain wrapper uses
+  `kSecAttrService`/`kSecAttrAccount` only — it does **not** pass
+  `kSecAttrAccessGroup`. macOS therefore assigns items to whatever default
+  access group the signing identity provides: none for ad-hoc signed
+  builds (the current AC0 lane and all `swift run` development),
+  `<TEAM_ID>.com.victorhqc.ai-usage` for Developer ID signed builds (the
+  AC2 lane). This means the first signed release WILL make existing
+  Keychain items invisible — users will need to re-enter their API keys.
+  Mitigation options if this becomes a real pain: (a) document the
+  one-time re-entry in the first signed release notes; (b) add a
+  migration step to the app that reads old items via a broad query (no
+  group filter) and re-saves them; (c) pin `kSecAttrAccessGroup`
+  explicitly in the Keychain wrapper and add a matching
+  `application-groups` entitlement — but this requires a paid Developer
+  Program membership to define the group, so it cannot be done in the
+  unsigned lane. The current stance accepts (a) as the cost of the
+  unsigned → signed transition.
 - **Release workflow scope vs (ci 01).** (ci 01) owns the `validate` job
   on every push; this spec owns the `release` job on tags. They must not
   share a workflow file (different triggers, different secrets). If a
