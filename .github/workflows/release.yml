@@ -1,0 +1,61 @@
+name: Release
+
+# Fires when a maintainer publishes a GitHub Release on a `v*` tag.
+# Bare tag push does nothing — the maintainer must publish a release to
+# fire the pipeline (ci 02 AC7). The job-level `if:` gates on the tag
+# prefix because `release` events have no tag filter of their own.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.event.release.tag_name }}
+  cancel-in-progress: true
+
+jobs:
+  release:
+    name: Build and publish DMG
+    if: startsWith(github.event.release.tag_name, 'v')
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install create-dmg
+        run: brew install create-dmg
+
+      - name: Derive version from tag
+        id: version
+        env:
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          # Tag is `v<version>`; strip the leading `v` so the DMG is
+          # AI-Usage-<version>-arm64.dmg, not AI-Usage-v<version>-arm64.dmg.
+          echo "version=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Build DMG
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: scripts/build-dmg.sh --version "$VERSION"
+
+      - name: Upload DMG and checksum
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          DMG="dist/AI-Usage-${VERSION}-arm64.dmg"
+          gh release upload --clobber "$TAG_NAME" "$DMG" "$DMG.sha256"
+
+      - name: Set release notes
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          NOTES="dist/AI-Usage-${VERSION}-arm64.release-notes.md"
+          gh release edit --notes-file "$NOTES" "$TAG_NAME"
