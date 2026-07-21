@@ -138,8 +138,11 @@ struct QuotaView: View {
             }
 
             // AC3: peak-hours block only for the z.ai provider (ui 04).
+            // Passing lastUpdated ensures SwiftUI re-evaluates the block's
+            // body on every refresh so the in-peak / off-peak status always
+            // uses the current time.
             if showsPeakHoursBlock(for: quota) {
-                PeakHoursBlock()
+                PeakHoursBlock(lastUpdated: quota.lastUpdated)
                     .padding(.top, 2)
             }
 
@@ -434,6 +437,11 @@ private struct UsageBar: View {
 /// Computed from `Date()` on each render so the popover stays correct while
 /// open (ui 04 AC4).
 private struct PeakHoursBlock: View {
+    /// The last time the provider quota was refreshed. SwiftUI uses this to
+    /// decide whether to re-evaluate the block's body — a new value on each
+    /// refresh guarantees `Date()` inside `body` is fresh.
+    let lastUpdated: Date
+
     // Asia/Shanghai is IANA's name for China Standard Time (UTC+8, no DST).
     private let shanghai = TimeZone(identifier: "Asia/Shanghai")
     private let peakStartHour = 14
