@@ -20,6 +20,13 @@ final class QuotaViewModel {
     /// mutations; it also refreshes the derived stored properties.
     private(set) var providerStates: [String: ProviderState] = [:]
 
+    /// Derived: provider IDs in the user-saved order (ui 09 AC4/AC6). Drives
+    /// both the popover (`configuredProviderIds` is the configured subset)
+    /// and the Appearance tab. Reassigned as a whole value so @Observable
+    /// notifies observers — `ProviderOrder` and `registry` are not observable
+    /// themselves, so a computed property would not trigger re-renders.
+    private(set) var orderedProviderIds: [String] = []
+
     /// Derived: provider IDs with a saved key, sorted by display name (ui 02 AC4).
     private(set) var configuredProviderIds: [String] = []
 
@@ -70,6 +77,7 @@ final class QuotaViewModel {
             }
         }
 
+        recomputeOrderedProviderIds()
         refreshDerived()
         fetchAllQuotas()
         refreshAllSetupStates()
@@ -77,11 +85,17 @@ final class QuotaViewModel {
 
     // MARK: - Derived properties — public
 
-    /// All registered provider metadata, sorted by display name (ui 02 AC4).
-    var registeredProvidersSorted: [ProviderInfo] {
-        registry.registeredProviders.sorted {
-            $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
-        }
+    /// All registered provider metadata in the user-saved order (ui 09 AC4/AC6).
+    ///
+    /// Display-name ascending is the fallback both for fresh installs (no
+    /// saved order) and for newly registered providers that have no saved
+    /// position (ui 09 AC5). Reads the stored `orderedProviderIds` cache so
+    /// SwiftUI re-renders when `moveProvider`/`persistOrder` reassign it.
+    var registeredProvidersOrdered: [ProviderInfo] {
+        let byId = Dictionary(
+            uniqueKeysWithValues: registry.registeredProviders.map { ($0.id, $0) }
+        )
+        return orderedProviderIds.compactMap { byId[$0] }
     }
 
     // MARK: - Key management (AC3/AC5: save & clear per provider (ui 02))
@@ -321,7 +335,11 @@ final class QuotaViewModel {
 
     /// Recompute stored derived properties from current state.
     private func refreshDerived() {
-        let ids = registeredProvidersSorted
+        let byId = Dictionary(
+            uniqueKeysWithValues: registry.registeredProviders.map { ($0.id, $0) }
+        )
+        let ids = orderedProviderIds
+            .compactMap { byId[$0] }
             .filter { info in
                 guard let state = providerStates[info.id] else { return false }
                 switch state {
@@ -341,6 +359,42 @@ final class QuotaViewModel {
 
     private func log(_ message: @autoclosure () -> String) {
         FileHandle.standardError.write(Data("[QuotaViewModel] \(message())\n".utf8))
+    }
+}
+
+// MARK: - Provider ordering (ui 09)
+
+extension QuotaViewModel {
+    /// Re-orders the registry's providers per a drag-and-drop gesture in the
+    /// Appearance tab, persists the new order, and refreshes derived state so
+    /// both the Appearance tab and popover re-render live (ui 09 AC3/AC7).
+    func moveProvider(from source: IndexSet, to destination: Int) {
+        var ids = orderedProviderIds
+        ids.move(fromOffsets: source, toOffset: destination)
+        ProviderOrder.setOrder(ids)
+        orderedProviderIds = ids
+        refreshDerived()
+    }
+
+    /// Writes an explicit ordered list of provider IDs and refreshes derived
+    /// state so both the Appearance tab and popover pick up the new order
+    /// (ui 09 AC3/AC7).
+    func persistOrder(_ ids: [String]) {
+        ProviderOrder.setOrder(ids)
+        orderedProviderIds = ids
+        refreshDerived()
+    }
+
+    /// Recomputes `orderedProviderIds` from the registry + saved order (ui 09).
+    ///
+    /// Display-name ascending is the fallback inside the App layer because
+    /// Core's `ProviderOrder.effectiveOrder(for:)` is name-agnostic. Must be
+    /// called whenever the registry or the saved order changes.
+    private func recomputeOrderedProviderIds() {
+        let sortedByName = registry.registeredProviders.sorted {
+            $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
+        }
+        orderedProviderIds = ProviderOrder.effectiveOrder(for: sortedByName.map(\.id))
     }
 }
 
