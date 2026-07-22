@@ -144,6 +144,52 @@ swift build -c release
 swift test
 ```
 
+## Commits
+
+We use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/).
+Every commit message starts with a type, then a short summary in the present
+tense.
+
+```
+<type>(<scope>): <summary>
+```
+
+- `<type>` says what kind of change it is. See the list below.
+- `<scope>` is optional. It names the area you touched, like `core`, `zai`, or
+  `build`.
+- `<summary>` is a short line in the present tense. "add z.ai provider", not
+  "added" or "adds".
+
+The types we use:
+
+- **feat** — a new feature.
+- **fix** — a bug fix.
+- **docs** — docs only.
+- **refactor** — a code change that neither fixes a bug nor adds a feature.
+- **test** — adding or fixing tests.
+- **chore** — build, tooling, or housekeeping.
+- **ci** — CI configuration.
+
+A breaking change adds a `!` after the type, like `feat(core)!: ...`, and
+explains the break in the commit body.
+
+Examples from this repo:
+
+```
+feat(core): consolidate keychain to single item for single auth prompt
+fix(build): set SDKROOT for relink step in build-dmg
+docs: update mascot image in README
+```
+
+## Pull requests
+
+Keep the PR body short and true. Say what the branch changes and why.
+
+Use the **pr-description** skill to write it. The skill reads the branch diff,
+then fills in a set template — Summary, Why, What changed, and Notes for review
+— in plain English. It lives at
+[`.agents/skills/pr-description/SKILL.md`](.agents/skills/pr-description/SKILL.md).
+
 ## License
 
 By contributing, you agree that your work ships under the project's
