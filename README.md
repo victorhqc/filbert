@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 <p align="center">
-  <img src="assets/token_octopus.png" alt="ai-usage mascot" height="200">
+  <img src="assets/mascot-with-ai-logos.png" alt="ai-usage mascot" height="250">
 </p>
 
 A macOS menu-bar app that shows your usage and quota across many AI providers
