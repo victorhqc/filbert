@@ -98,8 +98,11 @@ change.
 - macOS **14.0 (Sonoma)** or newer.
 - To build from source: **Swift 5.9+**. Install the Xcode Command Line Tools
   with `xcode-select --install`.
-- Dev tools: **SwiftFormat** and **SwiftLint**. Install them with
-  `brew install swiftformat swiftlint`.
+- Dev tools: **SwiftFormat** and **SwiftLint**, pinned by version in
+  [`Mintfile`](./Mintfile). For parity with CI, download the pinned prebuilt
+  binaries from GitHub releases (see [`CONTRIBUTING.md`](./CONTRIBUTING.md)), or
+  use Homebrew (`brew install swiftformat swiftlint`, matching the versions in
+  `Mintfile`).
 - API keys for the providers you want to track.
 
 ### Claude Code (optional, only if you track Claude Code usage)
