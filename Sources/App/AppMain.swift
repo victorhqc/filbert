@@ -38,6 +38,8 @@ struct AppMain: App {
         Settings {
             SettingsView(viewModel: viewModel)
         }
+        .defaultSize(width: 620, height: 520)
+        .windowResizability(.contentMinSize)
     }
 }
 

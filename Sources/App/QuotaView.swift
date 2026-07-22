@@ -295,7 +295,10 @@ struct QuotaView: View {
     /// so they can never disagree (ui 04 AC2, ui 11 AC1). Delegates to the
     /// appearance-aware palette so light-mode foregrounds pass WCAG AA.
     private func percentageColor(_ pct: Double) -> Color {
-        tierColor(QuotaStatusResolver.tier(for: .window(percentage: pct))!, scheme: colorScheme)
+        ProviderVisualStyle.tierColor(
+            QuotaStatusResolver.tier(for: .window(percentage: pct))!,
+            scheme: colorScheme
+        )
     }
 
     /// Forwards to the shared resolver so the popover rows and the menu-bar
@@ -320,7 +323,7 @@ struct QuotaView: View {
         else {
             return nil
         }
-        return balanceTierColor(total, scheme: colorScheme)
+        return ProviderVisualStyle.balanceTierColor(total, scheme: colorScheme)
     }
 
     /// Forwards to the shared resolver so the popover rows and the menu-bar
@@ -349,7 +352,10 @@ private extension QuotaView {
                 }
             }
             .padding(8)
-            .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+            .background(
+                ProviderVisualStyle.neutralContainerFill,
+                in: RoundedRectangle(cornerRadius: ProviderVisualStyle.cardCornerRadius)
+            )
         }
     }
 
@@ -423,35 +429,6 @@ private extension QuotaView {
     }
 }
 
-// MARK: - Provider card header (ui 14)
-
-private struct ProviderLogoBadge: View {
-    let glyph: ProviderGlyph
-
-    var body: some View {
-        Group {
-            switch glyph {
-            case let .sfSymbol(name):
-                Image(systemName: name)
-            case let .asset(name, bundle):
-                if let image = bundle.image(forResource: NSImage.Name(name)) {
-                    Image(nsImage: image)
-                        .renderingMode(.template)
-                        .resizable()
-                        .scaledToFit()
-                } else {
-                    Image(systemName: "cpu")
-                }
-            }
-        }
-        .foregroundStyle(.primary)
-        .frame(width: 15, height: 15)
-        .padding(4)
-        .background(.secondary.opacity(0.14), in: RoundedRectangle(cornerRadius: 6))
-        .accessibilityHidden(true)
-    }
-}
-
 private struct CompactProviderStatus: View {
     let status: QuotaStatusResolver.Status
 
@@ -462,10 +439,13 @@ private struct CompactProviderStatus: View {
         case let .window(percentage):
             if let tier = QuotaStatusResolver.tier(for: status) {
                 HStack(spacing: 4) {
-                    compactRing(percentage: percentage, color: tierColor(tier, scheme: colorScheme))
+                    compactRing(
+                        percentage: percentage,
+                        color: ProviderVisualStyle.tierColor(tier, scheme: colorScheme)
+                    )
                     Text(String(format: "%.0f%%", percentage))
                         .font(.caption.monospacedDigit())
-                        .foregroundStyle(tierColor(tier, scheme: colorScheme))
+                        .foregroundStyle(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))
                 }
                 .accessibilityHidden(true)
             }
@@ -473,7 +453,7 @@ private struct CompactProviderStatus: View {
             if let tier = QuotaStatusResolver.tier(for: status) {
                 HStack(spacing: 4) {
                     Circle()
-                        .fill(tierColor(tier, scheme: colorScheme))
+                        .fill(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))
                         .frame(width: 7, height: 7)
                     Text(formattedAmount)
                         .font(.caption.monospacedDigit())
@@ -496,43 +476,6 @@ private struct CompactProviderStatus: View {
                 .rotationEffect(.degrees(-90))
         }
         .frame(width: 14, height: 14)
-    }
-}
-
-// MARK: - Tier colors (ui 08 AC3, ui 11 AC1)
-
-/// Red / orange / green tier for a balance amount, using the user-configured
-/// low/ok thresholds. Red below `low` (almost gone or gone), orange in
-/// `[low, ok)` (decreasing), green at or above `ok` (healthy). Delegates to
-/// `tierColor(_:scheme:)` so the balance path and the percentage path never
-/// disagree (ui 04 AC2).
-private func balanceTierColor(_ total: Double, scheme: ColorScheme) -> Color {
-    tierColor(
-        QuotaStatusResolver.tier(for: .balance(used: nil, total: total, formattedAmount: ""))!,
-        scheme: scheme
-    )
-}
-
-/// Appearance-aware tier palette. Light-mode values are tuned to the user's
-/// chosen hues while clearing WCAG AA: they target ≥ 4.0:1 against the
-/// popover's light container background (safe for the ~15pt percentage
-/// number, with headroom for large headline text and tier graphics). Dark
-/// mode keeps the semantic system colors, which already pass. Measured
-/// baseline vs tuned ratios (ui 11 AC1, plan step 1):
-///
-/// | Tier     | Baseline light | Tuned light | Baseline dark | Target |
-/// |----------|----------------|-------------|---------------|--------|
-/// | good     | 1.78           | 4.08        | 7.51          | 4.0    |
-/// | warn     | 1.65           | 4.05        | 8.11          | 4.0    |
-/// | critical | 2.73           | 4.86        | 4.89          | 4.0    |
-private func tierColor(_ tier: QuotaStatusResolver.Tier, scheme: ColorScheme) -> Color {
-    switch (tier, scheme) {
-    case (.good, .light): Color(red: 0.027, green: 0.502, blue: 0.141) // #078024
-    case (.warn, .light): Color(red: 0.690, green: 0.333, blue: 0.051) // #B0550D
-    case (.critical, .light): Color(red: 0.729, green: 0.169, blue: 0.161) // #BA2B29
-    case (.good, _): .green
-    case (.warn, _): .orange
-    case (.critical, _): .red
     }
 }
 
