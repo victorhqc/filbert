@@ -49,6 +49,7 @@ public struct ClaudeCodeProvider: AIProvider {
 
     public static let providerId = "claude-code"
     public static let providerName = "Claude Code"
+    public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static let providerDescription = String(
         localized: "Monitor Claude Pro/Max subscription usage"
     )

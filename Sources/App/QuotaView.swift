@@ -1,3 +1,4 @@
+import AppKit
 import Core
 import SwiftUI
 
@@ -66,24 +67,6 @@ struct QuotaView: View {
         .padding(.vertical, 16)
     }
 
-    // MARK: - Per-provider section (AC4/AC6: one section per configured provider (ui 02))
-
-    @ViewBuilder
-    private func providerSection(providerId: String, state: ProviderState) -> some View {
-        switch state {
-        case .unconfigured:
-            EmptyView()
-        case let .setup(reason):
-            setupContent(reason, providerId: providerId)
-        case .loading:
-            loadingContent
-        case let .loaded(quota):
-            quotaContent(quota, providerId: providerId)
-        case let .error(message):
-            errorContent(message, providerId: providerId)
-        }
-    }
-
     // MARK: - Setup (core 03 AC6: setup reason for .apiKeyFree providers)
 
     private func setupContent(_ reason: String, providerId _: String) -> some View {
@@ -110,34 +93,8 @@ struct QuotaView: View {
 
     // MARK: - Quota content (AC4: render live quota (ui 01); bars + peak (ui 04))
 
-    private func quotaContent(_ quota: ProviderQuota, providerId: String) -> some View {
+    private func quotaContent(_ quota: ProviderQuota) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            // AC4: caption row carries the provider name, the last-updated
-            // label, the refresh-error indicator, and the refresh control
-            // grouped at the top-right (ui 11). The name truncates before the
-            // trailing cluster on very long display names.
-            HStack {
-                Text(quota.providerName)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.secondary)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-
-                Spacer()
-
-                lastUpdatedLabel(quota)
-                // AC6: non-blocking indicator surfacing the most recent
-                // refresh failure while last-known data is still shown (ui 07).
-                if let message = viewModel.refreshErrors[providerId] {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.yellow)
-                        .font(.caption2)
-                        .help(message)
-                }
-                refreshButton(for: providerId)
-            }
-
             // AC3: headline gains a tier-indicator Circle for balance-only
             // providers; the dot reflects the first balance line's amount
             // (ui 08). Percentage-based providers have no balance line, so no
@@ -174,6 +131,8 @@ struct QuotaView: View {
             if quota.isStale {
                 staleCacheHint(quota)
             }
+
+            lastUpdatedLabel(quota)
         }
         .padding(.bottom, 4)
     }
@@ -181,7 +140,7 @@ struct QuotaView: View {
     /// Per-provider refresh control (ui 04 AC5, ui 07 AC3/AC4, ui 11 AC4).
     /// Icon-only, borderless, disabled and spinning while a refresh is in
     /// flight, debounced by the view model.
-    private func refreshButton(for providerId: String) -> some View {
+    private func refreshButton(for providerId: String, state: ProviderState) -> some View {
         Button {
             viewModel.manualRefresh(for: providerId)
         } label: {
@@ -190,7 +149,46 @@ struct QuotaView: View {
         .buttonStyle(.borderless)
         .font(.caption)
         .help(String(localized: "Refresh"))
-        .disabled(viewModel.isRefreshing[providerId] ?? false)
+        .disabled(isRefreshDisabled(providerId: providerId, state: state))
+    }
+
+    private func isRefreshDisabled(providerId: String, state: ProviderState) -> Bool {
+        if viewModel.isRefreshing[providerId] == true {
+            return true
+        }
+        if case .loading = state {
+            return true
+        }
+        return false
+    }
+
+    private func headerErrorMessage(providerId: String, state: ProviderState) -> String? {
+        if let refreshError = viewModel.refreshErrors[providerId] {
+            return refreshError
+        }
+        if case let .error(message) = state {
+            return message
+        }
+        return nil
+    }
+
+    private func headerAccessibilityLabel(
+        info: ProviderInfo,
+        state: ProviderState,
+        collapsed: Bool
+    ) -> String {
+        guard collapsed, case let .loaded(quota) = state else {
+            return info.displayName
+        }
+
+        switch QuotaStatusResolver.resolve(for: quota) {
+        case let .window(percentage):
+            return String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
+        case let .balance(_, _, formattedAmount):
+            return String(localized: "\(info.displayName): \(formattedAmount) remaining")
+        case .fallback:
+            return info.displayName
+        }
     }
 
     private func usageLineRow(_ line: UsageLine) -> some View {
@@ -329,6 +327,175 @@ struct QuotaView: View {
     /// icon share one currency formatter (ui 10 AC4, ui 08 AC3).
     private func amountText(for line: UsageLine) -> String? {
         QuotaStatusResolver.amountText(for: line)
+    }
+}
+
+// MARK: - Per-provider card (ui 14)
+
+private extension QuotaView {
+    @ViewBuilder
+    func providerSection(providerId: String, state: ProviderState) -> some View {
+        if let info = viewModel.providerInfo(for: providerId) {
+            let collapsed = viewModel.isCollapsed(providerId)
+            VStack(alignment: .leading, spacing: 8) {
+                providerHeader(
+                    info: info,
+                    state: state,
+                    collapsed: collapsed
+                )
+
+                if !collapsed {
+                    providerBody(providerId: providerId, state: state)
+                }
+            }
+            .padding(10)
+            .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
+        }
+    }
+
+    func providerHeader(
+        info: ProviderInfo,
+        state: ProviderState,
+        collapsed: Bool
+    ) -> some View {
+        HStack(spacing: 6) {
+            Button {
+                withAnimation(.easeInOut(duration: 0.16)) {
+                    viewModel.toggleCollapsed(info.id)
+                }
+            } label: {
+                HStack(spacing: 7) {
+                    ProviderLogoBadge(glyph: info.glyph)
+
+                    Text(info.displayName)
+                        .font(.headline)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+
+                    Spacer(minLength: 4)
+
+                    if collapsed, case let .loaded(quota) = state {
+                        CompactProviderStatus(status: QuotaStatusResolver.resolve(for: quota))
+                    }
+
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 12)
+                        .rotationEffect(.degrees(collapsed ? 0 : 90))
+                }
+                .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel(headerAccessibilityLabel(info: info, state: state, collapsed: collapsed))
+            .accessibilityValue(collapsed ? String(localized: "Collapsed") : String(localized: "Expanded"))
+            .accessibilityAction(
+                named: collapsed ? String(localized: "Expand") : String(localized: "Collapse")
+            ) {
+                viewModel.toggleCollapsed(info.id)
+            }
+
+            if let message = headerErrorMessage(providerId: info.id, state: state) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .foregroundColor(.yellow)
+                    .font(.caption2)
+                    .help(message)
+            }
+
+            refreshButton(for: info.id, state: state)
+        }
+    }
+
+    @ViewBuilder
+    func providerBody(providerId: String, state: ProviderState) -> some View {
+        switch state {
+        case .unconfigured:
+            EmptyView()
+        case let .setup(reason):
+            setupContent(reason, providerId: providerId)
+        case .loading:
+            loadingContent
+        case let .loaded(quota):
+            quotaContent(quota)
+        case let .error(message):
+            errorContent(message, providerId: providerId)
+        }
+    }
+}
+
+// MARK: - Provider card header (ui 14)
+
+private struct ProviderLogoBadge: View {
+    let glyph: ProviderGlyph
+
+    var body: some View {
+        Group {
+            switch glyph {
+            case let .sfSymbol(name):
+                Image(systemName: name)
+            case let .asset(name, bundle):
+                if let image = bundle.image(forResource: NSImage.Name(name)) {
+                    Image(nsImage: image)
+                        .renderingMode(.template)
+                        .resizable()
+                        .scaledToFit()
+                } else {
+                    Image(systemName: "cpu")
+                }
+            }
+        }
+        .foregroundStyle(.primary)
+        .frame(width: 15, height: 15)
+        .padding(4)
+        .background(.secondary.opacity(0.14), in: RoundedRectangle(cornerRadius: 6))
+        .accessibilityHidden(true)
+    }
+}
+
+private struct CompactProviderStatus: View {
+    let status: QuotaStatusResolver.Status
+
+    @Environment(\.colorScheme) private var colorScheme: ColorScheme
+
+    var body: some View {
+        switch status {
+        case let .window(percentage):
+            if let tier = QuotaStatusResolver.tier(for: status) {
+                HStack(spacing: 4) {
+                    compactRing(percentage: percentage, color: tierColor(tier, scheme: colorScheme))
+                    Text(String(format: "%.0f%%", percentage))
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(tierColor(tier, scheme: colorScheme))
+                }
+                .accessibilityHidden(true)
+            }
+        case let .balance(_, _, formattedAmount):
+            if let tier = QuotaStatusResolver.tier(for: status) {
+                HStack(spacing: 4) {
+                    Circle()
+                        .fill(tierColor(tier, scheme: colorScheme))
+                        .frame(width: 7, height: 7)
+                    Text(formattedAmount)
+                        .font(.caption.monospacedDigit())
+                }
+                .accessibilityHidden(true)
+            }
+        case .fallback:
+            EmptyView()
+        }
+    }
+
+    private func compactRing(percentage: Double, color: Color) -> some View {
+        let fraction = QuotaStatusResolver.clampedFraction(percentage / 100)
+        return ZStack {
+            Circle()
+                .stroke(.secondary.opacity(0.2), lineWidth: 2)
+            Circle()
+                .trim(from: 0, to: fraction)
+                .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round))
+                .rotationEffect(.degrees(-90))
+        }
+        .frame(width: 14, height: 14)
     }
 }
 

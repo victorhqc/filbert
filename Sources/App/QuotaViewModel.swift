@@ -33,6 +33,11 @@ final class QuotaViewModel {
     /// Derived: whether any provider is configured (ui 02 AC3).
     private(set) var hasAnyConfiguredProvider: Bool = false
 
+    /// Observation token for UserDefaults-backed collapse choices (ui 14).
+    /// The values remain in Core; changing this token tells SwiftUI to resolve
+    /// them again.
+    private var collapseStateRevision = 0
+
     // MARK: - Quiet refresh (ui 07)
 
     /// Per-provider flag set while a refresh is in flight and last-known data
@@ -359,6 +364,36 @@ final class QuotaViewModel {
 
     private func log(_ message: @autoclosure () -> String) {
         FileHandle.standardError.write(Data("[QuotaViewModel] \(message())\n".utf8))
+    }
+}
+
+// MARK: - Provider cards (ui 14)
+
+extension QuotaViewModel {
+    func providerInfo(for providerId: String) -> ProviderInfo? {
+        registry.registeredProviders.first { $0.id == providerId }
+    }
+
+    func isCollapsed(_ providerId: String) -> Bool {
+        _ = collapseStateRevision
+        return Self.resolvedCollapseState(
+            providerId: providerId,
+            topProviderId: configuredProviderIds.first,
+            savedState: ProviderCollapseState.collapsedState(for: providerId)
+        )
+    }
+
+    func toggleCollapsed(_ providerId: String) {
+        ProviderCollapseState.setCollapsed(!isCollapsed(providerId), for: providerId)
+        collapseStateRevision += 1
+    }
+
+    static func resolvedCollapseState(
+        providerId: String,
+        topProviderId: String?,
+        savedState: Bool?
+    ) -> Bool {
+        savedState ?? (providerId != topProviderId)
     }
 }
 

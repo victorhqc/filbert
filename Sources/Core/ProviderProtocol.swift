@@ -195,6 +195,7 @@ public enum ProviderAuth: Sendable {
 public protocol AIProvider: Sendable {
     static var providerId: String { get }
     static var providerName: String { get }
+    static var providerGlyph: ProviderGlyph { get }
     /// Short, localized description shown in the Settings provider list (ui 02).
     static var providerDescription: String { get }
     /// Production host root for this provider, e.g.
@@ -254,6 +255,10 @@ public protocol AIProvider: Sendable {
 // MARK: - AIProvider defaults (core 03 AC3/AC5/AC6)
 
 public extension AIProvider {
+    static var providerGlyph: ProviderGlyph {
+        .sfSymbol("cpu")
+    }
+
     /// Defaults to `.apiKey` so existing providers need zero changes beyond
     /// the `fetchQuota` signature (core 03 Plan 2/3).
     static var authShape: ProviderAuth.Shape {
@@ -308,6 +313,7 @@ public struct ProviderSetupHelp: Sendable, Equatable {
 public struct ProviderInfo: Sendable, Identifiable {
     public let id: String
     public let displayName: String
+    public let glyph: ProviderGlyph
     public let description: String
     /// Production host root the provider hits when no override is set (core 02).
     /// Surfaced so the Settings UI can show what the user would be overriding
@@ -322,6 +328,7 @@ public struct ProviderInfo: Sendable, Identifiable {
     public init(
         id: String,
         displayName: String,
+        glyph: ProviderGlyph = .sfSymbol("cpu"),
         description: String,
         defaultBaseURL: URL,
         authShape: ProviderAuth.Shape,
@@ -329,6 +336,7 @@ public struct ProviderInfo: Sendable, Identifiable {
     ) {
         self.id = id
         self.displayName = displayName
+        self.glyph = glyph
         self.description = description
         self.defaultBaseURL = defaultBaseURL
         self.authShape = authShape

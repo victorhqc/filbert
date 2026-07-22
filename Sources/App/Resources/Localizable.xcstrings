@@ -1,6 +1,100 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%1$@: %2$@ remaining" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@ verbleibend"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$@ remaining"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: quedan %2$@"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: quedan %2$@"
+          }
+        }
+      }
+    },
+    "%1$@: %2$lld%% used" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$lld%% verwendet"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$lld%% used"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$lld%% usado"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$lld%% usado"
+          }
+        }
+      }
+    },
+    "Collapse" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einklappen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Collapse" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Contraer" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Contraer" } }
+      }
+    },
+    "Collapsed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Eingeklappt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Collapsed" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Contraído" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Contraído" } }
+      }
+    },
+    "Expand" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ausklappen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Expand" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } }
+      }
+    },
+    "Expanded" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ausgeklappt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Expanded" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } }
+      }
+    },
     "Show a classic Happy / Sad Mac face instead of the ring in the menu bar" : {
       "extractionState" : "manual",
       "localizations" : {

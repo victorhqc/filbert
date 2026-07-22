@@ -22,6 +22,7 @@ extension OpenAICodexError: LocalizedError {
 public struct OpenAICodexProvider: AIProvider {
     public static let providerId = "openai-codex"
     public static let providerName = "OpenAI Codex"
+    public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static let providerDescription = String(
         localized: "Monitor Codex subscription usage"
     )
