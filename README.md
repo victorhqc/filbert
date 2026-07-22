@@ -1,6 +1,6 @@
 # ai-usage
 
-[![Platform: macOS](https://img.shields.io/badge/platform-macOS%2014%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
+[![Platform: macOS](https://img.shields.io/badge/platform-macOS%2026%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
@@ -97,9 +97,9 @@ change.
 
 ## Requirements
 
-- **Apple Silicon** (M1 or newer). Intel Macs that run Sonoma work too, but
-  they are not the main target.
-- macOS **14.0 (Sonoma)** or newer.
+- **Apple Silicon** (M1 or newer). The released DMG is arm64-only.
+- macOS **26 (Tahoe)** or newer. The app is built against the macOS 26 SDK;
+  older systems render an outdated popover and are no longer supported.
 - To build from source: **Swift 5.9+**. Install the Xcode Command Line Tools
   with `xcode-select --install`.
 - Dev tools: **SwiftFormat** and **SwiftLint**, pinned by version in

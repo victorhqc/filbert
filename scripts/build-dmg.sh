@@ -31,6 +31,14 @@ BUILD_DIR="$REPO_ROOT/.build/$ARCH-apple-macosx/release"
 ENTITLEMENTS="$REPO_ROOT/packaging/AIUsage.entitlements"
 INFO_PLIST_TEMPLATE="$REPO_ROOT/packaging/Info.plist"
 
+# Minimum macOS SDK the app must be built against. SwiftUI/AppKit gate their
+# rendering on the SDK an app links against ("linked on or after"). Below
+# macOS 26 they serve the pre-Tahoe codepath at runtime — wrong popover
+# vibrancy material and a MenuBarExtra(.window) that won't resize to fit
+# content. The build runner's image dictates the SDK (macos-14 → SDK 14.x);
+# assert_build_sdk fails the build loudly rather than shipping the old look.
+MIN_SDK_MAJOR=26
+
 # Secrets that flip the script into the signed lane (ci 02 Plan §8).
 SIGN_SECRET_NAMES=(
     APPLE_DEVELOPER_ID_P12
@@ -137,6 +145,32 @@ build_release() {
     # relink so Bundle.module resolves against Contents/Resources/ at
     # runtime (ci 03).
     patch_resource_bundle_accessors
+
+    # Fail loudly if the build linked against too old an SDK (e.g. a stale
+    # CI runner image). Runs after the relink so it checks the exact binary
+    # that ships.
+    assert_build_sdk "$BUILD_DIR/App"
+}
+
+# Reads the SDK version stamped into the executable's LC_BUILD_VERSION and
+# fails the build if it predates MIN_SDK_MAJOR. This is the version SwiftUI
+# and AppKit read at runtime to pick a rendering codepath; a too-old value
+# ships the pre-Tahoe look and the non-resizing MenuBarExtra popover even
+# when the app later runs on macOS 26. The runner image, not this script,
+# controls the SDK — this only refuses to package a bad one.
+assert_build_sdk() {
+    local exe="$1"
+    local sdk major
+    sdk=$(otool -l "$exe" | awk '/LC_BUILD_VERSION/{f=1} f&&$1=="sdk"{print $2; exit}')
+    [[ -n "$sdk" ]] || fatal "Could not read LC_BUILD_VERSION sdk from $exe"
+    major="${sdk%%.*}"
+    if (( major < MIN_SDK_MAJOR )); then
+        fatal "Built against macOS SDK $sdk, need >= ${MIN_SDK_MAJOR}.0. The \
+build runner's SDK is too old — SwiftUI would ship its pre-Tahoe codepath \
+(wrong popover material, MenuBarExtra that won't resize). Use a macOS 26 / \
+Xcode 26 runner."
+    fi
+    ok "Built against macOS SDK $sdk"
 }
 
 # ─── Resource accessor patch (ci 03) ─────────────────────────────────────────
