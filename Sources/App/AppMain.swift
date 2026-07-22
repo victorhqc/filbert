@@ -1,6 +1,7 @@
 import ClaudeCodeProvider
 import Core
 import DeepSeekProvider
+import OpenAICodexProvider
 import SwiftUI
 import ZAIProvider
 
@@ -15,6 +16,7 @@ struct AppMain: App {
         registry.register(ZAIProvider())
         registry.register(ClaudeCodeProvider())
         registry.register(DeepSeekProvider())
+        registry.register(OpenAICodexProvider())
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }
 
@@ -47,9 +49,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // The app runs as a SwiftPM executable without a full `.app` bundle, so
         // set the application icon programmatically from the bundled `.icns`.
         // This is what Notification Center widgets and any window chrome pick up.
-        if let iconURL = Bundle.module.url(forResource: "AppIcon", withExtension: "icns"),
-           let icon = NSImage(contentsOf: iconURL)
-        {
+        let iconURL = Bundle.module.url(forResource: "AppIcon", withExtension: "icns")
+        let icon = iconURL.flatMap(NSImage.init(contentsOf:))
+        if let icon {
             NSApplication.shared.applicationIconImage = icon
         }
     }

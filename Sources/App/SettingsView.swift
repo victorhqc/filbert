@@ -1,3 +1,4 @@
+import AppKit
 import Core
 import SwiftUI
 
@@ -407,9 +408,7 @@ private struct APIKeyFreeSettingsRow: View {
                     installPromptView(reason: reason)
                 } else {
                     // AC3: binary missing — show actionable message, no button.
-                    Text(reason)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
+                    setupReasonView(reason: reason)
                 }
             case .loaded:
                 // AC5: helper installed.
@@ -504,9 +503,7 @@ private struct APIKeyFreeSettingsRow: View {
 
     private func installPromptView(reason: String) -> some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(reason)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            setupReasonView(reason: reason)
 
             Text(String(localized: "AI Usage reads your Claude Code usage by hooking into its status line."))
                 .font(.caption)
@@ -518,6 +515,27 @@ private struct APIKeyFreeSettingsRow: View {
             Button(String(localized: "Install Helper")) {
                 onInstall()
             }
+        }
+    }
+
+    private func setupReasonView(reason: String) -> some View {
+        HStack(spacing: 6) {
+            if let setupHelp = provider.setupHelp {
+                Button {
+                    NSWorkspace.shared.open(setupHelp.url)
+                } label: {
+                    Label(setupHelp.linkLabel, systemImage: "arrow.up.right")
+                }
+                .font(.caption)
+                .buttonStyle(.link)
+                .layoutPriority(1)
+            }
+
+            Text(reason)
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            Spacer(minLength: 0)
         }
     }
 

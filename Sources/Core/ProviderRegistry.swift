@@ -19,7 +19,8 @@ public final class ProviderRegistry {
                 displayName: type(of: provider).providerName,
                 description: type(of: provider).providerDescription,
                 defaultBaseURL: type(of: provider).baseURL,
-                authShape: type(of: provider).authShape
+                authShape: type(of: provider).authShape,
+                setupHelp: type(of: provider).setupHelp
             )
         }
     }

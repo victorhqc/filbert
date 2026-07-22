@@ -25,16 +25,22 @@ the "the gate mirrors CI" claim in the coding standards is true.
 ### AC2: The workflow runs the full validation gate, in order
 - **Given** a CI run starts
 - **When** the job executes
-- **Then** it runs, as separate steps: `swiftformat --lint .`, `swiftlint`,
+- **Then** it runs, as separate steps: the SwiftFormat lint, the SwiftLint lint,
   `swift build`, `swift build -c release`, and `swift test`
-- **And** each command matches the `writing-code` validation gate exactly, so
-  local and CI results agree
+- **And** the two lint steps invoke the pinned prebuilt binaries (versions read
+  from `Mintfile`), so CI never drifts from the intended tool versions even when
+  Homebrew publishes newer ones
+- **And** each step is functionally identical to the `writing-code` validation
+  gate (same tool, same version, same arguments), so a green local run predicts
+  a green CI run
 
-### AC3: Required tools are installed before use
+### AC3: Required tools are installed before use, at pinned versions
 - **Given** a fresh runner
 - **When** the gate needs SwiftFormat and SwiftLint
-- **Then** the workflow installs them (`brew install swiftformat swiftlint`)
-  before the lint steps run
+- **Then** the workflow downloads the prebuilt SwiftFormat and SwiftLint
+  binaries for the exact versions pinned in `Mintfile` before the lint steps run
+- **And** those binaries are cached under `~/.swift-tools`, keyed on the
+  `Mintfile` hash, so repeat runs do not re-download the tools
 
 ### AC4: The runner satisfies the macOS 14 / Swift 5.9 baseline
 - **Given** the job configuration
@@ -52,8 +58,17 @@ the "the gate mirrors CI" claim in the coding standards is true.
 
 One workflow, one job (`validate`) on a `macos-14` runner. Steps in gate order.
 Concurrency is grouped by ref with `cancel-in-progress` so a new push supersedes
-an in-flight run. No caching, no matrix, no third-party actions beyond
-`actions/checkout` — keep the first CI minimal and obvious.
+an in-flight run. No matrix; the only third-party actions are `actions/checkout`
+and `actions/cache`.
+
+SwiftFormat and SwiftLint are pinned by version in a `Mintfile`, which acts as
+the single source of version truth. CI reads those versions and downloads the
+matching prebuilt release binaries (`swiftformat.zip` and
+`portable_swiftlint.zip`), rather than `brew install` (which drifts to the
+latest release) or building from source via Mint (slow, and can break against
+the runner's Swift toolchain). The downloaded binaries are cached under
+`~/.swift-tools` (keyed on the `Mintfile` hash), and the two lint steps run them
+directly from `PATH`.
 
 ## Risks
 
@@ -61,3 +76,8 @@ an in-flight run. No caching, no matrix, no third-party actions beyond
   regression.
 - `macos-14` default Xcode may advance over time. If a future Xcode drops below
   or diverges from the Swift 5.9 baseline, pin the toolchain then — not now.
+- Unpinned linters drift: a newer SwiftFormat or SwiftLint can introduce or
+  change a rule (e.g. SwiftFormat's `redundantSendable`) that fails on CI but
+  not on a contributor's older local install. The `Mintfile` pins both tools to
+  a fixed version to keep CI deterministic; bumping a pin is an intentional
+  change that local installs should match.
