@@ -66,13 +66,6 @@ struct SettingsView: View {
                     )
                 }
             }
-
-            // AC4: Balance thresholds section lives below the provider list (ui 08).
-            Section {
-                BalanceThresholdsSettingsRow()
-            } header: {
-                Text(String(localized: "Balance thresholds"))
-            }
         }
         .navigationTitle(String(localized: "Providers"))
     }
@@ -96,21 +89,37 @@ private struct AppearanceTab: View {
 
     var body: some View {
         List {
+            // AC2/AC3: a lightweight caption labels the reorderable list
+            // without the ~115px grouped-section header that SwiftUI would
+            // otherwise reserve for a Section header (ui 11).
+            Text(String(localized: "Provider order"))
+                .font(.caption)
+                .fontWeight(.semibold)
+                .foregroundColor(.secondary)
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 2, trailing: 0))
+                .listRowSeparator(.hidden)
+                .moveDisabled(true)
+
             // AC2: one row per registered provider, display name only.
+            // AC3: tight row content spacing so the order list doesn't read as
+            // over-spaced next to the thresholds section below (ui 11).
+            ForEach(viewModel.registeredProvidersOrdered) { provider in
+                Text(provider.displayName)
+                    .listRowInsets(EdgeInsets(top: 2, leading: 0, bottom: 2, trailing: 0))
+            }
+            .onMove { source, destination in
+                // AC3: drag-and-drop re-order. The view model persists the
+                // new order and refreshes derived state so the popover
+                // re-renders live (ui 09 AC7).
+                viewModel.moveProvider(from: source, to: destination)
+            }
+
+            // AC2: Balance thresholds relocated from the Providers tab (ui 08 AC4).
+            // Contents, stepper semantics, and persistence are unchanged.
             Section {
-                ForEach(viewModel.registeredProvidersOrdered) { provider in
-                    Text(provider.displayName)
-                }
-                .onMove { source, destination in
-                    // AC3: drag-and-drop re-order. The view model persists the
-                    // new order and refreshes derived state so the popover
-                    // re-renders live (ui 09 AC7).
-                    viewModel.moveProvider(from: source, to: destination)
-                }
+                BalanceThresholdsSettingsRow()
             } header: {
-                Text(String(localized: "Provider order"))
-            } footer: {
-                Text(String(localized: "Drag rows to reorder providers in the menu bar."))
+                Text(String(localized: "Balance thresholds"))
             }
         }
         .navigationTitle(String(localized: "Appearance"))

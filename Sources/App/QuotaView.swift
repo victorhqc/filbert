@@ -7,6 +7,10 @@ import SwiftUI
 struct QuotaView: View {
     let viewModel: QuotaViewModel
 
+    // AC1: appearance-aware tier palette so both percentage and balance paths
+    // resolve identical colors that meet WCAG AA in light and dark (ui 11).
+    @Environment(\.colorScheme) private var colorScheme: ColorScheme
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             if !viewModel.hasAnyConfiguredProvider {
@@ -108,10 +112,31 @@ struct QuotaView: View {
 
     private func quotaContent(_ quota: ProviderQuota, providerId: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            Text(quota.providerName)
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
+            // AC4: caption row carries the provider name, the last-updated
+            // label, the refresh-error indicator, and the refresh control
+            // grouped at the top-right (ui 11). The name truncates before the
+            // trailing cluster on very long display names.
+            HStack {
+                Text(quota.providerName)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.secondary)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+
+                Spacer()
+
+                lastUpdatedLabel(quota)
+                // AC6: non-blocking indicator surfacing the most recent
+                // refresh failure while last-known data is still shown (ui 07).
+                if let message = viewModel.refreshErrors[providerId] {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.yellow)
+                        .font(.caption2)
+                        .help(message)
+                }
+                refreshButton(for: providerId)
+            }
 
             // AC3: headline gains a tier-indicator Circle for balance-only
             // providers; the dot reflects the first balance line's amount
@@ -149,36 +174,23 @@ struct QuotaView: View {
             if quota.isStale {
                 staleCacheHint(quota)
             }
-
-            Divider()
-            HStack {
-                lastUpdatedLabel(quota)
-                // AC6: non-blocking indicator surfacing the most recent
-                // refresh failure while last-known data is still shown (ui 07).
-                if let message = viewModel.refreshErrors[providerId] {
-                    Image(systemName: "exclamationmark.triangle.fill")
-                        .foregroundColor(.yellow)
-                        .font(.caption2)
-                        .help(message)
-                }
-
-                Spacer()
-
-                Button {
-                    viewModel.manualRefresh(for: providerId)
-                } label: {
-                    // AC5: icon-only Refresh control; tooltip carries the label (ui 04).
-                    // AC3/AC4: glyph rotates while the refresh is in flight and the
-                    // control is disabled — debounce follows the new flag (ui 07).
-                    RefreshIcon(isRefreshing: viewModel.isRefreshing[providerId] ?? false)
-                }
-                .buttonStyle(.borderless)
-                .font(.caption)
-                .help(String(localized: "Refresh"))
-                .disabled(viewModel.isRefreshing[providerId] ?? false)
-            }
         }
         .padding(.bottom, 4)
+    }
+
+    /// Per-provider refresh control (ui 04 AC5, ui 07 AC3/AC4, ui 11 AC4).
+    /// Icon-only, borderless, disabled and spinning while a refresh is in
+    /// flight, debounced by the view model.
+    private func refreshButton(for providerId: String) -> some View {
+        Button {
+            viewModel.manualRefresh(for: providerId)
+        } label: {
+            RefreshIcon(isRefreshing: viewModel.isRefreshing[providerId] ?? false)
+        }
+        .buttonStyle(.borderless)
+        .font(.caption)
+        .help(String(localized: "Refresh"))
+        .disabled(viewModel.isRefreshing[providerId] ?? false)
     }
 
     private func usageLineRow(_ line: UsageLine) -> some View {
@@ -282,12 +294,13 @@ struct QuotaView: View {
     // MARK: - Helpers
 
     /// Green / orange / red tier shared by the percentage number and the bar,
-    /// so they can never disagree (ui 04 AC2).
+    /// so they can never disagree (ui 04 AC2, ui 11 AC1). Delegates to the
+    /// appearance-aware palette so light-mode foregrounds pass WCAG AA.
     private func percentageColor(_ pct: Double) -> Color {
         switch pct {
-        case ..<50: .green
-        case 50 ..< 80: .orange
-        default: .red
+        case ..<50: tierColor(.good, scheme: colorScheme)
+        case 50 ..< 80: tierColor(.warn, scheme: colorScheme)
+        default: tierColor(.critical, scheme: colorScheme)
         }
     }
 
@@ -313,7 +326,7 @@ struct QuotaView: View {
         else {
             return nil
         }
-        return balanceTierColor(total)
+        return balanceTierColor(total, scheme: colorScheme)
     }
 
     /// Forwards to the shared resolver so the popover rows and the menu-bar
@@ -323,16 +336,46 @@ struct QuotaView: View {
     }
 }
 
-// MARK: - Balance tier color (ui 08 AC3)
+// MARK: - Tier colors (ui 08 AC3, ui 11 AC1)
 
 /// Red / orange / green tier for a balance amount, using the user-configured
 /// low/ok thresholds. Red below `low` (almost gone or gone), orange in
-/// `[low, ok)` (decreasing), green at or above `ok` (healthy).
-private func balanceTierColor(_ total: Double) -> Color {
+/// `[low, ok)` (decreasing), green at or above `ok` (healthy). Delegates to
+/// `tierColor(_:scheme:)` so the balance path and the percentage path never
+/// disagree (ui 04 AC2).
+private func balanceTierColor(_ total: Double, scheme: ColorScheme) -> Color {
     switch total {
-    case ..<BalanceThresholds.low: .red
-    case BalanceThresholds.low ..< BalanceThresholds.ok: .orange
-    default: .green
+    case ..<BalanceThresholds.low: tierColor(.critical, scheme: scheme)
+    case BalanceThresholds.low ..< BalanceThresholds.ok: tierColor(.warn, scheme: scheme)
+    default: tierColor(.good, scheme: scheme)
+    }
+}
+
+/// Tier labels for the shared good / warn / critical palette.
+private enum Tier {
+    case good, warn, critical
+}
+
+/// Appearance-aware tier palette. Light-mode values are tuned to the user's
+/// chosen hues while clearing WCAG AA: they target ≥ 4.0:1 against the
+/// popover's light container background (safe for the ~15pt percentage
+/// number, with headroom for large headline text and tier graphics). Dark
+/// mode keeps the semantic system colors, which already pass. Measured
+/// baseline vs tuned ratios (ui 11 AC1, plan step 1):
+///
+/// | Tier     | Baseline light | Tuned light | Baseline dark | Target |
+/// |----------|----------------|-------------|---------------|--------|
+/// | good     | 1.78           | 4.08        | 7.51          | 4.0    |
+/// | warn     | 1.65           | 4.05        | 8.11          | 4.0    |
+/// | critical | 2.73           | 4.86        | 4.89          | 4.0    |
+private func tierColor(_ tier: Tier, scheme: ColorScheme) -> Color {
+    switch (tier, scheme) {
+    case (.good, .light): Color(red: 0.027, green: 0.502, blue: 0.141) // #078024
+    case (.warn, .light): Color(red: 0.690, green: 0.333, blue: 0.051) // #B0550D
+    case (.critical, .light): Color(red: 0.729, green: 0.169, blue: 0.161) // #BA2B29
+    case (.good, _): .green
+    case (.warn, _): .orange
+    case (.critical, _): .red
     }
 }
 
