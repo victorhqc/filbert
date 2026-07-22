@@ -267,6 +267,19 @@ if missing:
 if link is None:
     sys.exit(f"no link command in manifest for executable: {exe_path}")
 
+# Stamp the correct SDK version into the relinked binary's LC_BUILD_VERSION.
+# The recorded swiftc link command carries -sdk, but ld reads the SDK version
+# for LC_BUILD_VERSION from the SDKROOT environment variable, which `swift
+# build` sets and this bare replay does not. Without it ld falls back to
+# stamping sdk = the deployment target (14.0) instead of the real SDK (e.g.
+# 26.5). A binary that claims it was built against the macOS 14 SDK makes
+# SwiftUI/AppKit serve their old-SDK codepath at runtime — wrong popover
+# vibrancy material and a MenuBarExtra(.window) that won't resize to fit
+# content. Mirror `swift build` by exporting the exact -sdk path the manifest
+# recorded, so the stamp matches a normal link byte-for-byte.
+if "-sdk" in link:
+    os.environ["SDKROOT"] = link[link.index("-sdk") + 1]
+
 def run(label, args):
     p = subprocess.run(args, stdout=subprocess.PIPE,
                        stderr=subprocess.STDOUT, text=True)
