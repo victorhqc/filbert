@@ -28,9 +28,20 @@ let package = Package(
             path: "Sources/Providers/DeepSeek",
             resources: [.process("Resources")]
         ),
+        .target(
+            name: "OpenAICodexProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/OpenAICodex"
+        ),
         .executableTarget(
             name: "App",
-            dependencies: ["Core", "ZAIProvider", "ClaudeCodeProvider", "DeepSeekProvider"],
+            dependencies: [
+                "Core",
+                "ZAIProvider",
+                "ClaudeCodeProvider",
+                "DeepSeekProvider",
+                "OpenAICodexProvider",
+            ],
             resources: [.process("Resources")]
         ),
         .testTarget(
@@ -51,6 +62,11 @@ let package = Package(
             name: "DeepSeekProviderTests",
             dependencies: ["DeepSeekProvider"],
             path: "Tests/DeepSeekProviderTests"
+        ),
+        .testTarget(
+            name: "OpenAICodexProviderTests",
+            dependencies: ["OpenAICodexProvider"],
+            path: "Tests/OpenAICodexProviderTests"
         ),
         .testTarget(
             name: "AppTests",

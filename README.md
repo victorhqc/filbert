@@ -45,11 +45,15 @@ need to open four browser tabs.
 | z.ai        | ✅ Done     | GLM Coding Plan quota, token window, peak hours   |
 | Claude      | ✅ Done¹    | Claude Code plan usage via the `claude` CLI       |
 | DeepSeek    | ✅ Done     | Prepaid balance — total, granted, topped-up       |
+| OpenAI Codex | ✅ Done²   | Subscription usage via the local `codex` CLI      |
 | OpenAI      | Planned     | API usage, token spend, billing                   |
 | Moonshot    | Planned     | API usage, token consumption                      |
 
 > ¹ Claude reads usage from the **Claude Code CLI**. See
 > [Claude Code setup](#claude-code) below.
+>
+> ² OpenAI Codex reads usage from the local **Codex CLI**. See
+> [OpenAI Codex setup](#openai-codex) below.
 
 Providers are **pluggable**. Each one is its own module behind a shared
 protocol. Add or remove any provider without touching the others or the core
@@ -104,6 +108,21 @@ change.
   use Homebrew (`brew install swiftformat swiftlint`, matching the versions in
   `Mintfile`).
 - API keys for the providers you want to track.
+
+### OpenAI Codex (optional, only if you track Codex usage)
+
+The OpenAI Codex provider reads subscription usage from the local `codex` CLI.
+Install it on macOS or Linux, then verify the installation:
+
+```sh
+curl -fsSL https://chatgpt.com/codex/install.sh | sh
+codex --version
+```
+
+Run `codex` from a project directory and choose **Sign in with ChatGPT** on
+first launch. AI Usage does not read, store, or manage your Codex credentials.
+For alternative installation methods and current troubleshooting, see the
+[official Codex CLI documentation](https://developers.openai.com/codex/cli/).
 
 ### Claude Code (optional, only if you track Claude Code usage)
 

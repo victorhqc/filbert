@@ -76,6 +76,7 @@ final class ProviderProtocolTests: XCTestCase {
         )
         XCTAssertEqual(info.id, "test")
         XCTAssertEqual(info.authShape, .apiKeyFree)
+        XCTAssertNil(info.setupHelp)
     }
 
     func testProviderInfo_authShapeDefaultsToApiKey_whenSetExplicitly() throws {
@@ -87,6 +88,30 @@ final class ProviderProtocolTests: XCTestCase {
             authShape: .apiKey
         )
         XCTAssertEqual(info.authShape, .apiKey)
+    }
+
+    func testProviderInfo_storesOptionalSetupHelp() throws {
+        let documentationURL = try XCTUnwrap(URL(string: "https://example.com/docs"))
+        let setupHelp = ProviderSetupHelp(linkLabel: "Install CLI", url: documentationURL)
+        let info = try ProviderInfo(
+            id: "test",
+            displayName: "Test",
+            description: "Desc",
+            defaultBaseURL: XCTUnwrap(URL(string: "https://example.com")),
+            authShape: .apiKeyFree,
+            setupHelp: setupHelp
+        )
+
+        XCTAssertEqual(info.setupHelp, setupHelp)
+    }
+
+    func testRegistry_transportsProviderSetupHelp() throws {
+        let registry = ProviderRegistry()
+        registry.register(SetupHelpProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+
+        XCTAssertEqual(info.setupHelp, SetupHelpProvider.setupHelp)
     }
 
     // MARK: - ProviderSetupError (ui 05)
@@ -101,5 +126,21 @@ final class ProviderProtocolTests: XCTestCase {
     func testProviderSetupError_notSupported_hasLocalizedDescription() {
         let error = ProviderSetupError.notSupported
         XCTAssertFalse(error.localizedDescription.isEmpty)
+    }
+}
+
+private struct SetupHelpProvider: AIProvider {
+    static let providerId = "setup-help-test"
+    static let providerName = "Setup Help Test"
+    static let providerDescription = "Test provider"
+    static let baseURL = URL(string: "https://example.com")!
+    static let authShape: ProviderAuth.Shape = .apiKeyFree
+    static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
+        linkLabel: "Install CLI",
+        url: URL(string: "https://example.com/docs")!
+    )
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        fatalError("The metadata transport test does not fetch quota data.")
     }
 }

@@ -204,6 +204,9 @@ public protocol AIProvider: Sendable {
     /// Non-payload discriminator the registry branches on so it never
     /// materializes a key it should not see (core 03 AC4/AC7).
     static var authShape: ProviderAuth.Shape { get }
+    /// Optional, provider-supplied documentation for an external setup
+    /// prerequisite (ui 13).
+    static var setupHelp: ProviderSetupHelp? { get }
 
     // MARK: - Quota fetch
 
@@ -257,6 +260,10 @@ public extension AIProvider {
         .apiKey
     }
 
+    static var setupHelp: ProviderSetupHelp? {
+        nil
+    }
+
     /// Defaults to `true` — only correct for `.apiKey` providers. The
     /// registry routes `.apiKey` providers through the Keychain path and
     /// never calls this (core 03 AC5).
@@ -288,6 +295,16 @@ public extension AIProvider {
 }
 
 /// Metadata about a registered provider, surfaced by the registry (ui 02 Plan 1).
+public struct ProviderSetupHelp: Sendable, Equatable {
+    public let linkLabel: String
+    public let url: URL
+
+    public init(linkLabel: String, url: URL) {
+        self.linkLabel = linkLabel
+        self.url = url
+    }
+}
+
 public struct ProviderInfo: Sendable, Identifiable {
     public let id: String
     public let displayName: String
@@ -299,19 +316,23 @@ public struct ProviderInfo: Sendable, Identifiable {
     /// Payload-free discriminator so the App layer can dispatch row variants
     /// without inspecting a provider ID string (ui 05 AC1).
     public let authShape: ProviderAuth.Shape
+    /// Optional documentation for providers with an external setup prerequisite.
+    public let setupHelp: ProviderSetupHelp?
 
     public init(
         id: String,
         displayName: String,
         description: String,
         defaultBaseURL: URL,
-        authShape: ProviderAuth.Shape
+        authShape: ProviderAuth.Shape,
+        setupHelp: ProviderSetupHelp? = nil
     ) {
         self.id = id
         self.displayName = displayName
         self.description = description
         self.defaultBaseURL = defaultBaseURL
         self.authShape = authShape
+        self.setupHelp = setupHelp
     }
 }
 
