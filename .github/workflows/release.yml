@@ -20,7 +20,11 @@ jobs:
   release:
     name: Build and publish DMG
     if: startsWith(github.event.release.tag_name, 'v')
-    runs-on: macos-14
+    # macOS 26 image → Xcode 26 / macOS 26 SDK. Building against an older SDK
+    # (the macos-14 image ships SDK 14.x) makes SwiftUI/AppKit serve their
+    # pre-Tahoe codepath at runtime: wrong popover material and a
+    # MenuBarExtra(.window) that won't resize. build-dmg.sh asserts the SDK.
+    runs-on: macos-26
     steps:
       - name: Checkout
         uses: actions/checkout@v4
