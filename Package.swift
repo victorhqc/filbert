@@ -31,7 +31,8 @@ let package = Package(
         .target(
             name: "OpenAICodexProvider",
             dependencies: ["Core"],
-            path: "Sources/Providers/OpenAICodex"
+            path: "Sources/Providers/OpenAICodex",
+            resources: [.process("Resources")]
         ),
         .executableTarget(
             name: "App",

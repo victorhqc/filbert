@@ -146,6 +146,7 @@ public enum ZAIPeakHours {
 public struct ZAIProvider: AIProvider {
     public static let providerId = "zai"
     public static let providerName = "z.ai"
+    public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static let providerDescription = String(localized: "Monitor API usage and quotas")
     /// Host root for z.ai requests; path segments live in `fetchQuota` (core 02 AC1/AC8).
     public static let baseURL = URL(string: "https://api.z.ai")!

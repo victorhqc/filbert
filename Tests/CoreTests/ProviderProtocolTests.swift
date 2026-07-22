@@ -114,6 +114,24 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.setupHelp, SetupHelpProvider.setupHelp)
     }
 
+    func testRegistry_transportsProviderGlyph() throws {
+        let registry = ProviderRegistry()
+        registry.register(GlyphProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+        guard case let .sfSymbol(name) = info.glyph else {
+            return XCTFail("Expected an SF Symbol glyph")
+        }
+        XCTAssertEqual(name, "sparkles")
+    }
+
+    func testProviderGlyph_defaultsToNeutralPlaceholder() {
+        guard case let .sfSymbol(name) = SetupHelpProvider.providerGlyph else {
+            return XCTFail("Expected the default SF Symbol glyph")
+        }
+        XCTAssertEqual(name, "cpu")
+    }
+
     // MARK: - ProviderSetupError (ui 05)
 
     func testProviderSetupError_notSupported_isEquatable() {
@@ -126,6 +144,18 @@ final class ProviderProtocolTests: XCTestCase {
     func testProviderSetupError_notSupported_hasLocalizedDescription() {
         let error = ProviderSetupError.notSupported
         XCTAssertFalse(error.localizedDescription.isEmpty)
+    }
+}
+
+private struct GlyphProvider: AIProvider {
+    static let providerId = "glyph-test"
+    static let providerName = "Glyph Test"
+    static let providerGlyph = ProviderGlyph.sfSymbol("sparkles")
+    static let providerDescription = "Test provider"
+    static let baseURL = URL(string: "https://example.com")!
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        fatalError("The metadata transport test does not fetch quota data.")
     }
 }
 

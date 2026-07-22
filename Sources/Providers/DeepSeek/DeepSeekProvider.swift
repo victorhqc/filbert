@@ -89,6 +89,7 @@ private struct DeepSeekBalanceInfo: Decodable {
 public struct DeepSeekProvider: AIProvider {
     public static let providerId = "deepseek"
     public static let providerName = "DeepSeek"
+    public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static let providerDescription = String(localized: "Monitor prepaid balance")
     /// Host root for DeepSeek requests; path segments live in `fetchQuota`
     /// (core 02 AC1/AC8).
