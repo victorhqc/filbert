@@ -86,6 +86,7 @@ struct SettingsView: View {
 @MainActor
 private struct AppearanceTab: View {
     let viewModel: QuotaViewModel
+    @State private var isVintageMacEnabled = VintageMacIcon.isEnabled
 
     var body: some View {
         List {
@@ -121,8 +122,28 @@ private struct AppearanceTab: View {
             } header: {
                 Text(String(localized: "Balance thresholds"))
             }
+
+            Section {
+                Toggle(isOn: $isVintageMacEnabled) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(String(localized: "Vintage Mac"))
+                        Text(vintageMacSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .onChange(of: isVintageMacEnabled) { _, isEnabled in
+                    VintageMacIcon.setEnabled(isEnabled)
+                }
+            }
         }
         .navigationTitle(String(localized: "Appearance"))
+    }
+
+    private var vintageMacSubtitle: String {
+        String(
+            localized: "Show a classic Happy / Sad Mac face instead of the ring in the menu bar"
+        )
     }
 }
 

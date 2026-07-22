@@ -297,11 +297,7 @@ struct QuotaView: View {
     /// so they can never disagree (ui 04 AC2, ui 11 AC1). Delegates to the
     /// appearance-aware palette so light-mode foregrounds pass WCAG AA.
     private func percentageColor(_ pct: Double) -> Color {
-        switch pct {
-        case ..<50: tierColor(.good, scheme: colorScheme)
-        case 50 ..< 80: tierColor(.warn, scheme: colorScheme)
-        default: tierColor(.critical, scheme: colorScheme)
-        }
+        tierColor(QuotaStatusResolver.tier(for: .window(percentage: pct))!, scheme: colorScheme)
     }
 
     /// Forwards to the shared resolver so the popover rows and the menu-bar
@@ -344,16 +340,10 @@ struct QuotaView: View {
 /// `tierColor(_:scheme:)` so the balance path and the percentage path never
 /// disagree (ui 04 AC2).
 private func balanceTierColor(_ total: Double, scheme: ColorScheme) -> Color {
-    switch total {
-    case ..<BalanceThresholds.low: tierColor(.critical, scheme: scheme)
-    case BalanceThresholds.low ..< BalanceThresholds.ok: tierColor(.warn, scheme: scheme)
-    default: tierColor(.good, scheme: scheme)
-    }
-}
-
-/// Tier labels for the shared good / warn / critical palette.
-private enum Tier {
-    case good, warn, critical
+    tierColor(
+        QuotaStatusResolver.tier(for: .balance(used: nil, total: total, formattedAmount: ""))!,
+        scheme: scheme
+    )
 }
 
 /// Appearance-aware tier palette. Light-mode values are tuned to the user's
@@ -368,7 +358,7 @@ private enum Tier {
 /// | good     | 1.78           | 4.08        | 7.51          | 4.0    |
 /// | warn     | 1.65           | 4.05        | 8.11          | 4.0    |
 /// | critical | 2.73           | 4.86        | 4.89          | 4.0    |
-private func tierColor(_ tier: Tier, scheme: ColorScheme) -> Color {
+private func tierColor(_ tier: QuotaStatusResolver.Tier, scheme: ColorScheme) -> Color {
     switch (tier, scheme) {
     case (.good, .light): Color(red: 0.027, green: 0.502, blue: 0.141) // #078024
     case (.warn, .light): Color(red: 0.690, green: 0.333, blue: 0.051) // #B0550D
