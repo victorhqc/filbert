@@ -8,6 +8,24 @@ import XCTest
 /// branch selection (ui 10 Plan §6). The ring geometry itself is verified via
 /// `QuotaStatusResolver.clampedFraction` — the same function the view calls.
 final class MenuBarStatusIconTests: XCTestCase {
+    private let suiteName = "ai-usage.tests.menu-bar-status-icon"
+    private var defaults: UserDefaults!
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        BalanceThresholds.setUserDefaults(defaults)
+        BalanceThresholds.set(low: 5, ok: 20)
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suiteName)
+        BalanceThresholds.setUserDefaults(.standard)
+        defaults = nil
+        super.tearDown()
+    }
+
     // MARK: - AC3: window-based provider → percentage mode
 
     func testResolve_windowPercentage_returnsWindowMode() {
@@ -208,5 +226,45 @@ final class MenuBarStatusIconTests: XCTestCase {
             1,
             "the ring view clamps the resolved fraction to [0, 1] before drawing"
         )
+    }
+
+    func testTier_windowUsesPopoverThresholdBoundaries() {
+        let cases: [(Double, QuotaStatusResolver.Tier)] = [
+            (0, .good), (49, .good), (50, .warn), (79, .warn), (80, .critical), (100, .critical),
+        ]
+
+        for (percentage, expectedTier) in cases {
+            XCTAssertEqual(
+                QuotaStatusResolver.tier(for: .window(percentage: percentage)),
+                expectedTier,
+                "Unexpected tier for \(percentage)%"
+            )
+        }
+    }
+
+    func testTier_windowDoesNotClampTheResolvedPercentage() {
+        XCTAssertEqual(QuotaStatusResolver.tier(for: .window(percentage: -1)), .good)
+        XCTAssertEqual(QuotaStatusResolver.tier(for: .window(percentage: 101)), .critical)
+    }
+
+    func testTier_balanceUsesAvailableAmountAndConfiguredThresholds() {
+        BalanceThresholds.set(low: 5, ok: 20)
+
+        XCTAssertEqual(
+            QuotaStatusResolver.tier(for: .balance(used: nil, total: 4.99, formattedAmount: "$4.99")),
+            .critical
+        )
+        XCTAssertEqual(
+            QuotaStatusResolver.tier(for: .balance(used: nil, total: 5, formattedAmount: "$5.00")),
+            .warn
+        )
+        XCTAssertEqual(
+            QuotaStatusResolver.tier(for: .balance(used: 500, total: 20, formattedAmount: "$20.00")),
+            .good
+        )
+    }
+
+    func testTier_fallbackReturnsNil() {
+        XCTAssertNil(QuotaStatusResolver.tier(for: .fallback))
     }
 }

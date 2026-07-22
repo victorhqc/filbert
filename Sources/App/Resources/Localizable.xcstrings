@@ -1,6 +1,64 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Show a classic Happy / Sad Mac face instead of the ring in the menu bar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeige ein klassisches Happy-/Sad-Mac-Gesicht statt des Rings in der Menüleiste"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Show a classic Happy / Sad Mac face instead of the ring in the menu bar"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra una cara clásica de Mac feliz/triste en lugar del anillo en la barra de menús"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Muestra una cara clásica de Mac feliz/triste en lugar del anillo en la barra de menú"
+          }
+        }
+      }
+    },
+    "Vintage Mac" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vintage-Mac"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vintage Mac"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac vintage"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mac vintage"
+          }
+        }
+      }
+    },
     "AI Usage" : {
       "extractionState" : "manual",
       "localizations" : {

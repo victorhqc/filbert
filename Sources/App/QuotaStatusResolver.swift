@@ -12,6 +12,10 @@ import Foundation
 /// There is no SwiftUI here on purpose — `Tests/AppTests` exercises the
 /// selection rules directly.
 enum QuotaStatusResolver {
+    enum Tier: Hashable {
+        case good, warn, critical
+    }
+
     /// The icon's resolved display state.
     enum Status: Equatable {
         /// Window-based provider: a percentage arc + `NN%` text (ui 10 AC3).
@@ -49,6 +53,25 @@ enum QuotaStatusResolver {
         }
 
         return .fallback
+    }
+
+    static func tier(for status: Status) -> Tier? {
+        switch status {
+        case let .window(percentage):
+            switch percentage {
+            case ..<50: .good
+            case 50 ..< 80: .warn
+            default: .critical
+            }
+        case let .balance(_, total, _):
+            switch total {
+            case ..<BalanceThresholds.low: .critical
+            case BalanceThresholds.low ..< BalanceThresholds.ok: .warn
+            default: .good
+            }
+        case .fallback:
+            nil
+        }
     }
 
     /// First line carrying a non-nil `percentage(for:)` value (ui 10 AC3).

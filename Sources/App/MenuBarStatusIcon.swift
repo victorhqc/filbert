@@ -15,10 +15,14 @@ import SwiftUI
 @MainActor
 struct MenuBarStatusIcon: View {
     let viewModel: QuotaViewModel
+    @State private var isVintageMacEnabled = VintageMacIcon.isEnabled
 
     var body: some View {
         content
             .accessibilityElement(children: .combine)
+            .onReceive(NotificationCenter.default.publisher(for: VintageMacIcon.didChangeNotification)) { _ in
+                isVintageMacEnabled = VintageMacIcon.isEnabled
+            }
     }
 
     @ViewBuilder
@@ -27,7 +31,11 @@ struct MenuBarStatusIcon: View {
             switch resolved.status {
             case let .window(percentage):
                 HStack(spacing: 3) {
-                    MenuBarRingImage(bucket: bucket(from: percentage / 100))
+                    if isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: resolved.status) {
+                        MenuBarMacFaceImage(tier: tier)
+                    } else {
+                        MenuBarRingImage(bucket: bucket(from: percentage / 100))
+                    }
                     Text(percentageText(percentage))
                         .font(.caption2.monospacedDigit())
                         .foregroundStyle(.primary)
@@ -39,20 +47,30 @@ struct MenuBarStatusIcon: View {
                     )
                 )
             case let .balance(_, total, formattedAmount):
-                // Balance providers (top-up credit, e.g. DeepSeek) render
-                // text-only: a balance is a remaining quantity, not a progress
-                // fraction, so a ring would be misleading. The ring is
-                // reserved for window-based providers where the arc encodes
-                // consumed/total budget.
-                Text(formattedAmount)
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.primary)
+                if isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: resolved.status) {
+                    HStack(spacing: 3) {
+                        MenuBarMacFaceImage(tier: tier)
+                        Text(formattedAmount)
+                            .font(.caption2.monospacedDigit())
+                            .foregroundStyle(.primary)
+                    }
                     .accessibilityLabel(
                         accessibilityBalance(
                             providerName: resolved.providerName,
                             total: total
                         )
                     )
+                } else {
+                    Text(formattedAmount)
+                        .font(.caption2.monospacedDigit())
+                        .foregroundStyle(.primary)
+                        .accessibilityLabel(
+                            accessibilityBalance(
+                                providerName: resolved.providerName,
+                                total: total
+                            )
+                        )
+                }
             case .fallback:
                 fallbackIcon
             }
@@ -267,5 +285,94 @@ private enum MenuBarRingRenderer {
         )
         nsImage.isTemplate = true
         return nsImage
+    }
+}
+
+private struct MenuBarMacFaceImage: View {
+    let tier: QuotaStatusResolver.Tier
+
+    var body: some View {
+        MenuBarMacFaceCache.image(for: tier)
+            .resizable()
+            .renderingMode(.template)
+            .frame(width: 16, height: 16)
+    }
+}
+
+private enum MenuBarMacFaceCache {
+    private static var cache: [QuotaStatusResolver.Tier: Image] = [:]
+
+    static func image(for tier: QuotaStatusResolver.Tier) -> Image {
+        if let cached = cache[tier] {
+            return cached
+        }
+        let image = Image(nsImage: MenuBarMacFaceRenderer.render(tier: tier))
+        cache[tier] = image
+        return image
+    }
+}
+
+private enum MenuBarMacFaceRenderer {
+    private static let pixels = 32
+    private static let ink = CGColor(gray: 0, alpha: 1)
+
+    static func render(tier: QuotaStatusResolver.Tier) -> NSImage {
+        let points = CGFloat(pixels) / 2
+        guard let context = CGContext(
+            data: nil,
+            width: pixels,
+            height: pixels,
+            bitsPerComponent: 8,
+            bytesPerRow: 0,
+            space: CGColorSpaceCreateDeviceGray(),
+            bitmapInfo: CGImageAlphaInfo.alphaOnly.rawValue
+        ) else {
+            return NSImage(size: NSSize(width: points, height: points))
+        }
+
+        context.clear(CGRect(x: 0, y: 0, width: pixels, height: pixels))
+        context.setFillColor(ink)
+        drawMacintosh(into: context)
+        drawMouth(for: tier, into: context)
+
+        guard let cgImage = context.makeImage() else {
+            return NSImage(size: NSSize(width: points, height: points))
+        }
+        let image = NSImage(cgImage: cgImage, size: NSSize(width: points, height: points))
+        image.isTemplate = true
+        return image
+    }
+
+    private static func drawMacintosh(into context: CGContext) {
+        fill([CGRect(x: 6, y: 30, width: 20, height: 1),
+              CGRect(x: 5, y: 29, width: 22, height: 1),
+              CGRect(x: 4, y: 28, width: 24, height: 1),
+              CGRect(x: 4, y: 6, width: 24, height: 22),
+              CGRect(x: 5, y: 4, width: 22, height: 2),
+              CGRect(x: 5, y: 1, width: 22, height: 3)], into: context)
+        context.clear(CGRect(x: 7, y: 11, width: 18, height: 17))
+        context.clear(CGRect(x: 17, y: 7, width: 7, height: 1))
+        fill([CGRect(x: 10, y: 22, width: 3, height: 4),
+              CGRect(x: 20, y: 22, width: 3, height: 4),
+              CGRect(x: 15, y: 17, width: 2, height: 6)], into: context)
+    }
+
+    private static func drawMouth(for tier: QuotaStatusResolver.Tier, into context: CGContext) {
+        switch tier {
+        case .good:
+            fill([CGRect(x: 11, y: 16, width: 2, height: 2),
+                  CGRect(x: 13, y: 14, width: 6, height: 2),
+                  CGRect(x: 19, y: 16, width: 2, height: 2)], into: context)
+        case .warn:
+            fill([CGRect(x: 11, y: 16, width: 10, height: 2)], into: context)
+        case .critical:
+            fill([CGRect(x: 11, y: 14, width: 2, height: 2),
+                  CGRect(x: 13, y: 16, width: 6, height: 2),
+                  CGRect(x: 19, y: 14, width: 2, height: 2)], into: context)
+        }
+    }
+
+    private static func fill(_ rectangles: [CGRect], into context: CGContext) {
+        rectangles.forEach(context.fill)
     }
 }
