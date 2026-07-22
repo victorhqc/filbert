@@ -348,7 +348,7 @@ private extension QuotaView {
                     providerBody(providerId: providerId, state: state)
                 }
             }
-            .padding(10)
+            .padding(8)
             .background(.secondary.opacity(0.08), in: RoundedRectangle(cornerRadius: 10))
         }
     }
