@@ -1428,6 +1428,114 @@
           }
         }
       }
+    },
+    "Appearance" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Darstellung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Appearance" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Apariencia" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Apariencia" } }
+      }
+    },
+    "Drag providers to change their order." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ziehe Anbieter, um ihre Reihenfolge zu ändern." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag providers to change their order." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra los proveedores para cambiar su orden." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra los proveedores para cambiar su orden." } }
+      }
+    },
+    "Drag to reorder providers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ziehen, um Anbieter neu anzuordnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag to reorder providers" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar los proveedores" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar los proveedores" } }
+      }
+    },
+    "Error" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Fehler" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Error" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Error" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Error" } }
+      }
+    },
+    "Menu bar icon" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Menüleistensymbol" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar icon" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Icono de la barra de menús" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ícono de la barra de menú" } }
+      }
+    },
+    "Move down" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach unten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Move down" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mover abajo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mover abajo" } }
+      }
+    },
+    "Move up" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach oben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Move up" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mover arriba" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mover arriba" } }
+      }
+    },
+    "Not configured" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nicht eingerichtet" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not configured" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Sin configurar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Sin configurar" } }
+      }
+    },
+    "Provider order" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anbieterreihenfolge" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider order" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Orden de proveedores" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Orden de proveedores" } }
+      }
+    },
+    "Ready" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Bereit" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ready" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Listo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Listo" } }
+      }
+    },
+    "Setup needed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einrichtung nötig" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Setup needed" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } }
+      }
+    },
+    "Working…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wird ausgeführt …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Working…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Procesando…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Procesando…" } }
+      }
     }
   },
   "version" : "1.0"
