@@ -1,12 +1,12 @@
 # ai-usage
 
-<p align="center">
-  <img src="assets/token_octopus.png" alt="ai-usage mascot" height="200">
-</p>
-
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS%2014%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+
+<p align="center">
+  <img src="assets/token_octopus.png" alt="ai-usage mascot" height="200">
+</p>
 
 A macOS menu-bar app that shows your usage and quota across many AI providers
 at a glance. Add only the platforms you use. The menu bar, popover, and widgets
