@@ -89,20 +89,32 @@ Install them once before you run it.
 xcode-select --install
 ```
 
-SwiftFormat and SwiftLint come from Homebrew. If you don't have Homebrew, get
-it from [brew.sh](https://brew.sh), then run:
+SwiftFormat and SwiftLint are version-pinned in a `Mintfile` so CI and local
+runs agree. You can install them either way:
 
-```sh
-brew install swiftformat swiftlint
-```
+- **Mint (recommended for exact parity)** — installs the exact `Mintfile`
+  versions and links them onto your PATH:
+
+  ```sh
+  brew install mint
+  mint bootstrap --link
+  ```
+
+- **Homebrew (simpler, if you keep the versions in sync)** — install the tools,
+  then make sure their versions match the `Mintfile` pins:
+
+  ```sh
+  brew install swiftformat swiftlint
+  swiftformat --version && swiftlint --version
+  ```
 
 The following commands should show if anything obvious is failing
 
 ```sh
-# 1. Format
+# 1. Format (SwiftFormat — version pinned in Mintfile)
 swiftformat --lint .
 
-# 2. Lint
+# 2. Lint (SwiftLint — version pinned in Mintfile)
 swiftlint
 
 # 3. Build (debug)

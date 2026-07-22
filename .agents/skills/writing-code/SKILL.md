@@ -94,12 +94,19 @@ to the user to run.
 ## 4. Validation gate
 
 **This is the single most important step in the loop.** The commands below are
-the *exact* commands CI runs in `.github/workflows/ci.yml`. Run all of them,
-in order, from the workspace root — **every one must pass before you notify
-the user.** Running only `swift build` + `swift test` is not enough: CI also
-runs `swiftformat --lint .` and a release build, so any of those failing on CI
-is a regression you shipped. Keep the gate in sync with `ci.yml` — if a step
-is added there, add it here.
+the *exact* gate CI runs in `.github/workflows/ci.yml`. Run all of them, in
+order, from the workspace root — **every one must pass before you notify the
+user.** Running only `swift build` + `swift test` is not enough: CI also
+runs the SwiftFormat lint and a release build, so any of those failing on CI is
+a regression you shipped. Keep the gate in sync with `ci.yml` — if a step is
+added there, add it here.
+
+SwiftFormat and SwiftLint versions are pinned in `Mintfile`. CI installs and
+runs them through Mint (`mint run swiftformat` / `mint run swiftlint`). Locally
+you can keep using Homebrew (`swiftformat` / `swiftlint` directly), but your
+installed versions **must match** the `Mintfile` pins — otherwise a green local
+run will not predict a green CI run. If your versions drift, install the pinned
+ones with `brew install mint && mint bootstrap --link`.
 
 Treat the gate as a literal checklist. Run each command, read its full output,
 and only move to the next when the previous is green. If any step fails, fix
@@ -107,10 +114,11 @@ the code and **restart the gate from step 1** — earlier steps can regress
 when you edit to fix a later one.
 
 ```sh
-# 1. Format — CI step "SwiftFormat (lint)" (install: brew install swiftformat)
+# 1. Format — CI step "SwiftFormat (lint)" (version pinned in Mintfile;
+#    locally: swiftformat via Homebrew matching the pin, or mint run swiftformat)
 swiftformat --lint .
 
-# 2. Lint — CI step "SwiftLint" (install: brew install swiftlint)
+# 2. Lint — CI step "SwiftLint" (version pinned in Mintfile)
 swiftlint
 
 # 3. Build — CI step "Build (debug)"
@@ -137,9 +145,11 @@ swift test
 
 ### When a tool isn't installed
 
-- If `swiftformat` or `swiftlint` is not installed, tell the user to install it
-  with `brew install swiftformat swiftlint`. Do not skip the gate — tell the
-  user the gate is blocked.
+- If `swiftformat` or `swiftlint` is not installed, tell the user to install
+  the version pinned in `Mintfile`. Either match it with Homebrew
+  (`brew install swiftformat swiftlint`, then verify the version matches the
+  pin) or use Mint directly (`brew install mint && mint bootstrap --link`). Do
+  not skip the gate — tell the user the gate is blocked.
 - If Swift itself is not available (`swift build` fails with "command not
   found"), tell the user to install Xcode Command Line Tools with
   `xcode-select --install`.

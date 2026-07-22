@@ -21,14 +21,23 @@ jobs:
       - name: Swift version
         run: swift --version
 
-      - name: Install SwiftFormat and SwiftLint
-        run: brew install swiftformat swiftlint
+      - name: Cache Mint builds
+        uses: actions/cache@v4
+        with:
+          path: ~/.mint
+          key: ${{ runner.os }}-mint-${{ hashFiles('Mintfile') }}
+
+      - name: Install Mint
+        run: brew install mint
+
+      - name: Install SwiftFormat and SwiftLint (pinned in Mintfile)
+        run: mint bootstrap
 
       - name: SwiftFormat (lint)
-        run: swiftformat --lint .
+        run: mint run swiftformat --lint .
 
       - name: SwiftLint
-        run: swiftlint
+        run: mint run swiftlint
 
       - name: Build (debug)
         run: swift build
