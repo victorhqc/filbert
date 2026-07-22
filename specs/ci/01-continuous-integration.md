@@ -27,9 +27,9 @@ the "the gate mirrors CI" claim in the coding standards is true.
 - **When** the job executes
 - **Then** it runs, as separate steps: the SwiftFormat lint, the SwiftLint lint,
   `swift build`, `swift build -c release`, and `swift test`
-- **And** the two lint steps invoke the tools via `mint run` against the
-  versions pinned in `Mintfile`, so CI never drifts from the intended tool
-  versions even when Homebrew publishes newer ones
+- **And** the two lint steps invoke the pinned prebuilt binaries (versions read
+  from `Mintfile`), so CI never drifts from the intended tool versions even when
+  Homebrew publishes newer ones
 - **And** each step is functionally identical to the `writing-code` validation
   gate (same tool, same version, same arguments), so a green local run predicts
   a green CI run
@@ -37,11 +37,10 @@ the "the gate mirrors CI" claim in the coding standards is true.
 ### AC3: Required tools are installed before use, at pinned versions
 - **Given** a fresh runner
 - **When** the gate needs SwiftFormat and SwiftLint
-- **Then** the workflow installs Mint (`brew install mint`) and builds the
-  exact versions pinned in `Mintfile` (`mint bootstrap`) before the lint steps
-  run
-- **And** those builds are cached under `~/.mint`, keyed on the `Mintfile`
-  hash, so repeat runs do not rebuild the tools
+- **Then** the workflow downloads the prebuilt SwiftFormat and SwiftLint
+  binaries for the exact versions pinned in `Mintfile` before the lint steps run
+- **And** those binaries are cached under `~/.swift-tools`, keyed on the
+  `Mintfile` hash, so repeat runs do not re-download the tools
 
 ### AC4: The runner satisfies the macOS 14 / Swift 5.9 baseline
 - **Given** the job configuration
@@ -62,12 +61,14 @@ Concurrency is grouped by ref with `cancel-in-progress` so a new push supersedes
 an in-flight run. No matrix; the only third-party actions are `actions/checkout`
 and `actions/cache`.
 
-SwiftFormat and SwiftLint are pinned by version in a `Mintfile` and installed
-via Mint (`mint bootstrap`), not via `brew install`, so CI and local runs agree
-on tool behaviour even when Homebrew ships a newer release. Mint builds are
-cached under `~/.mint` (keyed on the `Mintfile` hash) because building SwiftLint
-from source is otherwise slow on every run. The two lint steps run the pinned
-binaries through `mint run`.
+SwiftFormat and SwiftLint are pinned by version in a `Mintfile`, which acts as
+the single source of version truth. CI reads those versions and downloads the
+matching prebuilt release binaries (`swiftformat.zip` and
+`portable_swiftlint.zip`), rather than `brew install` (which drifts to the
+latest release) or building from source via Mint (slow, and can break against
+the runner's Swift toolchain). The downloaded binaries are cached under
+`~/.swift-tools` (keyed on the `Mintfile` hash), and the two lint steps run them
+directly from `PATH`.
 
 ## Risks
 

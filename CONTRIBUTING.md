@@ -90,14 +90,22 @@ xcode-select --install
 ```
 
 SwiftFormat and SwiftLint are version-pinned in a `Mintfile` so CI and local
-runs agree. You can install them either way:
+runs agree. CI downloads the pinned prebuilt binaries; do the same locally for
+exact parity:
 
-- **Mint (recommended for exact parity)** — installs the exact `Mintfile`
-  versions and links them onto your PATH:
+- **Prebuilt binaries (recommended — identical to CI)** — download the exact
+  `Mintfile` versions from GitHub releases and drop them on your PATH:
 
   ```sh
-  brew install mint
-  mint bootstrap --link
+  SF_VERSION=$(grep -Eo 'SwiftFormat@[0-9.]+' Mintfile | cut -d@ -f2)
+  SL_VERSION=$(grep -Eo 'SwiftLint@[0-9.]+' Mintfile | cut -d@ -f2)
+
+  curl -fsSL "https://github.com/nicklockwood/SwiftFormat/releases/download/${SF_VERSION}/swiftformat.zip" -o /tmp/swiftformat.zip
+  curl -fsSL "https://github.com/realm/SwiftLint/releases/download/${SL_VERSION}/portable_swiftlint.zip" -o /tmp/swiftlint.zip
+
+  # /usr/local/bin is on your PATH; drop the `sudo` if it's writable
+  sudo unzip -oj /tmp/swiftformat.zip swiftformat -d /usr/local/bin
+  sudo unzip -oj /tmp/swiftlint.zip swiftlint -d /usr/local/bin
   ```
 
 - **Homebrew (simpler, if you keep the versions in sync)** — install the tools,
@@ -106,6 +114,15 @@ runs agree. You can install them either way:
   ```sh
   brew install swiftformat swiftlint
   swiftformat --version && swiftlint --version
+  ```
+
+- **Mint (builds the pinned versions from source)** — reads the `Mintfile` and
+  links the exact versions onto your PATH. Slower on first run (and can fail if
+  your local Swift toolchain can't build a pinned tool):
+
+  ```sh
+  brew install mint
+  mint bootstrap --link
   ```
 
 The following commands should show if anything obvious is failing

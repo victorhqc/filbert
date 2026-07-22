@@ -1,2 +1,5 @@
+# Single source of truth for the pinned SwiftFormat / SwiftLint versions.
+# CI reads these versions and downloads the matching prebuilt binaries
+# (it does not run Mint). Mint is only needed if you choose to build locally.
 nicklockwood/SwiftFormat@0.62.1
 realm/SwiftLint@0.65.0

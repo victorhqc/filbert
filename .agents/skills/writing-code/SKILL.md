@@ -101,12 +101,12 @@ runs the SwiftFormat lint and a release build, so any of those failing on CI is
 a regression you shipped. Keep the gate in sync with `ci.yml` — if a step is
 added there, add it here.
 
-SwiftFormat and SwiftLint versions are pinned in `Mintfile`. CI installs and
-runs them through Mint (`mint run swiftformat` / `mint run swiftlint`). Locally
-you can keep using Homebrew (`swiftformat` / `swiftlint` directly), but your
-installed versions **must match** the `Mintfile` pins — otherwise a green local
-run will not predict a green CI run. If your versions drift, install the pinned
-ones with `brew install mint && mint bootstrap --link`.
+SwiftFormat and SwiftLint versions are pinned in `Mintfile`. CI downloads the
+pinned prebuilt binaries from GitHub releases and runs them directly
+(`swiftformat` / `swiftlint`). Locally you can use Homebrew (`swiftformat` /
+`swiftlint` directly), but your installed versions **must match** the `Mintfile`
+pins — otherwise a green local run will not predict a green CI run. If your
+versions drift, grab the pinned prebuilt binaries (see `CONTRIBUTING.md`).
 
 Treat the gate as a literal checklist. Run each command, read its full output,
 and only move to the next when the previous is green. If any step fails, fix
@@ -115,7 +115,7 @@ when you edit to fix a later one.
 
 ```sh
 # 1. Format — CI step "SwiftFormat (lint)" (version pinned in Mintfile;
-#    locally: swiftformat via Homebrew matching the pin, or mint run swiftformat)
+#    locally: swiftformat matching the pin, via Homebrew or prebuilt download)
 swiftformat --lint .
 
 # 2. Lint — CI step "SwiftLint" (version pinned in Mintfile)
@@ -148,7 +148,7 @@ swift test
 - If `swiftformat` or `swiftlint` is not installed, tell the user to install
   the version pinned in `Mintfile`. Either match it with Homebrew
   (`brew install swiftformat swiftlint`, then verify the version matches the
-  pin) or use Mint directly (`brew install mint && mint bootstrap --link`). Do
+  pin) or download the pinned prebuilt binaries (see `CONTRIBUTING.md`). Do
   not skip the gate — tell the user the gate is blocked.
 - If Swift itself is not available (`swift build` fails with "command not
   found"), tell the user to install Xcode Command Line Tools with

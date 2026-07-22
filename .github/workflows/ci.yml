@@ -21,23 +21,41 @@ jobs:
       - name: Swift version
         run: swift --version
 
-      - name: Cache Mint builds
+      - name: Cache pinned Swift tools
         uses: actions/cache@v4
         with:
-          path: ~/.mint
-          key: ${{ runner.os }}-mint-${{ hashFiles('Mintfile') }}
+          path: ~/.swift-tools
+          key: ${{ runner.os }}-swift-tools-${{ hashFiles('Mintfile') }}
 
-      - name: Install Mint
-        run: brew install mint
+      - name: Install SwiftFormat and SwiftLint (versions pinned in Mintfile)
+        run: |
+          set -euo pipefail
+          SF_VERSION=$(grep -Eo 'SwiftFormat@[0-9.]+' Mintfile | cut -d@ -f2)
+          SL_VERSION=$(grep -Eo 'SwiftLint@[0-9.]+' Mintfile | cut -d@ -f2)
+          TOOLS="$HOME/.swift-tools"
+          mkdir -p "$TOOLS"
+          if [ ! -x "$TOOLS/swiftformat" ]; then
+            curl -fsSL "https://github.com/nicklockwood/SwiftFormat/releases/download/${SF_VERSION}/swiftformat.zip" -o /tmp/swiftformat.zip
+            unzip -oj /tmp/swiftformat.zip swiftformat -d "$TOOLS"
+            chmod +x "$TOOLS/swiftformat"
+          fi
+          if [ ! -x "$TOOLS/swiftlint" ]; then
+            curl -fsSL "https://github.com/realm/SwiftLint/releases/download/${SL_VERSION}/portable_swiftlint.zip" -o /tmp/portable_swiftlint.zip
+            unzip -oj /tmp/portable_swiftlint.zip swiftlint -d "$TOOLS"
+            chmod +x "$TOOLS/swiftlint"
+          fi
+          echo "$TOOLS" >> "$GITHUB_PATH"
 
-      - name: Install SwiftFormat and SwiftLint (pinned in Mintfile)
-        run: mint bootstrap
+      - name: Tool versions
+        run: |
+          swiftformat --version
+          swiftlint --version
 
       - name: SwiftFormat (lint)
-        run: mint run swiftformat --lint .
+        run: swiftformat --lint .
 
       - name: SwiftLint
-        run: mint run swiftlint
+        run: swiftlint
 
       - name: Build (debug)
         run: swift build
