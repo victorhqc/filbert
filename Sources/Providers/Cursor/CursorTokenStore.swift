@@ -8,6 +8,7 @@ struct CursorTokenPair: Sendable, Equatable {
     let accessToken: String
     let refreshToken: String
     let source: Source
+    let keychainCredentials: CursorKeychainCredentials?
 
     /// Where the token was read from. Only the Keychain source is persisted
     /// back to on refresh — writing to Cursor's `state.vscdb` while the
@@ -17,14 +18,26 @@ struct CursorTokenPair: Sendable, Equatable {
         case keychain
         case sqlite
     }
+
+    init(
+        accessToken: String,
+        refreshToken: String,
+        source: Source,
+        keychainCredentials: CursorKeychainCredentials? = nil
+    ) {
+        self.accessToken = accessToken
+        self.refreshToken = refreshToken
+        self.source = source
+        self.keychainCredentials = keychainCredentials
+    }
 }
 
 /// Reads Cursor auth tokens from the two supported local stores, Keychain
 /// first, and refreshes the short-lived JWT when needed (providers 07 AC4/AC5).
 ///
 /// Token sources, in priority order:
-/// 1. **Keychain** — service `cursor-agent`, accounts `cursor-access-token` /
-///    `cursor-refresh-token`. Populated by the Cursor CLI (`agent login`).
+/// 1. **Keychain** — Cursor Agent stores its access and refresh tokens in one
+///    of its supported Keychain layouts after `agent login`.
 /// 2. **SQLite** — Cursor Desktop's `state.vscdb`, keys
 ///    `cursorAuth/accessToken` / `cursorAuth/refreshToken`.
 ///
@@ -95,19 +108,22 @@ struct CursorTokenStore: Sendable {
     /// Returns the first complete, non-empty token pair, or `nil` when neither
     /// source has one. Never throws.
     func load() -> CursorTokenPair? {
-        // Keychain first.
-        if let pair = completePair(
-            accessToken: readKeychain(
-                CursorAuth.keychainService,
-                CursorAuth.keychainAccessAccount
-            ),
-            refreshToken: readKeychain(
-                CursorAuth.keychainService,
-                CursorAuth.keychainRefreshAccount
-            ),
-            source: .keychain
-        ) {
-            return pair
+        // Keychain first, accepting both supported Cursor Agent layouts.
+        for credentials in CursorAuth.keychainCredentials {
+            if let pair = completePair(
+                accessToken: readKeychain(
+                    credentials.accessTokenService,
+                    credentials.accessTokenAccount
+                ),
+                refreshToken: readKeychain(
+                    credentials.refreshTokenService,
+                    credentials.refreshTokenAccount
+                ),
+                source: .keychain,
+                keychainCredentials: credentials
+            ) {
+                return pair
+            }
         }
 
         // SQLite fallback.
@@ -125,7 +141,8 @@ struct CursorTokenStore: Sendable {
     private func completePair(
         accessToken: String?,
         refreshToken: String?,
-        source: CursorTokenPair.Source
+        source: CursorTokenPair.Source,
+        keychainCredentials: CursorKeychainCredentials? = nil
     ) -> CursorTokenPair? {
         guard let accessToken,
               !accessToken.isEmpty,
@@ -137,7 +154,8 @@ struct CursorTokenStore: Sendable {
         return CursorTokenPair(
             accessToken: accessToken,
             refreshToken: refreshToken,
-            source: source
+            source: source,
+            keychainCredentials: keychainCredentials
         )
     }
 
@@ -220,9 +238,10 @@ struct CursorTokenStore: Sendable {
 
         // Persist back to the Keychain source only (providers 07 Risks).
         if pair.source == .keychain {
+            let credentials = pair.keychainCredentials ?? CursorAuth.legacyCLIKeychainCredentials
             writeKeychain(
-                CursorAuth.keychainService,
-                CursorAuth.keychainAccessAccount,
+                credentials.accessTokenService,
+                credentials.accessTokenAccount,
                 accessToken
             )
         }

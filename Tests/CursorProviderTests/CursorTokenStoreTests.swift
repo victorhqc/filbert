@@ -2,6 +2,12 @@
 import Foundation
 import XCTest
 
+private struct KeychainWrite: Equatable {
+    let service: String
+    let account: String
+    let value: String
+}
+
 final class CursorTokenStoreTests: XCTestCase {
     // MARK: - AC4b: locator ordering (providers 07)
 
@@ -42,8 +48,9 @@ final class CursorTokenStoreTests: XCTestCase {
 
         let store = CursorTokenStore(
             homeDirectory: "/test",
-            readKeychain: { _, account in
-                account == "cursor-access-token" ? "keychain-access" : "keychain-refresh"
+            readKeychain: { service, account in
+                guard service == "cursor-agent" else { return nil }
+                return account == "cursor-access-token" ? "keychain-access" : "keychain-refresh"
             },
             writeKeychain: { _, _, _ in },
             readSQLiteValue: { _, key in
@@ -292,5 +299,67 @@ final class CursorTokenStoreTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+    }
+}
+
+final class CurrentCursorAgentKeychainTests: XCTestCase {
+    func testTokenStore_readsCurrentCursorAgentKeychainCredentials() {
+        let store = CursorTokenStore(
+            homeDirectory: "/test",
+            readKeychain: { service, account in
+                switch (service, account) {
+                case ("cursor-access-token", "cursor-user"):
+                    "current-access"
+                case ("cursor-refresh-token", "cursor-user"):
+                    "current-refresh"
+                default:
+                    nil
+                }
+            },
+            writeKeychain: { _, _, _ in },
+            readSQLiteValue: { _, _ in nil }
+        )
+
+        let pair = store.load()
+
+        XCTAssertEqual(pair?.accessToken, "current-access")
+        XCTAssertEqual(pair?.refreshToken, "current-refresh")
+        XCTAssertEqual(pair?.source, .keychain)
+        XCTAssertEqual(pair?.keychainCredentials, CursorAuth.currentCLIKeychainCredentials)
+    }
+
+    func testEnsureValidAccessToken_writesToCurrentCursorAgentKeychainCredentials() async throws {
+        let writtenBack = LockedBox<KeychainWrite?>(nil)
+        let session = CursorTestFixtures.mockSession(
+            refreshBody: CursorTestFixtures.refreshResponse()
+        )
+        let store = CursorTokenStore(
+            session: session,
+            homeDirectory: "/test",
+            refreshSkew: 60,
+            readKeychain: { _, _ in nil },
+            writeKeychain: { service, account, value in
+                writtenBack.withValue { $0 = KeychainWrite(service: service, account: account, value: value) }
+            },
+            readSQLiteValue: { _, _ in nil }
+        )
+        let pair = CursorTokenPair(
+            accessToken: CursorTestFixtures.makeJWT(exp: 0),
+            refreshToken: "valid-refresh",
+            source: .keychain,
+            keychainCredentials: CursorAuth.currentCLIKeychainCredentials
+        )
+
+        _ = try await store.ensureValidAccessToken(pair)
+
+        XCTAssertEqual(
+            writtenBack.read()?.service,
+            CursorAuth.currentCLIKeychainCredentials.accessTokenService
+        )
+        XCTAssertEqual(
+            writtenBack.read()?.account,
+            CursorAuth.currentCLIKeychainCredentials.accessTokenAccount
+        )
+        XCTAssertEqual(writtenBack.read()?.value, "fresh-access-token")
     }
 }
