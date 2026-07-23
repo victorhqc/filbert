@@ -63,8 +63,8 @@ public actor ClaudeCodeRefresher {
     /// share the same cadence.
     static let spawnDebounceSeconds: TimeInterval = 60
 
-    /// Argv passed to the `claude` binary (providers 03 AC1). Notes on order
-    /// and choice:
+    /// Argv passed to the `claude` binary (providers 03 AC1, revised by
+    /// providers 06 AC2). Notes on order and choice:
     ///   - `-p "/usage"` runs the built-in usage command non-interactively;
     ///     its text output carries the session (5-hour) and week (7-day)
     ///     percentages and reset times.
@@ -79,10 +79,27 @@ public actor ClaudeCodeRefresher {
     ///     the positional prompt — otherwise it swallows the prompt and
     ///     `claude` errors with "Input must be provided … when using --print".
     ///     Keeping `-p "/usage"` last makes the positional prompt unambiguous.
+    ///   - `--safe-mode`, `--strict-mcp-config`, and `--no-chrome` suppress
+    ///     Claude Code's startup discovery surface — CLAUDE.md files, skills,
+    ///     plugins, hooks, MCP servers, custom commands/agents, output styles,
+    ///     status-line commands, LSP servers, auto-memory, and Chrome init —
+    ///     so a child that inherits an inert working directory cannot probe
+    ///     macOS-protected user locations during startup (providers 06 AC1,
+    ///     AC2). These are *startup-isolation* flags, not Claude tool-
+    ///     permission modes: they neither grant, deny, nor suppress a macOS
+    ///     TCC decision, and `--permission-mode bypassPermissions` /
+    ///     `--dangerously-skip-permissions` are deliberately absent
+    ///     (providers 06 AC3). `--strict-mcp-config` is passed without a
+    ///     sibling `--mcp-config`, so no user, project, or local MCP server
+    ///     is loaded. `--bare` is also deliberately absent: it would disable
+    ///     the OAuth/Keychain login the refresh must reuse.
     static let spawnArguments: [String] = [
         "--model", "haiku",
         "--max-turns", "1",
         "--no-session-persistence",
+        "--safe-mode",
+        "--strict-mcp-config",
+        "--no-chrome",
         "--tools", "",
         "--output-format", "json",
         "-p", "/usage",
@@ -93,6 +110,7 @@ public actor ClaudeCodeRefresher {
     private let spawnTimeout: TimeInterval
     private let terminateGrace: TimeInterval
     private let spawnDebounce: TimeInterval
+    private let workingDirectoryProvider: () -> URL?
 
     /// Timestamp of the most recent spawn *attempt* — successful or not —
     /// used to suppress follow-up clicks within the debounce window
@@ -114,6 +132,7 @@ public actor ClaudeCodeRefresher {
         spawnTimeout = Self.spawnTimeoutSeconds
         terminateGrace = Self.terminateGraceSeconds
         spawnDebounce = Self.spawnDebounceSeconds
+        workingDirectoryProvider = Self.makeDefaultWorkingDirectory
     }
 
     /// Test-only initializer that overrides the cache store and the timeout /
@@ -124,13 +143,15 @@ public actor ClaudeCodeRefresher {
         cacheStore: StatuslineCacheStore = StatuslineCacheStore(),
         spawnTimeout: TimeInterval,
         terminateGrace: TimeInterval,
-        spawnDebounce: TimeInterval
+        spawnDebounce: TimeInterval,
+        workingDirectoryProvider: @escaping () -> URL? = ClaudeCodeRefresher.makeDefaultWorkingDirectory
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
         self.spawnTimeout = spawnTimeout
         self.terminateGrace = terminateGrace
         self.spawnDebounce = spawnDebounce
+        self.workingDirectoryProvider = workingDirectoryProvider
     }
 
     // MARK: - Public entry point (providers 03 AC1, AC2, AC4)
@@ -171,12 +192,13 @@ public actor ClaudeCodeRefresher {
         // follow-up clicks within the debounce window (providers 03 AC4).
         lastSpawnAt = Date()
 
-        let task = Task<Void, Error> { [locator, cacheStore, spawnTimeout, terminateGrace] in
+        let task = Task<Void, Error> { [locator, cacheStore, spawnTimeout, terminateGrace, workingDirectoryProvider] in
             try await Self.runSpawnOnce(
                 locator: locator,
                 cacheStore: cacheStore,
                 spawnTimeout: spawnTimeout,
-                terminateGrace: terminateGrace
+                terminateGrace: terminateGrace,
+                workingDirectoryProvider: workingDirectoryProvider
             )
         }
         inFlightTask = task
@@ -199,11 +221,24 @@ public actor ClaudeCodeRefresher {
         locator: ClaudeCodeLocator,
         cacheStore: StatuslineCacheStore,
         spawnTimeout: TimeInterval,
-        terminateGrace: TimeInterval
+        terminateGrace: TimeInterval,
+        workingDirectoryProvider: () -> URL?
     ) async throws {
         guard let binaryPath = locator.resolve() else {
             ClaudeCodeRefresherLog.log("runSpawnOnce: binary not found")
             throw ClaudeCodeRefresherError.binaryNotFound
+        }
+
+        // Spawn inside a dedicated, inert working directory so Claude Code's
+        // startup CWD discovery (CLAUDE.md walk, project state) does not touch
+        // macOS-protected user locations (providers 06 AC1). If the directory
+        // cannot be created, abort this attempt and leave the cache untouched —
+        // never fall back to inheriting the parent's CWD.
+        guard let workingDirectoryURL = workingDirectoryProvider() else {
+            ClaudeCodeRefresherLog.log(
+                "runSpawnOnce: working directory creation failed — aborting spawn, cache left as-is"
+            )
+            return
         }
 
         let environment = makeSpawnEnvironment(forBinaryAt: binaryPath)
@@ -211,6 +246,7 @@ public actor ClaudeCodeRefresher {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: binaryPath)
         process.arguments = spawnArguments
+        process.currentDirectoryURL = workingDirectoryURL
         // Capture stdout — that's where the `rate_limit_event` lands in
         // stream-json mode. stderr is discarded: we never surface the child's
         // diagnostics, and dropping it keeps a GUI menu-bar app quiet.
@@ -220,7 +256,10 @@ public actor ClaudeCodeRefresher {
         process.environment = environment
 
         ClaudeCodeRefresherLog.log(
-            "runSpawnOnce: spawning \(binaryPath) \(spawnArguments.joined(separator: " "))"
+            "runSpawnOnce: spawning \(binaryPath) argv=\(spawnArguments.joined(separator: " "))"
+        )
+        ClaudeCodeRefresherLog.log(
+            "runSpawnOnce: cwd=\(workingDirectoryURL.path)"
         )
 
         do {
