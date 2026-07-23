@@ -28,6 +28,7 @@ protocol CursorCredentialVault: Sendable {
     func load() throws -> CursorTokenPair?
     func save(_ pair: CursorTokenPair) throws
     func replaceAccessToken(_ accessToken: String) throws
+    func clear() throws
 }
 
 struct KeychainCursorCredentialVault: CursorCredentialVault {
@@ -89,6 +90,15 @@ struct KeychainCursorCredentialVault: CursorCredentialVault {
         updatedFields[Self.accessTokenField] = accessToken
         do {
             try keychain.save(updatedFields, for: Self.providerId)
+        } catch let error as KeychainError {
+            throw CursorCredentialVaultError.keychain(error)
+        }
+    }
+
+    // AC1: drop the Cursor entry from the shared vault (bugs 01).
+    func clear() throws {
+        do {
+            try keychain.delete(for: Self.providerId)
         } catch let error as KeychainError {
             throw CursorCredentialVaultError.keychain(error)
         }

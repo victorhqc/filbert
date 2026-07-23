@@ -23,7 +23,7 @@ public struct CursorProvider: AIProvider {
     )
 
     private let locator: CursorLocator
-    private let tokenStore: CursorTokenStore
+    let tokenStore: CursorTokenStore
     private let session: URLSession
     private let rateLimitBackoff: CursorRateLimitBackoff
 

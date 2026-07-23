@@ -117,6 +117,12 @@ struct CursorTokenStore: Sendable {
         )
     }
 
+    /// Drops the Cursor pair from Filbert's shared vault (bugs 01). Leaves
+    /// Cursor's own first-party stores untouched.
+    func clearSharedCredentials() throws {
+        try vault.clear()
+    }
+
     private func loadExternalPair() throws -> ExternalCursorTokenPair? {
         let authenticationContext = CursorKeychainAuthenticationContext()
         for credentials in CursorAuth.keychainCredentials {
