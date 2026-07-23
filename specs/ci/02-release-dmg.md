@@ -25,7 +25,7 @@ spec pending legal review.
   Developer ID signing + notarization lane (see Future Work) that activates
   automatically when six named env vars are present; this spec does not
   exercise that lane.
-- `packaging/Info.plist`, `packaging/AIUsage.entitlements` — build metadata
+- `packaging/Info.plist`, `packaging/Filbert.entitlements` — build metadata
   consumed by `scripts/build-dmg.sh`. Lives outside `Sources/` because SPM
   would otherwise bundle them inside the shipped app.
 - Builds on (ci 01): the release pipeline runs **after** a green `validate`
@@ -80,22 +80,22 @@ spec pending legal review.
 - **Given** a maintainer publishes a GitHub Release on a `v*` tag (see
   AC7)
 - **When** the release workflow runs
-- **Then** the build job produces `AI-Usage-<version>-arm64.dmg` containing
-  a launchable `AI Usage.app` (per AC1, AC4)
+- **Then** the build job produces `Filbert-<version>-arm64.dmg` containing
+  a launchable `Filbert.app` (per AC1, AC4)
 - **And** the bundle is ad-hoc signed
   (`codesign -s - --force --deep --options runtime`) so it runs on the
   maintainer's own machine without re-signing
 - **And** the DMG is uploaded to the GitHub Release as an asset, with a
   clear note in the release body that this is an **unsigned** build and
   users must right-click → Open (or
-  `xattr -cr '/Applications/AI Usage.app'`) on first launch
+  `xattr -cr '/Applications/Filbert.app'`) on first launch
 
 ### AC1: Release produces a runnable `.app` bundle
 
 - **Given** a tagged release triggers the release workflow
 - **When** the build job finishes
-- **Then** the runner has produced `AI Usage.app` with the standard macOS
-  bundle layout (`Contents/MacOS/AI Usage`, `Contents/Resources/`, an
+- **Then** the runner has produced `Filbert.app` with the standard macOS
+  bundle layout (`Contents/MacOS/Filbert`, `Contents/Resources/`, an
   `Info.plist` declaring `LSUIElement=true`, `CFBundleIdentifier`, and the
   macOS 14 deployment target)
 - **And** the bundle is built **arm64 only**
@@ -113,10 +113,10 @@ spec pending legal review.
 
 - **Given** the ad-hoc-signed bundle from AC1
 - **When** the DMG step runs
-- **Then** a read-only DMG named `AI-Usage-<version>-arm64.dmg` is
+- **Then** a read-only DMG named `Filbert-<version>-arm64.dmg` is
   produced via `create-dmg` (a hard dependency — see Plan §3)
 - **And** the DMG presents the conventional "drag to /Applications"
-  layout: `AI Usage.app` alongside an `/Applications` symlink
+  layout: `Filbert.app` alongside an `/Applications` symlink
 - **And** the GitHub Release body notes the first-launch workaround (see
   AC10)
 
@@ -126,7 +126,7 @@ spec pending legal review.
 - **When** the release job uploads it
 - **Then** the DMG is attached to the GitHub Release for the triggering
   tag, with a SHA-256 checksum file alongside
-  (`AI-Usage-<version>-<arch>.dmg.sha256`)
+  (`Filbert-<version>-<arch>.dmg.sha256`)
 - **And** a verification step mounts the DMG, copies the `.app` to a temp
   dir, and runs `codesign --verify --verbose=4` against the copy. The job
   fails if `codesign` errors. (`spctl --assess` is **not** invoked — it
@@ -163,7 +163,7 @@ spec pending legal review.
 - **Then** there is an "Installation" section that explains the
   drag-to-`/Applications` step from the mounted DMG
 - **And** it documents the first-launch workaround: right-click → Open,
-  or `xattr -cr '/Applications/AI Usage.app'`
+  or `xattr -cr '/Applications/Filbert.app'`
 - **And** the section notes that signed + notarized builds are planned
   (see Future Work) and will not need the workaround
 - **And** the section links to the GitHub Releases page rather than
@@ -171,17 +171,17 @@ spec pending legal review.
 
 ### AC9: The Claude Code in-app flow is unchanged by distribution
 
-- **Given** the user has installed AI Usage from the DMG and opened it
+- **Given** the user has installed Filbert from the DMG and opened it
 - **When** they go to Settings → Claude Code → Install Helper
 - **Then** the same installer path from (providers 02 AC7, AC8) runs:
   `Bundle.module.url(forResource: "statusline_helper",
   withExtension: "swift")` resolves against `Contents/Resources/`,
-  `swiftc` is invoked to compile it to `~/.claude/ai-usage-statusline`,
+  `swiftc` is invoked to compile it to `~/.claude/filbert-statusline`,
   and `~/.claude/settings.json` is chained
 - **And** no part of the DMG or its install step writes to `~/.claude/`
   — the distribution and the Claude Code integration remain orthogonal
 - **And** a user who never opens Settings → Claude Code never has their
-  `~/.claude/settings.json` touched, even after running AI Usage
+  `~/.claude/settings.json` touched, even after running Filbert
 
 ## Plan
 
@@ -192,10 +192,10 @@ work item.
 
 1. **Bundle assembly.** Implemented in `scripts/build-dmg.sh` (function
    `assemble_bundle`). The script copies the SPM-built `App` executable
-   into `AI Usage.app/Contents/MacOS/AI Usage`, copies the SPM-generated
-   resource bundles (`ai-usage_App.bundle`,
-   `ai-usage_ClaudeCodeProvider.bundle`, `ai-usage_Core.bundle`,
-   `ai-usage_DeepSeekProvider.bundle`, `ai-usage_ZAIProvider.bundle`)
+   into `Filbert.app/Contents/MacOS/Filbert`, copies the SPM-generated
+   resource bundles (`filbert_App.bundle`,
+   `filbert_ClaudeCodeProvider.bundle`, `filbert_Core.bundle`,
+   `filbert_DeepSeekProvider.bundle`, `filbert_ZAIProvider.bundle`)
    verbatim into `Contents/Resources/`, copies `AppIcon.icns` to the top
    of `Contents/Resources/`, and generates `Contents/Info.plist` from
    `packaging/Info.plist` (substituting `@VERSION@`). Flattening the
@@ -213,7 +213,7 @@ work item.
    processing. `packaging/Info.plist` is a template with an `@VERSION@`
    placeholder that `scripts/build-dmg.sh` substitutes; it declares
    `LSUIElement=true`, `CFBundleIdentifier`, and the macOS 14 deployment
-   target (AC1). `packaging/AIUsage.entitlements` is currently an empty
+   target (AC1). `packaging/Filbert.entitlements` is currently an empty
    `<dict>` — ad-hoc signing (`codesign -s -`) does not require any
    entitlements, and the app needs no special entitlements for its
    current behavior (Keychain access via
@@ -227,7 +227,7 @@ work item.
    drop-link — via a `.DS_Store` it synthesizes. There is no `hdiutil`
    fallback: reimplementing the `.DS_Store`/AppleScript layout logic by
    hand is not worth the maintenance, and `create-dmg` is the community
-   standard. Output filename is always `AI-Usage-<version>-arm64.dmg`.
+   standard. Output filename is always `Filbert-<version>-arm64.dmg`.
 4. **Build script.** `scripts/build-dmg.sh` runs the entire pipeline.
    Flags in scope: `--version <semver>`, `--output <dir>`. The script
    also recognizes `--no-sign` and six signing env vars, but those are
@@ -265,7 +265,7 @@ work item.
 6. **README and release body.**
    - **`README.md`** gets an "Installation" section (AC10) covering the
      unsigned-build workaround (right-click → Open, or
-     `xattr -cr '/Applications/AI Usage.app'`). The README is the
+     `xattr -cr '/Applications/Filbert.app'`). The README is the
      durable, release-independent reference.
    - The **release body** is written by the script to
      `<dmg>.release-notes.md` and attached to the GitHub Release by the
@@ -378,7 +378,7 @@ starting point.
     `kSecAttrAccessGroup`. macOS therefore assigns items to whatever
     default access group the signing identity provides: none for ad-hoc
     signed builds (the current lane and all `swift run` development),
-    `<TEAM_ID>.com.victorhqc.ai-usage` for Developer ID signed builds.
+    `<TEAM_ID>.com.victorhqc.filbert` for Developer ID signed builds.
     The first signed release WILL make existing Keychain items
     invisible — users will need to re-enter their API keys. Mitigation
     options if this becomes a real pain: (a) document the one-time

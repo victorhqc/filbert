@@ -9,9 +9,10 @@ final class KeychainTests: XCTestCase {
             .saveFailed(-1),
             .loadFailed(-1),
             .deleteFailed(-1),
+            .migrationFailed(-1),
         ]
 
-        XCTAssertEqual(errors.count, 3)
+        XCTAssertEqual(errors.count, 4)
     }
 
     func testKeychainError_isEquatable() {

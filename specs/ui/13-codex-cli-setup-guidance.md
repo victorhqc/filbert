@@ -20,7 +20,7 @@ Make the OpenAI Codex provider's CLI prerequisite easy to install from both the 
 - **When** they choose to track OpenAI Codex usage
 - **Then** the README identifies the Codex provider as available through the local `codex` CLI
 - **And** it provides the current official macOS/Linux installation command, a verification command, and a sign-in step
-- **And** it explains that AI Usage does not read or store Codex credentials
+- **And** it explains that Filbert does not read or store Codex credentials
 - **And** the instructions link to the official Codex CLI documentation instead of duplicating version-specific troubleshooting.
 
 ### AC2: Expose generic optional setup help

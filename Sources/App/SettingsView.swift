@@ -316,7 +316,7 @@ private struct APIKeyFreeSettingsRow: View {
         VStack(alignment: .leading, spacing: 8) {
             setupReasonView(reason: reason)
 
-            Text(String(localized: "AI Usage reads your Claude Code usage by hooking into its status line."))
+            Text(String(localized: "Filbert reads your Claude Code usage by hooking into its status line."))
                 .font(.caption)
                 .foregroundColor(.secondary)
             Text(String(localized: "This adds a small helper script to ~/.claude/."))

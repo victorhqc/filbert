@@ -8,7 +8,7 @@ final class StatuslineCacheStoreTests: XCTestCase {
     override func setUp() {
         super.setUp()
         let tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-tests-\(UUID().uuidString)")
+            .appendingPathComponent("filbert-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
             at: tmpDir,
             withIntermediateDirectories: true

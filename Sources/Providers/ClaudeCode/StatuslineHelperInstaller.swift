@@ -2,11 +2,11 @@ import Foundation
 
 // MARK: - Paths (providers 02 Plan §5)
 
-/// `~/.claude/ai-usage-statusline` — the compiled helper binary
+/// `~/.claude/filbert-statusline` — the compiled helper binary
 /// (providers 02 Plan §5).
 public let claudeHelperDestURL: URL = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent(".claude")
-    .appendingPathComponent("ai-usage-statusline")
+    .appendingPathComponent("filbert-statusline")
 
 /// `~/.claude/settings.json` — Claude Code's settings file
 /// (providers 02 AC8).
@@ -25,12 +25,15 @@ public enum InstallerError: Error, Equatable, Sendable {
     case unparseableSettings
     /// The bundled helper source is missing from the app resources.
     case helperSourceNotFound
+    /// The helper or Claude settings did not match the staged installation.
+    case configurationVerificationFailed
 
     public static func == (lhs: InstallerError, rhs: InstallerError) -> Bool {
         switch (lhs, rhs) {
         case (.swiftcNotFound, .swiftcNotFound): true
         case (.unparseableSettings, .unparseableSettings): true
         case (.helperSourceNotFound, .helperSourceNotFound): true
+        case (.configurationVerificationFailed, .configurationVerificationFailed): true
         case let (.compilationFailed(lhsCode), .compilationFailed(rhsCode)): lhsCode == rhsCode
         default: false
         }
@@ -48,6 +51,8 @@ extension InstallerError: LocalizedError {
             String(localized: "Could not parse ~/.claude/settings.json.")
         case .helperSourceNotFound:
             String(localized: "Helper source file not found in app bundle.")
+        case .configurationVerificationFailed:
+            String(localized: "Could not verify the helper installation.")
         }
     }
 }
@@ -66,24 +71,54 @@ public struct StatuslineHelperInstaller: Sendable {
     private let settingsURL: URL
     private let helperDestURL: URL
     private let cacheURL: URL
+    private let legacyConfiguration: LegacyClaudeBrandConfiguration?
+    private let swiftCompilerPath: String?
 
     // MARK: - Chain markers
 
     /// Sentinels embedded in the chained shell command so we can detect our
     /// own wrapper and extract the original command (providers 02 AC8).
-    private static let chainStart = "###AI-USAGE-CHAIN-START###"
-    private static let chainSep = "###AI-USAGE-CHAIN-SEPARATOR###"
+    private static let chainStart = "###FILBERT-CHAIN-START###"
+    private static let chainSep = "###FILBERT-CHAIN-SEPARATOR###"
 
     // MARK: - Init
 
+    public init() {
+        self.init(
+            settingsURL: claudeSettingsFileURL,
+            helperDestURL: claudeHelperDestURL,
+            cacheURL: claudeCodeCacheFileURL,
+            legacyConfiguration: .production,
+            swiftCompilerPath: nil
+        )
+    }
+
     public init(
-        settingsURL: URL = claudeSettingsFileURL,
-        helperDestURL: URL = claudeHelperDestURL,
-        cacheURL: URL = claudeCodeCacheFileURL
+        settingsURL: URL,
+        helperDestURL: URL,
+        cacheURL: URL
+    ) {
+        self.init(
+            settingsURL: settingsURL,
+            helperDestURL: helperDestURL,
+            cacheURL: cacheURL,
+            legacyConfiguration: nil,
+            swiftCompilerPath: nil
+        )
+    }
+
+    init(
+        settingsURL: URL,
+        helperDestURL: URL,
+        cacheURL: URL,
+        legacyConfiguration: LegacyClaudeBrandConfiguration?,
+        swiftCompilerPath: String?
     ) {
         self.settingsURL = settingsURL
         self.helperDestURL = helperDestURL
         self.cacheURL = cacheURL
+        self.legacyConfiguration = legacyConfiguration
+        self.swiftCompilerPath = swiftCompilerPath
     }
 
     // MARK: - Status (providers 02 AC3)
@@ -94,6 +129,10 @@ public struct StatuslineHelperInstaller: Sendable {
         FileManager.default.isExecutableFile(atPath: helperDestURL.path)
     }
 
+    func hasLegacyHelperInstallation() -> Bool {
+        (try? hasLegacyHelperIntegration()) == true
+    }
+
     // MARK: - Install (providers 02 AC7, AC8)
 
     /// Full install: compiles the helper from the bundled Swift source,
@@ -102,16 +141,35 @@ public struct StatuslineHelperInstaller: Sendable {
     /// - Parameter helperSourceURL: The URL of `statusline_helper.swift` in
     ///   the app bundle. Obtain via `Bundle.module.url(forResource:withExtension:)`.
     public func install(helperSourceURL: URL) throws {
-        // 1. Compile the helper to a native binary (providers 02 Plan §5).
-        try compileHelper(sourceURL: helperSourceURL)
+        let helperExisted = isHelperInstalled()
+        let settingsBackup = try? Data(contentsOf: settingsURL)
+        do {
+            try compileHelper(sourceURL: helperSourceURL)
+            try updateSettingsForInstall()
+            try verifyInstalledConfiguration()
+            try migrateLegacyCacheIfNeeded()
+            removeLegacyArtifacts()
+        } catch {
+            if !helperExisted {
+                try? FileManager.default.removeItem(at: helperDestURL)
+            }
+            restoreSettings(from: settingsBackup)
+            throw error
+        }
+    }
 
-        // 2. Chain into settings.json (providers 02 AC8).
-        try updateSettingsForInstall()
+    func migrateLegacyInstallationIfNeeded(helperSourceURL: URL) throws -> Bool {
+        guard try hasLegacyHelperIntegration() else {
+            try migrateLegacyCacheIfNeeded()
+            return false
+        }
+        try install(helperSourceURL: helperSourceURL)
+        return true
     }
 
     // MARK: - Uninstall (providers 02 AC11)
 
-    /// Removes the helper binary, unwraps any ai-usage chain from
+    /// Removes the helper binary, unwraps any filbert chain from
     /// `settings.json`, and deletes the cache file.
     public func uninstall() throws {
         // 1. Unwrap settings.json (providers 02 AC11).
@@ -165,6 +223,9 @@ public struct StatuslineHelperInstaller: Sendable {
     }
 
     private func findSwiftC() -> String? {
+        if let swiftCompilerPath {
+            return swiftCompilerPath
+        }
         guard let pathEnv = ProcessInfo.processInfo.environment["PATH"] else {
             return nil
         }
@@ -207,6 +268,14 @@ public struct StatuslineHelperInstaller: Sendable {
         try data.write(to: settingsURL, options: .atomic)
     }
 
+    private func restoreSettings(from backup: Data?) {
+        if let backup {
+            try? backup.write(to: settingsURL, options: .atomic)
+        } else {
+            try? FileManager.default.removeItem(at: settingsURL)
+        }
+    }
+
     // MARK: - Settings manipulation (providers 02 AC8)
 
     /// Extracts the `command` string from a `statusLine` value, which may
@@ -229,11 +298,26 @@ public struct StatuslineHelperInstaller: Sendable {
         let newCommand: String
 
         if let existingCommand {
+            let legacyChain = legacyConfiguration.map {
+                existingCommand.contains($0.chainStart)
+            } ?? false
+            let legacySoleHelper = legacyConfiguration.map {
+                existingCommand == $0.helperURL.path
+            } ?? false
             if existingCommand.contains(Self.chainStart) {
                 // Already chained by us — extract original, re-wrap so a
                 // reinstall replaces our wrapper in place (providers 02 AC8).
                 let original = extractOriginalCommand(from: existingCommand) ?? ""
                 newCommand = wrapCommand(original, helperPath: helperDestURL.path)
+            } else if legacyChain, let legacyConfiguration {
+                let original = extractOriginalCommand(
+                    from: existingCommand,
+                    chainStart: legacyConfiguration.chainStart,
+                    chainSeparator: legacyConfiguration.chainSeparator
+                ) ?? ""
+                newCommand = wrapCommand(original, helperPath: helperDestURL.path)
+            } else if legacySoleHelper {
+                newCommand = helperDestURL.path
             } else {
                 // User's own command — chain our helper after it
                 // (providers 02 AC8).
@@ -301,11 +385,23 @@ public struct StatuslineHelperInstaller: Sendable {
     /// and unescapes shell-escaped characters so the round-trip is lossless
     /// (providers 02 AC8, AC11).
     private func extractOriginalCommand(from wrapped: String) -> String? {
-        guard let startRange = wrapped.range(of: Self.chainStart) else {
+        extractOriginalCommand(
+            from: wrapped,
+            chainStart: Self.chainStart,
+            chainSeparator: Self.chainSep
+        )
+    }
+
+    private func extractOriginalCommand(
+        from wrapped: String,
+        chainStart: String,
+        chainSeparator: String
+    ) -> String? {
+        guard let startRange = wrapped.range(of: chainStart) else {
             return nil
         }
         let searchRange = startRange.upperBound ..< wrapped.endIndex
-        guard let sepRange = wrapped.range(of: Self.chainSep, range: searchRange) else {
+        guard let sepRange = wrapped.range(of: chainSeparator, range: searchRange) else {
             return nil
         }
         let escaped = String(wrapped[startRange.upperBound ..< sepRange.lowerBound])
@@ -339,5 +435,57 @@ public struct StatuslineHelperInstaller: Sendable {
             }
         }
         return result
+    }
+
+    private func hasLegacyHelperIntegration() throws -> Bool {
+        guard let legacyConfiguration else {
+            return false
+        }
+        if FileManager.default.isExecutableFile(atPath: legacyConfiguration.helperURL.path) {
+            return true
+        }
+        guard let command = try commandFromStatusLine(readSettings()?["statusLine"]) else {
+            return false
+        }
+        return command == legacyConfiguration.helperURL.path
+            || command.contains(legacyConfiguration.chainStart)
+    }
+
+    private func verifyInstalledConfiguration() throws {
+        guard isHelperInstalled(),
+              let command = try commandFromStatusLine(readSettings()?["statusLine"]),
+              command.contains(helperDestURL.path)
+        else {
+            throw InstallerError.configurationVerificationFailed
+        }
+    }
+
+    private func migrateLegacyCacheIfNeeded() throws {
+        guard let legacyConfiguration else {
+            return
+        }
+        guard !FileManager.default.fileExists(atPath: cacheURL.path) else {
+            return
+        }
+        let legacyStore = StatuslineCacheStore(cacheURL: legacyConfiguration.cacheURL)
+        guard let cache = legacyStore.read() else {
+            return
+        }
+        let currentStore = StatuslineCacheStore(cacheURL: cacheURL)
+        try currentStore.write(cache)
+        guard currentStore.read() != nil else {
+            throw InstallerError.configurationVerificationFailed
+        }
+        try? FileManager.default.removeItem(at: legacyConfiguration.cacheURL)
+    }
+
+    private func removeLegacyArtifacts() {
+        guard let legacyConfiguration else {
+            return
+        }
+        try? FileManager.default.removeItem(at: legacyConfiguration.helperURL)
+        if FileManager.default.fileExists(atPath: cacheURL.path) {
+            try? FileManager.default.removeItem(at: legacyConfiguration.cacheURL)
+        }
     }
 }

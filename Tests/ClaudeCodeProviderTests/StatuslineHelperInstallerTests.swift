@@ -11,13 +11,13 @@ final class StatuslineHelperInstallerTests: XCTestCase {
     override func setUp() {
         super.setUp()
         tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-installer-tests-\(UUID().uuidString)")
+            .appendingPathComponent("filbert-installer-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
             at: tmpDir,
             withIntermediateDirectories: true
         )
         settingsURL = tmpDir.appendingPathComponent("settings.json")
-        helperURL = tmpDir.appendingPathComponent("ai-usage-statusline")
+        helperURL = tmpDir.appendingPathComponent("filbert-statusline")
         cacheURL = tmpDir.appendingPathComponent("claude-code.json")
         installer = StatuslineHelperInstaller(
             settingsURL: settingsURL,
@@ -162,7 +162,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
 
         let secondCommand = try extractCommand(from: readSettingsJSON()) ?? ""
         // Should contain the same sentinel count — no double-wrapping.
-        let sentinel = "###AI-USAGE-CHAIN-START###"
+        let sentinel = "###FILBERT-CHAIN-START###"
         let firstCount = firstCommand.components(separatedBy: sentinel).count - 1
         let secondCount = secondCommand.components(separatedBy: sentinel).count - 1
         XCTAssertEqual(firstCount, secondCount, "Reinstall must not double-wrap the chain")
@@ -297,7 +297,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
             at: dir,
             withIntermediateDirectories: true
         )
-        try "#!/bin/sh\necho ai-usage-helper".write(
+        try "#!/bin/sh\necho filbert-helper".write(
             to: helperURL,
             atomically: true,
             encoding: .utf8

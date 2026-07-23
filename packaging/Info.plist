@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <!--
-  Template for AI Usage.app's Contents/Info.plist.
+  Template for Filbert.app's Contents/Info.plist.
   scripts/build-dmg.sh substitutes @VERSION@ with the release version.
   Keys required by (ci 02 AC1): LSUIElement, CFBundleIdentifier,
   LSMinimumSystemVersion.
@@ -11,17 +11,17 @@
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleDisplayName</key>
-    <string>AI Usage</string>
+    <string>Filbert</string>
     <key>CFBundleExecutable</key>
-    <string>AI Usage</string>
+    <string>Filbert</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>com.victorhqc.ai-usage</string>
+    <string>com.victorhqc.filbert</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>AI Usage</string>
+    <string>Filbert</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

@@ -82,7 +82,7 @@ struct MenuBarStatusIcon: View {
     /// AC5: no usable data — fall back to the static SF Symbol, no text (ui 10).
     private var fallbackIcon: some View {
         Image(systemName: "brain.head.profile")
-            .accessibilityLabel(String(localized: "AI Usage"))
+            .accessibilityLabel(String(localized: "Filbert"))
     }
 
     // MARK: - Resolution

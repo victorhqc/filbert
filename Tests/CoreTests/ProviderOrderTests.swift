@@ -3,7 +3,7 @@ import XCTest
 
 final class ProviderOrderTests: XCTestCase {
     /// Isolated `UserDefaults` so tests don't touch the user's real defaults.
-    private let suiteName = "ai-usage.tests.provider-order"
+    private let suiteName = "filbert.tests.provider-order"
     private var defaults: UserDefaults!
 
     override func setUpWithError() throws {

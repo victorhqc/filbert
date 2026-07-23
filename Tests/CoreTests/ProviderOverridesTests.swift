@@ -3,7 +3,7 @@ import XCTest
 
 final class ProviderOverridesTests: XCTestCase {
     /// Isolated `UserDefaults` so tests don't touch the user's real defaults.
-    private let suiteName = "ai-usage.tests.provider-overrides"
+    private let suiteName = "filbert.tests.provider-overrides"
     private var defaults: UserDefaults!
 
     override func setUpWithError() throws {

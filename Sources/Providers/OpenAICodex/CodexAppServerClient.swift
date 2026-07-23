@@ -113,7 +113,7 @@ struct CodexAppServerClient: Sendable {
                 id: 1,
                 method: "initialize",
                 params: InitializeParameters(
-                    clientInfo: ClientInfo(name: "AI Usage", version: "1.0"),
+                    clientInfo: ClientInfo(name: "Filbert", version: "1.0"),
                     capabilities: EmptyParameters()
                 )
             ),

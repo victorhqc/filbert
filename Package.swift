@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "ai-usage",
+    name: "filbert",
     defaultLocalization: "en",
     platforms: [.macOS(.v14)],
     targets: [

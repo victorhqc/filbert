@@ -1,15 +1,18 @@
-# ai-usage
+# Filbert
 
 [![Platform: macOS](https://img.shields.io/badge/platform-macOS%2026%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 <p align="center">
-  <img src="assets/mascot-with-ai-logos.png" alt="ai-usage mascot" height="250">
+  <img src="assets/mascot-with-ai-logos.png" alt="filbert mascot" height="250">
 </p>
 
-**ai-usage** shows how much AI quota you have left. It lives in your macOS menu
-bar. Add the platforms you use, and it tracks usage, quota, and spend across all
+**Filbert** is a simple, friendly menu-bar companion that tells you when your
+token budgets are running low. The name stands for **F**riendly **I**con
+**L**etting **B**udgets **E**xplain **R**emaining **T**okens.
+
+Add the platforms you use, and Filbert tracks usage, quota, and spend across all
 of them at once.
 
 Most developers use more than one AI platform. A coding plan here, an API key
@@ -57,11 +60,11 @@ whatever you configure.
 
 ## Install
 
-Pre-built builds live on the [GitHub Releases page](https://github.com/victorhqc/ai-usage/releases).
-Download the `AI-Usage-<version>-arm64.dmg`, then:
+Pre-built builds live on the [GitHub Releases page](https://github.com/victorhqc/filbert/releases).
+Download the `Filbert-<version>-arm64.dmg`, then:
 
 1. **Mount the DMG** by double-clicking it.
-2. **Drag AI Usage to /Applications** — use the `/Applications` shortcut inside
+2. **Drag Filbert to /Applications** — use the `/Applications` shortcut inside
    the DMG window.
 3. **Launch it.** The app lives in the menu bar. There is no Dock icon.
 
@@ -74,20 +77,33 @@ action from you.
 
 To open an unsigned build, do **one** of these:
 
-- **Right-click** AI Usage in /Applications → **Open** → confirm the prompt. You
+- **Right-click** Filbert in /Applications → **Open** → confirm the prompt. You
   only do this once. Later launches work with a double-click.
 - Or clear the quarantine flag from the terminal:
 
   ```sh
-  xattr -cr '/Applications/AI Usage.app'
+  xattr -cr '/Applications/Filbert.app'
   ```
 
 Signed and notarized builds, when available, launch with no warning and need
 none of this.
 
+### Upgrading from ai-usage
+
+Filbert automatically carries forward saved provider keys and preferences on
+first launch. If the ai-usage Claude status-line helper is installed, Filbert
+also compiles its new helper, preserves any user-owned status-line command,
+moves a valid cache, and removes the old helper only after verifying the new
+configuration. A failed helper migration leaves the old setup intact and shows
+an **Install Helper** retry in Settings.
+
+Because Filbert has a new bundle identifier and app name, `AI Usage.app` may
+remain beside `Filbert.app` in `/Applications`. Quit and remove the old app
+after confirming Filbert has your configuration.
+
 ## Use it
 
-Open AI Usage, click the menu-bar icon, and go to **Settings** to add a
+Open Filbert, click the menu-bar icon, and go to **Settings** to add a
 provider. Enter its API key. The key goes straight into the Keychain. From then
 on the app refreshes usage on its own — one refresh every five minutes by
 default.
@@ -107,7 +123,7 @@ codex --version
 ```
 
 Run `codex` from a project directory and choose **Sign in with ChatGPT** on
-first launch. AI Usage does not read, store, or manage your Codex credentials.
+first launch. Filbert does not read, store, or manage your Codex credentials.
 For other install methods and troubleshooting, see the
 [official Codex CLI docs](https://developers.openai.com/codex/cli/).
 
@@ -118,7 +134,7 @@ For other install methods and troubleshooting, see the
 The Claude provider reads usage from the **Claude Code CLI** (`claude`). It does
 not read from the Claude desktop app or from editor plugins like Zed's Claude
 agent. Those are separate products. They share the Claude brand, but they do not
-feed AI Usage.
+feed Filbert.
 
 **Install the CLI.** Run this in your terminal:
 
@@ -133,14 +149,14 @@ which claude
 # expected: /Users/<you>/.local/bin/claude
 ```
 
-**Log in.** Make sure `claude` is logged in. AI Usage reads the usage Claude
+**Log in.** Make sure `claude` is logged in. Filbert reads the usage Claude
 Code already fetched for your account. It never handles your credentials.
 
-Then open AI Usage → Settings → Claude Code and click **Install Helper**. The
+Then open Filbert → Settings → Claude Code and click **Install Helper**. The
 helper hooks into Claude Code's `statusLine` command and writes a small cache
-file that AI Usage reads on refresh.
+file that Filbert reads on refresh.
 
-> **You never run anything by hand.** When you click **Refresh**, AI Usage runs
+> **You never run anything by hand.** When you click **Refresh**, Filbert runs
 > `claude -p "/usage"` in the background, reads the figures, and updates the
 > cache itself. This works even when you drive Claude Code from an editor and
 > never open its status line. During interactive sessions, the status-line
@@ -153,7 +169,7 @@ run on its own.
 
 ## How it works
 
-ai-usage uses an **orthogonal provider architecture**. Each provider is its own
+Filbert uses an **orthogonal provider architecture**. Each provider is its own
 module behind a shared protocol. You can add or remove any provider without
 touching the others or the core app.
 
@@ -202,8 +218,8 @@ change.
 If you're on Intel, want the latest `main`, or prefer to build it yourself:
 
 ```bash
-git clone https://github.com/victorhqc/ai-usage.git
-cd ai-usage
+git clone https://github.com/victorhqc/filbert.git
+cd filbert
 swift run
 ```
 
@@ -216,7 +232,7 @@ first:
 ```sh
 brew install create-dmg
 scripts/build-dmg.sh --version 0.1.0 --no-sign
-# → dist/AI-Usage-0.1.0-arm64.dmg
+# → dist/Filbert-0.1.0-arm64.dmg
 ```
 
 ## Status

@@ -17,6 +17,15 @@ struct AppMain: App {
         registry.register(ClaudeCodeProvider())
         registry.register(DeepSeekProvider())
         registry.register(OpenAICodexProvider())
+        do {
+            try LegacyBrandMigration.migratePreferences(
+                providerIds: registry.registeredProviders.map(\.id)
+            )
+        } catch {
+            FileHandle.standardError.write(
+                Data("[Filbert] Preference migration failed: \(error.localizedDescription)\n".utf8)
+            )
+        }
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }
 
@@ -24,7 +33,7 @@ struct AppMain: App {
         // AC1: Menu Bar popover (ui 02). The visible menu-bar content is the
         // `label:` view — a live status ring (ui 10). The `MenuBarStatusIcon`
         // carries its own accessibility label: a per-state sentence for
-        // window/balance modes (ui 10 AC9), and "AI Usage" for the fallback,
+        // window/balance modes (ui 10 AC9), and "Filbert" for the fallback,
         // preserving the original menu-bar announcement.
         MenuBarExtra {
             QuotaView(viewModel: viewModel)

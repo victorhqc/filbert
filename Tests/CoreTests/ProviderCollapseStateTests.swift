@@ -2,7 +2,7 @@ import Core
 import XCTest
 
 final class ProviderCollapseStateTests: XCTestCase {
-    private let suiteName = "ai-usage.tests.provider-collapse-state"
+    private let suiteName = "filbert.tests.provider-collapse-state"
     private var defaults: UserDefaults!
 
     override func setUpWithError() throws {

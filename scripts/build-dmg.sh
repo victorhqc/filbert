@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # scripts/build-dmg.sh
 #
-# Builds AI Usage.app and packages it into an arm64 DMG.
+# Builds Filbert.app and packages it into an arm64 DMG.
 # Single entry point for local and CI builds (ci 02 AC8).
 #
 # Requires: create-dmg (brew install create-dmg) for DMG packaging.
@@ -21,14 +21,14 @@ set -euo pipefail
 
 # ─── Configuration ──────────────────────────────────────────────────────────
 
-APP_NAME="AI Usage"
-APP_BUNDLE_ID="com.victorhqc.ai-usage"
+APP_NAME="Filbert"
+APP_BUNDLE_ID="com.victorhqc.filbert"
 ARCH="arm64"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 BUILD_DIR="$REPO_ROOT/.build/$ARCH-apple-macosx/release"
-ENTITLEMENTS="$REPO_ROOT/packaging/AIUsage.entitlements"
+ENTITLEMENTS="$REPO_ROOT/packaging/Filbert.entitlements"
 INFO_PLIST_TEMPLATE="$REPO_ROOT/packaging/Info.plist"
 
 # Minimum macOS SDK the app must be built against. SwiftUI/AppKit gate their
@@ -331,18 +331,18 @@ PY
 
 # ─── Bundle assembly (ci 02 AC1, Plan §1B) ──────────────────────────────────
 
-# Assembles AI Usage.app into the passed staging dir and echoes its path.
+# Assembles Filbert.app into the passed staging dir and echoes its path.
 # Layout (ci 02 AC1, ci 03 AC2):
-#   AI Usage.app/
+#   Filbert.app/
 #     Contents/
 #       Info.plist                            (generated from template)
-#       MacOS/AI Usage                        (renamed release executable)
+#       MacOS/Filbert                        (renamed release executable)
 #       Resources/                            (SPM resource bundles + icon)
-#         ai-usage_App.bundle/                (Bundle.module lookup target)
-#         ai-usage_ClaudeCodeProvider.bundle/
-#         ai-usage_Core.bundle/
-#         ai-usage_DeepSeekProvider.bundle/
-#         ai-usage_ZAIProvider.bundle/
+#         filbert_App.bundle/                (Bundle.module lookup target)
+#         filbert_ClaudeCodeProvider.bundle/
+#         filbert_Core.bundle/
+#         filbert_DeepSeekProvider.bundle/
+#         filbert_ZAIProvider.bundle/
 #         AppIcon.icns                        (for Finder/Dock pre-launch)
 #
 assemble_bundle() {
@@ -367,7 +367,7 @@ assemble_bundle() {
     while IFS= read -r bundle; do
         cp -R "$bundle" "$app_dir/Contents/Resources/"
         bundle_count=$((bundle_count + 1))
-    done < <(find "$BUILD_DIR" -maxdepth 1 -name 'ai-usage_*.bundle' -type d)
+    done < <(find "$BUILD_DIR" -maxdepth 1 -name 'filbert_*.bundle' -type d)
     [[ $bundle_count -gt 0 ]] || fatal "No SPM resource bundles found in $BUILD_DIR"
     ok "Copied $bundle_count resource bundle(s)"
 
@@ -527,7 +527,7 @@ verify_release() {
     mount_point="$(mktemp -d)"
     hdiutil attach -readonly -nobrowse -mountpoint "$mount_point" "$dmg_path" >/dev/null
 
-    local verify_app="/tmp/ai-usage-verify-$$"
+    local verify_app="/tmp/filbert-verify-$$"
     rm -rf "$verify_app"
     cp -R "$mount_point/$APP_NAME.app" "$verify_app"
     hdiutil detach "$mount_point" >/dev/null
@@ -559,19 +559,19 @@ write_release_notes() {
 
     if [[ "$LANE" == "signed" ]]; then
         cat > "$notes_path" <<EOF
-## AI Usage $VERSION
+## Filbert $VERSION
 
 Signed and notarized macOS build (Apple Silicon).
 
 - **DMG:** $(basename "$dmg_path")
 - **SHA-256:** \`$checksum\`
 
-Drag **AI Usage** to **/Applications**. The app is signed and notarized, so
+Drag **Filbert** to **/Applications**. The app is signed and notarized, so
 it launches with no Gatekeeper warning.
 EOF
     else
         cat > "$notes_path" <<EOF
-## AI Usage $VERSION
+## Filbert $VERSION
 
 Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
 
@@ -580,15 +580,15 @@ Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
 
 ## Install
 
-1. Mount the DMG and drag **AI Usage** to **/Applications**.
+1. Mount the DMG and drag **Filbert** to **/Applications**.
 2. On first launch, macOS Gatekeeper will block the app because it is
    unsigned. Do one of:
-   - **Right-click** AI Usage in /Applications → **Open** → confirm the
+   - **Right-click** Filbert in /Applications → **Open** → confirm the
      prompt. Only needed once.
    - Or run this in Terminal:
 
      \`\`\`sh
-     xattr -cr '/Applications/AI Usage.app'
+     xattr -cr '/Applications/Filbert.app'
      \`\`\`
 
 ## Why unsigned?
@@ -640,7 +640,7 @@ main() {
 
     codesign --verify --verbose=4 "$app_dir"
 
-    dmg_name="AI-Usage-$VERSION-$ARCH.dmg"
+    dmg_name="Filbert-$VERSION-$ARCH.dmg"
     dmg_path="$OUTPUT_DIR/$dmg_name"
     rm -f "$dmg_path"
     create_dmg "$stage_dir" "$dmg_path"

@@ -134,7 +134,7 @@ short text value beside it.
   "<provider display name>: 42% used" or "<provider display name>: $12.34
   remaining", produced via `String(localized:)`
 - **And** the fallback static icon keeps the existing
-  `String(localized: "AI Usage")` accessibility label
+  `String(localized: "Filbert")` accessibility label
 
 ### AC10: Localization
 - **Given** the app running under a non-English locale
@@ -169,7 +169,7 @@ short text value beside it.
    square size so the menu bar baseline does not shift.
 4. **App: swap `AppMain`'s `MenuBarExtra` initializer.**
    ```swift
-   MenuBarExtra(String(localized: "AI Usage")) {
+   MenuBarExtra(String(localized: "Filbert")) {
        QuotaView(viewModel: viewModel)
            .frame(width: 280)
    } label: {

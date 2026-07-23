@@ -109,7 +109,7 @@ derived from the top-most provider's status, drawn into a bitmap `NSImage` so
   (no configured providers, `.loading`, `.error`, no usable data, etc.)
 - **When** the menu-bar label renders
 - **Then** it shows the existing `Image(systemName: "brain.head.profile")` with
-  the existing localized "AI Usage" accessibility label — identical to the
+  the existing localized "Filbert" accessibility label — identical to the
   non-Vintage fallback today (ui 10 AC5)
 - **And** the popover's own content is unaffected by Vintage Mac mode
 
@@ -127,7 +127,7 @@ derived from the top-most provider's status, drawn into a bitmap `NSImage` so
   produced today (e.g. "Claude Code: 42% used", "DeepSeek: $12.34 remaining")
   from (ui 10 AC9), so assistive tech loses no information when the visible
   text is hidden behind the face
-- **And** the fallback keeps its existing "AI Usage" label
+- **And** the fallback keeps its existing "Filbert" label
 
 ### AC8: Localization
 - **Given** the app running under a non-English locale

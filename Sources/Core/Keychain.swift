@@ -19,7 +19,9 @@ import Security
 public final class Keychain: @unchecked Sendable {
     public static let shared = Keychain()
 
-    private let service = "ai-usage"
+    private let service: String
+    private let previousService: String?
+    private let storage: any KeychainStorage
     /// Account under which the consolidated JSON blob is stored.
     private let account = "providers"
     /// Prefix of the pre-consolidation per-provider accounts, read only during
@@ -36,7 +38,23 @@ public final class Keychain: @unchecked Sendable {
     /// the private `…Store` helpers assume the lock is already held.
     private let lock = NSLock()
 
-    private init() {}
+    private convenience init() {
+        self.init(
+            storage: SecurityKeychainStorage(),
+            service: "filbert",
+            previousService: LegacyBrandIdentifiers.keychainService
+        )
+    }
+
+    init(
+        storage: any KeychainStorage,
+        service: String,
+        previousService: String?
+    ) {
+        self.storage = storage
+        self.service = service
+        self.previousService = previousService
+    }
 
     public func save(_ key: String, for providerId: String) throws {
         try mutateStore { $0[providerId] = key }
@@ -79,101 +97,117 @@ public final class Keychain: @unchecked Sendable {
     }
 
     private func readStore() throws -> [String: String] {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitOne,
-        ]
-
-        var item: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &item)
-        switch status {
-        case errSecSuccess:
-            guard let data = item as? Data,
-                  let store = try? JSONDecoder().decode([String: String].self, from: data)
-            else {
-                throw KeychainError.loadFailed(errSecDecode)
+        do {
+            if let data = try storage.readData(service: service, account: account) {
+                return try decodeStore(data, error: .loadFailed(errSecDecode))
             }
-            return store
-        case errSecItemNotFound:
-            // No consolidated blob yet. Fold any legacy per-provider items into
-            // one and persist it so this cost is paid at most once.
-            let migrated = readLegacyItems()
-            if !migrated.isEmpty {
-                try writeStore(migrated)
-                deleteLegacyItems(providerIds: Array(migrated.keys))
-            }
-            return migrated
-        default:
-            throw KeychainError.loadFailed(status)
+        } catch let error as KeychainStorageError {
+            throw KeychainError.loadFailed(error.status)
         }
+
+        return try migrateStore()
     }
 
     private func writeStore(_ store: [String: String]) throws {
         let data = try JSONEncoder().encode(store)
-
-        // Delete-then-add (rather than update) so the item is (re)created by the
-        // running app, matching the original per-provider behavior.
-        let base: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
-        ]
-        SecItemDelete(base as CFDictionary)
-
-        var addQuery = base
-        addQuery[kSecValueData as String] = data
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw KeychainError.saveFailed(status)
+        do {
+            try storage.replaceData(data, service: service, account: account)
+        } catch let error as KeychainStorageError {
+            throw KeychainError.saveFailed(error.status)
         }
     }
 
-    // MARK: - One-time migration from per-provider items
+    // swiftlint:disable:next function_body_length
+    private func migrateStore() throws -> [String: String] {
+        var migrated: [String: String] = [:]
+        var itemsToDelete: [(service: String, account: String)] = []
 
-    /// Reads every legacy `provider-<id>` item for this service and returns
-    /// them keyed by provider ID. Empty when there is nothing to migrate.
-    private func readLegacyItems() -> [String: String] {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecReturnAttributes as String: true,
-            kSecReturnData as String: true,
-            kSecMatchLimit as String: kSecMatchLimitAll,
-        ]
+        if let previousService {
+            let previousItems = try migrationItems(service: previousService)
+            migrated.merge(previousItems.store) { _, latest in latest }
+            itemsToDelete.append(contentsOf: previousItems.accounts.map {
+                (previousService, $0)
+            })
 
-        var result: CFTypeRef?
-        guard SecItemCopyMatching(query as CFDictionary, &result) == errSecSuccess,
-              let items = result as? [[String: Any]]
-        else {
+            do {
+                if let data = try storage.readData(service: previousService, account: account) {
+                    let consolidated = try decodeStore(
+                        data,
+                        error: .migrationFailed(errSecDecode)
+                    )
+                    migrated.merge(consolidated) { _, latest in latest }
+                    itemsToDelete.append((previousService, account))
+                }
+            } catch let error as KeychainStorageError {
+                throw KeychainError.migrationFailed(error.status)
+            }
+        }
+
+        let currentItems = try migrationItems(service: service)
+        migrated.merge(currentItems.store) { _, latest in latest }
+        itemsToDelete.append(contentsOf: currentItems.accounts.map { (service, $0) })
+
+        guard !migrated.isEmpty else {
             return [:]
         }
 
-        var store: [String: String] = [:]
-        for item in items {
-            guard let account = item[kSecAttrAccount as String] as? String,
-                  account.hasPrefix(legacyAccountPrefix),
-                  let data = item[kSecValueData as String] as? Data,
-                  let key = String(data: data, encoding: .utf8)
+        do {
+            let data = try JSONEncoder().encode(migrated)
+            try storage.replaceData(data, service: service, account: account)
+            guard let verificationData = try storage.readData(service: service, account: account)
             else {
-                continue
+                throw KeychainError.migrationFailed(errSecItemNotFound)
             }
-            store[String(account.dropFirst(legacyAccountPrefix.count))] = key
+            let verified = try decodeStore(
+                verificationData,
+                error: .migrationFailed(errSecDecode)
+            )
+            guard verified == migrated else {
+                throw KeychainError.migrationFailed(errSecVerifyFailed)
+            }
+        } catch let error as KeychainError {
+            storage.delete(service: service, account: account)
+            throw error
+        } catch let error as KeychainStorageError {
+            storage.delete(service: service, account: account)
+            throw KeychainError.migrationFailed(error.status)
         }
-        return store
+
+        for item in itemsToDelete {
+            storage.delete(service: item.service, account: item.account)
+        }
+        return migrated
     }
 
-    private func deleteLegacyItems(providerIds: [String]) {
-        for providerId in providerIds {
-            let query: [String: Any] = [
-                kSecClass as String: kSecClassGenericPassword,
-                kSecAttrService as String: service,
-                kSecAttrAccount as String: "\(legacyAccountPrefix)\(providerId)",
-            ]
-            SecItemDelete(query as CFDictionary)
+    private func migrationItems(
+        service: String
+    ) throws -> (store: [String: String], accounts: [String]) {
+        let items: [StoredKeychainItem]
+        do {
+            items = try storage.readItems(service: service)
+        } catch let error as KeychainStorageError {
+            throw KeychainError.migrationFailed(error.status)
         }
+
+        var migrated: [String: String] = [:]
+        var accounts: [String] = []
+        for item in items where item.account.hasPrefix(legacyAccountPrefix) {
+            guard let key = String(data: item.data, encoding: .utf8) else { continue }
+            let providerId = String(item.account.dropFirst(legacyAccountPrefix.count))
+            migrated[providerId] = key
+            accounts.append(item.account)
+        }
+        return (migrated, accounts)
+    }
+
+    private func decodeStore(
+        _ data: Data,
+        error: KeychainError
+    ) throws -> [String: String] {
+        guard let store = try? JSONDecoder().decode([String: String].self, from: data) else {
+            throw error
+        }
+        return store
     }
 }
 
@@ -181,4 +215,14 @@ public enum KeychainError: Error, Equatable {
     case saveFailed(OSStatus)
     case loadFailed(OSStatus)
     case deleteFailed(OSStatus)
+    case migrationFailed(OSStatus)
+}
+
+private extension KeychainStorageError {
+    var status: OSStatus {
+        switch self {
+        case let .status(status):
+            status
+        }
+    }
 }

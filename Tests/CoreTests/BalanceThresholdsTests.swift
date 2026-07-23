@@ -3,7 +3,7 @@ import XCTest
 
 final class BalanceThresholdsTests: XCTestCase {
     /// Isolated `UserDefaults` so tests don't touch the user's real defaults.
-    private let suiteName = "ai-usage.tests.balance-thresholds"
+    private let suiteName = "filbert.tests.balance-thresholds"
     private var defaults: UserDefaults!
 
     override func setUpWithError() throws {

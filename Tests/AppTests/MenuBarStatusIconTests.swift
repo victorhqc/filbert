@@ -8,7 +8,7 @@ import XCTest
 /// branch selection (ui 10 Plan §6). The ring geometry itself is verified via
 /// `QuotaStatusResolver.clampedFraction` — the same function the view calls.
 final class MenuBarStatusIconTests: XCTestCase {
-    private let suiteName = "ai-usage.tests.menu-bar-status-icon"
+    private let suiteName = "filbert.tests.menu-bar-status-icon"
     private var defaults: UserDefaults!
 
     override func setUpWithError() throws {

@@ -8,8 +8,8 @@ Patch SPM's generated `resource_bundle_accessor.swift` in the release build so
 
 ## Context
 
-- `scripts/build-dmg.sh` (`assemble_bundle`) places `ai-usage_*.bundle` at
-  `AI Usage.app/Contents/Resources/` — see (ci 02 Plan §1). This layout is the
+- `scripts/build-dmg.sh` (`assemble_bundle`) places `filbert_*.bundle` at
+  `Filbert.app/Contents/Resources/` — see (ci 02 Plan §1). This layout is the
   one macOS code sealing accepts: the `.app` root contains only `Contents/`.
 - SPM's generated accessor (`.build/<config>/<Module>.build/DerivedSources/
   resource_bundle_accessor.swift`) looks up the resource bundle at
@@ -21,14 +21,14 @@ Patch SPM's generated `resource_bundle_accessor.swift` in the release build so
   init, then aborts at the first real `Bundle.module` access:
   ```
   App/resource_bundle_accessor.swift:12: Fatal error: could not load resource bundle:
-    from /Applications/AI Usage.app/ai-usage_App.bundle
-     or /Users/runner/work/ai-usage/ai-usage/.build/arm64-apple-macosx/release/ai-usage_App.bundle
+    from /Applications/Filbert.app/filbert_App.bundle
+     or /Users/runner/work/filbert/filbert/.build/arm64-apple-macosx/release/filbert_App.bundle
   ```
-  Reproduced by invoking `/Applications/AI Usage.app/Contents/MacOS/AI Usage`
+  Reproduced by invoking `/Applications/Filbert.app/Contents/MacOS/Filbert`
   directly.
 - `AppIcon.icns` must remain at `Contents/Resources/AppIcon.icns` for Finder/Dock
   `CFBundleIconFile` resolution; the runtime icon set by `AppDelegate` reads
-  from `ai-usage_App.bundle` (untouched, SPM-placed).
+  from `filbert_App.bundle` (untouched, SPM-placed).
 - Earlier draft of this spec proposed moving bundles to the `.app` top level.
   That layout makes the app run, but `codesign` rejects it with
   `unsealed contents present in the bundle root` — modern macOS requires the
@@ -52,10 +52,10 @@ Patch SPM's generated `resource_bundle_accessor.swift` in the release build so
 ### AC2: `assemble_bundle` keeps bundles under `Contents/Resources/`
 - **Given** the build script runs
 - **When** `assemble_bundle` finishes
-- **Then** every `ai-usage_*.bundle` from `$BUILD_DIR` lives at
-  `<stage>/AI Usage.app/Contents/Resources/<name>.bundle`
-- **And** no `ai-usage_*.bundle` exists at the `.app` top level
-- **And** `AppIcon.icns` is at `AI Usage.app/Contents/Resources/AppIcon.icns`
+- **Then** every `filbert_*.bundle` from `$BUILD_DIR` lives at
+  `<stage>/Filbert.app/Contents/Resources/<name>.bundle`
+- **And** no `filbert_*.bundle` exists at the `.app` top level
+- **And** `AppIcon.icns` is at `Filbert.app/Contents/Resources/AppIcon.icns`
 
 ### AC3: The assembled `.app` signs and verifies
 - **Given** the assembled `.app` with bundles at `Contents/Resources/`
@@ -77,7 +77,7 @@ Patch SPM's generated `resource_bundle_accessor.swift` in the release build so
 - **When** `Bundle.module.url(forResource: "statusline_helper", withExtension: "swift")`
   is evaluated from `ClaudeCodeProvider`
 - **Then** it resolves to the file inside
-  `AI Usage.app/Contents/Resources/ai-usage_ClaudeCodeProvider.bundle/statusline_helper.swift`
+  `Filbert.app/Contents/Resources/filbert_ClaudeCodeProvider.bundle/statusline_helper.swift`
 - **And** the in-app "Install Helper" flow from (providers 02) is unaffected
 
 ### AC6: `swift run` and `swift test` remain unaffected
@@ -162,7 +162,7 @@ time rather than silently producing a broken app.
   `v0.1.1` once this lands and pointing users at it.
 - **Finder/Dock icon.** Unchanged — `CFBundleIconFile` still resolves from
   `Contents/Resources/AppIcon.icns`, and the runtime icon still reads from
-  `ai-usage_App.bundle`.
+  `filbert_App.bundle`.
 - **`verify_release` coverage gap.** It runs `codesign --verify` (which AC3
   now satisfies) but does not launch the app, so it cannot on its own catch a
   `Bundle.module` regression. AC4 is verified manually during release

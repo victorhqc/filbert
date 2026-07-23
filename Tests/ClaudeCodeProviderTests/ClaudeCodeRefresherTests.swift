@@ -17,7 +17,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
     override func setUp() {
         super.setUp()
         tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-refresher-tests-\(UUID().uuidString)")
+            .appendingPathComponent("filbert-refresher-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
             at: tmpDir,
             withIntermediateDirectories: true
@@ -39,7 +39,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
     }
 
     /// A refresher wired to the temp cache file so tests never touch the real
-    /// `~/.cache/ai-usage/claude-code.json`.
+    /// `~/.cache/filbert/claude-code.json`.
     private func makeRefresher(
         binaryPath: String?,
         spawnTimeout: TimeInterval = 30,

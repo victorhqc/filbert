@@ -58,7 +58,7 @@ minimal contract.
 ### AC3: Keychain wrapper stores and retrieves API keys by provider
 - **Given** a provider ID (e.g. `"zai"`)
 - **When** the app calls `Keychain.shared.save("key123", for: "zai")`
-- **Then** the key is stored as a generic-password item with service `ai-usage` and account `provider-zai`, retrievable via `Keychain.shared.load(for: "zai")`
+- **Then** the key is stored as a generic-password item with service `filbert` and account `provider-zai`, retrievable via `Keychain.shared.load(for: "zai")`
 
 ### AC4: `ProviderRegistry` holds provider instances and dispatches fetches
 - **Given** one or more providers registered
@@ -90,7 +90,7 @@ minimal contract.
    `UsageLine` replaces the old `QuotaLimit` name to better fit API-plan
    providers that track consumption, not just limits.
 3. Write `Sources/Core/Keychain.swift` — adapt zai-bar's pattern: `service`
-   is always `"ai-usage"`, `account` is `"provider-<id>"`. Provide
+   is always `"filbert"`, `account` is `"provider-<id>"`. Provide
    `save(_:for:)`, `load(for:)`, `delete(for:)`.
 4. Write `Sources/Core/ProviderRegistry.swift` — stores `[String: any AIProvider]`,
    loads keys via Keychain, calls `fetchQuota`, collects results.

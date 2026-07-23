@@ -11,7 +11,7 @@ Prevent the headless Claude Code refresh from probing macOS-protected user locat
 - `Tests/ClaudeCodeProviderTests/ClaudeCodeRefresherWorkingDirectoryTests.swift`
   — verifies the child's working directory and the directory-creation failure
   path (AC5).
-- `packaging/AIUsage.entitlements` — currently has no App Sandbox entitlement.
+- `packaging/Filbert.entitlements` — currently has no App Sandbox entitlement.
   This remains unchanged.
 - Extends the proactive spawn in (providers 03). Its AC1 is the authoritative
   argv contract and is revised by this spec.
@@ -51,9 +51,9 @@ Prevent the headless Claude Code refresh from probing macOS-protected user locat
 
 ### AC1: Spawn starts in a dedicated temporary directory
 
-- **Given** AI Usage is about to start the `claude` child
+- **Given** Filbert is about to start the `claude` child
 - **When** it configures `Process`
-- **Then** it creates an AI Usage-owned directory below
+- **Then** it creates a Filbert-owned directory below
   `FileManager.default.temporaryDirectory` and assigns that URL to
   `process.currentDirectoryURL`
 - **And** the directory is not the user's home, Documents, Desktop, Downloads,
@@ -111,7 +111,7 @@ Prevent the headless Claude Code refresh from probing macOS-protected user locat
 
 ### AC6: A clean macOS account receives no protected-resource prompts
 
-- **Given** a non-managed macOS account where AI Usage has never been granted
+- **Given** a non-managed macOS account where Filbert has never been granted
   Music, Documents, Desktop, or Downloads access and Claude Code is 2.1.169 or
   newer
 - **When** the user clicks Refresh for Claude Code
@@ -134,7 +134,7 @@ Prevent the headless Claude Code refresh from probing macOS-protected user locat
 ## Plan
 
 1. [x] Add a working-directory dependency to `ClaudeCodeRefresher`, defaulting
-   to an AI Usage-specific child of `FileManager.default.temporaryDirectory`.
+   to a Filbert-specific child of `FileManager.default.temporaryDirectory`.
    Create it immediately before each spawn and set
    `Process.currentDirectoryURL` before `run()`.
 2. [x] Add `--safe-mode`, `--strict-mcp-config`, and `--no-chrome` to

@@ -97,21 +97,23 @@ public final class ProviderRegistry {
         let snapshot = providers
 
         return await withTaskGroup(
-            of: (String, ProviderState).self
+            of: (String, ProviderState?).self
         ) { group in
             for (id, provider) in snapshot {
                 let providerId = id
                 let shape = type(of: provider).authShape
                 guard shape == .apiKeyFree else { continue }
                 group.addTask {
-                    let state = await provider.currentSetupState() ?? .setup("Unknown state")
+                    let state = await provider.currentSetupState()
                     return (providerId, state)
                 }
             }
 
             var results: [String: ProviderState] = [:]
             for await (id, state) in group {
-                results[id] = state
+                if let state {
+                    results[id] = state
+                }
             }
             return results
         }
