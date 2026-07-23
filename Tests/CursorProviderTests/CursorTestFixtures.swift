@@ -154,6 +154,7 @@ struct CursorCredentialVaultCounts {
     let loads: Int
     let saves: Int
     let accessUpdates: Int
+    let clears: Int
 }
 
 final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendable {
@@ -163,6 +164,7 @@ final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendabl
     private var loadCount = 0
     private var saveCount = 0
     private var accessTokenUpdateCount = 0
+    private var clearCount = 0
 
     init(fields: [String: String]? = nil) {
         self.fields = fields
@@ -212,6 +214,13 @@ final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendabl
         lock.withLock { shouldFailSave = enabled }
     }
 
+    func clear() throws {
+        try lock.withLock {
+            fields = nil
+            clearCount += 1
+        }
+    }
+
     func storedFields() -> [String: String]? {
         lock.withLock { fields }
     }
@@ -221,7 +230,8 @@ final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendabl
             CursorCredentialVaultCounts(
                 loads: loadCount,
                 saves: saveCount,
-                accessUpdates: accessTokenUpdateCount
+                accessUpdates: accessTokenUpdateCount,
+                clears: clearCount
             )
         }
     }

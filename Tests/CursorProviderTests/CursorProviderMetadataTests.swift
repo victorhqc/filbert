@@ -77,6 +77,63 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertNil(state)
     }
 
+    // MARK: - AC1/AC2: credential removal (bugs 01)
+
+    func testRemoveHelper_clearsStoredCredentialsAndReportsUnconfigured() async throws {
+        let vault = TestCursorCredentialVault(fields: [
+            "accessToken": CursorTestFixtures.tokenPair(valid: true).accessToken,
+            "refreshToken": CursorTestFixtures.tokenPair(valid: true).refreshToken,
+        ])
+        let provider = CursorProvider(
+            locator: CursorLocator(
+                environment: ["PATH": "/bin", "HOME": "/test"],
+                isExecutable: { _ in true }
+            ),
+            tokenStore: CursorTokenStore(
+                vault: vault,
+                homeDirectory: "/test",
+                readKeychain: { _, _ in nil },
+                readSQLiteValue: { _, _ in nil }
+            ),
+            session: .shared
+        )
+
+        XCTAssertTrue(provider.isConfigured())
+
+        try await provider.removeHelper()
+
+        XCTAssertNil(vault.storedFields())
+        XCTAssertEqual(vault.counts().clears, 1)
+        XCTAssertFalse(provider.isConfigured())
+    }
+
+    // MARK: - AC3: idempotent removal (bugs 01)
+
+    func testRemoveHelper_isIdempotentWhenVaultEmpty() async throws {
+        let vault = TestCursorCredentialVault()
+        let provider = CursorProvider(
+            locator: CursorLocator(
+                environment: ["PATH": "/bin", "HOME": "/test"],
+                isExecutable: { _ in true }
+            ),
+            tokenStore: CursorTokenStore(
+                vault: vault,
+                homeDirectory: "/test",
+                readKeychain: { _, _ in nil },
+                readSQLiteValue: { _, _ in nil }
+            ),
+            session: .shared
+        )
+
+        XCTAssertFalse(provider.isConfigured())
+
+        try await provider.removeHelper()
+        try await provider.removeHelper()
+
+        XCTAssertEqual(vault.counts().clears, 2)
+        XCTAssertFalse(provider.isConfigured())
+    }
+
     func testSetupState_failedSharedVaultSaveSurfacesKeychainError() async {
         let vault = TestCursorCredentialVault()
         vault.setSaveFailure(true)
