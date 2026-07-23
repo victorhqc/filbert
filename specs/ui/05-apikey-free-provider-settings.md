@@ -76,7 +76,7 @@ provider ID.
 - **Given** the binary is locatable and `StatuslineHelperInstaller` reports
   the helper is not installed in `~/.claude/settings.json`
 - **When** the row renders
-- **Then** the body shows a short explanation ("AI Usage reads your Claude
+- **Then** the body shows a short explanation ("Filbert reads your Claude
   Code usage by hooking into its status line. This adds a small helper
   script to ~/.claude/.") followed by an "Install Helper" button
 - **And** clicking the button calls
@@ -91,7 +91,7 @@ provider ID.
   `~/.claude/settings.json`
 - **When** the row renders
 - **Then** the body shows the helper binary path
-  (`~/.claude/ai-usage-statusline`) as monospaced secondary text, and a
+  (`~/.claude/filbert-statusline`) as monospaced secondary text, and a
   "Remove Helper" button
 - **And** clicking the button calls
   `viewModel.removeHelper(for: providerId)`, which unchains and deletes

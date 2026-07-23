@@ -201,8 +201,23 @@ final class QuotaViewModel {
     private func refreshAllSetupStates() {
         Task {
             let states = await registry.refreshSetupStates()
-            for (id, state) in states {
-                setState(state, for: id)
+            let providers = registry.registeredProviders.filter {
+                $0.authShape == .apiKeyFree
+            }
+            for provider in providers {
+                if let state = states[provider.id] {
+                    setState(state, for: provider.id)
+                    continue
+                }
+                guard registry.isConfigured(provider.id) else { continue }
+                switch providerStates[provider.id] {
+                case .loading, .loaded:
+                    continue
+                default:
+                    setState(.loading, for: provider.id)
+                    startAutoRefresh(for: provider.id)
+                    performFetch(for: provider.id)
+                }
             }
             refreshDerived()
         }

@@ -9,7 +9,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
     override func setUp() {
         super.setUp()
         tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-provider-tests-\(UUID().uuidString)")
+            .appendingPathComponent("filbert-provider-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
             at: tmpDir,
             withIntermediateDirectories: true

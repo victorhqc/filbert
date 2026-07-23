@@ -122,7 +122,7 @@ data source went through two iterations:
   positional prompt — or the CLI treats `/usage` as a tool name and errors
   with *"Input must be provided … when using --print"*. This is why the
   prompt (`-p "/usage"`) is pinned to the end of the argv
-- **And** the refresher spawns the child in an AI Usage-owned directory below
+- **And** the refresher spawns the child in a Filbert-owned directory below
   `FileManager.default.temporaryDirectory`, never the parent's CWD — the
   startup-isolation behavior is specified fully in (providers 06 AC1)
 - **And** the refresher captures **stdout** (via a `Pipe`), discards

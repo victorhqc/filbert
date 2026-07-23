@@ -2,7 +2,7 @@
 import Foundation
 
 // Reads Claude Code statusline JSON from stdin, extracts `rate_limits`,
-// and writes an atomic cache for the ai-usage menu bar app.
+// and writes an atomic cache for the filbert menu bar app.
 //
 // This source is compiled at install time with `swiftc -O` so the helper
 // binary has near-zero cold-start latency when Claude Code spawns it on
@@ -12,7 +12,7 @@ import Foundation
 
 let cacheDir = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent(".cache")
-    .appendingPathComponent("ai-usage")
+    .appendingPathComponent("filbert")
 let cachePath = cacheDir.appendingPathComponent("claude-code.json")
 
 // MARK: - Read stdin

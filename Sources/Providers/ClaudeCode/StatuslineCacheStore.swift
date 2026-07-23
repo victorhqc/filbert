@@ -2,11 +2,11 @@ import Foundation
 
 // MARK: - Cache path (providers 02 AC4)
 
-/// `~/.cache/ai-usage/claude-code.json` — the single source of truth
+/// `~/.cache/filbert/claude-code.json` — the single source of truth
 /// for Claude Code usage data (providers 02 AC4).
 public let claudeCodeCacheFileURL: URL = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent(".cache")
-    .appendingPathComponent("ai-usage")
+    .appendingPathComponent("filbert")
     .appendingPathComponent("claude-code.json")
 
 // MARK: - Cache model (providers 02 AC5)
@@ -79,21 +79,43 @@ struct Window: Codable {
 /// the atomic-write contract (providers 02 AC7).
 public struct StatuslineCacheStore: Sendable {
     private let cacheURL: URL
+    private let fallbackCacheURL: URL?
 
-    public init(cacheURL: URL = claudeCodeCacheFileURL) {
+    public init() {
+        cacheURL = claudeCodeCacheFileURL
+        fallbackCacheURL = LegacyClaudeBrandConfiguration.production.cacheURL
+    }
+
+    public init(cacheURL: URL) {
         self.cacheURL = cacheURL
+        fallbackCacheURL = nil
+    }
+
+    init(cacheURL: URL, fallbackCacheURL: URL?) {
+        self.cacheURL = cacheURL
+        self.fallbackCacheURL = fallbackCacheURL
     }
 
     /// Reads and decodes the cache file. Returns `nil` when the file is
     /// absent or unparseable — a missing cache is a data state, not an error
     /// (providers 02 AC10).
     func read() -> StatuslineCache? {
-        let path = cacheURL.path
+        if let cache = read(at: cacheURL) {
+            return cache
+        }
+        guard let fallbackCacheURL else {
+            return nil
+        }
+        return read(at: fallbackCacheURL)
+    }
+
+    private func read(at url: URL) -> StatuslineCache? {
+        let path = url.path
         guard FileManager.default.fileExists(atPath: path) else {
             ClaudeCodeLog.log("read: cache file missing at \(path)")
             return nil
         }
-        guard let data = try? Data(contentsOf: cacheURL) else {
+        guard let data = try? Data(contentsOf: url) else {
             ClaudeCodeLog.log("read: failed to read \(path)")
             return nil
         }

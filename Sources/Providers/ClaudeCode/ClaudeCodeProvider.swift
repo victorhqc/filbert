@@ -91,6 +91,7 @@ public struct ClaudeCodeProvider: AIProvider {
     public func isConfigured() -> Bool {
         let binaryPath = locator.resolve()
         let helperInstalled = installer.isHelperInstalled()
+            || installer.hasLegacyHelperInstallation()
         ClaudeCodeLog.log("isConfigured: binary=\(binaryPath ?? "nil") helperInstalled=\(helperInstalled)")
         return binaryPath != nil && helperInstalled
     }
@@ -102,7 +103,28 @@ public struct ClaudeCodeProvider: AIProvider {
             return .setup(String(localized: "Claude Code not found"))
         }
         if !installer.isHelperInstalled() {
-            return .setup(String(localized: "Helper not installed"))
+            guard let sourceURL = helperSourceURL else {
+                return .setup(String(localized: "Helper source file not found in app bundle."))
+            }
+            do {
+                _ = try await Task.detached {
+                    try installer.migrateLegacyInstallationIfNeeded(
+                        helperSourceURL: sourceURL
+                    )
+                }.value
+            } catch {
+                ClaudeCodeLog.log(
+                    "legacy helper migration failed: \(error.localizedDescription)"
+                )
+                return .setup(
+                    String(
+                        localized: "Automatic helper migration failed. Select Install Helper to retry."
+                    )
+                )
+            }
+            if !installer.isHelperInstalled() {
+                return .setup(String(localized: "Helper not installed"))
+            }
         }
         return nil
     }
@@ -119,16 +141,15 @@ public struct ClaudeCodeProvider: AIProvider {
     /// Compiles the helper binary and chains it into
     /// `~/.claude/settings.json` (providers 02 AC7, ui 05 AC4).
     public func installHelper() async throws {
-        guard let sourceURL = Bundle.module.url(
-            forResource: "statusline_helper",
-            withExtension: "swift"
-        ) else {
+        guard let sourceURL = helperSourceURL else {
             ClaudeCodeLog.log("installHelper: helper source not found in bundle")
             throw InstallerError.helperSourceNotFound
         }
         let binaryPath = locator.resolve()
         ClaudeCodeLog.log("installHelper: binary=\(binaryPath ?? "nil") source=\(sourceURL.path)")
-        try installer.install(helperSourceURL: sourceURL)
+        try await Task.detached {
+            try installer.install(helperSourceURL: sourceURL)
+        }.value
         ClaudeCodeLog.log("installHelper: install ok, helperInstalled=\(installer.isHelperInstalled())")
     }
 
@@ -137,6 +158,13 @@ public struct ClaudeCodeProvider: AIProvider {
     /// (providers 02 AC11, ui 05 AC5).
     public func removeHelper() async throws {
         try installer.uninstall()
+    }
+
+    private var helperSourceURL: URL? {
+        Bundle.module.url(
+            forResource: "statusline_helper",
+            withExtension: "swift"
+        )
     }
 
     // MARK: - Quota fetch (providers 02 AC2, AC4–AC6, AC10)

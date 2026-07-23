@@ -3,7 +3,7 @@ import Foundation
 extension ClaudeCodeRefresher {
     // MARK: - Working directory (providers 06 AC1)
 
-    /// Creates an AI Usage-owned directory below
+    /// Creates a Filbert-owned directory below
     /// `FileManager.default.temporaryDirectory` for the `claude` child to run
     /// in. Returns `nil` if creation fails, in which case the caller aborts
     /// the spawn and leaves the cache untouched.
@@ -16,7 +16,7 @@ extension ClaudeCodeRefresher {
     /// (providers 06 AC1).
     static func makeDefaultWorkingDirectory() -> URL? {
         let url = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-claude-code-spawn", isDirectory: true)
+            .appendingPathComponent("filbert-claude-code-spawn", isDirectory: true)
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         do {
             try FileManager.default.createDirectory(

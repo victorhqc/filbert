@@ -1,6 +1,6 @@
-# Contributing to ai-usage
+# Contributing to Filbert
 
-Thanks for helping build ai-usage. This guide covers how we work: the
+Thanks for helping build Filbert. This guide covers how we work: the
 spec-first workflow, the project layout, the coding standards, and the
 validation gate you must pass before you hand off a change.
 

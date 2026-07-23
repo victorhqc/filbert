@@ -38,7 +38,7 @@ jobs:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           # Tag is `v<version>`; strip the leading `v` so the DMG is
-          # AI-Usage-<version>-arm64.dmg, not AI-Usage-v<version>-arm64.dmg.
+          # Filbert-<version>-arm64.dmg, not Filbert-v<version>-arm64.dmg.
           echo "version=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Build DMG
@@ -52,7 +52,7 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          DMG="dist/AI-Usage-${VERSION}-arm64.dmg"
+          DMG="dist/Filbert-${VERSION}-arm64.dmg"
           gh release upload --clobber "$TAG_NAME" "$DMG" "$DMG.sha256"
 
       - name: Set release notes
@@ -61,5 +61,5 @@ jobs:
           VERSION: ${{ steps.version.outputs.version }}
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          NOTES="dist/AI-Usage-${VERSION}-arm64.release-notes.md"
+          NOTES="dist/Filbert-${VERSION}-arm64.release-notes.md"
           gh release edit --notes-file "$NOTES" "$TAG_NAME"

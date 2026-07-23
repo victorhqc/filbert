@@ -16,7 +16,7 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
     override func setUp() {
         super.setUp()
         tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-proactive-tests-\(UUID().uuidString)")
+            .appendingPathComponent("filbert-proactive-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
             at: tmpDir,
             withIntermediateDirectories: true

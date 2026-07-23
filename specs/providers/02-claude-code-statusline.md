@@ -78,7 +78,7 @@ Keychain entry.
 ### AC4: Fetch reads only the cache file
 - **Given** the provider is configured and `auth == .apiKeyFree`
 - **When** `fetchQuota(auth:baseURL:)` runs
-- **Then** it reads `~/.cache/ai-usage/claude-code.json` (the cache path),
+- **Then** it reads `~/.cache/filbert/claude-code.json` (the cache path),
   decodes the JSON the helper script wrote, and never spawns `claude`, never
   touches the network, and never reads Claude Code's Keychain entry
 
@@ -120,7 +120,7 @@ Keychain entry.
 - **Given** the user has clicked "Install helper" in Settings (ui 05)
 - **When** Claude Code next invokes its `statusLine` command
 - **Then** our helper script (installed at
-  `~/.claude/ai-usage-statusline.sh`) reads the JSON from stdin, extracts
+  `~/.claude/filbert-statusline.sh`) reads the JSON from stdin, extracts
   `rate_limits`, and writes it to the cache path via a temp file + `rename`
   so a half-written file is never observed by a concurrent reader
 
@@ -131,7 +131,7 @@ Keychain entry.
 - **Then** it preserves the user's existing command by chaining: the new
   `statusLine.command` runs the user's prior command first, captures its
   stdout, then pipes the original JSON into our helper
-- **And** an existing `ai-usage` chain entry is detected and replaced in
+- **And** an existing `filbert` chain entry is detected and replaced in
   place (no double-wrapping on reinstall)
 - **And** the written `statusLine` object always includes `"type": "command"`,
   which Claude Code requires to invoke the command at all (see
@@ -169,8 +169,8 @@ Keychain entry.
 - **Given** the user clicks "Remove helper" in Settings (ui 05) or the
   provider is unconfigured
 - **When** uninstall runs
-- **Then** the helper script at `~/.claude/ai-usage-statusline.sh` is
-  deleted and any `ai-usage` chain entry is unwrapped from
+- **Then** the helper script at `~/.claude/filbert-statusline.sh` is
+  deleted and any `filbert` chain entry is unwrapped from
   `~/.claude/settings.json`, restoring the user's prior `statusLine.command`
 - **And** the cache file at the cache path is deleted
 
@@ -205,7 +205,7 @@ Keychain entry.
      per AC4–AC6.
 5. **Helper binary.** A small Swift source file shipped as a resource in
    the `ClaudeCodeProvider` module. At install time we compile it with
-   `swiftc -O -o ~/.claude/ai-usage-statusline <source>` so the helper is a
+   `swiftc -O -o ~/.claude/filbert-statusline <source>` so the helper is a
    native binary — fast cold-start (Claude Code spawns it on every status
    line update, debounced ~300ms) and no runtime interpreter dependency.
    Reads stdin JSON via `JSONDecoder`, extracts `rate_limits`, writes the
@@ -230,7 +230,7 @@ Keychain entry.
      atomic write survives a simulated concurrent read.
    - `StatuslineHelperInstallerTests` — install into a settings.json with no
      prior `statusLine`, with a prior `statusLine` (chain preserved), with
-     an existing ai-usage chain (replaced in place), with an unparseable
+     an existing filbert chain (replaced in place), with an unparseable
      settings.json (install aborts). Uninstall restores prior state in each
      case.
    - `ClaudeCodeProviderTests` — given a cache fixture, assert the mapped

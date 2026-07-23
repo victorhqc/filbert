@@ -16,7 +16,7 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
     override func setUp() {
         super.setUp()
         tmpDir = FileManager.default.temporaryDirectory
-            .appendingPathComponent("ai-usage-refresher-wd-tests-\(UUID().uuidString)")
+            .appendingPathComponent("filbert-refresher-wd-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
             at: tmpDir,
             withIntermediateDirectories: true

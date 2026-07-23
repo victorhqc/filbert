@@ -2,7 +2,7 @@ import Core
 import XCTest
 
 final class VintageMacIconTests: XCTestCase {
-    private let suiteName = "ai-usage.tests.vintage-mac-icon"
+    private let suiteName = "filbert.tests.vintage-mac-icon"
     private var defaults: UserDefaults!
 
     override func setUpWithError() throws {

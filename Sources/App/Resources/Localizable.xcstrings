@@ -153,31 +153,31 @@
         }
       }
     },
-    "AI Usage" : {
+    "Filbert" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "AI Usage"
+            "value" : "Filbert"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uso de IA"
+            "value" : "Filbert"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Uso de IA"
+            "value" : "Filbert"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "KI-Nutzung"
+            "value" : "Filbert"
           }
         }
       }

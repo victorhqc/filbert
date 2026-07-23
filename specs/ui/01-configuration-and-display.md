@@ -7,7 +7,7 @@ popover.
 
 - `Sources/App/AppMain.swift` — the `MenuBarExtra` popover; currently a static
   placeholder + Quit. Gains configuration entry, live rendering, and refresh.
-- `Sources/Core/Keychain.swift` — key storage, service `ai-usage`, account
+- `Sources/Core/Keychain.swift` — key storage, service `filbert`, account
   `provider-zai` (core 01 AC3).
 - `Sources/Core/ProviderRegistry.swift` — `fetchAll()` drives the provider
   (core 01 AC4).
