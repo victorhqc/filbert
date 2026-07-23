@@ -1,5 +1,13 @@
 import Foundation
 
+/// The Keychain locations that hold a Cursor CLI OAuth token pair.
+struct CursorKeychainCredentials: Sendable, Equatable {
+    let accessTokenService: String
+    let accessTokenAccount: String
+    let refreshTokenService: String
+    let refreshTokenAccount: String
+}
+
 /// Cursor first-party OAuth constants (providers 07 AC5/AC11).
 ///
 /// The `client_id` is Cursor's own CLI/desktop client id — hardcoded in the
@@ -16,14 +24,27 @@ enum CursorAuth {
     /// refresh path never goes through a user proxy override (providers 07 AC5).
     static let tokenEndpoint = URL(string: "https://api2.cursor.sh/oauth/token")!
 
-    /// Keychain service used by the Cursor CLI (`agent login`).
-    static let keychainService = "cursor-agent"
+    /// Credentials written by the current Cursor Agent CLI (`agent login`).
+    static let currentCLIKeychainCredentials = CursorKeychainCredentials(
+        accessTokenService: "cursor-access-token",
+        accessTokenAccount: "cursor-user",
+        refreshTokenService: "cursor-refresh-token",
+        refreshTokenAccount: "cursor-user"
+    )
 
-    /// Keychain account for the short-lived access token (JWT).
-    static let keychainAccessAccount = "cursor-access-token"
+    /// Credentials for the `cursor-agent` Keychain layout.
+    static let legacyCLIKeychainCredentials = CursorKeychainCredentials(
+        accessTokenService: "cursor-agent",
+        accessTokenAccount: "cursor-access-token",
+        refreshTokenService: "cursor-agent",
+        refreshTokenAccount: "cursor-refresh-token"
+    )
 
-    /// Keychain account for the long-lived refresh token.
-    static let keychainRefreshAccount = "cursor-refresh-token"
+    /// Lookup covers all supported Cursor Agent Keychain layouts.
+    static let keychainCredentials = [
+        currentCLIKeychainCredentials,
+        legacyCLIKeychainCredentials,
+    ]
 
     /// SQLite key storing the access token in Cursor Desktop's `state.vscdb`.
     static let sqliteAccessKey = "cursorAuth/accessToken"
