@@ -102,8 +102,12 @@ data source went through two iterations:
 - **When** the provider asks the refresher to refresh
 - **Then** the refresher spawns the binary with argv
   `["--model", "haiku", "--max-turns", "1", "--no-session-persistence",
+  "--safe-mode", "--strict-mcp-config", "--no-chrome",
   "--tools", "", "--output-format", "json", "-p", "/usage"]` — no `--debug`,
-  no interactive TUI, no other flags
+  no interactive TUI, no other flags. `--safe-mode`, `--strict-mcp-config`,
+  and `--no-chrome` are the startup-isolation flags added by
+  (providers 06 AC1, AC2); see that spec for why they are distinct from
+  Claude's tool-permission modes (providers 06 AC3)
 - **And** `-p "/usage"` runs the built-in usage command non-interactively;
   its text output carries the session (5-hour) and week (7-day) percentages
   and reset times. `/usage` is model-free, so the spawn is effectively free
@@ -118,6 +122,9 @@ data source went through two iterations:
   positional prompt — or the CLI treats `/usage` as a tool name and errors
   with *"Input must be provided … when using --print"*. This is why the
   prompt (`-p "/usage"`) is pinned to the end of the argv
+- **And** the refresher spawns the child in an AI Usage-owned directory below
+  `FileManager.default.temporaryDirectory`, never the parent's CWD — the
+  startup-isolation behavior is specified fully in (providers 06 AC1)
 - **And** the refresher captures **stdout** (via a `Pipe`), discards
   **stderr** (`/dev/null`), and does not configure stdin. The `/usage` output
   is a few KB — well under the OS pipe buffer — so stdout is drained after
