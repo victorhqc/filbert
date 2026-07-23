@@ -19,11 +19,19 @@ Most developers use more than one AI platform. A coding plan here, an API key
 there, a subscription somewhere else. This app brings them together, so you
 never have to open four browser tabs to check what you have left.
 
+<table>
+  <tr>
+    <td><img src="assets/screenshots/in-context.png" alt="Filbert popover shown over a desktop" height="360"></td>
+    <td><img src="assets/screenshots/collapsed.png" alt="Filbert popover with providers collapsed" height="360"></td>
+    <td><img src="assets/screenshots/expanded.png" alt="Filbert popover with provider details expanded" height="360"></td>
+  </tr>
+</table>
+
 ## What you get
 
 - **Menu bar** — glance at your most-used provider's remaining quota.
 - **Popover** — click the icon for a full breakdown across every provider.
-- **Widgets** — pin a provider's stats to Notification Center or your desktop.
+- **Widgets** — pin a provider's stats to Notification Center or your desktop (WIP).
 
 It is a real macOS app, built to stay out of your way:
 
