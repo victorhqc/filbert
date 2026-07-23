@@ -76,6 +76,7 @@ final class ProviderProtocolTests: XCTestCase {
         )
         XCTAssertEqual(info.id, "test")
         XCTAssertEqual(info.authShape, .apiKeyFree)
+        XCTAssertNil(info.disclaimer)
         XCTAssertNil(info.setupHelp)
     }
 
@@ -112,6 +113,15 @@ final class ProviderProtocolTests: XCTestCase {
         let info = try XCTUnwrap(registry.registeredProviders.first)
 
         XCTAssertEqual(info.setupHelp, SetupHelpProvider.setupHelp)
+    }
+
+    func testRegistry_transportsProviderDisclaimer() throws {
+        let registry = ProviderRegistry()
+        registry.register(DisclaimerProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+
+        XCTAssertEqual(info.disclaimer, DisclaimerProvider.providerDisclaimer)
     }
 
     func testRegistry_transportsProviderGlyph() throws {
@@ -172,5 +182,23 @@ private struct SetupHelpProvider: AIProvider {
 
     func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
         fatalError("The metadata transport test does not fetch quota data.")
+    }
+}
+
+private struct DisclaimerProvider: AIProvider {
+    static let providerId = "disclaimer"
+    static let providerName = "Disclaimer"
+    static let providerDescription = "Description"
+    static let providerDisclaimer: String? = "Undocumented integration"
+    static let baseURL = URL(string: "https://example.com")!
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        ProviderQuota(
+            providerId: Self.providerId,
+            providerName: Self.providerName,
+            headline: "No data",
+            lines: [],
+            lastUpdated: Date()
+        )
     }
 }

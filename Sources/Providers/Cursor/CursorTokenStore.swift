@@ -92,38 +92,53 @@ struct CursorTokenStore: Sendable {
 
     // MARK: - Loading (providers 07 AC4)
 
-    /// Returns the token pair from the first store that has an access token,
-    /// or `nil` when neither source has one. Never throws.
+    /// Returns the first complete, non-empty token pair, or `nil` when neither
+    /// source has one. Never throws.
     func load() -> CursorTokenPair? {
         // Keychain first.
-        let keychainAccess = readKeychain(
-            CursorAuth.keychainService,
-            CursorAuth.keychainAccessAccount
-        )
-        if let keychainAccess, !keychainAccess.isEmpty {
-            let keychainRefresh = readKeychain(
+        if let pair = completePair(
+            accessToken: readKeychain(
+                CursorAuth.keychainService,
+                CursorAuth.keychainAccessAccount
+            ),
+            refreshToken: readKeychain(
                 CursorAuth.keychainService,
                 CursorAuth.keychainRefreshAccount
-            ) ?? ""
-            return CursorTokenPair(
-                accessToken: keychainAccess,
-                refreshToken: keychainRefresh,
-                source: .keychain
-            )
+            ),
+            source: .keychain
+        ) {
+            return pair
         }
 
         // SQLite fallback.
-        let sqliteAccess = readSQLiteValue(sqlitePath, CursorAuth.sqliteAccessKey)
-        if let sqliteAccess, !sqliteAccess.isEmpty {
-            let sqliteRefresh = readSQLiteValue(sqlitePath, CursorAuth.sqliteRefreshKey) ?? ""
-            return CursorTokenPair(
-                accessToken: sqliteAccess,
-                refreshToken: sqliteRefresh,
-                source: .sqlite
-            )
+        if let pair = completePair(
+            accessToken: readSQLiteValue(sqlitePath, CursorAuth.sqliteAccessKey),
+            refreshToken: readSQLiteValue(sqlitePath, CursorAuth.sqliteRefreshKey),
+            source: .sqlite
+        ) {
+            return pair
         }
 
         return nil
+    }
+
+    private func completePair(
+        accessToken: String?,
+        refreshToken: String?,
+        source: CursorTokenPair.Source
+    ) -> CursorTokenPair? {
+        guard let accessToken,
+              !accessToken.isEmpty,
+              let refreshToken,
+              !refreshToken.isEmpty
+        else {
+            return nil
+        }
+        return CursorTokenPair(
+            accessToken: accessToken,
+            refreshToken: refreshToken,
+            source: source
+        )
     }
 
     private var sqlitePath: String {
@@ -173,9 +188,13 @@ struct CursorTokenStore: Sendable {
             throw CursorError.network(URLError(.badServerResponse))
         }
 
-        // AC11: a 4xx on /oauth/token means Cursor rotated its client_id —
-        // filbert's embedded constant is now stale and needs an update.
+        // A 4xx on /oauth/token means Cursor rotated its client_id —
+        // filbert's embedded constant is now stale and needs an update
+        // (providers 07 AC11).
         guard (200 ... 299).contains(httpResponse.statusCode) else {
+            if httpResponse.statusCode == 429 {
+                throw CursorError.http(429)
+            }
             if (400 ... 499).contains(httpResponse.statusCode) {
                 throw CursorError.clientIdRejected
             }
@@ -189,9 +208,13 @@ struct CursorTokenStore: Sendable {
             throw CursorError.decoding(error)
         }
 
-        // AC5: shouldLogout or an empty access token means the session is
-        // genuinely expired — the user must re-run `agent login`.
-        if refreshResponse.shouldLogout == true || refreshResponse.accessToken.isEmpty {
+        // `shouldLogout` or an empty access token means the session is
+        // genuinely expired — the user must re-run `agent login`
+        // (providers 07 AC5).
+        guard refreshResponse.shouldLogout != true,
+              let accessToken = refreshResponse.accessToken,
+              !accessToken.isEmpty
+        else {
             throw CursorError.sessionExpired
         }
 
@@ -200,11 +223,11 @@ struct CursorTokenStore: Sendable {
             writeKeychain(
                 CursorAuth.keychainService,
                 CursorAuth.keychainAccessAccount,
-                refreshResponse.accessToken
+                accessToken
             )
         }
 
-        return refreshResponse.accessToken
+        return accessToken
     }
 
     // MARK: - JWT expiry (no third-party library)
@@ -273,7 +296,14 @@ struct CursorTokenStore: Sendable {
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
         ]
-        SecItemDelete(query as CFDictionary)
+        let attributes: [String: Any] = [
+            kSecValueData as String: Data(value.utf8),
+        ]
+        let updateStatus = SecItemUpdate(
+            query as CFDictionary,
+            attributes as CFDictionary
+        )
+        guard updateStatus == errSecItemNotFound else { return }
 
         var addQuery = query
         addQuery[kSecValueData as String] = Data(value.utf8)
@@ -306,7 +336,7 @@ struct CursorTokenStore: Sendable {
         }
         defer { sqlite3_finalize(statement) }
 
-        sqlite3_bind_text(statement, 1, key, -1, nil)
+        sqlite3_bind_text(statement, 1, key, -1, sqliteTransient)
 
         guard sqlite3_step(statement) == SQLITE_ROW,
               let cString = sqlite3_column_text(statement, 0)
@@ -332,7 +362,7 @@ private struct RefreshRequest: Encodable {
 }
 
 private struct RefreshResponse: Decodable {
-    let accessToken: String
+    let accessToken: String?
     let shouldLogout: Bool?
 
     enum CodingKeys: String, CodingKey {
@@ -340,3 +370,7 @@ private struct RefreshResponse: Decodable {
         case shouldLogout
     }
 }
+
+/// `SQLITE_TRANSIENT` asks SQLite to copy Swift's temporary UTF-8 buffer
+/// before `sqlite3_bind_text` returns.
+private let sqliteTransient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)

@@ -1,0 +1,89 @@
+import Core
+@testable import CursorProvider
+import Foundation
+import XCTest
+
+final class CursorProviderMetadataTests: XCTestCase {
+    // MARK: - AC1: provider-owned glyph (providers 07)
+
+    func testProviderGlyphLoadsFromModuleResources() {
+        guard case let .asset(name, bundle) = CursorProvider.providerGlyph else {
+            return XCTFail("Expected an asset-backed provider glyph")
+        }
+
+        XCTAssertEqual(name, "ProviderGlyph")
+        XCTAssertNotNil(bundle.url(forResource: name, withExtension: "png"))
+        XCTAssertNotNil(bundle.url(forResource: "\(name)@2x", withExtension: "png"))
+    }
+
+    // MARK: - AC2b: external login prerequisite (providers 07)
+
+    func testSetupHelpPointsToCursorCLIAuthenticationDocs() throws {
+        let setupHelp = try XCTUnwrap(CursorProvider.setupHelp)
+        let registry = ProviderRegistry()
+        registry.register(CursorProvider())
+        let expectedURL = URL(string: "https://cursor.com/docs/cli/reference/authentication")
+
+        XCTAssertEqual(setupHelp.linkLabel, "Sign in to Cursor")
+        XCTAssertEqual(setupHelp.url, expectedURL)
+        XCTAssertEqual(registry.registeredProviders.first?.setupHelp, setupHelp)
+    }
+
+    func testProviderDescriptionIncludesUndocumentedEndpointDisclaimer() {
+        XCTAssertEqual(
+            CursorProvider.providerDisclaimer,
+            "This provider uses undocumented Cursor endpoints and may stop working if Cursor changes them."
+        )
+    }
+
+    // MARK: - AC10: setup state (providers 07)
+
+    func testSetupState_missingBinaryAndToken_showsInstallMessage() async {
+        let provider = makeProvider(token: nil, binaryExists: false)
+
+        XCTAssertEqual(CursorProvider.authShape, .apiKeyFree)
+        XCTAssertFalse(provider.isConfigured())
+        guard case let .setup(message) = await provider.currentSetupState() else {
+            return XCTFail("Expected setup state")
+        }
+        XCTAssertEqual(
+            message,
+            "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
+        )
+    }
+
+    func testSetupState_binaryPresentNoToken_showsSignInMessage() async {
+        let provider = makeProvider(token: nil, binaryExists: true)
+
+        XCTAssertTrue(provider.isConfigured())
+        guard case let .setup(message) = await provider.currentSetupState() else {
+            return XCTFail("Expected setup state")
+        }
+        XCTAssertEqual(message, "Sign in to Cursor")
+    }
+
+    func testSetupState_tokenPresent_isConfiguredWithNoSetupState() async {
+        let provider = makeProvider(
+            token: CursorTestFixtures.tokenPair(valid: true),
+            binaryExists: false
+        )
+
+        XCTAssertTrue(provider.isConfigured())
+        let state = await provider.currentSetupState()
+        XCTAssertNil(state)
+    }
+
+    private func makeProvider(token: CursorTokenPair?, binaryExists: Bool) -> CursorProvider {
+        let locator = CursorLocator(
+            environment: ["PATH": "/bin", "HOME": "/test"],
+            isExecutable: { _ in binaryExists }
+        )
+        let tokenStore = CursorTokenStore(
+            homeDirectory: "/test",
+            readKeychain: { _, _ in token?.accessToken },
+            writeKeychain: { _, _, _ in },
+            readSQLiteValue: { _, _ in nil }
+        )
+        return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
+    }
+}

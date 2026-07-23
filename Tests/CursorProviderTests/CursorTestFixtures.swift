@@ -105,7 +105,8 @@ enum CursorTestFixtures {
         usageBody: Data = Data(),
         usageStatus: Int = 200,
         usageError: Error? = nil,
-        onRefresh: (() -> Void)? = nil
+        onRefresh: (() -> Void)? = nil,
+        onUsage: (() -> Void)? = nil
     ) -> URLSession {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
@@ -120,6 +121,7 @@ enum CursorTestFixtures {
                     error: nil
                 )
             }
+            onUsage?()
             return MockURLProtocol.MockResponse(
                 data: usageBody,
                 statusCode: usageStatus,
@@ -127,5 +129,24 @@ enum CursorTestFixtures {
             )
         }
         return session
+    }
+}
+
+final class LockedBox<Value>: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value: Value
+
+    init(_ value: Value) {
+        self.value = value
+    }
+
+    func read() -> Value {
+        lock.withLock { value }
+    }
+
+    func withValue<Result>(_ body: (inout Value) -> Result) -> Result {
+        lock.withLock {
+            body(&value)
+        }
     }
 }

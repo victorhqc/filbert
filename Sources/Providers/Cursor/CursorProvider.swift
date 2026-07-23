@@ -14,29 +14,40 @@ public struct CursorProvider: AIProvider {
     public static let providerDescription = String(
         localized: "Monitor subscription and on-demand spend"
     )
+    public static let providerDisclaimer: String? = String(
+        localized: "This provider uses undocumented Cursor endpoints and may stop working if Cursor changes them."
+    )
     public static let baseURL = URL(string: "https://api2.cursor.sh")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
     public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
         linkLabel: String(localized: "Sign in to Cursor"),
-        url: URL(string: "https://docs.cursor.com/en/cli/reference/authentication")!
+        url: URL(string: "https://cursor.com/docs/cli/reference/authentication")!
     )
 
     private let locator: CursorLocator
     private let tokenStore: CursorTokenStore
     private let session: URLSession
+    private let rateLimitBackoff: CursorRateLimitBackoff
 
     public init() {
         self.init(
             locator: CursorLocator(),
             tokenStore: CursorTokenStore(),
-            session: .shared
+            session: .shared,
+            rateLimitBackoff: CursorRateLimitBackoff()
         )
     }
 
-    init(locator: CursorLocator, tokenStore: CursorTokenStore, session: URLSession) {
+    init(
+        locator: CursorLocator,
+        tokenStore: CursorTokenStore,
+        session: URLSession,
+        rateLimitBackoff: CursorRateLimitBackoff = CursorRateLimitBackoff()
+    ) {
         self.locator = locator
         self.tokenStore = tokenStore
         self.session = session
+        self.rateLimitBackoff = rateLimitBackoff
     }
 
     // MARK: - Configuration (providers 07 AC10)
@@ -63,13 +74,23 @@ public struct CursorProvider: AIProvider {
     // MARK: - Fetch (providers 07 AC5/AC6)
 
     public func fetchQuota(auth _: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
+        try await rateLimitBackoff.checkRequestAllowed()
+
         guard let pair = tokenStore.load() else {
             throw CursorError.missingToken
         }
 
-        let accessToken = try await tokenStore.ensureValidAccessToken(pair)
+        let accessToken: String
+        do {
+            accessToken = try await tokenStore.ensureValidAccessToken(pair)
+        } catch let error as CursorError {
+            if case .http(429) = error {
+                await rateLimitBackoff.recordRateLimit()
+            }
+            throw error
+        }
 
-        // ── AC6: Connect-RPC call ──
+        // ── AC6: Connect-RPC call (providers 07) ──
         let endpoint = baseURL
             .appendingPathComponent("aiserver.v1.DashboardService")
             .appendingPathComponent("GetCurrentPeriodUsage")
@@ -92,7 +113,13 @@ public struct CursorProvider: AIProvider {
             throw CursorError.network(URLError(.badServerResponse))
         }
 
-        // ── AC10: typed errors for non-200 ──
+        if httpResponse.statusCode == 429 {
+            await rateLimitBackoff.recordRateLimit()
+            throw CursorError.http(429)
+        }
+        await rateLimitBackoff.recordSuccessfulResponse()
+
+        // ── AC10: typed errors for non-200 (providers 07) ──
         guard httpResponse.statusCode == 200 else {
             throw CursorError.http(httpResponse.statusCode)
         }
@@ -114,12 +141,12 @@ public struct CursorProvider: AIProvider {
         let plan = normalizedPlan(from: response)
         var lines: [UsageLine] = []
 
-        // ── AC7: plan usage → percentage + reset UsageLines ──
+        // ── AC7: plan usage → percentage + reset UsageLines (providers 07) ──
         if let plan {
             lines.append(contentsOf: planLines(plan, resetDate: resetDate))
         }
 
-        // ── AC8: on-demand and pooled spend → currency UsageLines ──
+        // ── AC8: on-demand and pooled spend → currency UsageLines (providers 07) ──
         if let onDemand = normalizedOnDemand(from: response) {
             if let line = onDemandLine(onDemand) {
                 lines.append(line)
@@ -146,7 +173,7 @@ public struct CursorProvider: AIProvider {
         )
     }
 
-    // MARK: Plan usage lines (AC7)
+    // MARK: Plan usage lines (providers 07 AC7)
 
     private func planLines(_ plan: PlanData, resetDate: Date?) -> [UsageLine] {
         var lines: [UsageLine] = []
@@ -189,7 +216,7 @@ public struct CursorProvider: AIProvider {
         return lines
     }
 
-    // MARK: On-demand line (AC8)
+    // MARK: On-demand line (providers 07 AC8)
 
     private func onDemandLine(_ onDemand: OnDemandData) -> UsageLine? {
         // Absent or zero-limit on-demand produces no line (providers 07 AC8).
@@ -202,7 +229,7 @@ public struct CursorProvider: AIProvider {
         )
     }
 
-    // MARK: Pooled line (AC8)
+    // MARK: Pooled line (providers 07 AC8)
 
     private func pooledLine(_ spend: CursorSpendLimitUsage) -> UsageLine? {
         guard let limit = spend.pooledLimit, limit > 0 else { return nil }
@@ -216,7 +243,7 @@ public struct CursorProvider: AIProvider {
         )
     }
 
-    // MARK: Headline (AC9)
+    // MARK: Headline (providers 07 AC9)
 
     private func computeHeadline(
         response: CursorUsageResponse,
@@ -283,10 +310,12 @@ public struct CursorProvider: AIProvider {
         }
         return nil
     }
+}
 
-    // MARK: - Helpers
+// MARK: - Helpers
 
-    private static func currencyFormatter() -> NumberFormatter {
+private extension CursorProvider {
+    static func currencyFormatter() -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = "USD"
@@ -294,7 +323,7 @@ public struct CursorProvider: AIProvider {
     }
 
     /// Converts a unix-milliseconds string to `Date` (providers 07 Context).
-    private static func dateFromMsString(_ milliseconds: String?) -> Date? {
+    static func dateFromMsString(_ milliseconds: String?) -> Date? {
         guard let milliseconds, let epoch = TimeInterval(milliseconds) else { return nil }
         return Date(timeIntervalSince1970: epoch / 1000)
     }

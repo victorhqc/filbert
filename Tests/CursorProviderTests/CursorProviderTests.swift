@@ -4,65 +4,6 @@ import Foundation
 import XCTest
 
 final class CursorProviderTests: XCTestCase {
-    // MARK: - AC1: provider-owned glyph (providers 07)
-
-    func testProviderGlyphLoadsFromModuleResources() {
-        guard case let .asset(name, bundle) = CursorProvider.providerGlyph else {
-            return XCTFail("Expected an asset-backed provider glyph")
-        }
-
-        XCTAssertEqual(name, "ProviderGlyph")
-        XCTAssertNotNil(bundle.url(forResource: name, withExtension: "png"))
-        XCTAssertNotNil(bundle.url(forResource: "\(name)@2x", withExtension: "png"))
-    }
-
-    // MARK: - AC2b: external login prerequisite (providers 07)
-
-    func testSetupHelpPointsToCursorCLIAuthenticationDocs() throws {
-        let setupHelp = try XCTUnwrap(CursorProvider.setupHelp)
-        let registry = ProviderRegistry()
-        registry.register(CursorProvider())
-        let expectedURL = URL(string: "https://docs.cursor.com/en/cli/reference/authentication")
-
-        XCTAssertEqual(setupHelp.linkLabel, "Sign in to Cursor")
-        XCTAssertEqual(setupHelp.url, expectedURL)
-        XCTAssertEqual(registry.registeredProviders.first?.setupHelp, setupHelp)
-    }
-
-    // MARK: - AC10: setup state (providers 07)
-
-    func testSetupState_missingBinaryAndToken_showsInstallMessage() async {
-        let provider = makeProvider(token: nil, binaryExists: false)
-
-        XCTAssertEqual(CursorProvider.authShape, .apiKeyFree)
-        XCTAssertFalse(provider.isConfigured())
-        guard case let .setup(message) = await provider.currentSetupState() else {
-            return XCTFail("Expected setup state")
-        }
-        XCTAssertEqual(
-            message,
-            "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
-        )
-    }
-
-    func testSetupState_binaryPresentNoToken_showsSignInMessage() async {
-        let provider = makeProvider(token: nil, binaryExists: true)
-
-        XCTAssertTrue(provider.isConfigured())
-        guard case let .setup(message) = await provider.currentSetupState() else {
-            return XCTFail("Expected setup state")
-        }
-        XCTAssertEqual(message, "Sign in to Cursor")
-    }
-
-    func testSetupState_tokenPresent_isConfiguredWithNoSetupState() async {
-        let provider = makeProvider(token: CursorTestFixtures.tokenPair(valid: true), binaryExists: false)
-
-        XCTAssertTrue(provider.isConfigured())
-        let state = await provider.currentSetupState()
-        XCTAssertNil(state)
-    }
-
     // MARK: - AC6: authenticated Connect-RPC request shape (providers 07)
 
     func testFetchQuota_issuesCorrectRequest() async throws {
@@ -215,7 +156,10 @@ final class CursorProviderTests: XCTestCase {
         let provider = makeProvider(token: nil, binaryExists: true)
 
         await assertThrowsCursorError(.missingToken) {
-            try await provider.fetchQuota(auth: .apiKeyFree, baseURL: CursorProvider.baseURL)
+            _ = try await provider.fetchQuota(
+                auth: .apiKeyFree,
+                baseURL: CursorProvider.baseURL
+            )
         }
     }
 
@@ -225,7 +169,10 @@ final class CursorProviderTests: XCTestCase {
             MockURLProtocol.lastRequest = nil
 
             await assertThrowsCursorError(.http(code)) {
-                try await provider.fetchQuota(auth: .apiKeyFree, baseURL: CursorProvider.baseURL)
+                _ = try await provider.fetchQuota(
+                    auth: .apiKeyFree,
+                    baseURL: CursorProvider.baseURL
+                )
             }
         }
     }

@@ -38,7 +38,7 @@ final class CursorTokenStoreTests: XCTestCase {
     // MARK: - AC4: token loading order (providers 07)
 
     func testTokenStore_prefersKeychainBeforeSQLite() {
-        var sqliteReads: [String] = []
+        let sqliteReads = LockedBox<[String]>([])
 
         let store = CursorTokenStore(
             homeDirectory: "/test",
@@ -47,7 +47,7 @@ final class CursorTokenStoreTests: XCTestCase {
             },
             writeKeychain: { _, _, _ in },
             readSQLiteValue: { _, key in
-                sqliteReads.append(key)
+                sqliteReads.withValue { $0.append(key) }
                 return nil
             }
         )
@@ -58,7 +58,7 @@ final class CursorTokenStoreTests: XCTestCase {
         XCTAssertEqual(pair?.refreshToken, "keychain-refresh")
         XCTAssertEqual(pair?.source, .keychain)
         // SQLite must not be read when Keychain has the token.
-        XCTAssertTrue(sqliteReads.isEmpty)
+        XCTAssertTrue(sqliteReads.read().isEmpty)
     }
 
     func testTokenStore_fallsBackToSQLiteWhenKeychainEmpty() {
@@ -74,6 +74,25 @@ final class CursorTokenStoreTests: XCTestCase {
                     return "sqlite-refresh"
                 }
                 return nil
+            }
+        )
+
+        let pair = store.load()
+
+        XCTAssertEqual(pair?.accessToken, "sqlite-access")
+        XCTAssertEqual(pair?.refreshToken, "sqlite-refresh")
+        XCTAssertEqual(pair?.source, .sqlite)
+    }
+
+    func testTokenStore_fallsBackToSQLiteWhenKeychainPairIsIncomplete() {
+        let store = CursorTokenStore(
+            homeDirectory: "/test",
+            readKeychain: { _, account in
+                account == "cursor-access-token" ? "keychain-access" : nil
+            },
+            writeKeychain: { _, _, _ in },
+            readSQLiteValue: { _, key in
+                key == "cursorAuth/accessToken" ? "sqlite-access" : "sqlite-refresh"
             }
         )
 
@@ -111,7 +130,7 @@ final class CursorTokenStoreTests: XCTestCase {
     // MARK: - AC5: transparent refresh (providers 07)
 
     func testEnsureValidAccessToken_refreshesExpiredToken() async throws {
-        var writtenBack: String?
+        let writtenBack = LockedBox<String?>(nil)
         let session = CursorTestFixtures.mockSession(
             refreshBody: CursorTestFixtures.refreshResponse()
         )
@@ -122,7 +141,7 @@ final class CursorTokenStoreTests: XCTestCase {
             readKeychain: { _, _ in nil },
             writeKeychain: { _, account, value in
                 if account == "cursor-access-token" {
-                    writtenBack = value
+                    writtenBack.withValue { $0 = value }
                 }
             },
             readSQLiteValue: { _, _ in nil }
@@ -137,7 +156,7 @@ final class CursorTokenStoreTests: XCTestCase {
         let token = try await store.ensureValidAccessToken(pair)
 
         XCTAssertEqual(token, "fresh-access-token")
-        XCTAssertEqual(writtenBack, "fresh-access-token")
+        XCTAssertEqual(writtenBack.read(), "fresh-access-token")
     }
 
     func testEnsureValidAccessToken_keepsValidTokenWithoutRefresh() async throws {
@@ -185,7 +204,30 @@ final class CursorTokenStoreTests: XCTestCase {
         )
 
         await assertThrowsCursorError(.sessionExpired) {
-            try await store.ensureValidAccessToken(pair)
+            _ = try await store.ensureValidAccessToken(pair)
+        }
+    }
+
+    func testEnsureValidAccessToken_throwsSessionExpiredWhenAccessTokenIsMissing() async {
+        let session = CursorTestFixtures.mockSession(
+            refreshBody: Data(#"{"shouldLogout":false}"#.utf8)
+        )
+        let store = CursorTokenStore(
+            session: session,
+            homeDirectory: "/test",
+            readKeychain: { _, _ in nil },
+            writeKeychain: { _, _, _ in },
+            readSQLiteValue: { _, _ in nil }
+        )
+
+        let pair = CursorTokenPair(
+            accessToken: CursorTestFixtures.makeJWT(exp: 0),
+            refreshToken: "refresh",
+            source: .keychain
+        )
+
+        await assertThrowsCursorError(.sessionExpired) {
+            _ = try await store.ensureValidAccessToken(pair)
         }
     }
 
@@ -211,7 +253,7 @@ final class CursorTokenStoreTests: XCTestCase {
         )
 
         await assertThrowsCursorError(.clientIdRejected) {
-            try await store.ensureValidAccessToken(pair)
+            _ = try await store.ensureValidAccessToken(pair)
         }
     }
 
