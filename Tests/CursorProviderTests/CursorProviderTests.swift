@@ -221,10 +221,13 @@ final class CursorProviderTests: XCTestCase {
             environment: ["PATH": "/bin", "HOME": "/test"],
             isExecutable: { _ in binaryExists }
         )
+        let vault = TestCursorCredentialVault(fields: token.map {
+            ["accessToken": $0.accessToken, "refreshToken": $0.refreshToken]
+        })
         let tokenStore = CursorTokenStore(
+            vault: vault,
             homeDirectory: "/test",
-            readKeychain: { _, _ in token?.accessToken },
-            writeKeychain: { _, _, _ in },
+            readKeychain: { _, _ in nil },
             readSQLiteValue: { _, _ in nil }
         )
         return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
@@ -240,11 +243,15 @@ final class CursorProviderTests: XCTestCase {
             usageStatus: usageStatus,
             usageError: usageError
         )
+        let token = CursorTestFixtures.tokenPair(valid: true)
         let tokenStore = CursorTokenStore(
+            vault: TestCursorCredentialVault(fields: [
+                "accessToken": token.accessToken,
+                "refreshToken": token.refreshToken,
+            ]),
             session: session,
             homeDirectory: "/test",
-            readKeychain: { _, _ in CursorTestFixtures.tokenPair(valid: true).accessToken },
-            writeKeychain: { _, _, _ in },
+            readKeychain: { _, _ in nil },
             readSQLiteValue: { _, _ in nil }
         )
         let locator = CursorLocator(

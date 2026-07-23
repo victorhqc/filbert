@@ -48,6 +48,35 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
             XCTFail("Expected .notSupported, got \(error)")
         }
     }
+
+    func testCredentialImport_routesToProviderWithoutInspectingItsID() async throws {
+        let registry = ProviderRegistry()
+        let provider = FakeCredentialImportProvider()
+        registry.register(provider)
+
+        XCTAssertEqual(
+            registry.credentialImportActionTitle(for: FakeCredentialImportProvider.providerId),
+            "Import credentials"
+        )
+        try await registry.importCredentials(for: FakeCredentialImportProvider.providerId)
+
+        XCTAssertTrue(provider.importCalled)
+    }
+
+    func testCredentialImport_isUnavailableForDefaultProvider() async {
+        let registry = ProviderRegistry()
+        registry.register(FakeNonRefreshableProvider())
+
+        XCTAssertNil(registry.credentialImportActionTitle(for: FakeNonRefreshableProvider.providerId))
+        do {
+            try await registry.importCredentials(for: FakeNonRefreshableProvider.providerId)
+            XCTFail("Expected .notSupported")
+        } catch ProviderSetupError.notSupported {
+            // Expected.
+        } catch {
+            XCTFail("Expected .notSupported, got \(error)")
+        }
+    }
 }
 
 // MARK: - Test fixtures
@@ -55,9 +84,7 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
 /// A minimal `AIProvider` that also conforms to `ProactiveRefreshable`, so
 /// the registry can route `proactiveRefresh(for:)` to it. `class` so the
 /// `refreshCalled` flag can mutate through the registry's stored reference.
-private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshable,
-    @unchecked Sendable
-{
+private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshable, @unchecked Sendable {
     static let providerId = "fake-refreshable"
     static let providerName = "Fake Refreshable"
     static let providerDescription = "Test fixture"
@@ -98,5 +125,30 @@ private struct FakeNonRefreshableProvider: AIProvider {
             lines: [],
             lastUpdated: Date()
         )
+    }
+}
+
+private final class FakeCredentialImportProvider: AIProvider, @unchecked Sendable {
+    static let providerId = "fake-importing-provider"
+    static let providerName = "Fake Importing"
+    static let providerDescription = "Test fixture"
+    static let baseURL = URL(string: "https://example.com")!
+    static let authShape: ProviderAuth.Shape = .apiKeyFree
+    static let credentialImportActionTitle: String? = "Import credentials"
+
+    var importCalled = false
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        ProviderQuota(
+            providerId: Self.providerId,
+            providerName: Self.providerName,
+            headline: "fake",
+            lines: [],
+            lastUpdated: Date()
+        )
+    }
+
+    func importCredentials() async throws {
+        importCalled = true
     }
 }

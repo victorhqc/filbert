@@ -22,7 +22,8 @@ public final class ProviderRegistry {
                 disclaimer: type(of: provider).providerDisclaimer,
                 defaultBaseURL: type(of: provider).baseURL,
                 authShape: type(of: provider).authShape,
-                setupHelp: type(of: provider).setupHelp
+                setupHelp: type(of: provider).setupHelp,
+                credentialImportActionTitle: type(of: provider).credentialImportActionTitle
             )
         }
     }
@@ -155,6 +156,23 @@ public final class ProviderRegistry {
             throw ProviderSetupError.notSupported
         }
         try await provider.removeHelper()
+    }
+
+    // MARK: - Credential import (core 04)
+
+    /// Returns the provider-owned title for an explicit credential import,
+    /// or `nil` when the provider does not support one (core 04 AC7).
+    public func credentialImportActionTitle(for providerId: String) -> String? {
+        providers[providerId].map { type(of: $0).credentialImportActionTitle } ?? nil
+    }
+
+    /// Routes an explicit credential import without inspecting a provider ID
+    /// or provider-specific credential shape (core 04 AC7).
+    public func importCredentials(for providerId: String) async throws {
+        guard let provider = providers[providerId] else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.importCredentials()
     }
 
     // MARK: - Proactive refresh (providers 03)

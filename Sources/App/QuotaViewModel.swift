@@ -142,58 +142,6 @@ final class QuotaViewModel {
         }
     }
 
-    // MARK: - Auth shape helpers (ui 05 AC3/AC4)
-
-    /// Returns `true` when the provider's helper can be installed right now
-    /// (binary present, helper not yet installed) (ui 05 AC3/AC4).
-    func canInstallHelper(for providerId: String) -> Bool {
-        registry.canInstallHelper(for: providerId)
-    }
-
-    // MARK: - Helper management (ui 05 AC4/AC5)
-
-    /// Installs the provider's helper, updates state to `.loading` during the
-    /// operation, and starts auto-refresh + fetch on success (ui 05 AC4).
-    func installHelper(for providerId: String) async {
-        log("installHelper: provider=\(providerId)")
-        setState(.loading, for: providerId)
-        refreshDerived()
-        do {
-            try await registry.installHelper(for: providerId)
-            log("installHelper: provider=\(providerId) success")
-            startAutoRefresh(for: providerId)
-            performFetch(for: providerId)
-        } catch {
-            log("installHelper: provider=\(providerId) failed: \(error.localizedDescription)")
-            setState(.error(error.localizedDescription), for: providerId)
-            refreshDerived()
-        }
-    }
-
-    /// Removes the provider's helper, stops auto-refresh, and re-checks the
-    /// setup state (ui 05 AC5).
-    func removeHelper(for providerId: String) async {
-        log("removeHelper: provider=\(providerId)")
-        setState(.loading, for: providerId)
-        refreshDerived()
-        do {
-            try await registry.removeHelper(for: providerId)
-            log("removeHelper: provider=\(providerId) success")
-            stopAutoRefresh(for: providerId)
-            // Re-check setup state so the row shows the right post-removal state.
-            let states = await registry.refreshSetupStates()
-            if let newState = states[providerId] {
-                setState(newState, for: providerId)
-            } else {
-                setState(.setup(String(localized: "Helper removed")), for: providerId)
-            }
-        } catch {
-            log("removeHelper: provider=\(providerId) failed: \(error.localizedDescription)")
-            setState(.error(error.localizedDescription), for: providerId)
-        }
-        refreshDerived()
-    }
-
     // MARK: - Setup state refresh
 
     /// Fires `refreshSetupStates()` on the registry and merges the results
@@ -379,6 +327,77 @@ final class QuotaViewModel {
 
     private func log(_ message: @autoclosure () -> String) {
         FileHandle.standardError.write(Data("[QuotaViewModel] \(message())\n".utf8))
+    }
+}
+
+// MARK: - Setup actions
+
+extension QuotaViewModel {
+    /// Returns `true` when the provider's helper can be installed right now
+    /// (binary present, helper not yet installed) (ui 05 AC3/AC4).
+    func canInstallHelper(for providerId: String) -> Bool {
+        registry.canInstallHelper(for: providerId)
+    }
+
+    func credentialImportActionTitle(for providerId: String) -> String? {
+        registry.credentialImportActionTitle(for: providerId)
+    }
+
+    /// Installs the provider's helper, updates state to `.loading` during the
+    /// operation, and starts auto-refresh + fetch on success (ui 05 AC4).
+    func installHelper(for providerId: String) async {
+        log("installHelper: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
+        do {
+            try await registry.installHelper(for: providerId)
+            log("installHelper: provider=\(providerId) success")
+            startAutoRefresh(for: providerId)
+            performFetch(for: providerId)
+        } catch {
+            log("installHelper: provider=\(providerId) failed: \(error.localizedDescription)")
+            setState(.error(error.localizedDescription), for: providerId)
+            refreshDerived()
+        }
+    }
+
+    /// Removes the provider's helper, stops auto-refresh, and re-checks the
+    /// setup state (ui 05 AC5).
+    func removeHelper(for providerId: String) async {
+        log("removeHelper: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
+        do {
+            try await registry.removeHelper(for: providerId)
+            log("removeHelper: provider=\(providerId) success")
+            stopAutoRefresh(for: providerId)
+            let states = await registry.refreshSetupStates()
+            if let newState = states[providerId] {
+                setState(newState, for: providerId)
+            } else {
+                setState(.setup(String(localized: "Helper removed")), for: providerId)
+            }
+        } catch {
+            log("removeHelper: provider=\(providerId) failed: \(error.localizedDescription)")
+            setState(.error(error.localizedDescription), for: providerId)
+        }
+        refreshDerived()
+    }
+
+    func importCredentials(for providerId: String) async {
+        log("importCredentials: provider=\(providerId)")
+        setState(.loading, for: providerId)
+        refreshDerived()
+        do {
+            try await registry.importCredentials(for: providerId)
+            log("importCredentials: provider=\(providerId) success")
+            startAutoRefresh(for: providerId)
+            performFetch(for: providerId)
+        } catch {
+            log("importCredentials: provider=\(providerId) failed: \(error.localizedDescription)")
+            setState(.error(error.localizedDescription), for: providerId)
+            refreshDerived()
+        }
     }
 }
 

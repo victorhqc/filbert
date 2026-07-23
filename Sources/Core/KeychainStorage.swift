@@ -79,13 +79,25 @@ struct SecurityKeychainStorage: KeychainStorage {
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
         ]
-        SecItemDelete(base as CFDictionary)
-
-        var addQuery = base
-        addQuery[kSecValueData as String] = data
-        let status = SecItemAdd(addQuery as CFDictionary, nil)
-        guard status == errSecSuccess else {
-            throw KeychainStorageError.status(status)
+        let attributes: [String: Any] = [
+            kSecValueData as String: data,
+        ]
+        let updateStatus = SecItemUpdate(
+            base as CFDictionary,
+            attributes as CFDictionary
+        )
+        switch updateStatus {
+        case errSecSuccess:
+            return
+        case errSecItemNotFound:
+            var addQuery = base
+            addQuery[kSecValueData as String] = data
+            let addStatus = SecItemAdd(addQuery as CFDictionary, nil)
+            guard addStatus == errSecSuccess else {
+                throw KeychainStorageError.status(addStatus)
+            }
+        default:
+            throw KeychainStorageError.status(updateStatus)
         }
     }
 

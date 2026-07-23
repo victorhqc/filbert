@@ -11,9 +11,7 @@ public struct CursorProvider: AIProvider {
     public static let providerId = "cursor"
     public static let providerName = "Cursor"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(
-        localized: "Monitor subscription and on-demand spend"
-    )
+    public static let providerDescription = String(localized: "Monitor subscription and on-demand spend")
     public static let providerDisclaimer: String? = String(
         localized: "This provider uses undocumented Cursor endpoints and may stop working if Cursor changes them."
     )
@@ -53,12 +51,16 @@ public struct CursorProvider: AIProvider {
     // MARK: - Configuration (providers 07 AC10)
 
     public func isConfigured() -> Bool {
-        tokenStore.load() != nil || locator.resolve() != nil
+        (try? tokenStore.loadOrBootstrap()) != nil
     }
 
     public func currentSetupState() async -> ProviderState? {
-        if tokenStore.load() != nil {
-            return nil
+        do {
+            if try tokenStore.loadOrBootstrap() != nil {
+                return nil
+            }
+        } catch {
+            return .error(error.localizedDescription)
         }
 
         // No token — distinguish binary-present from binary-missing so the
@@ -71,12 +73,16 @@ public struct CursorProvider: AIProvider {
         ))
     }
 
+    public func importCredentials() async throws {
+        try tokenStore.reimport()
+    }
+
     // MARK: - Fetch (providers 07 AC5/AC6)
 
     public func fetchQuota(auth _: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
         try await rateLimitBackoff.checkRequestAllowed()
 
-        guard let pair = tokenStore.load() else {
+        guard let pair = try tokenStore.loadOrBootstrap() else {
             throw CursorError.missingToken
         }
 

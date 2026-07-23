@@ -28,6 +28,8 @@ public struct ProviderInfo: Sendable, Identifiable {
     public let authShape: ProviderAuth.Shape
     /// Optional documentation for providers with an external setup prerequisite.
     public let setupHelp: ProviderSetupHelp?
+    /// Optional title for an explicit provider-owned credential import action.
+    public let credentialImportActionTitle: String?
 
     public init(
         id: String,
@@ -37,7 +39,8 @@ public struct ProviderInfo: Sendable, Identifiable {
         disclaimer: String? = nil,
         defaultBaseURL: URL,
         authShape: ProviderAuth.Shape,
-        setupHelp: ProviderSetupHelp? = nil
+        setupHelp: ProviderSetupHelp? = nil,
+        credentialImportActionTitle: String? = nil
     ) {
         self.id = id
         self.displayName = displayName
@@ -47,5 +50,6 @@ public struct ProviderInfo: Sendable, Identifiable {
         self.defaultBaseURL = defaultBaseURL
         self.authShape = authShape
         self.setupHelp = setupHelp
+        self.credentialImportActionTitle = credentialImportActionTitle
     }
 }

@@ -24,8 +24,7 @@ enum CursorTestFixtures {
             : 0
         return CursorTokenPair(
             accessToken: valid ? "valid-access" : makeJWT(exp: exp),
-            refreshToken: "valid-refresh",
-            source: .keychain
+            refreshToken: "valid-refresh"
         )
     }
 
@@ -147,6 +146,83 @@ final class LockedBox<Value>: @unchecked Sendable {
     func withValue<Result>(_ body: (inout Value) -> Result) -> Result {
         lock.withLock {
             body(&value)
+        }
+    }
+}
+
+struct CursorCredentialVaultCounts {
+    let loads: Int
+    let saves: Int
+    let accessUpdates: Int
+}
+
+final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendable {
+    private let lock = NSLock()
+    private var fields: [String: String]?
+    private var shouldFailSave = false
+    private var loadCount = 0
+    private var saveCount = 0
+    private var accessTokenUpdateCount = 0
+
+    init(fields: [String: String]? = nil) {
+        self.fields = fields
+    }
+
+    func load() throws -> CursorTokenPair? {
+        try lock.withLock {
+            loadCount += 1
+            guard let fields else { return nil }
+            guard let accessToken = fields["accessToken"], !accessToken.isEmpty,
+                  let refreshToken = fields["refreshToken"], !refreshToken.isEmpty
+            else {
+                throw CursorCredentialVaultError.malformedRecord
+            }
+            return CursorTokenPair(accessToken: accessToken, refreshToken: refreshToken)
+        }
+    }
+
+    func save(_ pair: CursorTokenPair) throws {
+        try lock.withLock {
+            guard !shouldFailSave else {
+                throw CursorCredentialVaultError.keychain(.saveFailed(-1))
+            }
+            fields = [
+                "accessToken": pair.accessToken,
+                "refreshToken": pair.refreshToken,
+            ]
+            saveCount += 1
+        }
+    }
+
+    func replaceAccessToken(_ accessToken: String) throws {
+        try lock.withLock {
+            guard var fields,
+                  let refreshToken = fields["refreshToken"],
+                  !refreshToken.isEmpty
+            else {
+                throw CursorCredentialVaultError.malformedRecord
+            }
+            fields["accessToken"] = accessToken
+            self.fields = fields
+            accessTokenUpdateCount += 1
+        }
+    }
+
+    func setSaveFailure(_ enabled: Bool) {
+        lock.withLock { shouldFailSave = enabled }
+    }
+
+    func storedFields() -> [String: String]? {
+        lock.withLock { fields }
+    }
+
+    func counts() -> CursorCredentialVaultCounts {
+        lock.withLock {
+            CursorCredentialVaultCounts(
+                loads: loadCount,
+                saves: saveCount,
+                accessUpdates: accessTokenUpdateCount
+            )
         }
     }
 }

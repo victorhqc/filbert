@@ -36,6 +36,10 @@ final class CursorProviderMetadataTests: XCTestCase {
         )
     }
 
+    func testProviderExposesCredentialReimportAction() {
+        XCTAssertEqual(CursorProvider.credentialImportActionTitle, "Re-import Cursor credentials")
+    }
+
     // MARK: - AC10: setup state (providers 07)
 
     func testSetupState_missingBinaryAndToken_showsInstallMessage() async {
@@ -55,7 +59,7 @@ final class CursorProviderMetadataTests: XCTestCase {
     func testSetupState_binaryPresentNoToken_showsSignInMessage() async {
         let provider = makeProvider(token: nil, binaryExists: true)
 
-        XCTAssertTrue(provider.isConfigured())
+        XCTAssertFalse(provider.isConfigured())
         guard case let .setup(message) = await provider.currentSetupState() else {
             return XCTFail("Expected setup state")
         }
@@ -73,15 +77,45 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertNil(state)
     }
 
+    func testSetupState_failedSharedVaultSaveSurfacesKeychainError() async {
+        let vault = TestCursorCredentialVault()
+        vault.setSaveFailure(true)
+        let tokenStore = CursorTokenStore(
+            vault: vault,
+            homeDirectory: "/test",
+            readKeychain: { service, _ in
+                service == "cursor-access-token" ? "access" : "refresh"
+            },
+            readSQLiteValue: { _, _ in nil }
+        )
+        let provider = CursorProvider(
+            locator: CursorLocator(
+                environment: ["PATH": "/bin", "HOME": "/test"],
+                isExecutable: { _ in true }
+            ),
+            tokenStore: tokenStore,
+            session: .shared
+        )
+
+        XCTAssertFalse(provider.isConfigured())
+        guard case let .error(message) = await provider.currentSetupState() else {
+            return XCTFail("Expected Keychain error state")
+        }
+        XCTAssertEqual(message, "Unable to access saved Cursor credentials. Check Keychain access and try again.")
+    }
+
     private func makeProvider(token: CursorTokenPair?, binaryExists: Bool) -> CursorProvider {
         let locator = CursorLocator(
             environment: ["PATH": "/bin", "HOME": "/test"],
             isExecutable: { _ in binaryExists }
         )
+        let vault = TestCursorCredentialVault(fields: token.map {
+            ["accessToken": $0.accessToken, "refreshToken": $0.refreshToken]
+        })
         let tokenStore = CursorTokenStore(
+            vault: vault,
             homeDirectory: "/test",
-            readKeychain: { _, _ in token?.accessToken },
-            writeKeychain: { _, _, _ in },
+            readKeychain: { _, _ in nil },
             readSQLiteValue: { _, _ in nil }
         )
         return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
