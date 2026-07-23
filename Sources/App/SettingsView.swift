@@ -43,10 +43,10 @@ struct SettingsView: View {
                             state: state,
                             overrideURL: viewModel.overrideURL(for: provider.id),
                             onSaveKey: { key in
-                                try? viewModel.saveKey(key, for: provider.id)
+                                try viewModel.saveKey(key, for: provider.id)
                             },
                             onClearKey: {
-                                try? viewModel.deleteKey(for: provider.id)
+                                try viewModel.deleteKey(for: provider.id)
                             },
                             onSaveOverride: { url in
                                 try viewModel.saveOverrideURL(url, for: provider.id)
@@ -57,11 +57,15 @@ struct SettingsView: View {
                             provider: provider,
                             state: state,
                             canInstall: viewModel.canInstallHelper(for: provider.id),
+                            credentialImportActionTitle: viewModel.credentialImportActionTitle(for: provider.id),
                             onInstall: {
                                 Task { await viewModel.installHelper(for: provider.id) }
                             },
                             onRemove: {
                                 Task { await viewModel.removeHelper(for: provider.id) }
+                            },
+                            onImportCredentials: {
+                                Task { await viewModel.importCredentials(for: provider.id) }
                             }
                         )
                     }
@@ -85,11 +89,11 @@ private struct ProviderSettingsRow: View {
     let provider: ProviderInfo
     let state: ProviderState
     let overrideURL: URL?
-    let onSaveKey: (String) -> Void
-    let onClearKey: () -> Void
+    let onSaveKey: (String) throws -> Void
+    let onClearKey: () throws -> Void
     let onSaveOverride: (URL?) throws -> Void
 
-    @State private var apiKey: String = ""
+    @State private var apiKeyEntryState = APIKeyEntryState()
     @State private var advancedExpanded: Bool = false
     @State private var overrideInput: String = ""
     @State private var overrideErrorMessage: String?
@@ -102,15 +106,12 @@ private struct ProviderSettingsRow: View {
                 status: ProviderStatusPresentation.apiKey(state),
                 supplementaryLabel: overrideURL == nil ? nil : String(localized: "custom URL")
             )
-
             Divider()
-
             if isConfigured {
                 configuredContent
             } else {
                 keyEntry
             }
-
             advancedDisclosure
         }
     }
@@ -130,24 +131,29 @@ private struct ProviderSettingsRow: View {
                     .foregroundStyle(.secondary)
             }
         }
-
         Button(String(localized: "Clear Key"), role: .destructive) {
-            onClearKey()
+            clearKey()
         }
         .controlSize(.small)
     }
 
     private var keyEntry: some View {
-        HStack(spacing: 6) {
-            SecureField(String(localized: "API Key"), text: $apiKey)
-                .textFieldStyle(.roundedBorder)
-                .onSubmit { saveKeyIfValid() }
-
-            Button(String(localized: "Save")) {
-                saveKeyIfValid()
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(spacing: 6) {
+                SecureField(String(localized: "API Key"), text: apiKeyBinding)
+                    .textFieldStyle(.roundedBorder)
+                    .onSubmit { saveKeyIfValid() }
+                Button(String(localized: "Save")) {
+                    saveKeyIfValid()
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(apiKeyEntryState.input.isEmpty)
             }
-            .buttonStyle(.borderedProminent)
-            .disabled(apiKey.isEmpty)
+            if let errorMessage = apiKeyEntryState.errorMessage {
+                Text(errorMessage)
+                    .font(.caption)
+                    .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+            }
         }
         .controlSize(.regular)
     }
@@ -179,7 +185,6 @@ private struct ProviderSettingsRow: View {
             }
             .buttonStyle(.borderless)
             .controlSize(.small)
-
             if advancedExpanded {
                 overrideEditor
             }
@@ -197,7 +202,6 @@ private struct ProviderSettingsRow: View {
                     .foregroundColor(.secondary)
                     .textSelection(.enabled)
             }
-
             HStack(spacing: 6) {
                 TextField(
                     String(localized: "Custom base URL (proxy)"),
@@ -208,18 +212,15 @@ private struct ProviderSettingsRow: View {
                 .onChange(of: overrideInput) { _, _ in
                     overrideErrorMessage = nil
                 }
-
                 Button(String(localized: "Save")) {
                     saveOverride()
                 }
                 .buttonStyle(.borderedProminent)
-
                 Button(String(localized: "Reset")) {
                     resetOverride()
                 }
                 .disabled(overrideURL == nil)
             }
-
             if let overrideErrorMessage {
                 Text(overrideErrorMessage)
                     .font(.caption)
@@ -230,10 +231,18 @@ private struct ProviderSettingsRow: View {
     }
 
     private func saveKeyIfValid() {
-        let trimmed = apiKey.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !trimmed.isEmpty else { return }
-        onSaveKey(trimmed)
-        apiKey = ""
+        apiKeyEntryState.save(using: onSaveKey)
+    }
+
+    private func clearKey() {
+        apiKeyEntryState.clear(using: onClearKey)
+    }
+
+    private var apiKeyBinding: Binding<String> {
+        Binding(
+            get: { apiKeyEntryState.input },
+            set: { apiKeyEntryState.updateInput($0) }
+        )
     }
 
     private func saveOverride() {
@@ -277,8 +286,10 @@ private struct APIKeyFreeSettingsRow: View {
     let provider: ProviderInfo
     let state: ProviderState
     let canInstall: Bool
+    let credentialImportActionTitle: String?
     let onInstall: () -> Void
     let onRemove: () -> Void
+    let onImportCredentials: () -> Void
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -301,17 +312,23 @@ private struct APIKeyFreeSettingsRow: View {
                         .foregroundColor(.secondary)
                 }
             case let .setup(reason):
-                if canInstall {
-                    installPromptView(reason: reason)
-                } else {
-                    setupReasonView(reason: reason)
+                VStack(alignment: .leading, spacing: 8) {
+                    if canInstall {
+                        installPromptView(reason: reason)
+                    } else {
+                        setupReasonView(reason: reason)
+                    }
+                    credentialImportButton
                 }
             case .loaded:
                 removeHelperView
             case let .error(message):
-                Label(message, systemImage: "exclamationmark.triangle.fill")
-                    .font(.caption)
-                    .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+                VStack(alignment: .leading, spacing: 8) {
+                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+                    credentialImportButton
+                }
             case .unconfigured:
                 Text(String(localized: "Not configured"))
                     .font(.caption)
@@ -356,6 +373,16 @@ private struct APIKeyFreeSettingsRow: View {
                 .foregroundColor(.secondary)
 
             Spacer(minLength: 0)
+        }
+    }
+
+    @ViewBuilder
+    private var credentialImportButton: some View {
+        if let credentialImportActionTitle {
+            Button(credentialImportActionTitle) {
+                onImportCredentials()
+            }
+            .buttonStyle(.bordered)
         }
     }
 

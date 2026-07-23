@@ -123,6 +123,44 @@ default.
 Three providers read from a local session instead of an API key. Set those up
 below.
 
+## Security
+
+- API keys live as **Keychain generic-password items**. They are never written
+  to disk in plaintext and never logged.
+- Keys go **only to their own provider's API**, over HTTPS.
+- **No telemetry, no analytics, no remote logging.** The only outbound requests
+  are the provider API calls that fetch your usage.
+
+## Why macOS asks for your password
+
+<img src="assets/screenshots/password.png" alt="Asking Password" height="250">
+
+macOS may show a system dialog asking for your login password or Touch ID when
+Filbert saves or reads credentials. This is the Keychain doing its job — not the
+app.
+
+Filbert stores every API key and token in the **macOS Keychain**, the same
+encrypted store Safari and other Apple apps use for passwords. When an app reads
+or writes a Keychain item for the first time in a session, macOS asks you to
+unlock it. Think of it as the lock on a safe:
+
+- **Your credentials stay encrypted on disk** — only the Keychain can decrypt
+  them, and only after you approve it.
+- **No other app can read them** — the Keychain ties each item to the app that
+  created it. A random process on your machine cannot ask for Filbert's secrets.
+- **Filbert never sees the process** — the app asks the Keychain to store or
+  retrieve a value, and the Keychain handles encryption and access control
+  itself. Filbert never touches your password or Touch ID.
+
+You may see this prompt once per session after the app launches (when it loads
+your saved keys) and once when you save a new key in Settings. Cursor users see
+an additional prompt on first import because Filbert reads tokens that Cursor's
+own apps stored in the Keychain — again, macOS is granting your permission, not
+asking for a second set of credentials.
+
+**In short:** the prompt means your credentials are locked up tight. It is
+macOS protecting your secrets, not Filbert collecting them.
+
 ### OpenAI Codex setup
 
 *Only if you track Codex usage.*
@@ -240,14 +278,6 @@ touching the others or the core app.
 
 To add a provider, you implement one protocol and register it. No other files
 change.
-
-## Security
-
-- API keys live as **Keychain generic-password items**. They are never written
-  to disk in plaintext and never logged.
-- Keys go **only to their own provider's API**, over HTTPS.
-- **No telemetry, no analytics, no remote logging.** The only outbound requests
-  are the provider API calls that fetch your usage.
 
 ## Build from source
 

@@ -78,6 +78,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.authShape, .apiKeyFree)
         XCTAssertNil(info.disclaimer)
         XCTAssertNil(info.setupHelp)
+        XCTAssertNil(info.credentialImportActionTitle)
     }
 
     func testProviderInfo_authShapeDefaultsToApiKey_whenSetExplicitly() throws {
@@ -122,6 +123,15 @@ final class ProviderProtocolTests: XCTestCase {
         let info = try XCTUnwrap(registry.registeredProviders.first)
 
         XCTAssertEqual(info.disclaimer, DisclaimerProvider.providerDisclaimer)
+    }
+
+    func testRegistry_transportsCredentialImportActionTitle() throws {
+        let registry = ProviderRegistry()
+        registry.register(CredentialImportProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+
+        XCTAssertEqual(info.credentialImportActionTitle, CredentialImportProvider.credentialImportActionTitle)
     }
 
     func testRegistry_transportsProviderGlyph() throws {
@@ -201,4 +211,25 @@ private struct DisclaimerProvider: AIProvider {
             lastUpdated: Date()
         )
     }
+}
+
+private struct CredentialImportProvider: AIProvider {
+    static let providerId = "credential-import"
+    static let providerName = "Credential Import"
+    static let providerDescription = "Description"
+    static let baseURL = URL(string: "https://example.com")!
+    static let authShape: ProviderAuth.Shape = .apiKeyFree
+    static let credentialImportActionTitle: String? = "Import credentials"
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        ProviderQuota(
+            providerId: Self.providerId,
+            providerName: Self.providerName,
+            headline: "No data",
+            lines: [],
+            lastUpdated: Date()
+        )
+    }
+
+    func importCredentials() async throws {}
 }

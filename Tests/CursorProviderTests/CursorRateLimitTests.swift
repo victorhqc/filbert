@@ -11,11 +11,15 @@ final class CursorRateLimitTests: XCTestCase {
             usageStatus: 429,
             onUsage: { usageRequestCount.withValue { $0 += 1 } }
         )
+        let token = CursorTestFixtures.tokenPair(valid: true)
         let tokenStore = CursorTokenStore(
+            vault: TestCursorCredentialVault(fields: [
+                "accessToken": token.accessToken,
+                "refreshToken": token.refreshToken,
+            ]),
             session: session,
             homeDirectory: "/test",
-            readKeychain: { _, _ in CursorTestFixtures.tokenPair(valid: true).accessToken },
-            writeKeychain: { _, _, _ in },
+            readKeychain: { _, _ in nil },
             readSQLiteValue: { _, _ in nil }
         )
         let provider = CursorProvider(
@@ -45,16 +49,18 @@ final class CursorRateLimitTests: XCTestCase {
             refreshBody: Data()
         )
         let store = CursorTokenStore(
+            vault: TestCursorCredentialVault(fields: [
+                "accessToken": CursorTestFixtures.makeJWT(exp: 0),
+                "refreshToken": "refresh",
+            ]),
             session: session,
             homeDirectory: "/test",
             readKeychain: { _, _ in nil },
-            writeKeychain: { _, _, _ in },
             readSQLiteValue: { _, _ in nil }
         )
         let pair = CursorTokenPair(
             accessToken: CursorTestFixtures.makeJWT(exp: 0),
-            refreshToken: "refresh",
-            source: .keychain
+            refreshToken: "refresh"
         )
 
         await assertThrowsCursorError(.http(429)) {

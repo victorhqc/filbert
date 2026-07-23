@@ -211,6 +211,9 @@ public protocol AIProvider: Sendable {
     /// Optional, provider-supplied documentation for an external setup
     /// prerequisite (ui 13).
     static var setupHelp: ProviderSetupHelp? { get }
+    /// Localized title for a deliberate credential-import action. `nil` means
+    /// this provider has no external credential source (core 04 AC7).
+    static var credentialImportActionTitle: String? { get }
 
     // MARK: - Quota fetch
 
@@ -253,6 +256,10 @@ public protocol AIProvider: Sendable {
     /// Returns `false` for `.apiKey` providers and for `.apiKeyFree` providers
     /// whose binary is missing (ui 05 AC3/AC4).
     func canInstallHelper() -> Bool
+
+    /// Imports credentials from a provider-owned external source when the
+    /// user explicitly requests it (core 04 AC7).
+    func importCredentials() async throws
 }
 
 // MARK: - AIProvider defaults (core 03 AC3/AC5/AC6)
@@ -269,6 +276,10 @@ public extension AIProvider {
     }
 
     static var setupHelp: ProviderSetupHelp? {
+        nil
+    }
+
+    static var credentialImportActionTitle: String? {
         nil
     }
 
@@ -304,6 +315,10 @@ public extension AIProvider {
     func canInstallHelper() -> Bool {
         false
     }
+
+    func importCredentials() async throws {
+        throw ProviderSetupError.notSupported
+    }
 }
 
 /// Per-provider state the view model tracks (ui 02 Plan 2, core 03 AC6).
@@ -331,7 +346,7 @@ extension ProviderSetupError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .notSupported:
-            String(localized: "This provider does not support helper installation.")
+            String(localized: "This provider does not support this action.")
         }
     }
 }
