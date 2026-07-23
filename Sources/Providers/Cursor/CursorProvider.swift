@@ -16,7 +16,7 @@ public struct CursorProvider: AIProvider {
     )
     public static let baseURL = URL(string: "https://api2.cursor.sh")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
-    public static let setupHelp = ProviderSetupHelp(
+    public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
         linkLabel: String(localized: "Sign in to Cursor"),
         url: URL(string: "https://docs.cursor.com/en/cli/reference/authentication")!
     )

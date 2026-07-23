@@ -18,12 +18,15 @@ final class CursorProviderTests: XCTestCase {
 
     // MARK: - AC2b: external login prerequisite (providers 07)
 
-    func testSetupHelpPointsToCursorCLIAuthenticationDocs() {
-        XCTAssertEqual(CursorProvider.setupHelp.linkLabel, "Sign in to Cursor")
-        XCTAssertEqual(
-            CursorProvider.setupHelp.url,
-            URL(string: "https://docs.cursor.com/en/cli/reference/authentication")
-        )
+    func testSetupHelpPointsToCursorCLIAuthenticationDocs() throws {
+        let setupHelp = try XCTUnwrap(CursorProvider.setupHelp)
+        let registry = ProviderRegistry()
+        registry.register(CursorProvider())
+        let expectedURL = URL(string: "https://docs.cursor.com/en/cli/reference/authentication")
+
+        XCTAssertEqual(setupHelp.linkLabel, "Sign in to Cursor")
+        XCTAssertEqual(setupHelp.url, expectedURL)
+        XCTAssertEqual(registry.registeredProviders.first?.setupHelp, setupHelp)
     }
 
     // MARK: - AC10: setup state (providers 07)
