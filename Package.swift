@@ -34,6 +34,12 @@ let package = Package(
             path: "Sources/Providers/OpenAICodex",
             resources: [.process("Resources")]
         ),
+        .target(
+            name: "CursorProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/Cursor",
+            resources: [.process("Resources")]
+        ),
         .executableTarget(
             name: "App",
             dependencies: [
@@ -68,6 +74,11 @@ let package = Package(
             name: "OpenAICodexProviderTests",
             dependencies: ["OpenAICodexProvider"],
             path: "Tests/OpenAICodexProviderTests"
+        ),
+        .testTarget(
+            name: "CursorProviderTests",
+            dependencies: ["CursorProvider"],
+            path: "Tests/CursorProviderTests"
         ),
         .testTarget(
             name: "AppTests",
