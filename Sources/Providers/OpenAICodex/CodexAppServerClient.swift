@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 enum CodexAppServerError: Error, Equatable, Sendable {
     case launchFailed
@@ -81,15 +82,24 @@ struct CodexAppServerClient: Sendable {
             }
         }
 
+        // When the timeout fires it terminates the process, which also closes
+        // stdout and lets the reader task observe EOF. Both tasks then finish
+        // near-simultaneously, so `group.next()` can surface either error. The
+        // `didTimeOut` flag lets the reader defer to the timeout so `.timedOut`
+        // always wins that race rather than depending on scheduler ordering.
+        let didTimeOut = OSAllocatedUnfairLock(initialState: false)
+
         return try await withThrowingTaskGroup(of: CodexRateLimitReadResult.self) { group in
             group.addTask {
                 try await readResponse(
                     input: input.fileHandleForWriting,
-                    output: output.fileHandleForReading
+                    output: output.fileHandleForReading,
+                    didTimeOut: didTimeOut
                 )
             }
             group.addTask {
                 try await Task.sleep(for: .seconds(timeout))
+                didTimeOut.withLock { value in value = true }
                 if process.isRunning {
                     process.terminate()
                 }
@@ -106,7 +116,8 @@ struct CodexAppServerClient: Sendable {
 
     private func readResponse(
         input: FileHandle,
-        output: FileHandle
+        output: FileHandle,
+        didTimeOut: OSAllocatedUnfairLock<Bool>
     ) async throws -> CodexRateLimitReadResult {
         try write(
             JSONRPCRequest(
@@ -160,6 +171,9 @@ struct CodexAppServerClient: Sendable {
             }
         }
 
+        if didTimeOut.withLock({ value in value }) {
+            throw CodexAppServerError.timedOut
+        }
         throw CodexAppServerError.childExited
     }
 
