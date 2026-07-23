@@ -39,6 +39,25 @@ final class ClaudeCodeProviderTests: XCTestCase {
         )
     }
 
+    func testProvider_suppliesOfficialCLISetupHelp() throws {
+        let setupHelp = try XCTUnwrap(ClaudeCodeProvider.setupHelp)
+
+        XCTAssertEqual(setupHelp.linkLabel, "Install Claude Code")
+        XCTAssertEqual(
+            setupHelp.url,
+            URL(string: "https://docs.claude.com/en/docs/claude-code/overview")
+        )
+    }
+
+    func testProvider_transportsSetupHelpThroughRegistry() throws {
+        let registry = ProviderRegistry()
+        registry.register(ClaudeCodeProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+
+        XCTAssertEqual(info.setupHelp, try XCTUnwrap(ClaudeCodeProvider.setupHelp))
+    }
+
     // MARK: - AC3: isConfigured does not touch Keychain
 
     func testIsConfigured_trueWhenBinaryFoundAndHelperInstalled() {

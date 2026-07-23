@@ -298,6 +298,35 @@
         }
       }
     },
+    "Install Claude Code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install Claude Code"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code installieren"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar Claude Code"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar Claude Code"
+          }
+        }
+      }
+    },
     "Install Codex CLI" : {
       "extractionState" : "manual",
       "localizations" : {

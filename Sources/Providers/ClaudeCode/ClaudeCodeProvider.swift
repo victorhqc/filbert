@@ -56,6 +56,10 @@ public struct ClaudeCodeProvider: AIProvider {
     /// Placeholder — this provider never makes network calls (providers 02 AC2).
     public static let baseURL = URL(string: "https://api.anthropic.com")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
+    public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
+        linkLabel: String(localized: "Install Claude Code"),
+        url: URL(string: "https://docs.claude.com/en/docs/claude-code/overview")!
+    )
 
     /// Cache freshness threshold before `isStale` flips to `true`
     /// (providers 02 AC10).
