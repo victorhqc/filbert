@@ -65,6 +65,14 @@ struct SettingsView: View {
                             }
                         )
                     }
+
+                    if let disclaimer = provider.disclaimer {
+                        Divider()
+                        Label(disclaimer, systemImage: "info.circle")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
                 }
             }
         }

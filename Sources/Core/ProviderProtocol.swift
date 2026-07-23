@@ -95,9 +95,9 @@ public struct PeakHoursConfig: Sendable {
     /// True iff `date`, interpreted in `timeZone`, falls in
     /// `[peakStartHour, peakEndHour)`.
     public func isInPeak(at date: Date) -> Bool {
-        guard let tz = timeZone else { return false }
+        guard let timeZone else { return false }
         var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = tz
+        cal.timeZone = timeZone
         let hour = cal.component(.hour, from: date)
         return hour >= peakStartHour && hour < peakEndHour
     }
@@ -198,6 +198,9 @@ public protocol AIProvider: Sendable {
     static var providerGlyph: ProviderGlyph { get }
     /// Short, localized description shown in the Settings provider list (ui 02).
     static var providerDescription: String { get }
+    /// Optional localized notice shown in Settings for providers that require
+    /// an explicit caveat about their integration.
+    static var providerDisclaimer: String? { get }
     /// Production host root for this provider, e.g.
     /// `URL(string: "https://api.z.ai")!` (core 02 AC1). Path segments stay
     /// inside `fetchQuota`.
@@ -269,6 +272,10 @@ public extension AIProvider {
         nil
     }
 
+    static var providerDisclaimer: String? {
+        nil
+    }
+
     /// Defaults to `true` — only correct for `.apiKey` providers. The
     /// registry routes `.apiKey` providers through the Keychain path and
     /// never calls this (core 03 AC5).
@@ -296,51 +303,6 @@ public extension AIProvider {
     /// installable helper override this.
     func canInstallHelper() -> Bool {
         false
-    }
-}
-
-/// Metadata about a registered provider, surfaced by the registry (ui 02 Plan 1).
-public struct ProviderSetupHelp: Sendable, Equatable {
-    public let linkLabel: String
-    public let url: URL
-
-    public init(linkLabel: String, url: URL) {
-        self.linkLabel = linkLabel
-        self.url = url
-    }
-}
-
-public struct ProviderInfo: Sendable, Identifiable {
-    public let id: String
-    public let displayName: String
-    public let glyph: ProviderGlyph
-    public let description: String
-    /// Production host root the provider hits when no override is set (core 02).
-    /// Surfaced so the Settings UI can show what the user would be overriding
-    /// (ui 03 Plan 3).
-    public let defaultBaseURL: URL
-    /// Payload-free discriminator so the App layer can dispatch row variants
-    /// without inspecting a provider ID string (ui 05 AC1).
-    public let authShape: ProviderAuth.Shape
-    /// Optional documentation for providers with an external setup prerequisite.
-    public let setupHelp: ProviderSetupHelp?
-
-    public init(
-        id: String,
-        displayName: String,
-        glyph: ProviderGlyph = .sfSymbol("cpu"),
-        description: String,
-        defaultBaseURL: URL,
-        authShape: ProviderAuth.Shape,
-        setupHelp: ProviderSetupHelp? = nil
-    ) {
-        self.id = id
-        self.displayName = displayName
-        self.glyph = glyph
-        self.description = description
-        self.defaultBaseURL = defaultBaseURL
-        self.authShape = authShape
-        self.setupHelp = setupHelp
     }
 }
 

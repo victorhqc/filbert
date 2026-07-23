@@ -40,6 +40,7 @@ It is a real macOS app, built to stay out of your way:
 | Claude       | ✅ Done¹  | Claude Code plan usage via the `claude` CLI     |
 | DeepSeek     | ✅ Done   | Prepaid balance — total, granted, topped-up     |
 | OpenAI Codex | ✅ Done²  | Subscription usage via the local `codex` CLI    |
+| Cursor       | ✅ Done³  | Subscription + on-demand spend via local token  |
 | Moonshot     | Planned   | API usage, token consumption                    |
 
 > ¹ Claude reads usage from the **Claude Code CLI**. See
@@ -47,6 +48,9 @@ It is a real macOS app, built to stay out of your way:
 >
 > ² OpenAI Codex reads usage from the local **Codex CLI**. See
 > [OpenAI Codex setup](#openai-codex-setup) below.
+>
+> ³ Cursor reads usage from your local Cursor session token. See
+> [Cursor setup](#cursor-setup) below.
 
 You only add the platforms you use. The menu bar, popover, and widgets adapt to
 whatever you configure.
@@ -108,7 +112,8 @@ provider. Enter its API key. The key goes straight into the Keychain. From then
 on the app refreshes usage on its own — one refresh every five minutes by
 default.
 
-Two providers read from a local CLI instead of an API key. Set those up below.
+Three providers read from a local session instead of an API key. Set those up
+below.
 
 ### OpenAI Codex setup
 
@@ -126,6 +131,29 @@ Run `codex` from a project directory and choose **Sign in with ChatGPT** on
 first launch. Filbert does not read, store, or manage your Codex credentials.
 For other install methods and troubleshooting, see the
 [official Codex CLI docs](https://developers.openai.com/codex/cli/).
+
+### Cursor setup
+
+*Only if you track Cursor usage.*
+
+The Cursor provider reads subscription and on-demand spend from your local
+Cursor session token. It does not read from the Cursor website. You never enter
+a key — Filbert finds the token that Cursor's own apps already stored on your
+machine.
+
+**Make sure you are signed in to Cursor.** The provider reads tokens from two
+places, tried in order:
+
+1. **Keychain** — service `cursor-agent`, accounts `cursor-access-token` and
+   `cursor-refresh-token`. Populated by `agent login` (the Cursor CLI).
+2. **SQLite** — Cursor Desktop's `state.vscdb`. Populated when you sign into
+   the Cursor desktop app.
+
+No manual setup is needed. If you're signed into the Cursor desktop app or have
+run `agent login`, Filbert picks up the token on the next refresh.
+
+> **This provider uses undocumented Cursor endpoints.** It may stop working if
+> Cursor changes their API.
 
 ### Claude Code setup
 
@@ -238,8 +266,8 @@ scripts/build-dmg.sh --version 0.1.0 --no-sign
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
-Claude, DeepSeek, and OpenAI Codex providers are in place. The app builds and
-runs as a menu-bar item. More providers and widgets come next.
+Claude, DeepSeek, OpenAI Codex, and Cursor providers are in place. The app
+builds and runs as a menu-bar item. More providers and widgets come next.
 
 See [`specs/`](specs/) for the spec files that drive the work.
 
