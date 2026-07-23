@@ -48,6 +48,7 @@ let package = Package(
                 "ClaudeCodeProvider",
                 "DeepSeekProvider",
                 "OpenAICodexProvider",
+                "CursorProvider",
             ],
             resources: [.process("Resources")]
         ),

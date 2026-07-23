@@ -97,9 +97,9 @@ implementation** that wires the assets from Phase 1 into a live provider.
   PNGs and the String Catalog so a designer/translator pass can land
   independently of the Swift work. Ends with a compiling package that adds the
   `CursorProvider` target shell but does not register it in `AppMain`.
-- **Phase 2 — Code implementation (AC4–AC10).** Implements token loading,
+- **Phase 2 — Code implementation (AC4–AC12).** Implements token loading,
   refresh, the `GetCurrentPeriodUsage` call, decoding, mapping to
-  `ProviderQuota`, and registration in `AppMain`.
+  `ProviderQuota`, and registration in `AppMain. [x] implemented.
 
 ## Acceptance Criteria
 
@@ -309,11 +309,17 @@ implementation** that wires the assets from Phase 1 into a live provider.
 5. **`CursorTokenStore` (Phase 2).** Read tokens in order:
    Keychain (`cursor-agent` service) → SQLite
    (`~/Library/Application Support/Cursor/User/globalStorage/state.vscdb`).
-   Use the existing `Keychain` helper in `Sources/Core/Keychain.swift` for the
-   Keychain path and a read-only `SQLite3` open for the SQLite path. Decode the
-   JWT `exp` without a third-party JWT library (base64url-decode the payload,
-   read `exp`). `ensureValidAccessToken()` POSTs to `/oauth/token` and writes
-   the refreshed access token back to the source it came from.
+   **Implementation note:** Core's `Keychain` class is filbert's own
+   consolidated store (service `filbert`), not usable for reading Cursor's
+   `cursor-agent` entries. Direct `SecItemCopyMatching` calls are used
+   instead, with an injectable closure for testing. A read-only `SQLite3`
+   open is used for the SQLite path. Decode the JWT `exp` without a
+   third-party JWT library (base64url-decode the payload, read `exp`).
+   `ensureValidAccessToken()` POSTs to `/oauth/token` and writes the
+   refreshed access token back to the Keychain source only (SQLite-sourced
+   tokens refresh in-memory — see Risks). When `exp` cannot be decoded
+   (non-JWT token), the token is used as-is rather than refreshing
+   speculatively.
 
 6. **`CursorAuth` + `CursorError`.** `CursorAuth` is a tiny file holding the
    first-party `client_id` constant
@@ -395,7 +401,8 @@ No production code is written until this spec is reviewed.
   back to Cursor's `state.vscdb` while the desktop app may have it open risks
   a write conflict. Preferred approach: only write back to the Keychain
   source; if the token was loaded from SQLite, refresh in-memory and do not
-  persist (the next `agent login` or app restart re-syncs). Flag for review.
+  persist (the next `agent login` or app restart re-syncs). **[x] implemented
+  this way** — SQLite-sourced tokens refresh in-memory only.
 - **Rate limits unknown.** Cursor does not document rate limits for
   `api2.cursor.sh`. The default 5-minute refresh interval (AGENTS.md §3) is
   conservative enough, but a 429 must back off exponentially per

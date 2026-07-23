@@ -1,5 +1,6 @@
 import ClaudeCodeProvider
 import Core
+import CursorProvider
 import DeepSeekProvider
 import OpenAICodexProvider
 import SwiftUI
@@ -17,6 +18,7 @@ struct AppMain: App {
         registry.register(ClaudeCodeProvider())
         registry.register(DeepSeekProvider())
         registry.register(OpenAICodexProvider())
+        registry.register(CursorProvider())
         do {
             try LegacyBrandMigration.migratePreferences(
                 providerIds: registry.registeredProviders.map(\.id)
