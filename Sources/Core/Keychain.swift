@@ -71,7 +71,10 @@ public final class Keychain: @unchecked Sendable {
     public func load(for providerId: String) throws -> String {
         lock.lock()
         defer { lock.unlock() }
-        guard let key = try loadedStore()[providerId]?["value"] else {
+        let authenticationContext = KeychainAuthenticationContext()
+        guard let key = try loadedStore(
+            authenticationContext: authenticationContext
+        )[providerId]?["value"] else {
             throw KeychainError.loadFailed(errSecItemNotFound)
         }
         return key
@@ -88,7 +91,10 @@ public final class Keychain: @unchecked Sendable {
     public func loadFields(for providerId: String) throws -> [String: String] {
         lock.lock()
         defer { lock.unlock() }
-        guard let fields = try loadedStore()[providerId] else {
+        let authenticationContext = KeychainAuthenticationContext()
+        guard let fields = try loadedStore(
+            authenticationContext: authenticationContext
+        )[providerId] else {
             throw KeychainError.loadFailed(errSecItemNotFound)
         }
         return fields
@@ -97,16 +103,20 @@ public final class Keychain: @unchecked Sendable {
     public func delete(for providerId: String) throws {
         try mutateStore { $0.removeValue(forKey: providerId) }
     }
+}
 
+private extension Keychain {
     // MARK: - Store access (all callers hold `lock`)
 
     /// Returns the cached store, loading it from the keychain — migrating any
     /// legacy per-provider items — on first use.
-    private func loadedStore() throws -> [String: [String: String]] {
+    private func loadedStore(
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> [String: [String: String]] {
         if let cache {
             return cache
         }
-        let loaded = try readStore()
+        let loaded = try readStore(authenticationContext: authenticationContext)
         cache = loaded.store
         cachedData = loaded.data
         return loaded.store
@@ -116,17 +126,28 @@ public final class Keychain: @unchecked Sendable {
     private func mutateStore(_ transform: (inout [String: [String: String]]) -> Void) throws {
         lock.lock()
         defer { lock.unlock() }
-        var store = try loadedStore()
+        let authenticationContext = KeychainAuthenticationContext()
+        var store = try loadedStore(authenticationContext: authenticationContext)
         transform(&store)
-        let data = try writeStore(store, previousData: cachedData)
+        let data = try writeStore(
+            store,
+            previousData: cachedData,
+            authenticationContext: authenticationContext
+        )
         cache = store
         cachedData = data
     }
 
-    private func readStore() throws -> LoadedStore {
+    private func readStore(
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> LoadedStore {
         let current: ConsolidatedStore?
         do {
-            if let data = try storage.readData(service: service, account: account) {
+            if let data = try storage.readData(
+                service: service,
+                account: account,
+                authenticationContext: authenticationContext
+            ) {
                 current = try decodeStore(data, error: .loadFailed(errSecDecode))
             } else {
                 current = nil
@@ -135,54 +156,64 @@ public final class Keychain: @unchecked Sendable {
             throw KeychainError.loadFailed(error.status)
         }
 
-        return try migrateStore(current: current)
+        if let current, !current.isLegacy {
+            return LoadedStore(store: current.store, data: current.data)
+        }
+        return try migrateStore(
+            current: current,
+            authenticationContext: authenticationContext
+        )
     }
 
     private func writeStore(
         _ store: [String: [String: String]],
-        previousData: Data?
+        previousData: Data?,
+        authenticationContext: KeychainAuthenticationContext
     ) throws -> Data {
         let data = try JSONEncoder().encode(store)
         try replaceAndVerify(
             data,
             previousData: previousData,
+            authenticationContext: authenticationContext,
             errorFactory: { .saveFailed($0) }
         )
         return data
     }
 
-    private func migrateStore(current: ConsolidatedStore?) throws -> LoadedStore {
+    private func migrateStore(
+        current: ConsolidatedStore?,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> LoadedStore {
         var migrated: [String: [String: String]] = [:]
         var itemsToDelete: [(service: String, account: String)] = []
         var requiresWrite = current?.isLegacy ?? false
 
         if let previousService {
-            let previousItems = try migrationItems(service: previousService)
-            migrated.merge(previousItems.store) { _, latest in latest }
-            itemsToDelete.append(contentsOf: previousItems.accounts.map {
-                (previousService, $0)
-            })
-            requiresWrite = requiresWrite || !previousItems.accounts.isEmpty
+            let previousHasItems = try mergeMigrationItems(
+                service: previousService,
+                into: &migrated,
+                itemsToDelete: &itemsToDelete,
+                authenticationContext: authenticationContext
+            )
+            requiresWrite = requiresWrite || previousHasItems
 
-            do {
-                if let data = try storage.readData(service: previousService, account: account) {
-                    let consolidated = try decodeStore(
-                        data,
-                        error: .migrationFailed(errSecDecode)
-                    )
-                    migrated.merge(consolidated.store) { _, latest in latest }
-                    itemsToDelete.append((previousService, account))
-                    requiresWrite = true
-                }
-            } catch let error as KeychainStorageError {
-                throw KeychainError.migrationFailed(error.status)
+            if let consolidated = try legacyConsolidatedStore(
+                service: previousService,
+                authenticationContext: authenticationContext
+            ) {
+                migrated.merge(consolidated.store) { _, latest in latest }
+                itemsToDelete.append((previousService, account))
+                requiresWrite = true
             }
         }
 
-        let currentItems = try migrationItems(service: service)
-        migrated.merge(currentItems.store) { _, latest in latest }
-        itemsToDelete.append(contentsOf: currentItems.accounts.map { (service, $0) })
-        requiresWrite = requiresWrite || !currentItems.accounts.isEmpty
+        let currentHasItems = try mergeMigrationItems(
+            service: service,
+            into: &migrated,
+            itemsToDelete: &itemsToDelete,
+            authenticationContext: authenticationContext
+        )
+        requiresWrite = requiresWrite || currentHasItems
 
         if let current {
             migrated.merge(current.store) { _, latest in latest }
@@ -196,55 +227,120 @@ public final class Keychain: @unchecked Sendable {
         try replaceAndVerify(
             data,
             previousData: current?.data,
+            authenticationContext: authenticationContext,
             errorFactory: { .migrationFailed($0) }
         )
         for item in itemsToDelete {
-            storage.delete(service: item.service, account: item.account)
+            storage.delete(
+                service: item.service,
+                account: item.account,
+                authenticationContext: authenticationContext
+            )
         }
         return LoadedStore(store: migrated, data: data)
+    }
+
+    private func mergeMigrationItems(
+        service: String,
+        into migrated: inout [String: [String: String]],
+        itemsToDelete: inout [(service: String, account: String)],
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> Bool {
+        let items = try migrationItems(
+            service: service,
+            authenticationContext: authenticationContext
+        )
+        migrated.merge(items.store) { _, latest in latest }
+        itemsToDelete.append(contentsOf: items.accounts.map { (service, $0) })
+        return !items.accounts.isEmpty
+    }
+
+    private func legacyConsolidatedStore(
+        service: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> ConsolidatedStore? {
+        do {
+            guard let data = try storage.readData(
+                service: service,
+                account: account,
+                authenticationContext: authenticationContext
+            ) else {
+                return nil
+            }
+            return try decodeStore(data, error: .migrationFailed(errSecDecode))
+        } catch let error as KeychainStorageError {
+            throw KeychainError.migrationFailed(error.status)
+        }
     }
 
     private func replaceAndVerify(
         _ data: Data,
         previousData: Data?,
+        authenticationContext: KeychainAuthenticationContext,
         errorFactory: (OSStatus) -> KeychainError
     ) throws {
         var replaced = false
         do {
-            try storage.replaceData(data, service: service, account: account)
+            try storage.replaceData(
+                data,
+                service: service,
+                account: account,
+                authenticationContext: authenticationContext
+            )
             replaced = true
-            guard let verified = try storage.readData(service: service, account: account),
-                  verified == data
+            guard let verified = try storage.readData(
+                service: service,
+                account: account,
+                authenticationContext: authenticationContext
+            ),
+                verified == data
             else {
                 throw KeychainError.saveFailed(errSecVerifyFailed)
             }
         } catch let storageError as KeychainStorageError {
             if replaced {
-                restore(previousData)
+                restore(previousData, authenticationContext: authenticationContext)
             }
             throw errorFactory(storageError.status)
         } catch {
             if replaced {
-                restore(previousData)
+                restore(previousData, authenticationContext: authenticationContext)
             }
             throw errorFactory(errSecVerifyFailed)
         }
     }
 
-    private func restore(_ previousData: Data?) {
+    private func restore(
+        _ previousData: Data?,
+        authenticationContext: KeychainAuthenticationContext
+    ) {
         if let previousData {
-            try? storage.replaceData(previousData, service: service, account: account)
+            try? storage.replaceData(
+                previousData,
+                service: service,
+                account: account,
+                authenticationContext: authenticationContext
+            )
         } else {
-            storage.delete(service: service, account: account)
+            storage.delete(
+                service: service,
+                account: account,
+                authenticationContext: authenticationContext
+            )
         }
     }
 
     private func migrationItems(
-        service: String
+        service: String,
+        authenticationContext: KeychainAuthenticationContext
     ) throws -> (store: [String: [String: String]], accounts: [String]) {
         let items: [StoredKeychainItem]
         do {
-            items = try storage.readItems(service: service)
+            items = try storage.readLegacyItems(
+                service: service,
+                accountPrefix: legacyAccountPrefix,
+                authenticationContext: authenticationContext
+            )
         } catch let error as KeychainStorageError {
             throw KeychainError.migrationFailed(error.status)
         }

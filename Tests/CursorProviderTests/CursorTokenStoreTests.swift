@@ -66,6 +66,59 @@ final class CursorTokenBootstrapTests: XCTestCase {
         )
     }
 
+    func testBootstrapReusesOneAuthenticationContextForKeychainPair() throws {
+        let vault = TestCursorCredentialVault()
+        let contexts = LockedBox(Set<ObjectIdentifier>())
+        let store = CursorTokenStore(
+            vault: vault,
+            homeDirectory: "/test",
+            readKeychainWithContext: { service, _, authenticationContext in
+                _ = contexts.withValue {
+                    $0.insert(ObjectIdentifier(authenticationContext))
+                }
+                return service == "cursor-access-token" ? "access" : "refresh"
+            },
+            readSQLiteValue: { _, _ in nil }
+        )
+
+        XCTAssertEqual(
+            try store.loadOrBootstrap(),
+            CursorTokenPair(accessToken: "access", refreshToken: "refresh")
+        )
+        XCTAssertEqual(contexts.read().count, 1)
+    }
+
+    func testKeychainAccessFailureStopsLaterLayoutsAndSQLiteFallback() {
+        let vault = TestCursorCredentialVault()
+        let keychainServices = LockedBox([String]())
+        let sqliteReads = LockedBox(0)
+        let store = CursorTokenStore(
+            vault: vault,
+            homeDirectory: "/test",
+            readKeychainWithContext: { service, _, _ in
+                keychainServices.withValue { $0.append(service) }
+                throw CursorExternalCredentialError.keychain(errSecAuthFailed)
+            },
+            readSQLiteValue: { _, _ in
+                sqliteReads.withValue { $0 += 1 }
+                return nil
+            }
+        )
+
+        XCTAssertThrowsError(try store.loadOrBootstrap()) { error in
+            XCTAssertEqual(
+                error as? CursorExternalCredentialError,
+                .keychain(errSecAuthFailed)
+            )
+        }
+        XCTAssertEqual(keychainServices.read(), ["cursor-access-token"])
+        XCTAssertEqual(sqliteReads.read(), 0)
+
+        XCTAssertThrowsError(try store.loadOrBootstrap())
+        XCTAssertEqual(keychainServices.read(), ["cursor-access-token"])
+        XCTAssertEqual(sqliteReads.read(), 0)
+    }
+
     func testBootstrapFallsBackToSQLiteAfterIncompleteKeychainPair() throws {
         let vault = TestCursorCredentialVault()
         let store = makeStore(

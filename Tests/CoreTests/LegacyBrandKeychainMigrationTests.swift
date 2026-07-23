@@ -45,6 +45,49 @@ final class LegacyBrandKeychainMigrationTests: XCTestCase {
         XCTAssertEqual(try keychain.load(for: "zai"), "current-key")
     }
 
+    func testMigrationReadsSecretDataOnlyForLegacyProviderAccounts() throws {
+        let storage = InMemoryKeychainStorage()
+        storage.items[previousService] = [
+            "provider-zai": Data("zai-key".utf8),
+            "unrelated": Data("unrelated-secret".utf8),
+        ]
+        let keychain = makeKeychain(storage: storage)
+
+        XCTAssertEqual(try keychain.load(for: "zai"), "zai-key")
+        XCTAssertEqual(
+            storage.legacyDataReadRequests,
+            [LegacyDataReadRequest(service: previousService, account: "provider-zai")]
+        )
+    }
+
+    func testMigrationReusesOneAuthenticationContext() throws {
+        let storage = InMemoryKeychainStorage()
+        storage.items[previousService] = ["provider-zai": Data("zai-key".utf8)]
+        let keychain = makeKeychain(storage: storage)
+
+        XCTAssertEqual(try keychain.load(for: "zai"), "zai-key")
+        XCTAssertEqual(storage.authenticationContextIdentifiers.count, 1)
+    }
+
+    func testStructuredStoreBypassesLegacyMigration() throws {
+        let storage = InMemoryKeychainStorage()
+        storage.items[currentService] = try [
+            "providers": JSONEncoder().encode(["zai": ["value": "zai-key"]]),
+        ]
+        storage.items[previousService] = ["provider-deepseek": Data("legacy-key".utf8)]
+        storage.legacyItemReadError = errSecAuthFailed
+        let keychain = makeKeychain(storage: storage)
+
+        XCTAssertEqual(try keychain.load(for: "zai"), "zai-key")
+        try keychain.save("deepseek-key", for: "deepseek")
+
+        XCTAssertTrue(storage.legacyItemLookupServices.isEmpty)
+        XCTAssertEqual(
+            try keychain.load(for: "deepseek"),
+            "deepseek-key"
+        )
+    }
+
     func testMigrationFailureLeavesPreviousItemsIntact() throws {
         let storage = InMemoryKeychainStorage()
         let previousData = try JSONEncoder().encode(["zai": "secret-key"])
@@ -61,6 +104,21 @@ final class LegacyBrandKeychainMigrationTests: XCTestCase {
                 $0.service == previousService && $0.account == "providers"
             }
         )
+    }
+
+    func testDeniedLegacyReadLeavesEveryItemIntact() {
+        let storage = InMemoryKeychainStorage()
+        let legacyData = Data("legacy-key".utf8)
+        storage.items[previousService] = ["provider-zai": legacyData]
+        storage.legacyItemReadError = errSecAuthFailed
+        let keychain = makeKeychain(storage: storage)
+
+        XCTAssertThrowsError(try keychain.load(for: "zai")) { error in
+            XCTAssertEqual(error as? KeychainError, .migrationFailed(errSecAuthFailed))
+        }
+        XCTAssertEqual(storage.items[previousService]?["provider-zai"], legacyData)
+        XCTAssertNil(storage.items[currentService]?["providers"])
+        XCTAssertTrue(storage.deletedItems.isEmpty)
     }
 
     func testVerificationFailureLeavesPreviousItemsIntact() throws {
@@ -181,24 +239,57 @@ final class LegacyBrandKeychainMigrationTests: XCTestCase {
     }
 }
 
+private struct LegacyDataReadRequest: Equatable {
+    let service: String
+    let account: String
+}
+
 private final class InMemoryKeychainStorage: KeychainStorage, @unchecked Sendable {
     var items: [String: [String: Data]] = [:]
     var deletedItems: [(service: String, account: String)] = []
     var replaceError: OSStatus?
     var createError: OSStatus?
     var corruptNextReplacement = false
+    var legacyDataReadRequests: [LegacyDataReadRequest] = []
+    var legacyItemLookupServices: [String] = []
+    var legacyItemReadError: OSStatus?
+    var authenticationContextIdentifiers = Set<ObjectIdentifier>()
 
-    func readData(service: String, account: String) throws -> Data? {
-        items[service]?[account]
+    func readData(
+        service: String,
+        account: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> Data? {
+        record(authenticationContext)
+        return items[service]?[account]
     }
 
-    func readItems(service: String) throws -> [StoredKeychainItem] {
-        (items[service] ?? [:]).map { account, data in
-            StoredKeychainItem(account: account, data: data)
+    func readLegacyItems(
+        service: String,
+        accountPrefix: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> [StoredKeychainItem] {
+        record(authenticationContext)
+        legacyItemLookupServices.append(service)
+        if let legacyItemReadError {
+            throw KeychainStorageError.status(legacyItemReadError)
+        }
+        return (items[service] ?? [:]).compactMap { account, data in
+            guard account.hasPrefix(accountPrefix) else { return nil }
+            legacyDataReadRequests.append(
+                LegacyDataReadRequest(service: service, account: account)
+            )
+            return StoredKeychainItem(account: account, data: data)
         }
     }
 
-    func replaceData(_ data: Data, service: String, account: String) throws {
+    func replaceData(
+        _ data: Data,
+        service: String,
+        account: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws {
+        record(authenticationContext)
         if let replaceError {
             throw KeychainStorageError.status(replaceError)
         }
@@ -210,8 +301,17 @@ private final class InMemoryKeychainStorage: KeychainStorage, @unchecked Sendabl
         items[service, default: [:]][account] = replacement
     }
 
-    func delete(service: String, account: String) {
+    func delete(
+        service: String,
+        account: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) {
+        record(authenticationContext)
         items[service]?[account] = nil
         deletedItems.append((service, account))
+    }
+
+    private func record(_ authenticationContext: KeychainAuthenticationContext) {
+        authenticationContextIdentifiers.insert(ObjectIdentifier(authenticationContext))
     }
 }

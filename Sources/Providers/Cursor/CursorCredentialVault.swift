@@ -107,7 +107,7 @@ final class CursorImportCoordinator: @unchecked Sendable {
 
     func loadOrBootstrap(
         loadShared: () throws -> CursorTokenPair?,
-        importExternal: () -> ExternalCursorTokenPair?,
+        importExternal: () throws -> ExternalCursorTokenPair?,
         saveShared: (CursorTokenPair) throws -> Void
     ) throws -> CursorTokenPair? {
         lock.lock()
@@ -123,45 +123,44 @@ final class CursorImportCoordinator: @unchecked Sendable {
             return nil
         }
         hasAttemptedBootstrap = true
-        guard let externalPair = importExternal() else {
-            return nil
-        }
-
-        let pair = CursorTokenPair(
-            accessToken: externalPair.accessToken,
-            refreshToken: externalPair.refreshToken
-        )
         do {
+            guard let externalPair = try importExternal() else {
+                return nil
+            }
+            let pair = CursorTokenPair(
+                accessToken: externalPair.accessToken,
+                refreshToken: externalPair.refreshToken
+            )
             try saveShared(pair)
+            return pair
         } catch {
             bootstrapError = error
             throw error
         }
-        return pair
     }
 
     func reimport(
-        importExternal: () -> ExternalCursorTokenPair?,
+        importExternal: () throws -> ExternalCursorTokenPair?,
         saveShared: (CursorTokenPair) throws -> Void
     ) throws -> CursorTokenPair {
         lock.lock()
         defer { lock.unlock() }
 
-        guard let externalPair = importExternal() else {
-            throw CursorCredentialVaultError.unavailable
-        }
-        let pair = CursorTokenPair(
-            accessToken: externalPair.accessToken,
-            refreshToken: externalPair.refreshToken
-        )
         do {
+            guard let externalPair = try importExternal() else {
+                throw CursorCredentialVaultError.unavailable
+            }
+            let pair = CursorTokenPair(
+                accessToken: externalPair.accessToken,
+                refreshToken: externalPair.refreshToken
+            )
             try saveShared(pair)
+            hasAttemptedBootstrap = true
+            bootstrapError = nil
+            return pair
         } catch {
             bootstrapError = error
             throw error
         }
-        hasAttemptedBootstrap = true
-        bootstrapError = nil
-        return pair
     }
 }

@@ -1,12 +1,36 @@
 import Foundation
+import LocalAuthentication
+import Security
 import SQLite3
+
+final class CursorKeychainAuthenticationContext: @unchecked Sendable {
+    let localAuthenticationContext = LAContext()
+}
+
+enum CursorExternalCredentialError: Error, Equatable, LocalizedError {
+    case keychain(OSStatus)
+    case malformedKeychainRecord
+
+    var errorDescription: String? {
+        switch self {
+        case .keychain:
+            String(localized: "Unable to access Cursor credentials. Check Keychain access and try again.")
+        case .malformedKeychainRecord:
+            String(localized: "Cursor credentials are invalid. Sign in to Cursor, then re-import them.")
+        }
+    }
+}
 
 /// Loads Cursor credentials from Filbert's shared vault. When the vault has
 /// no Cursor record, one bootstrap attempt imports the first complete pair
 /// from Cursor Agent Keychain layouts, then Cursor Desktop SQLite.
 struct CursorTokenStore: Sendable {
     private let vault: any CursorCredentialVault
-    private let readKeychain: @Sendable (String, String) -> String?
+    private let readKeychain: @Sendable (
+        String,
+        String,
+        CursorKeychainAuthenticationContext
+    ) throws -> String?
     private let readSQLiteValue: @Sendable (String, String) -> String?
     private let homeDirectory: String
     private let session: URLSession
@@ -23,7 +47,13 @@ struct CursorTokenStore: Sendable {
             session: session,
             homeDirectory: homeDirectory,
             refreshSkew: refreshSkew,
-            readKeychain: { CursorTokenStore.defaultReadKeychain(service: $0, account: $1) },
+            readKeychainWithContext: {
+                try CursorTokenStore.defaultReadKeychain(
+                    service: $0,
+                    account: $1,
+                    authenticationContext: $2
+                )
+            },
             readSQLiteValue: { CursorTokenStore.defaultReadSQLiteValue(dbPath: $0, key: $1) }
         )
     }
@@ -36,11 +66,35 @@ struct CursorTokenStore: Sendable {
         readKeychain: @escaping @Sendable (String, String) -> String?,
         readSQLiteValue: @escaping @Sendable (String, String) -> String?
     ) {
+        self.init(
+            vault: vault,
+            session: session,
+            homeDirectory: homeDirectory,
+            refreshSkew: refreshSkew,
+            readKeychainWithContext: { service, account, _ in
+                readKeychain(service, account)
+            },
+            readSQLiteValue: readSQLiteValue
+        )
+    }
+
+    init(
+        vault: any CursorCredentialVault,
+        session: URLSession = .shared,
+        homeDirectory: String,
+        refreshSkew: TimeInterval = 60,
+        readKeychainWithContext: @escaping @Sendable (
+            String,
+            String,
+            CursorKeychainAuthenticationContext
+        ) throws -> String?,
+        readSQLiteValue: @escaping @Sendable (String, String) -> String?
+    ) {
         self.vault = vault
         self.session = session
         self.homeDirectory = homeDirectory
         self.refreshSkew = refreshSkew
-        self.readKeychain = readKeychain
+        readKeychain = readKeychainWithContext
         self.readSQLiteValue = readSQLiteValue
         importCoordinator = CursorImportCoordinator()
     }
@@ -49,7 +103,7 @@ struct CursorTokenStore: Sendable {
     func loadOrBootstrap() throws -> CursorTokenPair? {
         try importCoordinator.loadOrBootstrap(
             loadShared: { try vault.load() },
-            importExternal: { loadExternalPair() },
+            importExternal: { try loadExternalPair() },
             saveShared: { try vault.save($0) }
         )
     }
@@ -58,23 +112,27 @@ struct CursorTokenStore: Sendable {
     /// Filbert's vault. No normal configuration or refresh path calls this.
     func reimport() throws {
         _ = try importCoordinator.reimport(
-            importExternal: { loadExternalPair() },
+            importExternal: { try loadExternalPair() },
             saveShared: { try vault.save($0) }
         )
     }
 
-    private func loadExternalPair() -> ExternalCursorTokenPair? {
+    private func loadExternalPair() throws -> ExternalCursorTokenPair? {
+        let authenticationContext = CursorKeychainAuthenticationContext()
         for credentials in CursorAuth.keychainCredentials {
-            if let pair = completeExternalPair(
-                accessToken: readKeychain(
-                    credentials.accessTokenService,
-                    credentials.accessTokenAccount
-                ),
-                refreshToken: readKeychain(
-                    credentials.refreshTokenService,
-                    credentials.refreshTokenAccount
-                )
-            ) {
+            guard let accessToken = try readKeychain(
+                credentials.accessTokenService,
+                credentials.accessTokenAccount,
+                authenticationContext
+            ) else {
+                continue
+            }
+            let refreshToken = try readKeychain(
+                credentials.refreshTokenService,
+                credentials.refreshTokenAccount,
+                authenticationContext
+            )
+            if let pair = completeExternalPair(accessToken: accessToken, refreshToken: refreshToken) {
                 return pair
             }
         }
@@ -193,23 +251,31 @@ struct CursorTokenStore: Sendable {
 
     private static func defaultReadKeychain(
         service: String,
-        account: String
-    ) -> String? {
+        account: String,
+        authenticationContext: CursorKeychainAuthenticationContext
+    ) throws -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecUseAuthenticationContext as String: authenticationContext.localAuthenticationContext,
         ]
 
         var item: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &item)
-        guard status == errSecSuccess,
-              let data = item as? Data,
+        guard status != errSecItemNotFound else {
+            return nil
+        }
+
+        guard status == errSecSuccess else {
+            throw CursorExternalCredentialError.keychain(status)
+        }
+        guard let data = item as? Data,
               let value = String(data: data, encoding: .utf8)
         else {
-            return nil
+            throw CursorExternalCredentialError.malformedKeychainRecord
         }
         return value
     }
