@@ -19,15 +19,6 @@ struct AppMain: App {
         registry.register(DeepSeekProvider())
         registry.register(OpenAICodexProvider())
         registry.register(CursorProvider())
-        do {
-            try LegacyBrandMigration.migratePreferences(
-                providerIds: registry.registeredProviders.map(\.id)
-            )
-        } catch {
-            FileHandle.standardError.write(
-                Data("[Filbert] Preference migration failed: \(error.localizedDescription)\n".utf8)
-            )
-        }
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }
 
