@@ -1,3 +1,4 @@
+@testable import Core
 @testable import CursorProvider
 import Foundation
 
@@ -147,6 +148,59 @@ final class LockedBox<Value>: @unchecked Sendable {
         lock.withLock {
             body(&value)
         }
+    }
+}
+
+/// Test-only `KeychainStorage` that drives external reads from a closure.
+/// Used to inject canned Keychain responses into `CursorTokenStore`
+/// without touching the real Keychain (core 07 AC6).
+final class ClosureKeychainStorage: KeychainStorage, @unchecked Sendable {
+    private let read: @Sendable (String, String, KeychainAuthenticationContext) throws -> Data?
+
+    /// Reads return a UTF-8-encoded canned string; the context is ignored.
+    init(read: @escaping @Sendable (String, String) throws -> String? = { _, _ in nil }) {
+        self.read = { service, account, _ in
+            guard let value = try read(service, account) else {
+                return nil
+            }
+            return Data(value.utf8)
+        }
+    }
+
+    /// Reads return raw `Data` and may inspect the context passed in — used
+    /// by tests that assert on the shared accessor or inject malformed bytes.
+    init(read: @escaping @Sendable (String, String, KeychainAuthenticationContext) throws -> Data?) {
+        self.read = read
+    }
+
+    func readData(
+        service: String,
+        account: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws -> Data? {
+        try read(service, account, authenticationContext)
+    }
+
+    func replaceData(
+        _ data: Data,
+        service: String,
+        account: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) throws {
+        _ = data
+        _ = service
+        _ = account
+        _ = authenticationContext
+    }
+
+    func delete(
+        service: String,
+        account: String,
+        authenticationContext: KeychainAuthenticationContext
+    ) {
+        _ = service
+        _ = account
+        _ = authenticationContext
     }
 }
 

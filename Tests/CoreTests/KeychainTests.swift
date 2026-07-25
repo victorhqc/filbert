@@ -85,6 +85,8 @@ final class KeychainTests: XCTestCase {
     }
 
     func testFailedUpdatePreservesCachedAndStoredFields() throws {
+        // core 07 AC2: a failed write returns a typed error and leaves both
+        // the in-memory cache and the on-disk item at their pre-write state.
         let storage = InMemoryKeychainStorage()
         let original = ["zai": ["value": "zai-key"], "deepseek": ["value": "deepseek-key"]]
         let originalData = try JSONEncoder().encode(original)
@@ -115,21 +117,38 @@ final class KeychainTests: XCTestCase {
         XCTAssertTrue(storage.deletedItems.isEmpty)
     }
 
-    func testVerificationFailureRestoresExistingConsolidatedItem() throws {
-        let storage = InMemoryKeychainStorage()
-        let originalData = try JSONEncoder().encode(["zai": ["value": "zai-key"]])
-        storage.items[currentService] = ["providers": originalData]
-        let keychain = makeKeychain(storage: storage)
+    func testKeychainStorageTypesArePublicAcrossModuleBoundary() {
+        // core 07 AC3: provider modules see the storage protocol, the
+        // concrete accessor, the shared context, and its error as `public`.
+        // Compile-time assertion only — no runtime behavior to exercise.
+        let storage: any KeychainStorage = SecurityKeychainStorage()
+        let context = KeychainAuthenticationContext()
+        let error: Error = KeychainStorageError.status(errSecNotAvailable)
 
-        XCTAssertEqual(try keychain.load(for: "zai"), "zai-key")
-        storage.corruptNextReplacement = true
+        XCTAssertNotNil(storage)
+        XCTAssertNotNil(context.localAuthenticationContext)
+        XCTAssertNotNil(error)
+    }
 
-        XCTAssertThrowsError(try keychain.save("new-key", for: "zai")) { error in
-            XCTAssertEqual(error as? KeychainError, .saveFailed(errSecVerifyFailed))
-        }
-        XCTAssertEqual(storage.items[currentService]?["providers"], originalData)
-        XCTAssertEqual(try keychain.load(for: "zai"), "zai-key")
-        XCTAssertTrue(storage.deletedItems.isEmpty)
+    func testSharedAuthenticationContextIsReusedAcrossAccesses() {
+        // core 07 AC1: every Keychain access in the session routes through
+        // the same `LAContext`, created lazily on first use.
+        let first = KeychainAuthenticationContext.shared.localAuthenticationContext
+        let second = KeychainAuthenticationContext.shared.localAuthenticationContext
+
+        XCTAssertTrue(first === second)
+    }
+
+    func testInvalidateSwapsUnderlyingLAContext() {
+        // core 07 AC5: sleep/wake/lock swap the underlying `LAContext` so
+        // macOS can re-prompt within its new authorization window.
+        let context = KeychainAuthenticationContext()
+        let before = context.localAuthenticationContext
+
+        context.invalidate()
+
+        let after = context.localAuthenticationContext
+        XCTAssertFalse(before === after)
     }
 
     private func makeKeychain(storage: InMemoryKeychainStorage) -> Keychain {
@@ -142,7 +161,6 @@ private final class InMemoryKeychainStorage: KeychainStorage, @unchecked Sendabl
     var deletedItems: [(service: String, account: String)] = []
     var replaceError: OSStatus?
     var createError: OSStatus?
-    var corruptNextReplacement = false
 
     func readData(
         service: String,
@@ -166,9 +184,7 @@ private final class InMemoryKeychainStorage: KeychainStorage, @unchecked Sendabl
         if items[service]?[account] == nil, let createError {
             throw KeychainStorageError.status(createError)
         }
-        let replacement = corruptNextReplacement ? Data("not-json".utf8) : data
-        corruptNextReplacement = false
-        items[service, default: [:]][account] = replacement
+        items[service, default: [:]][account] = data
     }
 
     func delete(

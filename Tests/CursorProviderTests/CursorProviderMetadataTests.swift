@@ -92,7 +92,7 @@ final class CursorProviderMetadataTests: XCTestCase {
             tokenStore: CursorTokenStore(
                 vault: vault,
                 homeDirectory: "/test",
-                readKeychain: { _, _ in nil },
+                externalStorage: ClosureKeychainStorage(),
                 readSQLiteValue: { _, _ in nil }
             ),
             session: .shared
@@ -119,7 +119,7 @@ final class CursorProviderMetadataTests: XCTestCase {
             tokenStore: CursorTokenStore(
                 vault: vault,
                 homeDirectory: "/test",
-                readKeychain: { _, _ in nil },
+                externalStorage: ClosureKeychainStorage(),
                 readSQLiteValue: { _, _ in nil }
             ),
             session: .shared
@@ -140,9 +140,9 @@ final class CursorProviderMetadataTests: XCTestCase {
         let tokenStore = CursorTokenStore(
             vault: vault,
             homeDirectory: "/test",
-            readKeychain: { service, _ in
+            externalStorage: ClosureKeychainStorage(read: { service, _ in
                 service == "cursor-access-token" ? "access" : "refresh"
-            },
+            }),
             readSQLiteValue: { _, _ in nil }
         )
         let provider = CursorProvider(
@@ -172,7 +172,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         let tokenStore = CursorTokenStore(
             vault: vault,
             homeDirectory: "/test",
-            readKeychain: { _, _ in nil },
+            externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
         return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
