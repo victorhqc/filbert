@@ -1,5 +1,12 @@
 import Foundation
 
+/// MainActor-isolated registry of configured providers.
+///
+/// All mutation happens on the MainActor (`AppMain.init()` registers providers
+/// before the view model reads them; `QuotaViewModel` is `@MainActor`).
+/// MainActor isolation implies `Sendable` (SE-0306/SE-0338), so the registry
+/// crosses `Task` boundaries safely without an `@unchecked` escape hatch (ci 04).
+@MainActor
 public final class ProviderRegistry {
     private var providers: [String: any AIProvider] = [:]
     private let keychain = Keychain.shared
@@ -45,6 +52,9 @@ public final class ProviderRegistry {
     }
 
     public func fetchAll() async -> [String: Result<ProviderQuota, Error>] {
+        // Snapshot the dictionary and keychain into locals before crossing
+        // into the TaskGroup so child tasks never touch MainActor-isolated
+        // state (ci 04 Plan §4).
         let snapshot = providers
         let keychain = keychain
 
@@ -96,6 +106,7 @@ public final class ProviderRegistry {
     /// The view model calls this at launch and after install/uninstall actions
     /// to re-sync setup state without blocking the main actor.
     public func refreshSetupStates() async -> [String: ProviderState] {
+        // Snapshot before crossing into the TaskGroup (ci 04 Plan §4).
         let snapshot = providers
 
         return await withTaskGroup(

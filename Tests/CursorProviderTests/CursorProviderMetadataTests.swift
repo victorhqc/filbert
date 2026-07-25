@@ -18,6 +18,7 @@ final class CursorProviderMetadataTests: XCTestCase {
 
     // MARK: - AC2b: external login prerequisite (providers 07)
 
+    @MainActor
     func testSetupHelpPointsToCursorCLIAuthenticationDocs() throws {
         let setupHelp = try XCTUnwrap(CursorProvider.setupHelp)
         let registry = ProviderRegistry()

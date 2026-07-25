@@ -2,7 +2,9 @@ import Foundation
 
 /// Persists the user's opt-in Vintage Mac menu-bar appearance preference.
 public enum VintageMacIcon {
-    private static var defaults: UserDefaults = .standard
+    /// `nonisolated(unsafe)`: production never mutates this after startup; only
+    /// the test-injection API writes, and XCTest runs serially.
+    private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
     public static var isEnabled: Bool {
         defaults.object(forKey: Keys.isEnabled) as? Bool ?? false

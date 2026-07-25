@@ -49,6 +49,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         )
     }
 
+    @MainActor
     func testProvider_transportsSetupHelpThroughRegistry() throws {
         let registry = ProviderRegistry()
         registry.register(ClaudeCodeProvider())

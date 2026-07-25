@@ -33,12 +33,21 @@ extension ClaudeCodeRefresher {
         "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
     ]
 
+    /// Decodes the `/usage` JSON envelope. The CLI emits a single object whose
+    /// `result` field carries the usage text; the wrapper replaces
+    /// `JSONSerialization` + `[String: Any]` so `Sources/` stays free of the
+    /// `Any` type (ci 04 AC7).
+    private struct UsageEnvelope: Decodable {
+        let result: String
+    }
+
     /// Decodes the `/usage` JSON, pulls the `result` text, and parses the
     /// session (5-hour) and week (7-day) lines out of it.
     static func parseUsageWindows(fromUsageJSON data: Data) -> [ParsedWindow] {
-        guard let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let text = object["result"] as? String
-        else { return [] }
+        guard let envelope = try? JSONDecoder().decode(UsageEnvelope.self, from: data) else {
+            return []
+        }
+        let text = envelope.result
 
         var parsed: [ParsedWindow] = []
         if let window = parseUsageLine(in: text, prefix: "Current session") {
@@ -96,18 +105,19 @@ extension ClaudeCodeRefresher {
         calendar.timeZone = timeZone
 
         let now = Date()
+        let currentYear = calendar.component(.year, from: now)
         var components = DateComponents()
         components.month = monthNumber
         components.day = day
         components.hour = hour
         components.minute = minute
-        components.year = calendar.component(.year, from: now)
+        components.year = currentYear
 
         guard let candidate = calendar.date(from: components) else { return nil }
         // A reset that already passed (allowing a 2-day slack for clock skew /
         // month boundaries) must belong to next year.
         if candidate < now.addingTimeInterval(-2 * 86400) {
-            components.year! += 1
+            components.year = currentYear + 1
             if let rolled = calendar.date(from: components) {
                 return rolled.timeIntervalSince1970
             }

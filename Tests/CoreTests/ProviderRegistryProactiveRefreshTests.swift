@@ -7,6 +7,9 @@ import XCTest
 /// The registry tests are scoped to the proactive-refresh surface added by
 /// (providers 03). Broader registry coverage (`fetchAll`, `isConfigured`,
 /// etc.) is exercised end-to-end by the provider test suites.
+/// `ProviderRegistry` is `@MainActor` (ci 04 Plan §4), so every test that
+/// constructs and exercises it runs on the main actor too.
+@MainActor
 final class ProviderRegistryProactiveRefreshTests: XCTestCase {
     // MARK: - AC3: routes to a conforming provider
 

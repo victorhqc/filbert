@@ -107,6 +107,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.setupHelp, setupHelp)
     }
 
+    @MainActor
     func testRegistry_transportsProviderSetupHelp() throws {
         let registry = ProviderRegistry()
         registry.register(SetupHelpProvider())
@@ -116,6 +117,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.setupHelp, SetupHelpProvider.setupHelp)
     }
 
+    @MainActor
     func testRegistry_transportsProviderDisclaimer() throws {
         let registry = ProviderRegistry()
         registry.register(DisclaimerProvider())
@@ -125,6 +127,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.disclaimer, DisclaimerProvider.providerDisclaimer)
     }
 
+    @MainActor
     func testRegistry_transportsCredentialImportActionTitle() throws {
         let registry = ProviderRegistry()
         registry.register(CredentialImportProvider())
@@ -134,6 +137,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.credentialImportActionTitle, CredentialImportProvider.credentialImportActionTitle)
     }
 
+    @MainActor
     func testRegistry_transportsProviderGlyph() throws {
         let registry = ProviderRegistry()
         registry.register(GlyphProvider())

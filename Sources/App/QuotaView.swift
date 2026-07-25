@@ -293,10 +293,8 @@ struct QuotaView: View {
     /// so they can never disagree (ui 04 AC2, ui 11 AC1). Delegates to the
     /// appearance-aware palette so light-mode foregrounds pass WCAG AA.
     private func percentageColor(_ pct: Double) -> Color {
-        ProviderVisualStyle.tierColor(
-            QuotaStatusResolver.tier(for: .window(percentage: pct))!,
-            scheme: colorScheme
-        )
+        let tier = QuotaStatusResolver.tier(for: .window(percentage: pct))
+        return ProviderVisualStyle.tierColor(tier ?? .good, scheme: colorScheme)
     }
 
     /// Forwards to the shared resolver so the popover rows and the menu-bar

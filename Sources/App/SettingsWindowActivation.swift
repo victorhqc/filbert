@@ -13,6 +13,11 @@ import SwiftUI
 ///
 /// The window is matched by structural traits (titled, non-panel) rather than
 /// localized title text, so the lookup is stable across locales.
+///
+/// `@MainActor`: SwiftUI invokes `ViewModifier.body` on the main actor, and
+/// every touch here (`NSApp`, `windows`, `styleMask`) is MainActor-isolated
+/// AppKit (ci 04 Plan §4).
+@MainActor
 private struct OpenAndRaiseSettingsModifier: ViewModifier {
     @Environment(\.openSettings) private var openSettings
 
@@ -36,6 +41,9 @@ private struct OpenAndRaiseSettingsModifier: ViewModifier {
     }
 }
 
+/// `@MainActor`: the lookup touches `NSApp.windows`, which is MainActor-
+/// isolated AppKit (ci 04 Plan §4).
+@MainActor
 enum SettingsWindowLookup {
     /// The Settings scene's `NSWindow`, identified without relying on
     /// localized title text (ui 16).

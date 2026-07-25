@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 // MARK: - Paths (providers 02 Plan §5)
@@ -54,6 +55,139 @@ extension InstallerError: LocalizedError {
         case .configurationVerificationFailed:
             String(localized: "Could not verify the helper installation.")
         }
+    }
+}
+
+// MARK: - Codable model for ~/.claude/settings.json (ci 04 AC7)
+
+//
+// `settings.json` is user-owned and open-schema: Claude Code accepts arbitrary
+// sibling keys alongside `statusLine`, and `statusLine` itself may be a bare
+// string or an object with arbitrary keys (`padding`, `refreshInterval`, …).
+// These types model the known keys (`statusLine`, `command`, `type`) while
+// sinking every unknown key into an `extra: [String: AnyJSON]` so a
+// read/modify/write round-trip preserves them — without exposing the `Any`
+// type (ci 04 AC5/AC6). `AnyJSON` is the open-schema value type from `Core`.
+
+/// The `statusLine` value: either a bare command string or a typed object
+/// (providers 02 AC8).
+enum StatusLineValue: Equatable {
+    case string(String)
+    case object(StatusLineObject)
+}
+
+/// The object form of `statusLine`. `command` and `type` are typed; every
+/// other key (`padding`, `refreshInterval`, …) is preserved in `extra`.
+struct StatusLineObject: Equatable {
+    var command: String?
+    var type: String?
+    var extra: [String: AnyJSON]
+
+    init(command: String? = nil, type: String? = nil, extra: [String: AnyJSON] = [:]) {
+        self.command = command
+        self.type = type
+        self.extra = extra
+    }
+}
+
+/// The top-level `~/.claude/settings.json` object. `statusLine` is typed;
+/// every other top-level key is preserved in `extra`.
+struct ClaudeSettings: Equatable {
+    var statusLine: StatusLineValue?
+    var extra: [String: AnyJSON]
+
+    init(statusLine: StatusLineValue? = nil, extra: [String: AnyJSON] = [:]) {
+        self.statusLine = statusLine
+        self.extra = extra
+    }
+}
+
+// MARK: - Codable round-trip via [String: AnyJSON]
+
+//
+// `KeyedDecodingContainer` with a fixed `CodingKey` enum silently drops keys
+// not in the enum, which would lose exactly the open-schema sibling keys this
+// model exists to preserve. Decoding the whole object as `[String: AnyJSON]`
+// and extracting known keys by hand keeps every key — known ones become typed
+// fields, the rest land in `extra`.
+
+extension ClaudeSettings: Codable {
+    private static let statusLineKey = "statusLine"
+
+    init(from decoder: Decoder) throws {
+        let raw = try decoder.singleValueContainer().decode([String: AnyJSON].self)
+        if let value = raw[Self.statusLineKey] {
+            statusLine = try Self.decodeStatusLine(value)
+        } else {
+            statusLine = nil
+        }
+        extra = raw.filter { $0.key != Self.statusLineKey }
+    }
+
+    func encode(to encoder: Encoder) throws {
+        var raw = extra
+        if let statusLine {
+            raw[Self.statusLineKey] = Self.encodeStatusLine(statusLine)
+        }
+        var container = encoder.singleValueContainer()
+        try container.encode(raw)
+    }
+
+    private static func decodeStatusLine(_ value: AnyJSON) throws -> StatusLineValue {
+        switch value {
+        case let .string(string):
+            return .string(string)
+        case let .object(dict):
+            return try .object(Self.decodeStatusLineObject(dict))
+        case .null, .bool, .number, .array:
+            throw DecodingError.dataCorrupted(.init(
+                codingPath: [],
+                debugDescription: "statusLine must be a string or an object"
+            ))
+        }
+    }
+
+    private static func decodeStatusLineObject(_ dict: [String: AnyJSON]) throws -> StatusLineObject {
+        var object = StatusLineObject()
+        var extra = dict
+        if let command = extra.removeValue(forKey: "command") {
+            object.command = Self.stringValue(command)
+        }
+        if let type = extra.removeValue(forKey: "type") {
+            object.type = Self.stringValue(type)
+        }
+        object.extra = extra
+        return object
+    }
+
+    private static func encodeStatusLine(_ value: StatusLineValue) -> AnyJSON {
+        switch value {
+        case let .string(string):
+            .string(string)
+        case let .object(object):
+            .object(Self.encodeStatusLineObject(object))
+        }
+    }
+
+    private static func encodeStatusLineObject(_ object: StatusLineObject) -> [String: AnyJSON] {
+        var raw = object.extra
+        if let command = object.command {
+            raw["command"] = .string(command)
+        }
+        if let type = object.type {
+            raw["type"] = .string(type)
+        }
+        return raw
+    }
+
+    /// Pulls a `String` out of an `AnyJSON` that is expected to hold a string,
+    /// returning `nil` for any other kind (matches the historical
+    /// `as? String` tolerance).
+    private static func stringValue(_ value: AnyJSON) -> String? {
+        if case let .string(string) = value {
+            return string
+        }
+        return nil
     }
 }
 
@@ -240,31 +374,25 @@ public struct StatuslineHelperInstaller: Sendable {
 
     // MARK: - Settings I/O
 
-    /// Reads `settingsURL` as a JSON dictionary, or returns `nil` when the
-    /// file is absent. Throws `InstallerError.unparseableSettings` when the
+    /// Reads `settingsURL` as a `ClaudeSettings` model, or returns `nil` when
+    /// the file is absent. Throws `InstallerError.unparseableSettings` when the
     /// file exists but is not valid JSON (providers 02 AC8).
-    private func readSettings() throws -> [String: Any]? {
+    private func readSettings() throws -> ClaudeSettings? {
         guard FileManager.default.fileExists(atPath: settingsURL.path) else {
             return nil
         }
         let data = try Data(contentsOf: settingsURL)
-        let obj: Any
         do {
-            obj = try JSONSerialization.jsonObject(with: data)
+            return try JSONDecoder().decode(ClaudeSettings.self, from: data)
         } catch {
             throw InstallerError.unparseableSettings
         }
-        guard let json = obj as? [String: Any] else {
-            throw InstallerError.unparseableSettings
-        }
-        return json
     }
 
-    private func writeSettings(_ settings: [String: Any]) throws {
-        let data = try JSONSerialization.data(
-            withJSONObject: settings,
-            options: [.prettyPrinted, .sortedKeys]
-        )
+    private func writeSettings(_ settings: ClaudeSettings) throws {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        let data = try encoder.encode(settings)
         try data.write(to: settingsURL, options: .atomic)
     }
 
@@ -280,20 +408,23 @@ public struct StatuslineHelperInstaller: Sendable {
 
     /// Extracts the `command` string from a `statusLine` value, which may
     /// be a plain string or a `{"command": "..."}` object (providers 02 AC8).
-    private func commandFromStatusLine(_ value: Any?) -> String? {
-        if let str = value as? String {
-            return str
+    private func commandFromStatusLine(_ value: StatusLineValue?) -> String? {
+        switch value {
+        case let .string(string):
+            string
+        case let .object(object):
+            object.command
+        case .none:
+            nil
         }
-        guard let dict = value as? [String: Any] else { return nil }
-        return dict["command"] as? String
     }
 
     private func updateSettingsForInstall() throws {
-        var settings = try readSettings() ?? [:]
+        var settings = try readSettings() ?? ClaudeSettings()
         // Preserve any existing statusLine keys (padding, refreshInterval, ...)
         // so we only rewrite `command` and ensure `type` is set.
-        var statusLineDict = (settings["statusLine"] as? [String: Any]) ?? [:]
-        let existingCommand = commandFromStatusLine(settings["statusLine"])
+        var statusLineObject = existingStatusLineObject(settings.statusLine) ?? StatusLineObject()
+        let existingCommand = commandFromStatusLine(settings.statusLine)
 
         let newCommand: String
 
@@ -331,32 +462,45 @@ public struct StatuslineHelperInstaller: Sendable {
         // Claude Code requires `type: "command"` to invoke the statusLine
         // (https://code.claude.com/docs/en/statusline). Always set it on
         // install so the helper is actually spawned.
-        statusLineDict["type"] = "command"
-        statusLineDict["command"] = newCommand
-        settings["statusLine"] = statusLineDict
+        statusLineObject.type = "command"
+        statusLineObject.command = newCommand
+        settings.statusLine = .object(statusLineObject)
         try writeSettings(settings)
+    }
+
+    /// Returns the existing `statusLine` as an object if it is one, so sibling
+    /// keys (`padding`, `refreshInterval`, …) survive the install rewrite. A
+    /// bare-string `statusLine` yields `nil` here — install normalizes it to
+    /// the object form (providers 02 AC8).
+    private func existingStatusLineObject(_ value: StatusLineValue?) -> StatusLineObject? {
+        if case let .object(object) = value {
+            return object
+        }
+        return nil
     }
 
     private func removeFromSettings() throws {
         guard var mutable = try? readSettings() else { return }
 
-        guard let command = commandFromStatusLine(mutable["statusLine"]) else {
+        guard let command = commandFromStatusLine(mutable.statusLine) else {
             return
         }
 
         if command.contains(Self.chainStart) {
             // Our wrapper is present — extract the original command and
-            // restore it (providers 02 AC11).
+            // restore it (providers 02 AC11). Like the original implementation,
+            // restore as a bare object with only `command`; sibling keys are
+            // not re-added (byte-equivalence with the prior behaviour, ci 04 AC7).
             let original = extractOriginalCommand(from: command) ?? ""
             if original.isEmpty {
-                mutable.removeValue(forKey: "statusLine")
+                mutable.statusLine = nil
             } else {
-                mutable["statusLine"] = ["command": original]
+                mutable.statusLine = .object(StatusLineObject(command: original))
             }
         } else if command == helperDestURL.path {
             // Our helper is the only command — remove the statusLine key
             // entirely (providers 02 AC11).
-            mutable.removeValue(forKey: "statusLine")
+            mutable.statusLine = nil
         }
         // else: a different command, not ours — leave it alone.
 
@@ -444,7 +588,7 @@ public struct StatuslineHelperInstaller: Sendable {
         if FileManager.default.isExecutableFile(atPath: legacyConfiguration.helperURL.path) {
             return true
         }
-        guard let command = try commandFromStatusLine(readSettings()?["statusLine"]) else {
+        guard let command = try commandFromStatusLine(readSettings()?.statusLine) else {
             return false
         }
         return command == legacyConfiguration.helperURL.path
@@ -453,7 +597,7 @@ public struct StatuslineHelperInstaller: Sendable {
 
     private func verifyInstalledConfiguration() throws {
         guard isHelperInstalled(),
-              let command = try commandFromStatusLine(readSettings()?["statusLine"]),
+              let command = try commandFromStatusLine(readSettings()?.statusLine),
               command.contains(helperDestURL.path)
         else {
             throw InstallerError.configurationVerificationFailed

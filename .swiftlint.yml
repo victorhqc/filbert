@@ -3,3 +3,38 @@ excluded:
 
 disabled_rules:
   - trailing_comma
+
+opt_in_rules:
+  - force_unwrapping
+  - implicitly_unwrapped_optional
+
+# Force-unwrap, force-cast, and force-try are never acceptable in Sources/
+# (ci 04 AC3). Implicitly-unwrapped optionals are banned alongside them
+# (ci 04 AC4). Tests/ is exempt from these four strict rules via the nested
+# `Tests/.swiftlint.yml` — test fixtures legitimately use
+# `URL(string:"...")!` and implicitly-unwrapped `XCTestCase` properties
+# (ci 04 AC1/AC5 exempt Tests from the gate).
+force_unwrapping: error
+force_cast: error
+force_try: error
+implicitly_unwrapped_optional: error
+
+custom_rules:
+  # The `Any` type is banned in Sources/ (ci 04 AC5). Use a concrete type, a
+  # generic, or Codable. The word-boundary anchors hit the `Any` type only;
+  # `match_kinds: [keyword]` restricts the match to actual `Any` type usages
+  # and skips the word `Any` in comments/strings and identifiers like
+  # `hasAnyConfiguredProvider`. (The spec's earlier draft used
+  # `match_kinds: [typeidentifier]`, but SwiftLint 0.65 classifies `Any` as a
+  # `keyword`, not a `typeidentifier` — verified empirically.) The rule does
+  # not match the `any Protocol` existential keyword (lowercase). The sole
+  # documented exception is `Sources/Core/KeychainStorage.swift` (the Security
+  # framework boundary), silenced per-line with
+  # `swiftlint:disable:next no_any_type` (ci 04 AC6).
+  no_any_type:
+    name: "No Any type"
+    regex: '(?<![A-Za-z_])Any(?![A-Za-z0-9_])'
+    match_kinds: [keyword]
+    message: "Do not use the Any type in Sources/. Use a concrete type, a generic, or Codable."
+    severity: error
+    included: [Sources/]
