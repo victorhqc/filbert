@@ -19,7 +19,7 @@ final class CursorRateLimitTests: XCTestCase {
             ]),
             session: session,
             homeDirectory: "/test",
-            readKeychain: { _, _ in nil },
+            externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
         let provider = CursorProvider(
@@ -55,7 +55,7 @@ final class CursorRateLimitTests: XCTestCase {
             ]),
             session: session,
             homeDirectory: "/test",
-            readKeychain: { _, _ in nil },
+            externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
         let pair = CursorTokenPair(

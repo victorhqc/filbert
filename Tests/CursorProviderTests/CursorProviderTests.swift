@@ -227,7 +227,7 @@ final class CursorProviderTests: XCTestCase {
         let tokenStore = CursorTokenStore(
             vault: vault,
             homeDirectory: "/test",
-            readKeychain: { _, _ in nil },
+            externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
         return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
@@ -251,7 +251,7 @@ final class CursorProviderTests: XCTestCase {
             ]),
             session: session,
             homeDirectory: "/test",
-            readKeychain: { _, _ in nil },
+            externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
         let locator = CursorLocator(

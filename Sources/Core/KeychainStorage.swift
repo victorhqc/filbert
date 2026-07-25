@@ -1,12 +1,11 @@
 import Foundation
-import LocalAuthentication
 import Security
 
-final class KeychainAuthenticationContext: @unchecked Sendable {
-    let localAuthenticationContext = LAContext()
-}
-
-protocol KeychainStorage: Sendable {
+/// Generic-password Keychain storage abstraction. Production code uses
+/// `SecurityKeychainStorage`; tests inject an in-memory fake. The shared
+/// `KeychainAuthenticationContext` is passed per call so the session's
+/// authorization state can be reused (core 07 AC3).
+public protocol KeychainStorage: Sendable {
     func readData(
         service: String,
         account: String,
@@ -25,12 +24,28 @@ protocol KeychainStorage: Sendable {
     )
 }
 
-enum KeychainStorageError: Error {
+public enum KeychainStorageError: Error {
     case status(OSStatus)
 }
 
-struct SecurityKeychainStorage: KeychainStorage {
-    func readData(
+public extension KeychainStorageError {
+    var status: OSStatus {
+        switch self {
+        case let .status(status):
+            status
+        }
+    }
+}
+
+/// Public accessor for generic-password Keychain items. Wraps
+/// `SecItemCopyMatching`, `SecItemUpdate`, `SecItemAdd`, and
+/// `SecItemDelete` so provider modules stop reinventing SecItem query
+/// builders (core 07 AC3). `Keychain` uses this accessor for the
+/// consolidated item via the same protocol providers consume.
+public struct SecurityKeychainStorage: KeychainStorage {
+    public init() {}
+
+    public func readData(
         service: String,
         account: String,
         authenticationContext: KeychainAuthenticationContext
@@ -59,7 +74,7 @@ struct SecurityKeychainStorage: KeychainStorage {
         }
     }
 
-    func replaceData(
+    public func replaceData(
         _ data: Data,
         service: String,
         account: String,
@@ -93,7 +108,7 @@ struct SecurityKeychainStorage: KeychainStorage {
         }
     }
 
-    func delete(
+    public func delete(
         service: String,
         account: String,
         authenticationContext: KeychainAuthenticationContext
