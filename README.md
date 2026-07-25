@@ -8,16 +8,17 @@
   <img src="assets/mascot-with-ai-logos.png" alt="filbert mascot" height="250">
 </p>
 
-**Filbert** is a simple, friendly menu-bar companion that tells you when your
-token budgets are running low. The name stands for **F**riendly **I**con
+**Filbert is a native macOS AI usage tracker.** It monitors token budgets,
+quotas, and spending across AI providers from a simple menu-bar app. The name
+stands for **F**riendly **I**con
 **L**etting **B**udgets **E**xplain **R**emaining **T**okens.
 
-Add the platforms you use, and Filbert tracks usage, quota, and spend across all
-of them at once.
+Add the AI providers you use, and Filbert tracks their usage, quotas, and spend
+in one place.
 
-Most developers use more than one AI platform. A coding plan here, an API key
-there, a subscription somewhere else. This app brings them together, so you
-never have to open four browser tabs to check what you have left.
+Most developers use more than one AI platform: a coding plan here, an API key
+there, and a subscription somewhere else. Filbert brings them into one view, so
+you do not need to open several browser tabs to see what remains.
 
 <table>
   <tr>
@@ -33,10 +34,10 @@ never have to open four browser tabs to check what you have left.
 - **Popover** — click the icon for a full breakdown across every provider.
 - **Widgets** — pin a provider's stats to Notification Center or your desktop (WIP).
 
-It is a real macOS app, built to stay out of your way:
+Filbert is a native macOS app built to stay out of your way:
 
 - No Dock icon. No app-switcher entry. Just a menu-bar item.
-- No proxy. No Electron. It calls each provider's API with native `URLSession`.
+- No proxy. No Electron. It calls each provider's API directly with native `URLSession`.
 - Your API keys stay on your machine, in the **macOS Keychain**.
 - No telemetry. No analytics. No remote logging.
 
@@ -60,8 +61,8 @@ It is a real macOS app, built to stay out of your way:
 > ³ Cursor reads usage from your local Cursor session token. See
 > [Cursor setup](#cursor-setup) below.
 
-You only add the platforms you use. The menu bar, popover, and widgets adapt to
-whatever you configure.
+Add only the providers you use. The menu bar, popover, and widgets adapt to
+your setup.
 
 ## Requirements
 
@@ -72,7 +73,7 @@ whatever you configure.
 
 ## Install
 
-Pre-built builds live on the [GitHub Releases page](https://github.com/victorhqc/filbert/releases).
+Prebuilt releases are available on the [GitHub Releases page](https://github.com/victorhqc/filbert/releases).
 Download the `Filbert-<version>-arm64.dmg`, then:
 
 1. **Mount the DMG** by double-clicking it.
@@ -83,9 +84,8 @@ Download the `Filbert-<version>-arm64.dmg`, then:
 ### First launch on an unsigned build
 
 Current releases are **unsigned** (ad-hoc signed), so macOS Gatekeeper blocks
-them on first launch. This is temporary. Once an Apple Developer Program
-membership is set up, releases become signed and notarized on their own, with no
-action from you.
+them on first launch. Once an Apple Developer Program membership is in place,
+releases will be signed and notarized. You will not need to take these steps.
 
 To open an unsigned build, do **one** of these:
 
@@ -100,25 +100,11 @@ To open an unsigned build, do **one** of these:
 Signed and notarized builds, when available, launch with no warning and need
 none of this.
 
-### Upgrading from ai-usage
-
-Filbert automatically carries forward saved provider keys and preferences on
-first launch. If the ai-usage Claude status-line helper is installed, Filbert
-also compiles its new helper, preserves any user-owned status-line command,
-moves a valid cache, and removes the old helper only after verifying the new
-configuration. A failed helper migration leaves the old setup intact and shows
-an **Install Helper** retry in Settings.
-
-Because Filbert has a new bundle identifier and app name, `AI Usage.app` may
-remain beside `Filbert.app` in `/Applications`. Quit and remove the old app
-after confirming Filbert has your configuration.
-
 ## Use it
 
-Open Filbert, click the menu-bar icon, and go to **Settings** to add a
-provider. Enter its API key. The key goes straight into the Keychain. From then
-on the app refreshes usage on its own — one refresh every five minutes by
-default.
+Click the Filbert menu-bar icon and open **Settings** to add a provider. Enter
+its API key. The key goes straight into the Keychain. Filbert then refreshes
+usage every five minutes by default.
 
 Three providers read from a local session instead of an API key. Set those up
 below.
@@ -127,22 +113,22 @@ below.
 
 - API keys live as **Keychain generic-password items**. They are never written
   to disk in plaintext and never logged.
-- Keys go **only to their own provider's API**, over HTTPS.
+- Keys go **only to their respective provider APIs**, over HTTPS.
 - **No telemetry, no analytics, no remote logging.** The only outbound requests
   are the provider API calls that fetch your usage.
 
 ## Why macOS asks for your password
 
-<img src="assets/screenshots/password.png" alt="Asking Password" height="250">
+<img src="assets/screenshots/password.png" alt="macOS Keychain password prompt" height="250">
 
 macOS may show a system dialog asking for your login password or Touch ID when
 Filbert saves or reads credentials. This is the Keychain doing its job — not the
 app.
 
-Filbert stores every API key and token in the **macOS Keychain**, the same
-encrypted store Safari and other Apple apps use for passwords. When an app reads
-or writes a Keychain item for the first time in a session, macOS asks you to
-unlock it. Think of it as the lock on a safe:
+Filbert stores every API key and token in the **macOS Keychain**, the encrypted
+store Safari and other Apple apps use for passwords. When an app first reads or
+writes a Keychain item in a session, macOS asks you to unlock it. Think of it as
+a safe's lock:
 
 - **Your credentials stay encrypted on disk** — only the Keychain can decrypt
   them, and only after you approve it.
@@ -152,14 +138,14 @@ unlock it. Think of it as the lock on a safe:
   retrieve a value, and the Keychain handles encryption and access control
   itself. Filbert never touches your password or Touch ID.
 
-You may see this prompt once per session after the app launches (when it loads
-your saved keys) and once when you save a new key in Settings. Cursor users see
-an additional prompt on first import because Filbert reads tokens that Cursor's
-own apps stored in the Keychain — again, macOS is granting your permission, not
-asking for a second set of credentials.
+You may see this prompt once per session after the app launches, when it loads
+saved keys. You may see it again when you save a new key in Settings. Cursor
+users see another prompt on first import because Filbert reads tokens that
+Cursor's own apps stored in the Keychain. macOS is granting permission, not
+asking for another set of credentials.
 
-**In short:** the prompt means your credentials are locked up tight. It is
-macOS protecting your secrets, not Filbert collecting them.
+**In short:** macOS shows this prompt to protect your credentials. Filbert does
+not receive your password or Touch ID.
 
 ### OpenAI Codex setup
 
@@ -173,8 +159,8 @@ curl -fsSL https://chatgpt.com/codex/install.sh | sh
 codex --version
 ```
 
-Run `codex` from a project directory and choose **Sign in with ChatGPT** on
-first launch. Filbert does not read, store, or manage your Codex credentials.
+Run `codex` from a project directory. On first launch, choose **Sign in with
+ChatGPT**. Filbert does not read, store, or manage your Codex credentials.
 For other install methods and troubleshooting, see the
 [official Codex CLI docs](https://developers.openai.com/codex/cli/).
 
@@ -188,7 +174,7 @@ a key — Filbert finds the token that Cursor's own apps already stored on your
 machine.
 
 **Make sure you are signed in to Cursor.** The provider reads tokens from two
-places, tried in order:
+locations, in this order:
 
 1. **Keychain** — service `cursor-agent`, accounts `cursor-access-token` and
    `cursor-refresh-token`. Populated by `agent login` (the Cursor CLI).
@@ -227,14 +213,14 @@ which claude
 Code already fetched for your account. It never handles your credentials.
 
 Then open Filbert → Settings → Claude Code and click **Install Helper**. The
-helper hooks into Claude Code's `statusLine` command and writes a small cache
-file that Filbert reads on refresh.
+helper hooks into Claude Code's `statusLine` command. It writes a small cache
+file that Filbert reads during refresh.
 
 > **You never run anything by hand.** When you click **Refresh**, Filbert runs
-> `claude -p "/usage"` in the background, reads the figures, and updates the
-> cache itself. This works even when you drive Claude Code from an editor and
-> never open its status line. During interactive sessions, the status-line
-> helper keeps the cache fresh on its own.
+> `claude -p "/usage"` in the background. It reads the figures and updates the
+> cache. This works even when you use Claude Code from an editor and never open
+> its status line. During interactive sessions, the status-line helper keeps the
+> cache fresh.
 
 The Claude desktop app (`/Applications/Claude.app`) is **not** a substitute. Its
 bundled `claude` binary sits under a versioned `~/Library/Application
@@ -276,12 +262,13 @@ touching the others or the core app.
 - **UI layer** — the menu bar, popover, and widgets read the hub's published
   state. They know nothing about a provider's API.
 
-To add a provider, you implement one protocol and register it. No other files
-change.
+To add a provider, implement the protocol and register it. Nothing else
+changes.
 
 ## Build from source
 
-If you're on Intel, want the latest `main`, or prefer to build it yourself:
+If you have an Intel Mac, want the latest `main`, or prefer to build it
+yourself:
 
 ```bash
 git clone https://github.com/victorhqc/filbert.git
@@ -292,8 +279,7 @@ swift run
 You'll need **Swift 5.9+**. Install the Xcode Command Line Tools with
 `xcode-select --install`.
 
-To produce a DMG locally (this mirrors what CI does), install `create-dmg`
-first:
+To create a DMG locally, first install `create-dmg`:
 
 ```sh
 brew install create-dmg
