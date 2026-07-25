@@ -1,32 +1,23 @@
 import Core
 import Foundation
 
-// MARK: - Paths (providers 02 Plan §5)
+// MARK: - Paths
 
-/// `~/.claude/filbert-statusline` — the compiled helper binary
-/// (providers 02 Plan §5).
 public let claudeHelperDestURL: URL = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent(".claude")
     .appendingPathComponent("filbert-statusline")
 
-/// `~/.claude/settings.json` — Claude Code's settings file
-/// (providers 02 AC8).
 public let claudeSettingsFileURL: URL = FileManager.default.homeDirectoryForCurrentUser
     .appendingPathComponent(".claude")
     .appendingPathComponent("settings.json")
 
-// MARK: - Installer error (providers 02 AC8)
+// MARK: - Installer error
 
 public enum InstallerError: Error, Equatable, Sendable {
-    /// `swiftc` is not on PATH — install cannot proceed (providers 02 Plan §5).
     case swiftcNotFound
-    /// `swiftc` exited non-zero.
     case compilationFailed(Int32)
-    /// `settings.json` exists but does not parse as JSON (providers 02 AC8).
     case unparseableSettings
-    /// The bundled helper source is missing from the app resources.
     case helperSourceNotFound
-    /// The helper or Claude settings did not match the staged installation.
     case configurationVerificationFailed
 
     public static func == (lhs: InstallerError, rhs: InstallerError) -> Bool {
@@ -58,26 +49,20 @@ extension InstallerError: LocalizedError {
     }
 }
 
-// MARK: - Codable model for ~/.claude/settings.json (ci 04 AC7)
+// MARK: - Codable model for ~/.claude/settings.json
 
-//
 // `settings.json` is user-owned and open-schema: Claude Code accepts arbitrary
 // sibling keys alongside `statusLine`, and `statusLine` itself may be a bare
 // string or an object with arbitrary keys (`padding`, `refreshInterval`, …).
 // These types model the known keys (`statusLine`, `command`, `type`) while
 // sinking every unknown key into an `extra: [String: AnyJSON]` so a
-// read/modify/write round-trip preserves them — without exposing the `Any`
-// type (ci 04 AC5/AC6). `AnyJSON` is the open-schema value type from `Core`.
+// read/modify/write round-trip preserves them.
 
-/// The `statusLine` value: either a bare command string or a typed object
-/// (providers 02 AC8).
 enum StatusLineValue: Equatable {
     case string(String)
     case object(StatusLineObject)
 }
 
-/// The object form of `statusLine`. `command` and `type` are typed; every
-/// other key (`padding`, `refreshInterval`, …) is preserved in `extra`.
 struct StatusLineObject: Equatable {
     var command: String?
     var type: String?
@@ -90,8 +75,6 @@ struct StatusLineObject: Equatable {
     }
 }
 
-/// The top-level `~/.claude/settings.json` object. `statusLine` is typed;
-/// every other top-level key is preserved in `extra`.
 struct ClaudeSettings: Equatable {
     var statusLine: StatusLineValue?
     var extra: [String: AnyJSON]
@@ -104,7 +87,6 @@ struct ClaudeSettings: Equatable {
 
 // MARK: - Codable round-trip via [String: AnyJSON]
 
-//
 // `KeyedDecodingContainer` with a fixed `CodingKey` enum silently drops keys
 // not in the enum, which would lose exactly the open-schema sibling keys this
 // model exists to preserve. Decoding the whole object as `[String: AnyJSON]`
@@ -181,8 +163,7 @@ extension ClaudeSettings: Codable {
     }
 
     /// Pulls a `String` out of an `AnyJSON` that is expected to hold a string,
-    /// returning `nil` for any other kind (matches the historical
-    /// `as? String` tolerance).
+    /// returning `nil` for any other kind.
     private static func stringValue(_ value: AnyJSON) -> String? {
         if case let .string(string) = value {
             return string
@@ -191,16 +172,8 @@ extension ClaudeSettings: Codable {
     }
 }
 
-// MARK: - Installer (providers 02 AC7, AC8, AC11)
+// MARK: - Installer
 
-/// Manages installation and removal of the statusline helper binary and its
-/// integration into Claude Code's `~/.claude/settings.json`.
-///
-/// The helper binary reads statusline JSON from stdin, extracts
-/// `rate_limits`, and writes an atomic cache file for the provider to read
-/// (providers 02 AC7). The installer chains the helper into any existing
-/// `statusLine.command` so the user's prior statusline continues to work
-/// (providers 02 AC8).
 public struct StatuslineHelperInstaller: Sendable {
     private let settingsURL: URL
     private let helperDestURL: URL
@@ -210,8 +183,9 @@ public struct StatuslineHelperInstaller: Sendable {
 
     // MARK: - Chain markers
 
-    /// Sentinels embedded in the chained shell command so we can detect our
-    /// own wrapper and extract the original command (providers 02 AC8).
+    // Sentinels bracketing the original command in the chained shell string,
+    // so we can detect our own wrapper and extract the original on
+    // reinstall/uninstall.
     private static let chainStart = "###FILBERT-CHAIN-START###"
     private static let chainSep = "###FILBERT-CHAIN-SEPARATOR###"
 
@@ -255,10 +229,8 @@ public struct StatuslineHelperInstaller: Sendable {
         self.swiftCompilerPath = swiftCompilerPath
     }
 
-    // MARK: - Status (providers 02 AC3)
+    // MARK: - Status
 
-    /// Returns `true` when the compiled helper binary exists and is
-    /// executable at the expected destination.
     public func isHelperInstalled() -> Bool {
         FileManager.default.isExecutableFile(atPath: helperDestURL.path)
     }
@@ -267,13 +239,8 @@ public struct StatuslineHelperInstaller: Sendable {
         (try? hasLegacyHelperIntegration()) == true
     }
 
-    // MARK: - Install (providers 02 AC7, AC8)
+    // MARK: - Install
 
-    /// Full install: compiles the helper from the bundled Swift source,
-    /// then chains it into `~/.claude/settings.json`.
-    ///
-    /// - Parameter helperSourceURL: The URL of `statusline_helper.swift` in
-    ///   the app bundle. Obtain via `Bundle.module.url(forResource:withExtension:)`.
     public func install(helperSourceURL: URL) throws {
         let helperExisted = isHelperInstalled()
         let settingsBackup = try? Data(contentsOf: settingsURL)
@@ -301,37 +268,26 @@ public struct StatuslineHelperInstaller: Sendable {
         return true
     }
 
-    // MARK: - Uninstall (providers 02 AC11)
+    // MARK: - Uninstall
 
-    /// Removes the helper binary, unwraps any filbert chain from
-    /// `settings.json`, and deletes the cache file.
     public func uninstall() throws {
-        // 1. Unwrap settings.json (providers 02 AC11).
         try removeFromSettings()
-
-        // 2. Delete the compiled helper binary.
         try? FileManager.default.removeItem(at: helperDestURL)
-
-        // 3. Delete the cache file so stale data doesn't linger.
+        // Delete the cache file so stale data doesn't linger.
         try? FileManager.default.removeItem(at: cacheURL)
     }
 
     // MARK: - Internal (testable entry points)
 
-    /// Settings-only install. Assumes the helper binary already exists at
-    /// `helperDestURL`. Exposed for testing so suites can pre-seed a dummy
-    /// binary and exercise the settings-manipulation logic in isolation.
     func installSettingsOnly() throws {
         try updateSettingsForInstall()
     }
 
-    /// Settings-only uninstall. Exposed for testing so suites can verify
-    /// chain unwrapping without touching the filesystem for the binary.
     func uninstallSettingsOnly() throws {
         try removeFromSettings()
     }
 
-    // MARK: - Compilation (providers 02 Plan §5)
+    // MARK: - Compilation
 
     private func compileHelper(sourceURL: URL) throws {
         let destDir = helperDestURL.deletingLastPathComponent()
@@ -374,9 +330,6 @@ public struct StatuslineHelperInstaller: Sendable {
 
     // MARK: - Settings I/O
 
-    /// Reads `settingsURL` as a `ClaudeSettings` model, or returns `nil` when
-    /// the file is absent. Throws `InstallerError.unparseableSettings` when the
-    /// file exists but is not valid JSON (providers 02 AC8).
     private func readSettings() throws -> ClaudeSettings? {
         guard FileManager.default.fileExists(atPath: settingsURL.path) else {
             return nil
@@ -404,10 +357,8 @@ public struct StatuslineHelperInstaller: Sendable {
         }
     }
 
-    // MARK: - Settings manipulation (providers 02 AC8)
+    // MARK: - Settings manipulation
 
-    /// Extracts the `command` string from a `statusLine` value, which may
-    /// be a plain string or a `{"command": "..."}` object (providers 02 AC8).
     private func commandFromStatusLine(_ value: StatusLineValue?) -> String? {
         switch value {
         case let .string(string):
@@ -437,7 +388,7 @@ public struct StatuslineHelperInstaller: Sendable {
             } ?? false
             if existingCommand.contains(Self.chainStart) {
                 // Already chained by us — extract original, re-wrap so a
-                // reinstall replaces our wrapper in place (providers 02 AC8).
+                // reinstall replaces our wrapper in place.
                 let original = extractOriginalCommand(from: existingCommand) ?? ""
                 newCommand = wrapCommand(original, helperPath: helperDestURL.path)
             } else if legacyChain, let legacyConfiguration {
@@ -450,28 +401,20 @@ public struct StatuslineHelperInstaller: Sendable {
             } else if legacySoleHelper {
                 newCommand = helperDestURL.path
             } else {
-                // User's own command — chain our helper after it
-                // (providers 02 AC8).
                 newCommand = wrapCommand(existingCommand, helperPath: helperDestURL.path)
             }
         } else {
-            // No prior statusLine — set our helper as the sole command.
             newCommand = helperDestURL.path
         }
 
         // Claude Code requires `type: "command"` to invoke the statusLine
-        // (https://code.claude.com/docs/en/statusline). Always set it on
-        // install so the helper is actually spawned.
+        // (https://code.claude.com/docs/en/statusline).
         statusLineObject.type = "command"
         statusLineObject.command = newCommand
         settings.statusLine = .object(statusLineObject)
         try writeSettings(settings)
     }
 
-    /// Returns the existing `statusLine` as an object if it is one, so sibling
-    /// keys (`padding`, `refreshInterval`, …) survive the install rewrite. A
-    /// bare-string `statusLine` yields `nil` here — install normalizes it to
-    /// the object form (providers 02 AC8).
     private func existingStatusLineObject(_ value: StatusLineValue?) -> StatusLineObject? {
         if case let .object(object) = value {
             return object
@@ -487,10 +430,8 @@ public struct StatuslineHelperInstaller: Sendable {
         }
 
         if command.contains(Self.chainStart) {
-            // Our wrapper is present — extract the original command and
-            // restore it (providers 02 AC11). Like the original implementation,
-            // restore as a bare object with only `command`; sibling keys are
-            // not re-added (byte-equivalence with the prior behaviour, ci 04 AC7).
+            // Restore as a bare object with only `command`; sibling keys are
+            // not re-added.
             let original = extractOriginalCommand(from: command) ?? ""
             if original.isEmpty {
                 mutable.statusLine = nil
@@ -498,25 +439,17 @@ public struct StatuslineHelperInstaller: Sendable {
                 mutable.statusLine = .object(StatusLineObject(command: original))
             }
         } else if command == helperDestURL.path {
-            // Our helper is the only command — remove the statusLine key
-            // entirely (providers 02 AC11).
             mutable.statusLine = nil
         }
-        // else: a different command, not ours — leave it alone.
 
         try writeSettings(mutable)
     }
 
-    // MARK: - Chain helpers (providers 02 AC8)
+    // MARK: - Chain helpers
 
-    /// Wraps an existing command so it runs first, followed by the helper
-    /// reading the same stdin. The shell pipeline captures stdin into a
-    /// variable, pipes it to the original command, then pipes it to our
-    /// helper (whose output is discarded — it writes the cache directly).
-    ///
-    /// Sentinels `chainStart` / `chainSep` bracket the original command
-    /// so we can detect and extract it on reinstall or uninstall
-    /// (providers 02 AC8).
+    /// The shell pipeline captures stdin into a variable, pipes it to the
+    /// original command, then pipes it to our helper — whose output is
+    /// discarded since it writes the cache directly.
     private func wrapCommand(_ original: String, helperPath: String) -> String {
         let escaped = escapeForShell(original)
         return "bash -c \"INPUT=$(cat); "
@@ -525,9 +458,6 @@ public struct StatuslineHelperInstaller: Sendable {
             + "echo \\\"$INPUT\\\" | \(helperPath) > /dev/null\""
     }
 
-    /// Extracts the original user command from between the chain sentinels
-    /// and unescapes shell-escaped characters so the round-trip is lossless
-    /// (providers 02 AC8, AC11).
     private func extractOriginalCommand(from wrapped: String) -> String? {
         extractOriginalCommand(
             from: wrapped,
@@ -553,8 +483,6 @@ public struct StatuslineHelperInstaller: Sendable {
         return original.isEmpty ? nil : original
     }
 
-    /// Escapes characters that would break the double-quoted shell string
-    /// the original command is embedded in.
     private func escapeForShell(_ input: String) -> String {
         input.replacingOccurrences(of: "\\", with: "\\\\")
             .replacingOccurrences(of: "\"", with: "\\\"")
@@ -562,8 +490,6 @@ public struct StatuslineHelperInstaller: Sendable {
             .replacingOccurrences(of: "`", with: "\\`")
     }
 
-    /// Reverses `escapeForShell` so the original command is restored
-    /// losslessly on uninstall (providers 02 AC11).
     private func unescapeFromShell(_ input: String) -> String {
         var result = ""
         var index = input.startIndex

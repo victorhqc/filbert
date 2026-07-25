@@ -1,15 +1,10 @@
 import SwiftUI
 
-// MARK: - Refresh icon (ui 07 AC3)
+// MARK: - Refresh icon
 
-/// `arrow.clockwise` glyph that rotates continuously while `isRefreshing`
-/// is true and stops when it flips back. The view-model flag drives both
-/// the animation and the click-debounce (ui 07 AC3/AC4).
-///
-/// `withAnimation(... .repeatForever)` is committed explicitly on each flag
-/// transition: implicit `.animation(_:value:)` was tried first but left the
-/// glyph mid-rotation when the flag flipped back, so the explicit form is
-/// used (ui 07 Risks).
+/// `withAnimation` is committed explicitly on each flag transition because
+/// `repeatForever` animations started implicitly do not stop cleanly when the
+/// driving value flips back.
 struct RefreshIcon: View {
     let isRefreshing: Bool
 

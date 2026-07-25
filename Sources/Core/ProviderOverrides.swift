@@ -1,23 +1,14 @@
 import Foundation
 
-/// Reads and writes per-provider base-URL overrides (core 02).
-///
-/// Overrides live in `UserDefaults` — they are not secrets, so the Keychain
-/// stays reserved for API keys (AGENTS.md §3). Raw keys are kept private so
-/// the storage shape can change without touching the App layer (core 02 AC5).
+/// Overrides are not secrets — `UserDefaults`, not the Keychain (AGENTS.md §3).
 public enum ProviderOverrides {
-    /// Standard `UserDefaults` the App writes to. Held as a parameter-free
-    /// accessor so tests can swap it via `setUserDefaults(_:for:)`.
-    ///
-    /// `nonisolated(unsafe)`: production never mutates this after startup; only
-    /// the test-injection API writes, and XCTest runs serially.
+    // `nonisolated(unsafe)`: production never mutates after startup; only the
+    // test-injection API writes, and XCTest runs serially.
     private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
-    /// Returns the saved override URL for a provider, or `nil` if none.
-    ///
     /// Invalid entries (unparseable, empty host, or non-`https`) are treated
     /// as unset and removed — a working default is always preferable to a
-    /// confusing URL error (core 02 AC6).
+    /// confusing URL error.
     public static func baseURL(for providerId: String) -> URL? {
         let raw = defaults.string(forKey: key(for: providerId))
         guard let raw,
@@ -35,10 +26,7 @@ public enum ProviderOverrides {
         return url
     }
 
-    /// Saves an override URL for a provider. Pass `nil` to clear.
-    ///
-    /// Only `https` URLs with a non-empty host are accepted; anything else
-    /// throws (core 02 AC5).
+    /// Pass `nil` to clear.
     @discardableResult
     public static func setBaseURL(_ url: URL?, for providerId: String) throws -> URL? {
         guard let url else {
@@ -58,8 +46,7 @@ public enum ProviderOverrides {
         return url
     }
 
-    /// Test-only escape hatch: swaps the backing store. Production code never
-    /// needs this.
+    /// Test-only escape hatch: swaps the backing store.
     public static func setUserDefaults(_ defaults: UserDefaults) {
         Self.defaults = defaults
     }

@@ -20,7 +20,7 @@ final class ProviderOrderTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC4: empty saved order → input order preserved
+    // MARK: - empty saved order → input order preserved
 
     func testEffectiveOrder_returnsInputOrderWhenUnset() {
         XCTAssertEqual(
@@ -30,19 +30,17 @@ final class ProviderOrderTests: XCTestCase {
     }
 
     func testEffectiveOrder_preservesInputOrderForUnsavedIds() {
-        // No saved order — input order is the fallback.
         XCTAssertEqual(
             ProviderOrder.effectiveOrder(for: ["deepseek", "zai"]),
             ["deepseek", "zai"]
         )
     }
 
-    // MARK: - AC5: partial saved order → saved-first then unsaved
+    // MARK: - partial saved order → saved-first then unsaved
 
     func testEffectiveOrder_putsSavedIdsFirstInSavedSequence() {
         ProviderOrder.setOrder(["claude", "zai"])
 
-        // Unsaved "deepseek" keeps its input position after the saved pair.
         XCTAssertEqual(
             ProviderOrder.effectiveOrder(for: ["deepseek", "zai", "claude"]),
             ["claude", "zai", "deepseek"]
@@ -58,7 +56,7 @@ final class ProviderOrderTests: XCTestCase {
         )
     }
 
-    // MARK: - AC5: stale saved IDs → dropped on read
+    // MARK: - stale saved IDs → dropped on read
 
     func testEffectiveOrder_dropsSavedIdsNoLongerRegistered() {
         ProviderOrder.setOrder(["claude", "zai", "ghost"])
@@ -69,19 +67,18 @@ final class ProviderOrderTests: XCTestCase {
         )
     }
 
-    // MARK: - AC5: appending newly registered providers
+    // MARK: - appending newly registered providers
 
     func testEffectiveOrder_appendsNewlyRegisteredIdsAfterSavedOnes() {
         ProviderOrder.setOrder(["claude", "zai"])
 
-        // "deepseek" is newly registered — appended in input order.
         XCTAssertEqual(
             ProviderOrder.effectiveOrder(for: ["claude", "zai", "deepseek"]),
             ["claude", "zai", "deepseek"]
         )
     }
 
-    // MARK: - AC8: setOrder round-trip via savedOrder()
+    // MARK: - setOrder round-trip via savedOrder()
 
     func testSavedOrder_returnsNilWhenUnset() {
         XCTAssertNil(ProviderOrder.savedOrder())
@@ -119,8 +116,6 @@ final class ProviderOrderTests: XCTestCase {
     }
 
     func testEffectiveOrder_emptySavedOrderListBehavesLikeUnset() {
-        // An explicit empty list is a valid stored value — should behave like
-        // "no saved order" (input order preserved).
         ProviderOrder.setOrder([])
 
         XCTAssertNotNil(ProviderOrder.savedOrder())

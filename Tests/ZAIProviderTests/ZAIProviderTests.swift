@@ -23,7 +23,7 @@ final class ZAIProviderTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC1: Authenticated request
+    // MARK: - Authenticated request
 
     func testFetchQuota_issuesCorrectRequest() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -42,7 +42,7 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(request?.value(forHTTPHeaderField: "Accept"), "application/json")
     }
 
-    // MARK: - AC8: custom base URL (proxy) is honored (core 02)
+    // MARK: - custom base URL (proxy) is honored
 
     func testFetchQuota_usesCustomBaseURLWhenProvided() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -62,7 +62,7 @@ final class ZAIProviderTests: XCTestCase {
         )
     }
 
-    // MARK: - AC2: Known (type, unit) → labelled UsageLine
+    // MARK: - Known (type, unit) → labelled UsageLine
 
     func testFetchQuota_mapsKnownTypeUnitPairs() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -149,7 +149,7 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].label, "5-hour window")
     }
 
-    // MARK: - AC3: nextResetTime → resetDate
+    // MARK: - nextResetTime → resetDate
 
     func testFetchQuota_convertsEpochMsToDate() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -167,7 +167,7 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(resetDate.timeIntervalSince1970, expected.timeIntervalSince1970, accuracy: 1)
     }
 
-    // MARK: - AC4: usageDetails → UsageDetail rows
+    // MARK: - usageDetails → UsageDetail rows
 
     func testFetchQuota_mapsUsageDetails() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -206,7 +206,7 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertNil(quota.lines[0].details)
     }
 
-    // MARK: - AC5: Headline priority (5-hour → weekly)
+    // MARK: - Headline priority (5-hour → weekly)
 
     func testFetchQuota_headlineUsesFiveHourPriority() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -263,7 +263,7 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(quota.headline, "No data")
     }
 
-    // MARK: - AC6: Failures surface as typed errors
+    // MARK: - Failures surface as typed errors
 
     func testFetchQuota_throwsMissingKeyForEmptyKey() async throws {
         do {
@@ -303,7 +303,6 @@ final class ZAIProviderTests: XCTestCase {
             XCTFail("Expected network error")
         } catch let error as ZAIError {
             if case .network = error {
-                // expected
             } else {
                 XCTFail("Expected .network error, got \(error)")
             }
@@ -322,14 +321,13 @@ final class ZAIProviderTests: XCTestCase {
             XCTFail("Expected decoding error")
         } catch let error as ZAIError {
             if case .decoding = error {
-                // expected
             } else {
                 XCTFail("Expected .decoding error, got \(error)")
             }
         }
     }
 
-    // MARK: - core 03 AC3: internal-consistency assertion
+    // MARK: - internal-consistency assertion
 
     func testFetchQuota_throwsInternalInconsistencyForApiKeyFree() async throws {
         MockURLProtocol.responseData = validResponseJSON()
@@ -346,7 +344,7 @@ final class ZAIProviderTests: XCTestCase {
         }
     }
 
-    // MARK: - core 03 AC6: currentSetupState returns nil for .apiKey providers
+    // MARK: - currentSetupState returns nil for .apiKey providers
 
     func testCurrentSetupState_returnsNil() async {
         let state = await provider.currentSetupState()

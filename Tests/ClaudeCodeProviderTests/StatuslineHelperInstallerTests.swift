@@ -38,10 +38,9 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - isHelperInstalled (providers 02 AC3)
+    // MARK: - isHelperInstalled
 
     func testIsHelperInstalled_trueWhenExecutableExists() {
-        // Create a dummy executable at the helper path.
         try? "#!/bin/sh\necho ok".write(to: helperURL, atomically: true, encoding: .utf8)
         try? FileManager.default.setAttributes(
             [.posixPermissions: 0o755],
@@ -59,7 +58,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         XCTAssertFalse(installer.isHelperInstalled())
     }
 
-    // MARK: - AC8: install with no prior statusLine
+    // MARK: - install with no prior statusLine
 
     func testInstall_setsStatusLine_whenNoPriorSettings() throws {
         try createHelperBinary()
@@ -84,7 +83,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         XCTAssertEqual(statusLine?["type"] as? String, "command")
     }
 
-    // MARK: - AC8: install preserves existing statusLine sibling keys
+    // MARK: - install preserves existing statusLine sibling keys
 
     func testInstall_preservesStatusLineSiblingKeys() throws {
         // A user may have `padding` or `refreshInterval` configured alongside
@@ -104,11 +103,12 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         XCTAssertEqual(statusLine?["padding"] as? Int, 2)
         XCTAssertEqual(statusLine?["refreshInterval"] as? Int, 5)
         XCTAssertEqual(statusLine?["type"] as? String, "command")
-        // Command is now chained, but the original must still be present.
         let command = statusLine?["command"] as? String ?? ""
         XCTAssertTrue(command.contains("ccstatusline"))
         XCTAssertTrue(command.contains(helperURL.path))
     }
+
+    // MARK: - install normalizes bare string to object form
 
     func testInstall_normalizesBareStringStatusLine_toObjectType() throws {
         // Claude Code accepts a bare string for statusLine, but our installer
@@ -123,7 +123,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         XCTAssertEqual(statusLine?["type"] as? String, "command")
     }
 
-    // MARK: - AC8: install chains existing statusLine.command
+    // MARK: - install chains existing statusLine.command
 
     func testInstall_chainsExistingStringCommand() throws {
         try writeSettingsJSON(["statusLine": "original-cmd"])
@@ -147,28 +147,25 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         XCTAssertTrue(command?.contains(helperURL.path) ?? false)
     }
 
-    // MARK: - AC8: reinstall replaces in place (no double-wrapping)
+    // MARK: - reinstall replaces in place (no double-wrapping)
 
     func testInstall_replacesExistingChain_whenAlreadyInstalled() throws {
-        // First install
         try writeSettingsJSON(["statusLine": "original-cmd"])
         try createHelperBinary()
         try installer.installSettingsOnly()
 
         let firstCommand = try extractCommand(from: readSettingsJSON()) ?? ""
 
-        // Second install (reinstall)
         try installer.installSettingsOnly()
 
         let secondCommand = try extractCommand(from: readSettingsJSON()) ?? ""
-        // Should contain the same sentinel count — no double-wrapping.
         let sentinel = "###FILBERT-CHAIN-START###"
         let firstCount = firstCommand.components(separatedBy: sentinel).count - 1
         let secondCount = secondCommand.components(separatedBy: sentinel).count - 1
         XCTAssertEqual(firstCount, secondCount, "Reinstall must not double-wrap the chain")
     }
 
-    // MARK: - AC8: unparseable settings aborts install
+    // MARK: - unparseable settings aborts install
 
     func testInstall_throwsWhenSettingsNotJSON() throws {
         try "not json {{{".write(to: settingsURL, atomically: true, encoding: .utf8)
@@ -178,18 +175,16 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         }
     }
 
-    // MARK: - AC11: uninstall restores original command
+    // MARK: - uninstall restores original command
 
     func testUninstall_restoresOriginalStringCommand() throws {
         try writeSettingsJSON(["statusLine": "original-cmd"])
         try createHelperBinary()
         try installer.installSettingsOnly()
 
-        // Verify chained
         let chainedCommand = try extractCommand(from: readSettingsJSON()) ?? ""
         XCTAssertTrue(chainedCommand.contains("original-cmd"))
 
-        // Uninstall
         try installer.uninstallSettingsOnly()
 
         let settings = try readSettingsJSON()
@@ -211,7 +206,6 @@ final class StatuslineHelperInstallerTests: XCTestCase {
     }
 
     func testUninstall_removesStatusLine_whenOnlyHelperWasSet() throws {
-        // No prior statusLine — just our helper.
         try createHelperBinary()
         try installer.installSettingsOnly()
 
@@ -226,7 +220,6 @@ final class StatuslineHelperInstallerTests: XCTestCase {
 
     func testUninstall_noOp_whenNoStatusLine() throws {
         try writeSettingsJSON(["otherKey": "value"])
-        // No statusLine key at all — uninstall should be a no-op.
         try installer.uninstallSettingsOnly()
 
         let settings = try readSettingsJSON()
@@ -239,19 +232,16 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         try installer.uninstallSettingsOnly()
 
         let settings = try readSettingsJSON()
-        // Different command, not ours — unchanged.
         let command = extractCommand(from: settings)
         XCTAssertEqual(command, "some-other-command")
     }
 
-    // MARK: - AC11: uninstall deletes cache file
+    // MARK: - uninstall deletes cache file
 
     func testUninstall_deletesCache() throws {
-        // Write a dummy cache and a helper binary.
         try "{}".write(to: cacheURL, atomically: true, encoding: .utf8)
         try createHelperBinary()
 
-        // Full uninstall (not just settings-only).
         try installer.uninstall()
 
         XCTAssertFalse(
@@ -260,7 +250,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         )
     }
 
-    // MARK: - AC11: uninstall deletes helper binary
+    // MARK: - uninstall deletes helper binary
 
     func testUninstall_deletesHelperBinary() throws {
         try createHelperBinary()
@@ -289,8 +279,6 @@ final class StatuslineHelperInstallerTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Creates a dummy executable shell script at the helper destination so
-    /// `isHelperInstalled()` returns `true`.
     private func createHelperBinary() throws {
         let dir = helperURL.deletingLastPathComponent()
         try FileManager.default.createDirectory(
@@ -328,8 +316,6 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         return json
     }
 
-    /// Extracts the `command` string from a `statusLine` value, which may
-    /// be a string or a `{"command": "..."}` object.
     private func extractCommand(from settings: [String: Any]) -> String? {
         let statusLine = settings["statusLine"]
         if let str = statusLine as? String {

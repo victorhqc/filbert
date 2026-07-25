@@ -64,7 +64,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(detail.value, "42 / 500")
     }
 
-    // MARK: - ProviderInfo (ui 05 AC1)
+    // MARK: - ProviderInfo
 
     func testProviderInfo_includesAuthShape() throws {
         let info = try ProviderInfo(
@@ -156,7 +156,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(name, "cpu")
     }
 
-    // MARK: - ProviderSetupError (ui 05)
+    // MARK: - ProviderSetupError
 
     func testProviderSetupError_notSupported_isEquatable() {
         XCTAssertEqual(

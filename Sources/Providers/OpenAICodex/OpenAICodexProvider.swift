@@ -17,8 +17,6 @@ extension OpenAICodexError: LocalizedError {
     }
 }
 
-/// Maps Codex app-server rate-limit snapshots into Core's generic quota model
-/// without accessing Codex credentials (providers 05 AC4).
 public struct OpenAICodexProvider: AIProvider {
     public static let providerId = "openai-codex"
     public static let providerName = "OpenAI Codex"

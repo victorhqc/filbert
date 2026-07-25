@@ -7,7 +7,6 @@ final class KeychainTests: XCTestCase {
     private let currentService = "filbert"
 
     func testKeychainError_casesExist() {
-        // Verify KeychainError cases exist and are distinct.
         // We can't test real Keychain I/O in CI, but the enum must compile.
         let errors: [KeychainError] = [
             .saveFailed(-1),
@@ -54,7 +53,7 @@ final class KeychainTests: XCTestCase {
             XCTAssertEqual(error as? KeychainError, .loadFailed(errSecDecode))
         }
         // The store is untouched — recovery happens via the normal setup flow,
-        // not an in-place rewrite (core 06 AC2).
+        // not an in-place rewrite.
         XCTAssertNotNil(storage.items[currentService]?["providers"])
         XCTAssertTrue(storage.deletedItems.isEmpty)
     }
@@ -85,8 +84,6 @@ final class KeychainTests: XCTestCase {
     }
 
     func testFailedUpdatePreservesCachedAndStoredFields() throws {
-        // core 07 AC2: a failed write returns a typed error and leaves both
-        // the in-memory cache and the on-disk item at their pre-write state.
         let storage = InMemoryKeychainStorage()
         let original = ["zai": ["value": "zai-key"], "deepseek": ["value": "deepseek-key"]]
         let originalData = try JSONEncoder().encode(original)
@@ -118,8 +115,6 @@ final class KeychainTests: XCTestCase {
     }
 
     func testKeychainStorageTypesArePublicAcrossModuleBoundary() {
-        // core 07 AC3: provider modules see the storage protocol, the
-        // concrete accessor, the shared context, and its error as `public`.
         // Compile-time assertion only — no runtime behavior to exercise.
         let storage: any KeychainStorage = SecurityKeychainStorage()
         let context = KeychainAuthenticationContext()
@@ -131,8 +126,6 @@ final class KeychainTests: XCTestCase {
     }
 
     func testSharedAuthenticationContextIsReusedAcrossAccesses() {
-        // core 07 AC1: every Keychain access in the session routes through
-        // the same `LAContext`, created lazily on first use.
         let first = KeychainAuthenticationContext.shared.localAuthenticationContext
         let second = KeychainAuthenticationContext.shared.localAuthenticationContext
 
@@ -140,8 +133,8 @@ final class KeychainTests: XCTestCase {
     }
 
     func testInvalidateSwapsUnderlyingLAContext() {
-        // core 07 AC5: sleep/wake/lock swap the underlying `LAContext` so
-        // macOS can re-prompt within its new authorization window.
+        // sleep/wake/lock swap the underlying `LAContext` so macOS can
+        // re-prompt within its new authorization window.
         let context = KeychainAuthenticationContext()
         let before = context.localAuthenticationContext
 

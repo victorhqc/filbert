@@ -1,19 +1,14 @@
 import Foundation
 
 extension ClaudeCodeRefresher {
-    // MARK: - Working directory (providers 06 AC1)
+    // MARK: - Working directory
 
-    /// Creates a Filbert-owned directory below
-    /// `FileManager.default.temporaryDirectory` for the `claude` child to run
-    /// in. Returns `nil` if creation fails, in which case the caller aborts
-    /// the spawn and leaves the cache untouched.
-    ///
-    /// The directory is intentionally *not* the user's home, Documents,
-    /// Desktop, Downloads, Music, the app's source checkout, or any
-    /// user-selected project: `temporaryDirectory` is per-user but lives
-    /// outside TCC-protected locations, so a child spawned here cannot reach
-    /// those locations through CWD/parent-walk discovery at startup
-    /// (providers 06 AC1).
+    /// `temporaryDirectory` is per-user but lives outside TCC-protected
+    /// locations, so a child spawned here cannot reach home, Documents,
+    /// Desktop, Downloads, etc. through CWD/parent-walk discovery at startup.
+    /// Returns `nil` if creation fails; the caller then aborts the spawn and
+    /// leaves the cache untouched — never fall back to inheriting the
+    /// parent's CWD.
     static func makeDefaultWorkingDirectory() -> URL? {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("filbert-claude-code-spawn", isDirectory: true)

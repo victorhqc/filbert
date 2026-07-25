@@ -16,7 +16,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         try FileManager.default.removeItem(at: temporaryDirectory)
     }
 
-    // MARK: - AC1 (providers 05): locator ordering
+    // MARK: - locator ordering
 
     func testLocator_prefersPATHBeforeKnownLocations() {
         let expectedPath = "/custom/bin/codex"
@@ -37,7 +37,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertNil(locator.resolve())
     }
 
-    // MARK: - AC2 (providers 05): API-key-free setup
+    // MARK: - API-key-free setup
 
     func testProvider_reportsMissingCLIAsSetupState() async {
         let provider = makeProvider(executablePath: nil)
@@ -67,7 +67,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(info.setupHelp, try XCTUnwrap(OpenAICodexProvider.setupHelp))
     }
 
-    // MARK: - AC3/AC8 (providers 05): protocol correlation and recoveries
+    // MARK: - protocol correlation and recoveries
 
     func testClient_ignoresNotificationsAndReturnsMatchingRateLimitResponse() async throws {
         let rateLimitResult = "{\"jsonrpc\":\"2.0\",\"id\":2,\"result\":"
@@ -133,7 +133,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertLessThan(Date().timeIntervalSince(start), 2)
     }
 
-    // MARK: - AC5–AC7 (providers 05): snapshot mapping
+    // MARK: - snapshot mapping
 
     func testProvider_prefersCodexBucketAndMapsWindowsCreditsAndHeadline() {
         let provider = makeProvider(executablePath: nil)
@@ -185,7 +185,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].details?.first?.value, "Unlimited credits")
     }
 
-    // MARK: - AC9 (providers 05): coalesced fetches
+    // MARK: - coalesced fetches
 
     func testProvider_coalescesConcurrentFetches() async throws {
         let countURL = temporaryDirectory.appendingPathComponent("count")

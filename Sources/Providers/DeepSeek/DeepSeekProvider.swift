@@ -3,8 +3,6 @@ import Foundation
 
 // MARK: - Diagnostic logging
 
-/// Lightweight stderr logger so `swift run` surfaces what DeepSeek actually
-/// returned. Diagnostic only.
 enum DeepSeekLog {
     static func log(_ message: @autoclosure () -> String) {
         FileHandle.standardError.write(Data("[DeepSeekProvider] \(message())\n".utf8))
@@ -18,9 +16,6 @@ public enum DeepSeekError: Error, Equatable, Sendable {
     case http(Int)
     case network(Error)
     case decoding(Error)
-    /// The registry routed `.apiKeyFree` auth to this provider, which is a
-    /// contract-integrity violation — DeepSeek always expects an API key
-    /// (core 03 AC3).
     case internalInconsistency
 
     public static func == (lhs: DeepSeekError, rhs: DeepSeekError) -> Bool {
@@ -56,7 +51,6 @@ extension DeepSeekError: LocalizedError {
 
 // MARK: - Wire types (private to this module)
 
-/// Top-level envelope for `GET /user/balance` (providers 04 AC2/AC3).
 private struct DeepSeekBalanceResponse: Decodable {
     let isAvailable: Bool
     let balanceInfos: [DeepSeekBalanceInfo]
@@ -67,9 +61,8 @@ private struct DeepSeekBalanceResponse: Decodable {
     }
 }
 
-/// One currency entry in the balance response. Wire shape is strings; the
-/// model wants numbers, so conversion happens in the mapping step (providers
-/// 04 AC2).
+/// Wire shape is strings; the model wants numbers, so conversion happens in
+/// the mapping step.
 private struct DeepSeekBalanceInfo: Decodable {
     let currency: String
     let totalBalance: String
@@ -91,8 +84,7 @@ public struct DeepSeekProvider: AIProvider {
     public static let providerName = "DeepSeek"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static let providerDescription = String(localized: "Monitor prepaid balance")
-    /// Host root for DeepSeek requests; path segments live in `fetchQuota`
-    /// (core 02 AC1/AC8).
+    /// Host root for DeepSeek requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.deepseek.com")!
 
     private let session: URLSession
@@ -107,8 +99,6 @@ public struct DeepSeekProvider: AIProvider {
         case let .apiKey(key):
             apiKey = key
         case .apiKeyFree:
-            // The registry never routes .apiKeyFree to DeepSeek — this is a
-            // contract-integrity assertion (core 03 AC3).
             throw DeepSeekError.internalInconsistency
         }
 
@@ -116,7 +106,6 @@ public struct DeepSeekProvider: AIProvider {
             throw DeepSeekError.missingKey
         }
 
-        // AC1: path is fixed; only the host comes from `baseURL` (core 02 AC8).
         let endpoint = baseURL
             .appendingPathComponent("user")
             .appendingPathComponent("balance")
@@ -159,14 +148,12 @@ public struct DeepSeekProvider: AIProvider {
 
     // MARK: - Mapping
 
-    /// Converts the decoded envelope into a `ProviderQuota`. Always emits the
-    /// balance lines so the user can see what's left even when the account is
-    /// marked unavailable (providers 04 AC3).
+    /// Always emits the balance lines so the user can see what's left even
+    /// when the account is marked unavailable.
     private func map(_ response: DeepSeekBalanceResponse) -> ProviderQuota {
         let lines = response.balanceInfos.flatMap { info -> [UsageLine] in
-            // AC2: total → `total`, granted/topped-up → their own lines, all
-            // tagged with the raw currency code. Currency formatting (symbol,
-            // decimals) is the UI's job, so `used` is not derived here.
+            // Currency formatting (symbol, decimals) is the UI's job, so
+            // `used` is not derived here.
             let currency = info.currency
             return [
                 UsageLine(
@@ -201,9 +188,6 @@ public struct DeepSeekProvider: AIProvider {
         )
     }
 
-    /// AC3 + AC4: when `is_available == false`, surface it explicitly; when
-    /// true, format the first balance as `"<symbol><amount> left"`; fall back
-    /// to the localized "No data" string when no balance parsed.
     private func computeHeadline(
         response: DeepSeekBalanceResponse,
         lines: [UsageLine]
@@ -224,9 +208,6 @@ public struct DeepSeekProvider: AIProvider {
         return String(localized: "\(amount) left")
     }
 
-    /// Locale-aware currency formatter for the headline (providers 04 AC4).
-    /// Local to this provider: per-AC2 currency formatting of the underlying
-    /// values is still the UI's job; this only styles the headline amount.
     private static func currencyFormatter(currencyCode: String) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency

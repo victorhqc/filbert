@@ -26,7 +26,7 @@ final class StatuslineCacheStoreTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC5: both windows present
+    // MARK: - both windows present
 
     func testRead_decodesBothWindows() throws {
         let cache = makeCache(
@@ -44,7 +44,7 @@ final class StatuslineCacheStoreTests: XCTestCase {
         XCTAssertEqual(decoded?.rateLimits?.sevenDay?.resetsAt, 1_713_500_000)
     }
 
-    // MARK: - AC5: only five_hour
+    // MARK: - only five_hour
 
     func testRead_decodesOnlyFiveHour() throws {
         let cache = makeCache(
@@ -58,7 +58,7 @@ final class StatuslineCacheStoreTests: XCTestCase {
         XCTAssertNil(decoded?.rateLimits?.sevenDay)
     }
 
-    // MARK: - AC5: only seven_day
+    // MARK: - only seven_day
 
     func testRead_decodesOnlySevenDay() throws {
         let cache = makeCache(
@@ -72,7 +72,7 @@ final class StatuslineCacheStoreTests: XCTestCase {
         XCTAssertEqual(decoded?.rateLimits?.sevenDay?.usedPercentage, 80)
     }
 
-    // MARK: - AC5: no rate_limits (free-tier / new session)
+    // MARK: - no rate_limits (free-tier / new session)
 
     func testRead_decodesNilRateLimits() throws {
         let json = Data("""
@@ -87,7 +87,7 @@ final class StatuslineCacheStoreTests: XCTestCase {
         XCTAssertNil(decoded?.rateLimits)
     }
 
-    // MARK: - AC4: absent file returns nil
+    // MARK: - absent file returns nil
 
     func testRead_returnsNilWhenFileAbsent() {
         XCTAssertNil(store.read())
@@ -108,10 +108,9 @@ final class StatuslineCacheStoreTests: XCTestCase {
         XCTAssertEqual(decoded?.rateLimits?.sevenDay?.usedPercentage, 60)
     }
 
-    // MARK: - AC7: atomic write (temp + rename)
+    // MARK: - atomic write (temp + rename)
 
     func testAtomicWrite_doesNotLeavePartialFile() throws {
-        // Pre-write a "current" cache so we can verify it survives a failed write.
         let original = makeCache(
             fiveHourPct: 10, fiveHourReset: 1,
             sevenDayPct: nil, sevenDayReset: nil
@@ -120,9 +119,6 @@ final class StatuslineCacheStoreTests: XCTestCase {
 
         let originalData = try Data(contentsOf: cacheURL)
 
-        // Simulate an updated write. The atomic contract (write to temp,
-        // then rename) means the original should be replaced atomically —
-        // the file should never be missing or partial.
         let updated = makeCache(
             fiveHourPct: 99, fiveHourReset: 2,
             sevenDayPct: nil, sevenDayReset: nil
@@ -138,8 +134,6 @@ final class StatuslineCacheStoreTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Builds a `StatuslineCache` with optional windows. Pass `nil` for
-    /// a percentage and a reset to omit that window entirely.
     private func makeCache(
         fiveHourPct: Double?,
         fiveHourReset: TimeInterval?,

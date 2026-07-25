@@ -1,10 +1,5 @@
 import Foundation
 
-/// Shared quota model that represents any provider plan type (core 01).
-///
-/// A single provider can return a mix of line types: some with percentage
-/// + resetDate (windowed quota), others with used + unit (continuous
-/// consumption), and some with both (capped API plans).
 public struct ProviderQuota: Sendable {
     public let providerId: String
     public let providerName: String
@@ -12,9 +7,6 @@ public struct ProviderQuota: Sendable {
     public let lines: [UsageLine]
     public let lastUpdated: Date
     public let error: String?
-    /// Provider-set flag indicating the data is beyond its freshness window.
-    /// Defaults to `false`; the provider is solely responsible for setting it
-    /// (providers 02 AC5b).
     public let isStale: Bool
     /// Optional peak-hours pricing config. Providers that have time-based
     /// multipliers (e.g. z.ai's GLM Coding Plan) populate this so the view
@@ -44,32 +36,21 @@ public struct ProviderQuota: Sendable {
 
 // MARK: - Peak-hours config
 
-/// Provider-agnostic peak-hours pricing configuration.
-///
-/// Providers with time-based tiers (peak/off-peak multipliers) populate this
-/// on their `ProviderQuota`. The view layer renders it generically — adding a
-/// new provider with peak hours requires no changes to `QuotaView.swift`.
+/// Provider-agnostic: adding a new provider with peak hours requires no
+/// changes to the view layer.
 public struct PeakHoursConfig: Sendable {
-    /// The time zone the peak window is defined in (e.g. Asia/Shanghai).
     public let timeZone: TimeZone?
 
-    /// Peak window: `[peakStartHour, peakEndHour)` in `timeZone`.
+    /// Peak window is `[peakStartHour, peakEndHour)` in `timeZone`.
     public let peakStartHour: Int
     public let peakEndHour: Int
 
-    /// Multiplier while inside the peak window.
     public let peakMultiplier: Int
 
-    /// Multiplier outside the peak window (used when no promo is active).
     public let offPeakMultiplier: Int
 
-    /// Optional promotional off-peak multiplier, valid until `promoEndDate`.
-    /// When non-nil and the date hasn't passed, this replaces
-    /// `offPeakMultiplier` for off-peak hours.
     public let promoMultiplier: Int?
 
-    /// End date of the promotional multiplier, if any. After this date
-    /// the off-peak multiplier reverts to `offPeakMultiplier`.
     public let promoEndDate: Date?
 
     public init(
@@ -92,8 +73,6 @@ public struct PeakHoursConfig: Sendable {
 
     // MARK: - Queries
 
-    /// True iff `date`, interpreted in `timeZone`, falls in
-    /// `[peakStartHour, peakEndHour)`.
     public func isInPeak(at date: Date) -> Bool {
         guard let timeZone else { return false }
         var cal = Calendar(identifier: .gregorian)
@@ -102,10 +81,6 @@ public struct PeakHoursConfig: Sendable {
         return hour >= peakStartHour && hour < peakEndHour
     }
 
-    /// The current multiplier at `date`:
-    /// - `peakMultiplier` inside the peak window,
-    /// - `promoMultiplier` off-peak while the promo is active,
-    /// - `offPeakMultiplier` otherwise.
     public func multiplier(at date: Date) -> Int {
         if isInPeak(at: date) {
             return peakMultiplier
@@ -117,11 +92,6 @@ public struct PeakHoursConfig: Sendable {
     }
 }
 
-/// One row in the quota display. Label is the only required field (core 01).
-///
-/// Lines are flexible: some carry percentage + resetDate (windowed quota),
-/// others carry used + unit (continuous consumption), and some carry both
-/// (capped API plans with a percentage-remaining ceiling).
 public struct UsageLine: Sendable {
     public let label: String
     public let used: Double?
@@ -150,7 +120,6 @@ public struct UsageLine: Sendable {
     }
 }
 
-/// A single key-value detail line, e.g. "RPM" : "42 / 500".
 public struct UsageDetail: Sendable {
     public let label: String
     public let value: String
@@ -161,116 +130,91 @@ public struct UsageDetail: Sendable {
     }
 }
 
-// MARK: - ProviderAuth (core 03)
+// MARK: - ProviderAuth
 
-/// The authentication shape a provider needs to fetch its quota (core 03 AC1).
-///
-/// Future auth shapes (e.g. OAuth tokens) get their own case under a separate
-/// spec — never bolted on as a Stringly-typed field.
+/// Future auth shapes (e.g. OAuth tokens) get their own case — never bolted on
+/// as a Stringly-typed field.
 public enum ProviderAuth: Sendable {
-    /// A plaintext API key stored in the macOS Keychain.
     case apiKey(String)
-    /// No API key is needed — the provider derives its auth from the local
-    /// environment (installed binary, helper process, cache file, etc.).
+    /// The provider derives its auth from the local environment (installed
+    /// binary, helper process, cache file, etc.) — no API key needed.
     case apiKeyFree
 
     /// Payload-free discriminator so the registry can route without ever
-    /// materializing a key it should not see (core 03 AC7).
+    /// materializing a key it should not see.
     public enum Shape: Sendable {
         case apiKey
         case apiKeyFree
     }
 }
 
-// MARK: - AIProvider (core 01, updated core 03)
+// MARK: - AIProvider
 
-/// Protocol every AI provider module must conform to (core 01).
+/// Each provider formats its own headline string — Core never interprets it.
 ///
-/// Each provider is responsible for formatting its own headline string —
-/// the Core layer never interprets it.
-///
-/// The effective base URL is resolved by Core (default vs. per-provider
-/// override) and passed into `fetchQuota` so providers never read the
-/// override themselves (core 02).
+/// Core resolves the effective base URL (default vs. per-provider override)
+/// and passes it into `fetchQuota` so providers never read the override
+/// themselves.
 public protocol AIProvider: Sendable {
     static var providerId: String { get }
     static var providerName: String { get }
     static var providerGlyph: ProviderGlyph { get }
-    /// Short, localized description shown in the Settings provider list (ui 02).
     static var providerDescription: String { get }
-    /// Optional localized notice shown in Settings for providers that require
-    /// an explicit caveat about their integration.
     static var providerDisclaimer: String? { get }
-    /// Production host root for this provider, e.g.
-    /// `URL(string: "https://api.z.ai")!` (core 02 AC1). Path segments stay
-    /// inside `fetchQuota`.
+    /// Host root only; path segments stay inside `fetchQuota`.
     static var baseURL: URL { get }
     /// Non-payload discriminator the registry branches on so it never
-    /// materializes a key it should not see (core 03 AC4/AC7).
+    /// materializes a key it should not see.
     static var authShape: ProviderAuth.Shape { get }
-    /// Optional, provider-supplied documentation for an external setup
-    /// prerequisite (ui 13).
     static var setupHelp: ProviderSetupHelp? { get }
-    /// Localized title for a deliberate credential-import action. `nil` means
-    /// this provider has no external credential source (core 04 AC7).
+    /// `nil` means this provider has no external credential source.
     static var credentialImportActionTitle: String? { get }
 
     // MARK: - Quota fetch
 
-    /// Fetches the provider's current quota, hitting `<baseURL>` resolved by
-    /// the registry (core 02 AC2, core 03 AC2).
-    ///
-    /// - Parameter auth: The provider's authentication shape. Providers that
-    ///   expect `.apiKey` should pattern-match `.apiKey(let key)`; providers
-    ///   that are `.apiKeyFree` should never see `.apiKey` and vice versa.
-    /// - Parameter baseURL: The effective host root, either the provider's
-    ///   default or a user-saved proxy override.
+    /// Providers that expect `.apiKey` should pattern-match `.apiKey(let key)`;
+    /// providers that are `.apiKeyFree` never see `.apiKey`, and vice versa.
     func fetchQuota(auth: ProviderAuth, baseURL: URL) async throws -> ProviderQuota
 
-    // MARK: - Configuration (core 03 AC5/AC6)
+    // MARK: - Configuration
 
-    /// Whether this provider is ready to fetch. The default returns `true`,
-    /// which is only correct for `.apiKey` providers — the registry routes
-    /// `.apiKey` providers through the Keychain path and never calls this.
-    /// `.apiKeyFree` providers MUST override to return their real state
-    /// (binary present, helper installed, etc.).
+    /// The default returns `true`, which is only correct for `.apiKey`
+    /// providers — the registry routes `.apiKey` providers through the
+    /// Keychain path and never calls this. `.apiKeyFree` providers MUST
+    /// override to return their real state (binary present, helper installed,
+    /// etc.).
     func isConfigured() -> Bool
 
-    /// `.apiKeyFree` providers return their current setup state, e.g. why the
-    /// provider is not ready. `.apiKey` providers never need this — the
-    /// registry never calls it for them (core 03 AC6).
+    /// `.apiKeyFree` providers return their current setup state (e.g. why the
+    /// provider is not ready). `.apiKey` providers never need this — the
+    /// registry never calls it for them.
     func currentSetupState() async -> ProviderState?
 
-    // MARK: - Helper management (ui 05 AC4/AC5)
+    // MARK: - Helper management
 
-    /// Installs the provider's helper (binary, config file, etc.). Only
-    /// `.apiKeyFree` providers that require a local helper override this;
-    /// the default throws `ProviderSetupError.notSupported` (ui 05 Plan 2).
+    /// Only `.apiKeyFree` providers that require a local helper override this;
+    /// the default throws `ProviderSetupError.notSupported`.
     func installHelper() async throws
 
-    /// Removes the provider's helper and restores any configuration the
-    /// install touched. Only `.apiKeyFree` providers override this (ui 05 AC5).
+    /// Restores any configuration the install touched. Only `.apiKeyFree`
+    /// providers override this.
     func removeHelper() async throws
 
-    /// Whether the helper can currently be installed (binary present, etc.).
     /// Returns `false` for `.apiKey` providers and for `.apiKeyFree` providers
-    /// whose binary is missing (ui 05 AC3/AC4).
+    /// whose binary is missing.
     func canInstallHelper() -> Bool
 
-    /// Imports credentials from a provider-owned external source when the
-    /// user explicitly requests it (core 04 AC7).
+    /// Provider-owned external source; only on explicit user action.
     func importCredentials() async throws
 }
 
-// MARK: - AIProvider defaults (core 03 AC3/AC5/AC6)
+// MARK: - AIProvider defaults
 
 public extension AIProvider {
     static var providerGlyph: ProviderGlyph {
         .sfSymbol("cpu")
     }
 
-    /// Defaults to `.apiKey` so existing providers need zero changes beyond
-    /// the `fetchQuota` signature (core 03 Plan 2/3).
     static var authShape: ProviderAuth.Shape {
         .apiKey
     }
@@ -287,15 +231,13 @@ public extension AIProvider {
         nil
     }
 
-    /// Defaults to `true` — only correct for `.apiKey` providers. The
-    /// registry routes `.apiKey` providers through the Keychain path and
-    /// never calls this (core 03 AC5).
+    /// Defaults to `true` — only correct for `.apiKey` providers, which the
+    /// registry routes through the Keychain path, never calling this.
     func isConfigured() -> Bool {
         true
     }
 
-    /// Defaults to `nil` — `.apiKey` providers are never asked for setup
-    /// state (core 03 AC6).
+    /// Defaults to `nil` — `.apiKey` providers are never asked for setup state.
     func currentSetupState() async -> ProviderState? {
         nil
     }
@@ -321,18 +263,16 @@ public extension AIProvider {
     }
 }
 
-/// Per-provider state the view model tracks (ui 02 Plan 2, core 03 AC6).
 public enum ProviderState: Sendable {
     case unconfigured
-    /// `.apiKeyFree` providers report why they aren't ready via a
-    /// human-readable reason (core 03 AC6).
+    /// The associated value is a human-readable reason the provider isn't ready.
     case setup(String)
     case loading
     case loaded(ProviderQuota)
     case error(String)
 }
 
-// MARK: - ProviderSetupError (ui 05 Plan 2)
+// MARK: - ProviderSetupError
 
 /// Thrown by `AIProvider.installHelper()` / `removeHelper()` default
 /// implementations when called on a provider that does not support helper
@@ -351,25 +291,19 @@ extension ProviderSetupError: LocalizedError {
     }
 }
 
-// MARK: - ProactiveRefreshable (providers 03)
+// MARK: - ProactiveRefreshable
 
-/// Opt-in capability for providers that can refresh their data on demand
-/// before the next `fetchQuota` call (providers 03 AC3).
-///
-/// Conformance is optional: providers that derive their data purely from
-/// the network on every fetch (e.g. `.apiKey` providers like ZAI) never
-/// conform, and the registry reports `ProviderSetupError.notSupported` for
-/// them. Providers whose data comes from a side channel that an external
-/// action can refresh (e.g. Claude Code's statusline cache) conform and
-/// implement `proactiveRefresh()` to trigger that action.
+/// Opt-in: providers that derive data purely from the network on every fetch
+/// (e.g. `.apiKey` providers like ZAI) never conform, and the registry reports
+/// `ProviderSetupError.notSupported` for them. Providers whose data comes from
+/// a side channel that an external action can refresh (e.g. Claude Code's
+/// statusline cache) conform and implement `proactiveRefresh()` to trigger
+/// that action.
 public protocol ProactiveRefreshable: AIProvider {
-    /// Trigger an out-of-band refresh of the provider's data source.
-    ///
     /// Implementations should block until the refresh is observably complete
     /// (e.g. the cache file has been rewritten) or a bounded timeout elapses,
     /// so the caller's subsequent `fetchQuota` reads fresh data. Failures
-    /// should throw; the view model catches them and proceeds to
-    /// `fetchQuota` regardless, surfacing whatever cached data is available
-    /// (providers 03 AC3).
+    /// should throw; the view model catches them and proceeds to `fetchQuota`
+    /// regardless, surfacing whatever cached data is available.
     func proactiveRefresh() async throws
 }

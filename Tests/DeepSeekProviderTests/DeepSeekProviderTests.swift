@@ -24,19 +24,17 @@ final class DeepSeekProviderTests: XCTestCase {
         super.tearDown()
     }
 
-    /// Convenience: fetch with the default test key and default base URL.
     private func fetchWithDefaultBaseURL() async throws -> ProviderQuota {
         try await provider.fetchQuota(auth: .apiKey("test-key"), baseURL: DeepSeekProvider.baseURL)
     }
 
-    /// Convenience: stage a mock response + 200 status, then fetch.
     private func fetchWithMock(_ data: Data) async throws -> ProviderQuota {
         MockURLProtocol.responseData = data
         MockURLProtocol.responseStatusCode = 200
         return try await fetchWithDefaultBaseURL()
     }
 
-    // MARK: - AC1: Authenticated request
+    // MARK: - Authenticated request
 
     func testFetchQuota_issuesCorrectRequest() async throws {
         _ = try await fetchWithMock(validResponseJSON())
@@ -60,7 +58,7 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(request.url?.absoluteString, "https://deepseek-proxy.example.com/user/balance")
     }
 
-    // MARK: - AC2: Balance maps to currency-tagged UsageLines
+    // MARK: - Balance maps to currency-tagged UsageLines
 
     func testFetchQuota_mapsBalanceInfosToLines() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
@@ -96,7 +94,7 @@ final class DeepSeekProviderTests: XCTestCase {
         }
     }
 
-    // MARK: - AC3: is_available: false surfaced explicitly
+    // MARK: - is_available: false surfaced explicitly
 
     func testFetchQuota_unavailableHeadlineWhenIsAvailableFalse() async throws {
         let json = Data("""
@@ -115,11 +113,11 @@ final class DeepSeekProviderTests: XCTestCase {
         let quota = try await fetchWithMock(json)
 
         XCTAssertEqual(quota.headline, "No balance available")
-        // AC3: lines are still returned so the user can see what's left.
+        // Lines are still returned so the user can see what's left.
         XCTAssertEqual(quota.lines.count, 3)
     }
 
-    // MARK: - AC4: Headline shows total balance, currency-aware
+    // MARK: - Headline shows total balance, currency-aware
 
     func testFetchQuota_headlineFormatsTotalBalanceWithCurrencySymbol() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
@@ -150,7 +148,7 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines.count, 0)
     }
 
-    // MARK: - AC5: Failures surface as typed errors
+    // MARK: - Failures surface as typed errors
 
     func testFetchQuota_throwsMissingKeyForEmptyKey() async throws {
         do {
@@ -184,7 +182,6 @@ final class DeepSeekProviderTests: XCTestCase {
             XCTFail("Expected network error")
         } catch let error as DeepSeekError {
             if case .network = error {
-                // expected
             } else {
                 XCTFail("Expected .network error, got \(error)")
             }
@@ -200,14 +197,13 @@ final class DeepSeekProviderTests: XCTestCase {
             XCTFail("Expected decoding error")
         } catch let error as DeepSeekError {
             if case .decoding = error {
-                // expected
             } else {
                 XCTFail("Expected .decoding error, got \(error)")
             }
         }
     }
 
-    // MARK: - AC5: 401 → localized "Authentication failed"; 429 → "Rate limited"
+    // MARK: - 401 → localized "Authentication failed"; 429 → "Rate limited"
 
     func testDeepSeekError_401MapsToAuthenticationFailed() {
         XCTAssertEqual(
@@ -223,7 +219,7 @@ final class DeepSeekProviderTests: XCTestCase {
         )
     }
 
-    // MARK: - core 03 AC3: internal-consistency assertion
+    // MARK: - internal-consistency assertion
 
     func testFetchQuota_throwsInternalInconsistencyForApiKeyFree() async throws {
         do {
@@ -234,7 +230,7 @@ final class DeepSeekProviderTests: XCTestCase {
         }
     }
 
-    // MARK: - core 03 AC6: currentSetupState returns nil for .apiKey providers
+    // MARK: - currentSetupState returns nil for .apiKey providers
 
     func testCurrentSetupState_returnsNil() async {
         let state = await provider.currentSetupState()

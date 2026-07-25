@@ -4,10 +4,6 @@ import Foundation
 import Security
 import XCTest
 
-/// Tests for `CursorTokenStore`'s use of Core's shared Keychain accessor
-/// (core 07 AC4/AC6). These belong in their own file because they exercise
-/// the public Core storage/context types directly rather than the
-/// closure-based test seams used by the bootstrap tests.
 final class CursorExternalAccessorTests: XCTestCase {
     func testBootstrapReadsExternalPairViaSharedAccessor() throws {
         let vault = TestCursorCredentialVault()
@@ -28,7 +24,6 @@ final class CursorExternalAccessorTests: XCTestCase {
 
         XCTAssertEqual(pair?.accessToken, "token")
         XCTAssertEqual(pair?.refreshToken, "token")
-        // core 07 AC4: external reads route through the shared Core context.
         XCTAssertTrue(contexts.read().allSatisfy {
             $0 == ObjectIdentifier(KeychainAuthenticationContext.shared)
         })
@@ -101,7 +96,7 @@ final class CursorExternalAccessorTests: XCTestCase {
         )
 
         // Absence (errSecItemNotFound) is not an error; it falls through to
-        // SQLite and ultimately returns nil (core 05 AC4, core 07 AC4).
+        // SQLite and ultimately returns nil.
         XCTAssertNil(try store.loadOrBootstrap())
     }
 

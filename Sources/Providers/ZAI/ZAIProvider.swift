@@ -3,9 +3,6 @@ import Foundation
 
 // MARK: - Diagnostic logging
 
-/// Lightweight stderr logger so `swift run` surfaces what z.ai actually
-/// returned. Diagnostic only — remove or gate behind a flag once the wire
-/// format is confirmed stable.
 enum ZAILog {
     static func log(_ message: @autoclosure () -> String) {
         FileHandle.standardError.write(Data("[ZAIProvider] \(message())\n".utf8))
@@ -19,8 +16,6 @@ public enum ZAIError: Error, Equatable, Sendable {
     case http(Int)
     case network(Error)
     case decoding(Error)
-    /// The registry routed `.apiKeyFree` auth to this provider, which is a
-    /// contract-integrity violation — z.ai always expects an API key (core 03 AC3).
     case internalInconsistency
 
     public static func == (lhs: ZAIError, rhs: ZAIError) -> Bool {
@@ -87,8 +82,7 @@ private struct ZAILimitLabel {
     let unit: Int
     let label: String
 
-    /// Recognized (type, unit) pairs (providers 01 AC2).
-    /// Unknown pairs are silently ignored during mapping.
+    /// Unknown (type, unit) pairs are silently ignored during mapping.
     static let known: [ZAILimitLabel] = [
         ZAILimitLabel(type: "TOKENS_LIMIT", unit: 3, label: "5-hour window"),
         ZAILimitLabel(type: "TOKENS_LIMIT", unit: 6, label: "Weekly"),
@@ -100,35 +94,26 @@ private struct ZAILimitLabel {
     }
 }
 
-// MARK: - Peak-hours metadata (ui 04 AC3/AC4)
+// MARK: - Peak-hours metadata
 
 /// GLM Coding Plan peak-hours rules sourced from zai-bar's README.
 /// Last verified: 2026-07-21.
-///
-/// These are provider-level constants — the view layer reads them so
-/// pricing rules aren't buried in UI-only code. When z.ai announces
-/// a change (extended promo, new multiplier, different peak window),
-/// updating this single location is sufficient.
 public enum ZAIPeakHours {
     /// China Standard Time (UTC+8, no DST).
     public static let timeZone = TimeZone(identifier: "Asia/Shanghai")
 
-    /// Peak window: 14:00–18:00 in Asia/Shanghai.
     public static let peakStartHour = 14
     public static let peakEndHour = 18
 
     /// Advanced-model (GLM-5.2 / GLM-5-Turbo) multiplier during peak hours.
     public static let peakMultiplier = 3
 
-    /// Off-peak multiplier after the limited-time promo ends.
     public static let offPeakMultiplier = 2
 
-    /// Off-peak multiplier while the limited-time promo is active.
     public static let promoMultiplier = 1
 
-    /// Limited-time promo cutoff: 2026-10-01 00:00 Asia/Shanghai.
-    /// After this date the off-peak multiplier flips from
-    /// `promoMultiplier` to `offPeakMultiplier`.
+    /// After this date the off-peak multiplier flips from `promoMultiplier`
+    /// to `offPeakMultiplier`.
     public static let promoEndDate: Date = {
         var components = DateComponents()
         components.year = 2026
@@ -148,11 +133,9 @@ public struct ZAIProvider: AIProvider {
     public static let providerName = "z.ai"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static let providerDescription = String(localized: "Monitor API usage and quotas")
-    /// Host root for z.ai requests; path segments live in `fetchQuota` (core 02 AC1/AC8).
+    /// Host root for z.ai requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.z.ai")!
 
-    /// Provider-agnostic config the view layer reads for the peak-hours block.
-    /// Sourced from `ZAIPeakHours` (zai-bar README).
     public static let peakHoursConfig = PeakHoursConfig(
         timeZone: ZAIPeakHours.timeZone,
         peakStartHour: ZAIPeakHours.peakStartHour,
@@ -175,8 +158,6 @@ public struct ZAIProvider: AIProvider {
         case let .apiKey(key):
             apiKey = key
         case .apiKeyFree:
-            // The registry never routes .apiKeyFree to ZAI — this is a
-            // contract-integrity assertion (core 03 AC3).
             throw ZAIError.internalInconsistency
         }
 
@@ -184,7 +165,6 @@ public struct ZAIProvider: AIProvider {
             throw ZAIError.missingKey
         }
 
-        // Path is plan-agnostic; only the host comes from `baseURL` (core 02 AC8).
         let endpoint = baseURL
             .appendingPathComponent("api")
             .appendingPathComponent("monitor")
@@ -193,9 +173,10 @@ public struct ZAIProvider: AIProvider {
             .appendingPathComponent("limit")
         var request = URLRequest(url: endpoint)
         request.httpMethod = "GET"
-        // z.ai's monitor endpoint expects the raw token, NOT an "Authorization: Bearer …"
-        // scheme. Sending a "Bearer " prefix is rejected as unauthenticated. This holds
-        // for both regular API and Coding Plan keys — the endpoint is plan-agnostic.
+        // z.ai's monitor endpoint expects the raw token, NOT an
+        // "Authorization: Bearer …" scheme. Sending a "Bearer " prefix is
+        // rejected as unauthenticated. This holds for both regular API and
+        // Coding Plan keys — the endpoint is plan-agnostic.
         request.setValue(apiKey, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -245,7 +226,6 @@ public struct ZAIProvider: AIProvider {
             guard let line = mapLimit(limit) else { continue }
             lines.append(line)
 
-            // Track for headline priority (AC5)
             if limit.type == "TOKENS_LIMIT", limit.unit == 3 {
                 fiveHourLimit = limit
             } else if limit.type == "TOKENS_LIMIT", limit.unit == 6 {
@@ -268,8 +248,6 @@ public struct ZAIProvider: AIProvider {
         )
     }
 
-    /// Maps a single z.ai limit to a UsageLine, or nil when the (type, unit)
-    /// pair is unrecognized (providers 01 AC2).
     private func mapLimit(_ limit: ZAILimit) -> UsageLine? {
         guard let labelKey = ZAILimitLabel.lookup(type: limit.type, unit: limit.unit) else {
             return nil
@@ -316,7 +294,6 @@ public struct ZAIProvider: AIProvider {
         )
     }
 
-    /// Builds the headline string using 5-hour → weekly priority (providers 01 AC5).
     private func computeHeadline(
         fiveHourLimit: ZAILimit?,
         weeklyLimit: ZAILimit?

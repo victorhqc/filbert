@@ -1,7 +1,5 @@
 import Foundation
 
-/// Transient UI state for an API-key entry row. The key remains only in the
-/// secure field until a successful Keychain write clears it.
 struct APIKeyEntryState {
     private(set) var input = ""
     private(set) var errorMessage: String?

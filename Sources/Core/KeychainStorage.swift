@@ -1,10 +1,9 @@
 import Foundation
 import Security
 
-/// Generic-password Keychain storage abstraction. Production code uses
-/// `SecurityKeychainStorage`; tests inject an in-memory fake. The shared
-/// `KeychainAuthenticationContext` is passed per call so the session's
-/// authorization state can be reused (core 07 AC3).
+/// Production code uses `SecurityKeychainStorage`; tests inject an in-memory
+/// fake. The shared `KeychainAuthenticationContext` is passed per call so the
+/// session's authorization state can be reused.
 public protocol KeychainStorage: Sendable {
     func readData(
         service: String,
@@ -37,11 +36,10 @@ public extension KeychainStorageError {
     }
 }
 
-/// Public accessor for generic-password Keychain items. Wraps
-/// `SecItemCopyMatching`, `SecItemUpdate`, `SecItemAdd`, and
+/// Wraps `SecItemCopyMatching`, `SecItemUpdate`, `SecItemAdd`, and
 /// `SecItemDelete` so provider modules stop reinventing SecItem query
-/// builders (core 07 AC3). `Keychain` uses this accessor for the
-/// consolidated item via the same protocol providers consume.
+/// builders. `Keychain` uses this accessor for the consolidated item via the
+/// same protocol providers consume.
 public struct SecurityKeychainStorage: KeychainStorage {
     public init() {}
 
@@ -50,7 +48,7 @@ public struct SecurityKeychainStorage: KeychainStorage {
         account: String,
         authenticationContext: KeychainAuthenticationContext
     ) throws -> Data? {
-        // Security framework API: `SecItem*` requires an untyped query (ci 04 AC6).
+        // `SecItem*` requires an untyped query.
         // swiftlint:disable:next no_any_type
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -82,7 +80,7 @@ public struct SecurityKeychainStorage: KeychainStorage {
         account: String,
         authenticationContext: KeychainAuthenticationContext
     ) throws {
-        // Security framework API: `SecItem*` requires an untyped query (ci 04 AC6).
+        // `SecItem*` requires an untyped query.
         // swiftlint:disable:next no_any_type
         let base: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -90,7 +88,7 @@ public struct SecurityKeychainStorage: KeychainStorage {
             kSecAttrAccount as String: account,
             kSecUseAuthenticationContext as String: authenticationContext.localAuthenticationContext,
         ]
-        // Security framework API: `SecItem*` requires untyped attributes (ci 04 AC6).
+        // `SecItem*` requires untyped attributes.
         // swiftlint:disable:next no_any_type
         let attributes: [String: Any] = [
             kSecValueData as String: data,
@@ -119,7 +117,7 @@ public struct SecurityKeychainStorage: KeychainStorage {
         account: String,
         authenticationContext: KeychainAuthenticationContext
     ) {
-        // Security framework API: `SecItem*` requires an untyped query (ci 04 AC6).
+        // `SecItem*` requires an untyped query.
         // swiftlint:disable:next no_any_type
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,

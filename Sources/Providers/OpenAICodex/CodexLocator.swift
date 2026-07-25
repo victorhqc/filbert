@@ -1,12 +1,9 @@
 import Foundation
 
-/// Resolves the user's `codex` executable without invoking a shell
-/// (providers 05 AC1).
 public struct CodexLocator: Sendable {
     private let environment: [String: String]
     private let isExecutable: @Sendable (String) -> Bool
 
-    /// Uses the process environment and filesystem for production lookup.
     public init() {
         self.init(
             environment: ProcessInfo.processInfo.environment,
@@ -22,8 +19,6 @@ public struct CodexLocator: Sendable {
         self.isExecutable = isExecutable
     }
 
-    /// Returns the first executable from `PATH`, then common macOS install
-    /// locations. A missing CLI is a normal setup state, not an error.
     public func resolve() -> String? {
         for directory in pathDirectories + knownDirectories {
             let candidate = (directory as NSString).appendingPathComponent("codex")

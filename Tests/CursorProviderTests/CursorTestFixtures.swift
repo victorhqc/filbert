@@ -2,11 +2,9 @@
 @testable import CursorProvider
 import Foundation
 
-/// Shared test fixtures and helpers for Cursor provider tests (providers 07).
 enum CursorTestFixtures {
     // MARK: - JWT builder
 
-    /// Builds a JWT string with the given `exp` claim (seconds since epoch).
     static func makeJWT(exp: TimeInterval) -> String {
         let header = "{\"alg\":\"RS256\",\"typ\":\"JWT\"}"
         let payload = "{\"exp\":\(Int(exp))}"
@@ -151,9 +149,9 @@ final class LockedBox<Value>: @unchecked Sendable {
     }
 }
 
-/// Test-only `KeychainStorage` that drives external reads from a closure.
-/// Used to inject canned Keychain responses into `CursorTokenStore`
-/// without touching the real Keychain (core 07 AC6).
+/// Test-only `KeychainStorage` that drives external reads from a closure,
+/// used to inject canned Keychain responses into `CursorTokenStore`
+/// without touching the real Keychain.
 final class ClosureKeychainStorage: KeychainStorage, @unchecked Sendable {
     private let read: @Sendable (String, String, KeychainAuthenticationContext) throws -> Data?
 
