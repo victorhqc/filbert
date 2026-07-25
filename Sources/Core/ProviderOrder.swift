@@ -9,7 +9,11 @@ import Foundation
 public enum ProviderOrder {
     /// Standard `UserDefaults` the App writes to. Held as a parameterless
     /// accessor so tests can swap it via `setUserDefaults(_:)`.
-    private static var defaults: UserDefaults = .standard
+    ///
+    /// `nonisolated(unsafe)`: production sets this once to `.standard` and never
+    /// mutates it; the only writer is the test-injection API, and XCTest runs
+    /// tests serially. `UserDefaults` itself is thread-safe for reads/writes.
+    private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
     /// Returns the passed provider IDs re-sorted so saved-order IDs come first
     /// in their saved sequence, then any unsaved IDs in their original

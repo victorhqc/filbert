@@ -1,0 +1,11 @@
+# Tests/ is exempt from the four strict rules the root config turns on at
+# `error` severity (ci 04 AC3/AC4). Test fixtures legitimately use
+# `URL(string:"...")!` and implicitly-unwrapped `XCTestCase` properties, and
+# the gate treats Tests as the testing ground (ci 04 AC1/AC5). All other rules
+# still apply here, so non-strict issues (file length, etc.) remain visible.
+disabled_rules:
+  - force_unwrapping
+  - force_cast
+  - force_try
+  - implicitly_unwrapped_optional
+  - no_any_type

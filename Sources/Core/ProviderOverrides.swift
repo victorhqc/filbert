@@ -8,7 +8,10 @@ import Foundation
 public enum ProviderOverrides {
     /// Standard `UserDefaults` the App writes to. Held as a parameter-free
     /// accessor so tests can swap it via `setUserDefaults(_:for:)`.
-    private static var defaults: UserDefaults = .standard
+    ///
+    /// `nonisolated(unsafe)`: production never mutates this after startup; only
+    /// the test-injection API writes, and XCTest runs serially.
+    private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
     /// Returns the saved override URL for a provider, or `nil` if none.
     ///

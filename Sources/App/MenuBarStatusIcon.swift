@@ -162,7 +162,9 @@ private struct MenuBarRingImage: View {
 /// when the resolved bucket changes between refreshes, never on every tick
 /// (ui 10 AC7).
 private enum MenuBarRingImageCache {
-    private static var cache: [Int: Image] = [:]
+    /// `nonisolated(unsafe)`: SwiftUI renders on the main actor, so the lazy
+    /// populate is single-threaded in practice (ci 04 Plan §4).
+    private nonisolated(unsafe) static var cache: [Int: Image] = [:]
 
     static func image(for bucket: Double) -> Image {
         let key = bucketKey(bucket)
@@ -300,7 +302,9 @@ private struct MenuBarMacFaceImage: View {
 }
 
 private enum MenuBarMacFaceCache {
-    private static var cache: [QuotaStatusResolver.Tier: Image] = [:]
+    /// `nonisolated(unsafe)`: SwiftUI renders on the main actor, so the lazy
+    /// populate is single-threaded in practice (ci 04 Plan §4).
+    private nonisolated(unsafe) static var cache: [QuotaStatusResolver.Tier: Image] = [:]
 
     static func image(for tier: QuotaStatusResolver.Tier) -> Image {
         if let cached = cache[tier] {

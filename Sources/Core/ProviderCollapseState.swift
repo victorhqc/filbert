@@ -5,7 +5,9 @@ import Foundation
 /// A missing value stays `nil`; the App layer owns the positional default
 /// because only it knows the current provider order.
 public enum ProviderCollapseState {
-    private static var defaults: UserDefaults = .standard
+    /// `nonisolated(unsafe)`: production never mutates this after startup; only
+    /// the test-injection API writes, and XCTest runs serially.
+    private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
     public static func collapsedState(for providerId: String) -> Bool? {
         savedStates()[providerId]

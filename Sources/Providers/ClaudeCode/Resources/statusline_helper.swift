@@ -8,6 +8,79 @@ import Foundation
 // binary has near-zero cold-start latency when Claude Code spawns it on
 // every statusline update (providers 02 Plan §5).
 
+// MARK: - Codable shapes
+
+//
+// The input and output JSON shapes are mirrored as Codable structs instead of
+// `[String: Any]` + `JSONSerialization` so this file stays free of the `Any`
+// type (ci 04 AC7). Field names and nesting match the shape the cache reader
+// (`StatuslineCacheStore`) decodes.
+
+/// One window inside the statusline payload. Fields are optional so a partial
+/// payload (missing `used_percentage` or `resets_at`) still decodes; the
+/// defaults are applied when building the cache (matching the previous
+/// `as? Double ?? 0` behaviour).
+struct StatuslineWindow: Decodable {
+    let usedPercentage: Double?
+    let resetsAt: Double?
+
+    enum CodingKeys: String, CodingKey {
+        case usedPercentage = "used_percentage"
+        case resetsAt = "resets_at"
+    }
+}
+
+struct StatuslineRateLimits: Decodable {
+    let fiveHour: StatuslineWindow?
+    let sevenDay: StatuslineWindow?
+
+    enum CodingKeys: String, CodingKey {
+        case fiveHour = "five_hour"
+        case sevenDay = "seven_day"
+    }
+}
+
+struct StatuslineInput: Decodable {
+    let rateLimits: StatuslineRateLimits?
+
+    enum CodingKeys: String, CodingKey {
+        case rateLimits = "rate_limits"
+    }
+}
+
+/// A non-optional window in the cache. The previous implementation defaulted
+/// missing values to `0`, and the cache reader treats `0` as "unknown" via the
+/// optional fields on its own model, so writing `0` here preserves that.
+struct CacheWindow: Encodable {
+    let usedPercentage: Double
+    let resetsAt: Double
+
+    enum CodingKeys: String, CodingKey {
+        case usedPercentage = "used_percentage"
+        case resetsAt = "resets_at"
+    }
+}
+
+struct CacheRateLimits: Encodable {
+    let fiveHour: CacheWindow?
+    let sevenDay: CacheWindow?
+
+    enum CodingKeys: String, CodingKey {
+        case fiveHour = "five_hour"
+        case sevenDay = "seven_day"
+    }
+}
+
+struct CachePayload: Encodable {
+    let writtenAt: Double
+    let rateLimits: CacheRateLimits?
+
+    enum CodingKeys: String, CodingKey {
+        case writtenAt = "written_at"
+        case rateLimits = "rate_limits"
+    }
+}
+
 // MARK: - Paths
 
 let cacheDir = FileManager.default.homeDirectoryForCurrentUser
@@ -30,54 +103,48 @@ let debugLogURL = cacheDir.appendingPathComponent("claude-code.helper.log")
 let debugLine = "\(Date()) invoked pid=\(ProcessInfo.processInfo.processIdentifier) bytes=\(rawInput.count)\n"
 appendDiagnosticLine(debugLine, to: debugLogURL)
 
-guard !rawInput.isEmpty,
-      let root = try? JSONSerialization.jsonObject(with: rawInput) as? [String: Any]
-else {
-    // No input or unparseable — write a cache with no rate_limits so the
-    // provider surfaces "No data" rather than silently clearing the last
-    // known state (providers 02 AC10).
-    writeCache(["written_at": writtenAt])
-    exit(0)
+/// Decode the statusline payload, tolerating empty/absent/unparseable input.
+/// A failed decode writes a cache with no `rate_limits` so the provider
+/// surfaces "No data" rather than silently clearing the last known state
+/// (providers 02 AC10).
+let input = (try? JSONDecoder().decode(StatuslineInput.self, from: rawInput))
+    ?? StatuslineInput(rateLimits: nil)
+
+/// Convert the decoded optional windows into non-optional cache windows,
+/// applying the historical `?? 0` default for missing fields.
+let fiveHour: CacheWindow? = input.rateLimits?.fiveHour.map {
+    CacheWindow(
+        usedPercentage: $0.usedPercentage ?? 0,
+        resetsAt: $0.resetsAt ?? 0
+    )
 }
 
-var cache: [String: Any] = ["written_at": writtenAt]
-
-if let rateLimits = root["rate_limits"] as? [String: Any] {
-    var rateLimitDict: [String: Any] = [:]
-
-    if let fiveHourDict = rateLimits["five_hour"] as? [String: Any] {
-        rateLimitDict["five_hour"] = [
-            "used_percentage": fiveHourDict["used_percentage"] as? Double ?? 0,
-            "resets_at": fiveHourDict["resets_at"] as? TimeInterval ?? 0,
-        ]
-    }
-
-    if let sevenDayDict = rateLimits["seven_day"] as? [String: Any] {
-        rateLimitDict["seven_day"] = [
-            "used_percentage": sevenDayDict["used_percentage"] as? Double ?? 0,
-            "resets_at": sevenDayDict["resets_at"] as? TimeInterval ?? 0,
-        ]
-    }
-
-    if !rateLimitDict.isEmpty {
-        cache["rate_limits"] = rateLimitDict
-    }
+let sevenDay: CacheWindow? = input.rateLimits?.sevenDay.map {
+    CacheWindow(
+        usedPercentage: $0.usedPercentage ?? 0,
+        resetsAt: $0.resetsAt ?? 0
+    )
 }
 
-writeCache(cache)
+/// Match the previous "only write rate_limits when at least one window is
+/// present" behaviour: an empty `rate_limits` object is never written.
+let rateLimits: CacheRateLimits? = (fiveHour != nil || sevenDay != nil)
+    ? CacheRateLimits(fiveHour: fiveHour, sevenDay: sevenDay)
+    : nil
+
+writeCache(CachePayload(writtenAt: writtenAt, rateLimits: rateLimits))
 
 // MARK: - Atomic write (providers 02 AC7)
 
-func writeCache(_ dict: [String: Any]) {
+func writeCache(_ payload: CachePayload) {
     try? FileManager.default.createDirectory(
         at: cacheDir,
         withIntermediateDirectories: true
     )
 
-    guard let data = try? JSONSerialization.data(
-        withJSONObject: dict,
-        options: [.sortedKeys]
-    ) else { return }
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = [.sortedKeys]
+    guard let data = try? encoder.encode(payload) else { return }
 
     let tempPath = cachePath.path + ".tmp." + UUID().uuidString
     let tempURL = URL(fileURLWithPath: tempPath)

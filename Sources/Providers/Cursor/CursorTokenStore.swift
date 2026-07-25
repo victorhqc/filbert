@@ -228,6 +228,13 @@ struct CursorTokenStore: Sendable {
 
     // MARK: - JWT expiry (no third-party library)
 
+    /// Minimal subset of a JWT payload: only the `exp` (expiry) claim is read.
+    /// Replaces `JSONSerialization` + `[String: Any]` so `Sources/` stays free
+    /// of the `Any` type (ci 04 AC7).
+    private struct JWTPayload: Decodable {
+        let exp: Double
+    }
+
     static func jwtExpiry(_ token: String) -> Date? {
         let segments = token.split(separator: ".", omittingEmptySubsequences: false)
         guard segments.count >= 2 else { return nil }
@@ -241,12 +248,11 @@ struct CursorTokenStore: Sendable {
         }
 
         guard let data = Data(base64Encoded: payload),
-              let json = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
-              let exp = json["exp"] as? NSNumber
+              let jwt = try? JSONDecoder().decode(JWTPayload.self, from: data)
         else {
             return nil
         }
-        return Date(timeIntervalSince1970: exp.doubleValue)
+        return Date(timeIntervalSince1970: jwt.exp)
     }
 
     // MARK: - Production external stores

@@ -11,7 +11,10 @@ public enum BalanceThresholds {
     /// Standard `UserDefaults` the App writes to. Held as a parameter-free
     /// accessor so tests can swap it via `setUserDefaults(_:)` — identical
     /// pattern to (core 02 Plan 4).
-    private static var defaults: UserDefaults = .standard
+    ///
+    /// `nonisolated(unsafe)`: production never mutates this after startup; only
+    /// the test-injection API writes, and XCTest runs serially.
+    private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
     /// Returns the saved "low" threshold, or the default when unset (ui 08 AC2).
     public static var low: Double {

@@ -57,6 +57,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(setupHelp.url, URL(string: "https://developers.openai.com/codex/cli/"))
     }
 
+    @MainActor
     func testProvider_transportsSetupHelpThroughRegistry() throws {
         let registry = ProviderRegistry()
         registry.register(OpenAICodexProvider())

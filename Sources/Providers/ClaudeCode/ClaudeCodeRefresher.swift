@@ -110,7 +110,7 @@ public actor ClaudeCodeRefresher {
     private let spawnTimeout: TimeInterval
     private let terminateGrace: TimeInterval
     private let spawnDebounce: TimeInterval
-    private let workingDirectoryProvider: () -> URL?
+    private let workingDirectoryProvider: @Sendable () -> URL?
 
     /// Timestamp of the most recent spawn *attempt* — successful or not —
     /// used to suppress follow-up clicks within the debounce window
@@ -132,7 +132,7 @@ public actor ClaudeCodeRefresher {
         spawnTimeout = Self.spawnTimeoutSeconds
         terminateGrace = Self.terminateGraceSeconds
         spawnDebounce = Self.spawnDebounceSeconds
-        workingDirectoryProvider = Self.makeDefaultWorkingDirectory
+        workingDirectoryProvider = { @Sendable in Self.makeDefaultWorkingDirectory() }
     }
 
     /// Test-only initializer that overrides the cache store and the timeout /
@@ -144,7 +144,9 @@ public actor ClaudeCodeRefresher {
         spawnTimeout: TimeInterval,
         terminateGrace: TimeInterval,
         spawnDebounce: TimeInterval,
-        workingDirectoryProvider: @escaping () -> URL? = ClaudeCodeRefresher.makeDefaultWorkingDirectory
+        workingDirectoryProvider: @escaping @Sendable () -> URL? = {
+            @Sendable in ClaudeCodeRefresher.makeDefaultWorkingDirectory()
+        }
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
@@ -222,7 +224,7 @@ public actor ClaudeCodeRefresher {
         cacheStore: StatuslineCacheStore,
         spawnTimeout: TimeInterval,
         terminateGrace: TimeInterval,
-        workingDirectoryProvider: () -> URL?
+        workingDirectoryProvider: @Sendable () -> URL?
     ) async throws {
         guard let binaryPath = locator.resolve() else {
             ClaudeCodeRefresherLog.log("runSpawnOnce: binary not found")
