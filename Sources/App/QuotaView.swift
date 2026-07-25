@@ -31,10 +31,9 @@ struct QuotaView: View {
             Divider()
 
             HStack {
-                SettingsLink {
-                    Text(String(localized: "Settings…"))
-                        .font(.caption)
-                }
+                Text(String(localized: "Settings…"))
+                    .font(.caption)
+                    .openAndRaiseSettings()
 
                 Spacer()
 
@@ -60,9 +59,8 @@ struct QuotaView: View {
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
-            SettingsLink {
-                Text(String(localized: "Open Settings"))
-            }
+            Text(String(localized: "Open Settings"))
+                .openAndRaiseSettings()
         }
         .padding(.vertical, 16)
     }
