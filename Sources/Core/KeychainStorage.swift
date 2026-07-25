@@ -6,22 +6,12 @@ final class KeychainAuthenticationContext: @unchecked Sendable {
     let localAuthenticationContext = LAContext()
 }
 
-struct StoredKeychainItem: Sendable {
-    let account: String
-    let data: Data
-}
-
 protocol KeychainStorage: Sendable {
     func readData(
         service: String,
         account: String,
         authenticationContext: KeychainAuthenticationContext
     ) throws -> Data?
-    func readLegacyItems(
-        service: String,
-        accountPrefix: String,
-        authenticationContext: KeychainAuthenticationContext
-    ) throws -> [StoredKeychainItem]
     func replaceData(
         _ data: Data,
         service: String,
@@ -67,48 +57,6 @@ struct SecurityKeychainStorage: KeychainStorage {
         default:
             throw KeychainStorageError.status(status)
         }
-    }
-
-    func readLegacyItems(
-        service: String,
-        accountPrefix: String,
-        authenticationContext: KeychainAuthenticationContext
-    ) throws -> [StoredKeychainItem] {
-        let query: [String: Any] = [
-            kSecClass as String: kSecClassGenericPassword,
-            kSecAttrService as String: service,
-            kSecReturnAttributes as String: true,
-            kSecMatchLimit as String: kSecMatchLimitAll,
-            kSecUseAuthenticationContext as String: authenticationContext.localAuthenticationContext,
-        ]
-
-        var result: CFTypeRef?
-        let status = SecItemCopyMatching(query as CFDictionary, &result)
-        if status == errSecItemNotFound {
-            return []
-        }
-        guard status == errSecSuccess else {
-            throw KeychainStorageError.status(status)
-        }
-        guard let items = result as? [[String: Any]] else {
-            throw KeychainStorageError.status(errSecDecode)
-        }
-
-        var legacyItems: [StoredKeychainItem] = []
-        for item in items {
-            guard let account = item[kSecAttrAccount as String] as? String,
-                  account.hasPrefix(accountPrefix),
-                  let data = try readData(
-                      service: service,
-                      account: account,
-                      authenticationContext: authenticationContext
-                  )
-            else {
-                continue
-            }
-            legacyItems.append(StoredKeychainItem(account: account, data: data))
-        }
-        return legacyItems
     }
 
     func replaceData(
