@@ -59,7 +59,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertEqual(info.setupHelp, try XCTUnwrap(ClaudeCodeProvider.setupHelp))
     }
 
-    // MARK: - AC3: isConfigured does not touch Keychain
+    // MARK: - isConfigured does not touch Keychain
 
     func testIsConfigured_trueWhenBinaryFoundAndHelperInstalled() {
         let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
@@ -82,7 +82,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertFalse(provider.isConfigured())
     }
 
-    // MARK: - AC3: currentSetupState reports binary and helper status
+    // MARK: - currentSetupState reports binary and helper status
 
     func testCurrentSetupState_setupReasonWhenBinaryMissing() async {
         let locator = ClaudeCodeLocator(injectedPath: nil)
@@ -116,7 +116,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertNil(state)
     }
 
-    // MARK: - AC3/AC4: canInstallHelper gating logic (ui 05)
+    // MARK: - canInstallHelper gating logic
 
     func testCanInstallHelper_trueWhenBinaryFoundAndHelperNotInstalled() {
         let locator = ClaudeCodeLocator(injectedPath: "/usr/local/bin/claude")
@@ -139,7 +139,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertFalse(provider.canInstallHelper())
     }
 
-    // MARK: - AC2: internal-consistency assertion
+    // MARK: - internal-consistency assertion
 
     func testFetchQuota_throwsInternalInconsistencyForApiKey() async throws {
         let provider = makeProvider()
@@ -154,7 +154,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         }
     }
 
-    // MARK: - AC4/AC10: no cache file → error quota
+    // MARK: - no cache file → error quota
 
     func testFetchQuota_returnsErrorQuota_whenNoCache() async throws {
         let provider = makeProvider()
@@ -170,7 +170,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertTrue(quota.error?.contains("Open Claude Code") ?? false)
     }
 
-    // MARK: - AC5: both windows → two UsageLines
+    // MARK: - both windows → two UsageLines
 
     func testFetchQuota_mapsBothWindows() async throws {
         try writeCache(fiveHourPct: 42, fiveHourReset: 1_713_127_600,
@@ -195,7 +195,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[1].percentage, 60)
     }
 
-    // MARK: - AC5: only five_hour
+    // MARK: - only five_hour
 
     func testFetchQuota_mapsOnlyFiveHour() async throws {
         try writeCache(fiveHourPct: 15, fiveHourReset: 1_713_127_600,
@@ -212,7 +212,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].percentage, 15)
     }
 
-    // MARK: - AC5: only seven_day
+    // MARK: - only seven_day
 
     func testFetchQuota_mapsOnlySevenDay() async throws {
         try writeCache(fiveHourPct: nil, fiveHourReset: nil,
@@ -229,7 +229,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].percentage, 80)
     }
 
-    // MARK: - AC5: no `used`, `total`, or `unit` synthesized
+    // MARK: - no `used`, `total`, or `unit` synthesized
 
     func testFetchQuota_noSynthesizedFields() async throws {
         try writeCache(fiveHourPct: 42, fiveHourReset: 1_713_127_600,
@@ -248,10 +248,9 @@ final class ClaudeCodeProviderTests: XCTestCase {
         }
     }
 
-    // MARK: - AC5/AC6: no rate_limits → "No data"
+    // MARK: - no rate_limits → "No data"
 
     func testFetchQuota_noDataWhenRateLimitsAbsent() async throws {
-        // Write cache with no rate_limits key.
         let json = Data(#"{"written_at": 1713000000}"#.utf8)
         try json.write(to: cacheURL, options: .atomic)
 
@@ -265,7 +264,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertTrue(quota.lines.isEmpty)
     }
 
-    // MARK: - AC6: headline priority (5-hour → weekly)
+    // MARK: - headline priority (5-hour → weekly)
 
     func testFetchQuota_headlineUsesFiveHourPriority() async throws {
         try writeCache(fiveHourPct: 42, fiveHourReset: futureEpoch(),
@@ -296,10 +295,9 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertTrue(quota.headline.contains("resets"))
     }
 
-    // MARK: - AC5b/AC10: isStale flag
+    // MARK: - isStale flag
 
     func testFetchQuota_isStaleTrue_whenCacheOlderThanFreshnessThreshold() async throws {
-        // Write a cache with written_at far in the past.
         let staleEpoch = Date().timeIntervalSince1970
             - ClaudeCodeProvider.freshnessThreshold - 60
         let store = StatuslineCacheStore(cacheURL: cacheURL)
@@ -322,7 +320,6 @@ final class ClaudeCodeProviderTests: XCTestCase {
     }
 
     func testFetchQuota_isStaleFalse_whenCacheIsFresh() async throws {
-        // Write a cache with written_at = now.
         let store = StatuslineCacheStore(cacheURL: cacheURL)
         let cache = StatuslineCache(
             writtenAt: Date().timeIntervalSince1970,
@@ -342,7 +339,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         XCTAssertFalse(quota.isStale, "isStale should be false for fresh cache")
     }
 
-    // MARK: - AC5: lastUpdated derived from written_at
+    // MARK: - lastUpdated derived from written_at
 
     func testFetchQuota_lastUpdatedMatchesWrittenAt() async throws {
         let epoch = 1_713_127_600 as TimeInterval
@@ -369,15 +366,12 @@ final class ClaudeCodeProviderTests: XCTestCase {
         )
     }
 
-    // MARK: - AC12: ZAI orthogonality
+    // MARK: - ZAI orthogonality
 
     func testZAIProvider_isUnaffected() {
-        // ZAIProvider compiles unchanged and its identity remains.
-        // We verify that importing Core and checking ProviderAuth still works.
         let shape = ProviderAuth.Shape.apiKey
         XCTAssertEqual(shape, .apiKey)
 
-        // isStale defaults to false, so existing ZAI quotas are unaffected.
         let quota = ProviderQuota(
             providerId: "zai",
             providerName: "z.ai",
@@ -403,9 +397,6 @@ final class ClaudeCodeProviderTests: XCTestCase {
         )
     }
 
-    /// Creates an installer pointed at temp paths. When `helperInstalled` is
-    /// `false` the helper destination is a nonexistent path so
-    /// `isHelperInstalled()` returns `false`.
     private func makeInstaller(helperInstalled: Bool) -> StatuslineHelperInstaller {
         let helperURL: URL = if helperInstalled {
             // Use a known executable so isHelperInstalled() returns true.
@@ -420,8 +411,6 @@ final class ClaudeCodeProviderTests: XCTestCase {
         )
     }
 
-    /// Writes a cache fixture to the temp cache URL. Pass `nil` for a
-    /// window's percentage to omit that window.
     private func writeCache(
         fiveHourPct: Double?,
         fiveHourReset: TimeInterval?,

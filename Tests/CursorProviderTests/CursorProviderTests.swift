@@ -4,7 +4,7 @@ import Foundation
 import XCTest
 
 final class CursorProviderTests: XCTestCase {
-    // MARK: - AC6: authenticated Connect-RPC request shape (providers 07)
+    // MARK: - authenticated Connect-RPC request shape
 
     func testFetchQuota_issuesCorrectRequest() async throws {
         let provider = makeProviderWithMock(usageBody: CursorTestFixtures.usageResponse())
@@ -36,7 +36,7 @@ final class CursorProviderTests: XCTestCase {
         )
     }
 
-    // MARK: - AC7: plan usage mapping (providers 07)
+    // MARK: - plan usage mapping
 
     func testFetchQuota_mapsPlanUsageToPercentageAndCurrencyLines() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
@@ -89,7 +89,7 @@ final class CursorProviderTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(onDemandLine.total), 20.0, accuracy: 0.01)
     }
 
-    // MARK: - AC8: on-demand and pooled spend (providers 07)
+    // MARK: - on-demand and pooled spend
 
     func testFetchQuota_addsOnDemandSpendLine() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
@@ -120,7 +120,7 @@ final class CursorProviderTests: XCTestCase {
         XCTAssertEqual(pooledLine.unit, "USD")
     }
 
-    // MARK: - AC9: headline (providers 07)
+    // MARK: - headline
 
     func testFetchQuota_headlineShowsRemainingAmountWithCountdown() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
@@ -150,7 +150,7 @@ final class CursorProviderTests: XCTestCase {
         XCTAssertEqual(quota.headline, "No data")
     }
 
-    // MARK: - AC10: typed errors (providers 07)
+    // MARK: - typed errors
 
     func testFetchQuota_throwsMissingTokenWhenNoToken() async {
         let provider = makeProvider(token: nil, binaryExists: true)

@@ -23,11 +23,6 @@ struct AppMain: App {
     }
 
     var body: some Scene {
-        // AC1: Menu Bar popover (ui 02). The visible menu-bar content is the
-        // `label:` view — a live status ring (ui 10). The `MenuBarStatusIcon`
-        // carries its own accessibility label: a per-state sentence for
-        // window/balance modes (ui 10 AC9), and "Filbert" for the fallback,
-        // preserving the original menu-bar announcement.
         MenuBarExtra {
             QuotaView(viewModel: viewModel)
                 .frame(width: 280)
@@ -36,7 +31,6 @@ struct AppMain: App {
         }
         .menuBarExtraStyle(.window)
 
-        // AC1: Standalone Settings scene (ui 02)
         Settings {
             SettingsView(viewModel: viewModel)
         }
@@ -51,8 +45,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         NSApplication.shared.setActivationPolicy(.accessory)
 
         // The app runs as a SwiftPM executable without a full `.app` bundle, so
-        // set the application icon programmatically from the bundled `.icns`.
-        // This is what Notification Center widgets and any window chrome pick up.
+        // the icon is set programmatically from the bundled `.icns`.
         let iconURL = Bundle.module.url(forResource: "AppIcon", withExtension: "icns")
         let icon = iconURL.flatMap(NSImage.init(contentsOf:))
         if let icon {

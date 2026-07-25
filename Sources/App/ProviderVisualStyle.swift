@@ -9,8 +9,8 @@ enum ProviderVisualStyle {
     static let cardCornerRadius: CGFloat = 10
     static let neutralContainerFill = Color.secondary.opacity(0.08)
 
-    /// Light values retain the contrast-tuned palette from (ui 11); dark mode
-    /// uses the semantic system colors so it follows the active appearance.
+    /// Light mode uses a contrast-tuned custom palette; dark mode uses semantic
+    /// system colors to follow the active appearance.
     static func tierColor(
         _ tier: QuotaStatusResolver.Tier,
         scheme: ColorScheme

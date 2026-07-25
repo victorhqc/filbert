@@ -49,7 +49,6 @@ struct CodexCredits: Decodable, Sendable {
     let unlimited: Bool?
 }
 
-/// Executes one bounded, read-only Codex app-server request (providers 05 AC3).
 struct CodexAppServerClient: Sendable {
     private let timeout: TimeInterval
 

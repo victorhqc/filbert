@@ -4,7 +4,7 @@ import Foundation
 import XCTest
 
 final class CursorProviderMetadataTests: XCTestCase {
-    // MARK: - AC1: provider-owned glyph (providers 07)
+    // MARK: - provider-owned glyph
 
     func testProviderGlyphLoadsFromModuleResources() {
         guard case let .asset(name, bundle) = CursorProvider.providerGlyph else {
@@ -16,7 +16,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertNotNil(bundle.url(forResource: "\(name)@2x", withExtension: "png"))
     }
 
-    // MARK: - AC2b: external login prerequisite (providers 07)
+    // MARK: - external login prerequisite
 
     @MainActor
     func testSetupHelpPointsToCursorCLIAuthenticationDocs() throws {
@@ -41,7 +41,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertEqual(CursorProvider.credentialImportActionTitle, "Re-import Cursor credentials")
     }
 
-    // MARK: - AC10: setup state (providers 07)
+    // MARK: - setup state
 
     func testSetupState_missingBinaryAndToken_showsInstallMessage() async {
         let provider = makeProvider(token: nil, binaryExists: false)
@@ -78,7 +78,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertNil(state)
     }
 
-    // MARK: - AC1/AC2: credential removal (bugs 01)
+    // MARK: - credential removal
 
     func testRemoveHelper_clearsStoredCredentialsAndReportsUnconfigured() async throws {
         let vault = TestCursorCredentialVault(fields: [
@@ -108,7 +108,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertFalse(provider.isConfigured())
     }
 
-    // MARK: - AC3: idempotent removal (bugs 01)
+    // MARK: - idempotent removal
 
     func testRemoveHelper_isIdempotentWhenVaultEmpty() async throws {
         let vault = TestCursorCredentialVault()

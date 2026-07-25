@@ -2,12 +2,6 @@
 import Core
 import XCTest
 
-/// Tests for the spawn mechanics in `ClaudeCodeRefresher` (providers 03).
-///
-/// The refresher treats `claude` as an opaque binary: it spawns whatever
-/// path the locator returns and waits for exit. These tests exploit that by
-/// pointing the locator at tiny shell scripts that record what the refresher
-/// did — without ever needing a real `claude` install in CI.
 final class ClaudeCodeRefresherTests: XCTestCase {
     private var tmpDir: URL!
     private var invocationLogURL: URL!
@@ -38,8 +32,6 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         super.tearDown()
     }
 
-    /// A refresher wired to the temp cache file so tests never touch the real
-    /// `~/.cache/filbert/claude-code.json`.
     private func makeRefresher(
         binaryPath: String?,
         spawnTimeout: TimeInterval = 30,
@@ -55,7 +47,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
     }
 
-    // MARK: - AC1: argv is exactly the documented flags
+    // MARK: - argv is exactly the documented flags
 
     func testRefresh_spawnsClaudeWithDocumentedArgv() async throws {
         let fakeBinary = try writeFakeBinary(
@@ -78,7 +70,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
     }
 
-    // MARK: - AC1 (providers 03): stream-json output is parsed into the cache
+    // MARK: - stream-json output is parsed into the cache
 
     func testRefresh_parsesUsageOutputIntoCache() async throws {
         // The fake binary emits what `claude -p "/usage" --output-format json`
@@ -134,10 +126,9 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         XCTAssertEqual(comps.hour, 23) // 11pm → 23:00
     }
 
-    // MARK: - AC6 (providers 03): a spawn with no usable output never clobbers
+    // MARK: - a spawn with no usable output never clobbers
 
     func testRefresh_leavesCacheUntouchedWhenNoUsage() async throws {
-        // Seed a good cache (as the statusline helper would).
         try StatuslineCacheStore(cacheURL: cacheURL).write(
             StatuslineCache(
                 writtenAt: 1000,
@@ -162,7 +153,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         XCTAssertEqual(cache.rateLimits?.fiveHour?.usedPercentage, 42)
     }
 
-    // MARK: - AC2: a hung process is terminated within the timeout + grace
+    // MARK: - a hung process is terminated within the timeout + grace
 
     func testRefresh_terminatesHungProcess() async throws {
         let fakeBinary = try writeFakeBinary(
@@ -196,7 +187,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
     }
 
-    // MARK: - AC4: debounce skips a second spawn within the window
+    // MARK: - debounce skips a second spawn within the window
 
     func testRefresh_debouncesSecondCallWithinWindow() async throws {
         let fakeBinary = try writeCountingBinary()
@@ -211,8 +202,6 @@ final class ClaudeCodeRefresherTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Writes an executable shell script that records each invocation by
-    /// appending `counted` to `invocationCountURL`.
     private func writeCountingBinary() throws -> URL {
         try writeFakeBinary(
             name: "fake-claude-count",
@@ -223,7 +212,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
     }
 
-    // MARK: - AC4: in-flight callers share one OS process
+    // MARK: - in-flight callers share one OS process
 
     func testRefresh_concurrentCallersShareOneProcess() async throws {
         // The fake binary sleeps briefly so the two concurrent callers
@@ -251,7 +240,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         XCTAssertEqual(count, 1, "Concurrent callers must coalesce onto one spawn")
     }
 
-    // MARK: - AC1 / Risks: binary not found surfaces as a thrown error
+    // MARK: - binary not found surfaces as a thrown error
 
     func testRefresh_throwsBinaryNotFoundWhenLocatorReturnsNil() async throws {
         let refresher = makeRefresher(binaryPath: nil)
@@ -264,18 +253,12 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         }
     }
 
-    // MARK: - AC4: a failed spawn still suppresses follow-up clicks
+    // MARK: - a failed spawn still suppresses follow-up clicks
 
     func testRefresh_failedSpawnStillDebounces() async throws {
-        // The locator returns nil, so refresh() throws binaryNotFound.
-        // The next call within the debounce window should also short-circuit
-        // (it would be a no-op regardless, but the contract is that the
-        // debounce timestamp is set on attempt).
         let refresher = makeRefresher(binaryPath: nil)
 
         _ = try? await refresher.refresh()
-        // Second call should return without throwing because it's debounced
-        // (returns early before re-attempting the binary lookup).
         try await refresher.refresh()
     }
 
@@ -295,8 +278,6 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         """
     }
 
-    /// Writes `body` to `<tmpDir>/<name>`, `chmod +x`s it, and returns the
-    /// file URL so it can be handed to `ClaudeCodeLocator(injectedPath:)`.
     private func writeFakeBinary(name: String, body: String) throws -> URL {
         let url = tmpDir.appendingPathComponent(name)
         try body.write(to: url, atomically: true, encoding: .utf8)
@@ -307,8 +288,6 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         return url
     }
 
-    /// Reads the integer written by the counting fake binary. Returns 0 when
-    /// the file does not exist (i.e. the spawn never ran).
     private func readInvocationCount() throws -> Int {
         guard FileManager.default.fileExists(atPath: invocationCountURL.path) else {
             return 0

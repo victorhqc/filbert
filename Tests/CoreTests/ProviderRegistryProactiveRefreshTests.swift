@@ -1,17 +1,9 @@
 import Core
 import XCTest
 
-/// Tests for the new `ProactiveRefreshable` routing in `ProviderRegistry`
-/// (providers 03 AC3, AC7).
-///
-/// The registry tests are scoped to the proactive-refresh surface added by
-/// (providers 03). Broader registry coverage (`fetchAll`, `isConfigured`,
-/// etc.) is exercised end-to-end by the provider test suites.
-/// `ProviderRegistry` is `@MainActor` (ci 04 Plan §4), so every test that
-/// constructs and exercises it runs on the main actor too.
 @MainActor
 final class ProviderRegistryProactiveRefreshTests: XCTestCase {
-    // MARK: - AC3: routes to a conforming provider
+    // MARK: - routes to a conforming provider
 
     func testProactiveRefresh_routesToConformingProvider() async throws {
         let registry = ProviderRegistry()
@@ -23,7 +15,7 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
         XCTAssertTrue(provider.refreshCalled, "proactiveRefresh(for:) must delegate to the conforming provider")
     }
 
-    // MARK: - AC7: non-conforming providers throw `.notSupported`
+    // MARK: - non-conforming providers throw `.notSupported`
 
     func testProactiveRefresh_throwsNotSupported_forNonConformingProvider() async {
         let registry = ProviderRegistry()
@@ -84,9 +76,8 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
 
 // MARK: - Test fixtures
 
-/// A minimal `AIProvider` that also conforms to `ProactiveRefreshable`, so
-/// the registry can route `proactiveRefresh(for:)` to it. `class` so the
-/// `refreshCalled` flag can mutate through the registry's stored reference.
+/// `class` so the `refreshCalled` flag can mutate through the registry's
+/// stored reference.
 private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshable, @unchecked Sendable {
     static let providerId = "fake-refreshable"
     static let providerName = "Fake Refreshable"
@@ -111,8 +102,6 @@ private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshab
     }
 }
 
-/// A minimal `AIProvider` that does NOT conform to `ProactiveRefreshable`,
-/// so the registry reports `.notSupported` for it (providers 03 AC7).
 private struct FakeNonRefreshableProvider: AIProvider {
     static let providerId = "fake-non-refreshable"
     static let providerName = "Fake Non-Refreshable"

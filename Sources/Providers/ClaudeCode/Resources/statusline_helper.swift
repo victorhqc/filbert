@@ -1,25 +1,12 @@
 #!/usr/bin/env swift
 import Foundation
 
-// Reads Claude Code statusline JSON from stdin, extracts `rate_limits`,
-// and writes an atomic cache for the filbert menu bar app.
-//
-// This source is compiled at install time with `swiftc -O` so the helper
-// binary has near-zero cold-start latency when Claude Code spawns it on
-// every statusline update (providers 02 Plan §5).
+// Compiled at install time with `swiftc -O` so the helper binary has
+// near-zero cold-start latency when Claude Code spawns it on every statusline
+// update.
 
 // MARK: - Codable shapes
 
-//
-// The input and output JSON shapes are mirrored as Codable structs instead of
-// `[String: Any]` + `JSONSerialization` so this file stays free of the `Any`
-// type (ci 04 AC7). Field names and nesting match the shape the cache reader
-// (`StatuslineCacheStore`) decodes.
-
-/// One window inside the statusline payload. Fields are optional so a partial
-/// payload (missing `used_percentage` or `resets_at`) still decodes; the
-/// defaults are applied when building the cache (matching the previous
-/// `as? Double ?? 0` behaviour).
 struct StatuslineWindow: Decodable {
     let usedPercentage: Double?
     let resetsAt: Double?
@@ -48,9 +35,8 @@ struct StatuslineInput: Decodable {
     }
 }
 
-/// A non-optional window in the cache. The previous implementation defaulted
-/// missing values to `0`, and the cache reader treats `0` as "unknown" via the
-/// optional fields on its own model, so writing `0` here preserves that.
+/// Non-optional in the cache. Missing values default to `0`, which the cache
+/// reader treats as "unknown" via the optional fields on its own model.
 struct CacheWindow: Encodable {
     let usedPercentage: Double
     let resetsAt: Double
@@ -96,22 +82,17 @@ let rawInput = FileHandle.standardInput.readDataToEndOfFile()
 
 let writtenAt = Date().timeIntervalSince1970
 
-// Diagnostic log: every invocation lands here so we can confirm Claude
-// Code is actually spawning the helper. Writes to a sibling file next to
-// the cache so it never interferes with stdout (which Claude Code captures).
+// Writes to a sibling file next to the cache so it never interferes with
+// stdout (which Claude Code captures).
 let debugLogURL = cacheDir.appendingPathComponent("claude-code.helper.log")
 let debugLine = "\(Date()) invoked pid=\(ProcessInfo.processInfo.processIdentifier) bytes=\(rawInput.count)\n"
 appendDiagnosticLine(debugLine, to: debugLogURL)
 
-/// Decode the statusline payload, tolerating empty/absent/unparseable input.
 /// A failed decode writes a cache with no `rate_limits` so the provider
-/// surfaces "No data" rather than silently clearing the last known state
-/// (providers 02 AC10).
+/// surfaces "No data" rather than silently clearing the last known state.
 let input = (try? JSONDecoder().decode(StatuslineInput.self, from: rawInput))
     ?? StatuslineInput(rateLimits: nil)
 
-/// Convert the decoded optional windows into non-optional cache windows,
-/// applying the historical `?? 0` default for missing fields.
 let fiveHour: CacheWindow? = input.rateLimits?.fiveHour.map {
     CacheWindow(
         usedPercentage: $0.usedPercentage ?? 0,
@@ -126,15 +107,14 @@ let sevenDay: CacheWindow? = input.rateLimits?.sevenDay.map {
     )
 }
 
-/// Match the previous "only write rate_limits when at least one window is
-/// present" behaviour: an empty `rate_limits` object is never written.
+/// An empty `rate_limits` object is never written.
 let rateLimits: CacheRateLimits? = (fiveHour != nil || sevenDay != nil)
     ? CacheRateLimits(fiveHour: fiveHour, sevenDay: sevenDay)
     : nil
 
 writeCache(CachePayload(writtenAt: writtenAt, rateLimits: rateLimits))
 
-// MARK: - Atomic write (providers 02 AC7)
+// MARK: - Atomic write
 
 func writeCache(_ payload: CachePayload) {
     try? FileManager.default.createDirectory(
@@ -159,9 +139,8 @@ func writeCache(_ payload: CachePayload) {
 
 // MARK: - Diagnostic log
 
-/// Appends `line` to `logURL`, creating the file on first write. Best-effort:
-/// any I/O failure is silently dropped so diagnostics never break the cache
-/// write path.
+// Best-effort: any I/O failure is silently dropped so diagnostics never
+// break the cache write path.
 func appendDiagnosticLine(_ line: String, to logURL: URL) {
     guard let data = line.data(using: .utf8) else { return }
     if FileManager.default.fileExists(atPath: logURL.path) {

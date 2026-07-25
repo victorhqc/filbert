@@ -2,13 +2,6 @@
 import Core
 import XCTest
 
-/// Tests for `ClaudeCodeProvider`'s conformance to `ProactiveRefreshable`
-/// (providers 03 AC3) and the isolation between `proactiveRefresh()` and
-/// `fetchQuota` (providers 03 AC3 — auto-refresh must not spawn `claude`).
-///
-/// Extracted from `ClaudeCodeProviderTests` so the main suite stays under
-/// SwiftLint's `type_body_length` limit. Both suites share the same fake-
-/// binary fixture pattern.
 final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
     private var cacheURL: URL!
     private var tmpDir: URL!
@@ -33,25 +26,21 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC7: registry downcast succeeds
+    // MARK: - registry downcast succeeds
 
     func testClaudeCodeProvider_conformsToProactiveRefreshable() {
         let provider = makeProvider()
-        // The downcast must succeed so the registry can route manual refresh
-        // clicks through `proactiveRefresh(for:)` (providers 03 AC7).
         // Erase to `any AIProvider` so the compiler cannot statically prove
         // the conformance — the test is about runtime behaviour.
         let anyProvider: any AIProvider = provider
         XCTAssert(anyProvider is ProactiveRefreshable)
     }
 
-    // MARK: - AC3: proactiveRefresh delegates to the refresher
+    // MARK: - proactiveRefresh delegates to the refresher
 
     func testProactiveRefresh_delegatesToRefresher_andRecordsDebounce() async throws {
-        // We can't stub the refresher actor directly. Instead, point it at a
-        // fake binary that records each spawn to a log file. The first call
-        // spawns; a second call within the debounce window should NOT spawn
-        // again — proving the delegation recorded the debounce timestamp.
+        // We can't stub the refresher actor directly, so point it at a fake
+        // binary that records each spawn to a log file.
         let spawnLogURL = tmpDir.appendingPathComponent("spawn.log")
         let fakeBinaryURL = try writeFakeClaudeBinary(
             body: "#!/bin/bash\necho spawned >> \"\(spawnLogURL.path)\"\n"
@@ -73,11 +62,9 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
         XCTAssertEqual(spawnCount, 1, "Second call must be debounced by the refresher")
     }
 
-    // MARK: - AC3: fetchQuota must NOT spawn `claude`
+    // MARK: - fetchQuota must NOT spawn `claude`
 
     func testFetchQuota_doesNotSpawn_whenCalledDirectly() async throws {
-        // `fetchQuota` is the auto-refresh entry point. It must remain a pure
-        // cache read and never spawn `claude` (providers 03 AC3).
         let spawnLogURL = tmpDir.appendingPathComponent("spawn.log")
         let fakeBinaryURL = try writeFakeClaudeBinary(
             body: "#!/bin/bash\necho spawned >> \"\(spawnLogURL.path)\"\n"
@@ -111,7 +98,6 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
         )
     }
 
-    /// Mirrors the helper in the main suite so the tests share one shape.
     private func makeInstaller(helperInstalled: Bool) -> StatuslineHelperInstaller {
         let helperURL: URL = if helperInstalled {
             URL(fileURLWithPath: "/bin/sh")

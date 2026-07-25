@@ -38,28 +38,64 @@ Code follows a spec. If there is no spec for the change, stop and use the
 6. **Protocol-oriented** — the provider architecture depends on it. Each
    provider is a struct or actor conforming to `AIProvider`. The hub talks to
    the protocol, never to a concrete provider.
-7. **Comments earn their place** — never restate what the code says. Comment
-   only business decisions, non-obvious "why", or provider-specific quirks
-   (e.g., "z.ai uses a 5-hour rolling window, not calendar hours"). If code
-   needs a comment to be understood, refactor the code first.
-   - **Never describe past behavior or the change itself.** Comments exist to
-     explain the current code, not to justify what it replaced or how it
-     "fixes" something. Words like "replaces", "used to", "previously",
-     "instead of", or "before this change" are a smell — rewrite the comment
-     to describe only what the code does now.
-   - When a comment refers to a spec, cite it in **MLA form** — `(topic NN)`,
-     e.g. `// peak-hours calculation follows the window defined in (providers 02)`.
-     See [`writing-specs`](../writing-specs/SKILL.md).
-   - **Any acceptance-criteria (AC) marker** — e.g. `// AC1`, `// ── AC1 ──`,
-     `/// AC3 — refresh cadence` — Overall, acceptance criteria SHOULD not be
-     used unless they provide a clarification that is critical to understand
-     a piece of code. Must code DO NOT NEED IT, the spec reference (MLA) is
-     enough most of the time. If it needs to be used then itMUST include the MLA
-     citation of the spec that owns it. A bare `AC1` is meaningless without its
-     spec; always write
-     `// AC1: totals invariant (core 01)` or
-     `// ── AC3: refresh-on-foreground (core 01) ──`. Code review must reject
-     any AC marker that lacks a parenthesised spec citation.
+7. **Comments are a last resort — the code is the comment.** The default is
+   no comment at all. Specs justify the code's existence; the code justifies
+   its own behavior. Most functions, types, and blocks in this repo need
+   zero comments. New code that adds comments to justify its existence is
+   wrong — delete the comments, not the code.
+
+   A comment earns its place **only** when it carries information that the
+   code and the spec together cannot convey. The valid cases, exhaustively:
+   - A non-obvious **why** — a business rule, external constraint, or
+     provider-specific quirk the code cannot express by itself. Example:
+     `// z.ai bills a 5-hour rolling window, not calendar hours`.
+   - A surprising platform behavior that forced a workaround — stated as a
+     fact about the current code, never about what it replaced.
+
+   A comment is **not** justified when it:
+   - **Restates what the code does.** If `Int(percentage.rounded())` is
+     preceded by `// round to the nearest percent`, the comment is the
+     problem, not the code. Delete it.
+   - **Justifies the code's existence or ties it to an acceptance
+     criterion.** That is the spec's job. "AC1", "satisfies", "implements
+     spec", or any phrase that exists to prove the line belongs are smells —
+     cut them and the comment around them.
+   - **Documents a type or function whose name + signature already convey
+     it** — e.g. `/// Saves the API key` above `func save(...)`.
+   - **Describes past behavior or the change itself.** Words like
+     "replaces", "used to", "previously", "instead of", or "before this
+     change" are a smell — describe only what the code does now, or delete
+     the comment.
+
+   **If a comment refers to a spec**, cite it in **MLA form** — `(topic NN)`,
+   e.g. `// peak-hours window matches (providers 02)`. See
+   [`writing-specs`](../writing-specs/SKILL.md). Spec citations are optional
+   and rare — add one only when the *why* genuinely comes from the spec and
+   the code would read as misleading without it. Do not sprinkle citations
+   to "prove" the code belongs; that is restating existence, which is banned
+   above.
+
+   **Acceptance-criteria markers are forbidden.** `// AC1`, `// ── AC3 ──`,
+   `/// AC5 — fallback`, and every variant are noise: the spec already
+   enumerates its ACs, the code is the evidence, and a marker cannot be
+   verified against either. If an AC genuinely shapes a non-obvious
+   decision, write a plain-English `// why` comment and cite the spec in MLA
+   form. Delete every existing AC marker on sight.
+
+   **Doc comments (`///`)** — SwiftFormat's `docComments` rule (default-on,
+   no `.swiftformat` opt-out in this repo) is the authority on `//` vs `///`:
+   any comment directly above a declaration (public or not) **must** be `///`,
+   and any comment *not* above a declaration **must** be `//`. So a surviving
+   *why* that documents a type/function/property is written as `///` — never
+   downgraded to `//` to "make it less official". That said, the rule is about
+   the *syntax* of comments that exist, not a license to add them: most
+   declarations still need no comment at all. Never write a doc comment that
+   restates the signature.
+
+   When in doubt, delete the comment. If the code then becomes unreadable,
+   write a better comment that explains only the non-obvious *why* — do not
+   restore the restatement.
+
 8. **Dependencies** — if a package is not in `Package.swift`, add it before
    using it. Prefer Apple frameworks over third-party packages.
 9. **Concurrency** — use Swift's structured concurrency (`async/await`,
@@ -176,8 +212,11 @@ changed** and verify:
 - [ ] **Test quality** — do the tests assert the right things, or are they just
   "tests to pass"?
 - [ ] **Scope creep** — did you change anything beyond the spec?
-- [ ] **MLA citations** — any comment referencing a spec uses `(topic NN)`
-  form.
+- [ ] **Comments are minimal** — every remaining comment explains a
+  non-obvious *why*, not *what* the code does. No restating the signature,
+  no AC markers, no justifying existence. When in doubt the comment is gone.
+- [ ] **MLA citations** — any comment that *does* reference a spec uses
+  `(topic NN)` form. No bare AC markers anywhere.
 - [ ] **No secrets in logs** — no API keys, tokens, or auth headers in
   `print()`, `os_log`, or debug output.
 

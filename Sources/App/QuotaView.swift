@@ -2,14 +2,12 @@ import AppKit
 import Core
 import SwiftUI
 
-// MARK: - Multi-provider quota popover (AC4: per-provider sections (ui 02))
+// MARK: - Multi-provider quota popover
 
 @MainActor
 struct QuotaView: View {
     let viewModel: QuotaViewModel
 
-    // AC1: appearance-aware tier palette so both percentage and balance paths
-    // resolve identical colors that meet WCAG AA in light and dark (ui 11).
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
@@ -17,10 +15,7 @@ struct QuotaView: View {
             if !viewModel.hasAnyConfiguredProvider {
                 emptyState
             } else {
-                // ScrollView is omitted intentionally — MenuBarExtra's
-                // window-style popover collapses ScrollView to zero height.
-                // When multiple providers are configured the content is
-                // still bounded by the popover's intrinsic sizing.
+                // No ScrollView: MenuBarExtra's window-style popover collapses it to zero height.
                 ForEach(viewModel.configuredProviderIds, id: \.self) { providerId in
                     if let state = viewModel.providerStates[providerId] {
                         providerSection(providerId: providerId, state: state)
@@ -48,7 +43,7 @@ struct QuotaView: View {
         .frame(width: 280)
     }
 
-    // MARK: - Empty state (AC3: no configured providers prompt (ui 02))
+    // MARK: - Empty state
 
     private var emptyState: some View {
         VStack(spacing: 8) {
@@ -65,7 +60,7 @@ struct QuotaView: View {
         .padding(.vertical, 16)
     }
 
-    // MARK: - Setup (core 03 AC6: setup reason for .apiKeyFree providers)
+    // MARK: - Setup
 
     private func setupContent(_ reason: String, providerId _: String) -> some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -76,7 +71,7 @@ struct QuotaView: View {
         .padding(.vertical, 4)
     }
 
-    // MARK: - Loading (AC6: loading indicator (ui 01))
+    // MARK: - Loading
 
     private var loadingContent: some View {
         HStack {
@@ -89,14 +84,10 @@ struct QuotaView: View {
         .padding(.vertical, 4)
     }
 
-    // MARK: - Quota content (AC4: render live quota (ui 01); bars + peak (ui 04))
+    // MARK: - Quota content
 
     private func quotaContent(_ quota: ProviderQuota) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            // AC3: headline gains a tier-indicator Circle for balance-only
-            // providers; the dot reflects the first balance line's amount
-            // (ui 08). Percentage-based providers have no balance line, so no
-            // Circle is drawn.
             HStack(spacing: 4) {
                 Text(quota.headline)
                     .font(.headline)
@@ -108,24 +99,18 @@ struct QuotaView: View {
             }
             .padding(.bottom, 2)
 
-            // AC1: balance-only lines with non-positive or duplicate totals are
-            // filtered out before ForEach so SwiftUI sees a stable list (ui 08).
-            // The headline still surfaces the total, so a true zero balance is
-            // never hidden from the user.
+            // balance-only lines with non-positive or duplicate totals are filtered out before ForEach.
             ForEach(renderedLines(quota.lines), id: \.label) { line in
                 usageLineRow(line)
             }
 
-            // AC3: peak-hours block for providers that supply a config (ui 04).
-            // Passing lastUpdated ensures SwiftUI re-evaluates the block's
-            // body on every refresh so the in-peak / off-peak status always
-            // uses the current time.
+            // `lastUpdated` forces SwiftUI to re-evaluate the block on every
+            // refresh so the in-peak / off-peak status always uses the current time.
             if let peakConfig = quota.peakHoursConfig {
                 PeakHoursBlock(config: peakConfig, lastUpdated: quota.lastUpdated)
                     .padding(.top, 2)
             }
 
-            // AC9: stale-cache hint for providers that set isStale (ui 05).
             if quota.isStale {
                 staleCacheHint(quota)
             }
@@ -135,9 +120,6 @@ struct QuotaView: View {
         .padding(.bottom, 4)
     }
 
-    /// Per-provider refresh control (ui 04 AC5, ui 07 AC3/AC4, ui 11 AC4).
-    /// Icon-only, borderless, disabled and spinning while a refresh is in
-    /// flight, debounced by the view model.
     private func refreshButton(for providerId: String, state: ProviderState) -> some View {
         Button {
             viewModel.manualRefresh(for: providerId)
@@ -201,15 +183,11 @@ struct QuotaView: View {
                         .font(.subheadline.monospacedDigit())
                         .foregroundColor(percentageColor(pct))
                 } else if let amount = amountText(for: line) {
-                    // AC3: balance-only row renders only the amount text; the
-                    // tier Circle lives on the headline, not on rows (ui 08).
                     Text(amount)
                         .font(.subheadline.monospacedDigit())
                 }
             }
 
-            // AC1: horizontal usage bar beneath the label row (ui 04).
-            // Balance-only rows get no bar (ui 08 AC3).
             if let pct = percentage(for: line) {
                 UsageBar(percentage: pct, color: percentageColor(pct))
             }
@@ -240,7 +218,7 @@ struct QuotaView: View {
         .padding(.vertical, 2)
     }
 
-    // MARK: - Error (AC6: error with Retry (ui 01))
+    // MARK: - Error
 
     private func errorContent(_ message: String, providerId: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
@@ -259,7 +237,7 @@ struct QuotaView: View {
         .padding(.vertical, 4)
     }
 
-    // MARK: - Last updated (AC5: last updated indicator (ui 01))
+    // MARK: - Last updated
 
     @ViewBuilder
     private func lastUpdatedLabel(_ quota: ProviderQuota) -> some View {
@@ -269,11 +247,8 @@ struct QuotaView: View {
             .foregroundColor(.secondary)
     }
 
-    // MARK: - Stale-cache hint (ui 05 AC9)
+    // MARK: - Stale-cache hint
 
-    /// Renders two muted lines when the provider flagged its data as stale.
-    /// The UI never computes freshness — it reads the flag the provider set
-    /// (ui 05 AC9).
     @ViewBuilder
     private func staleCacheHint(_ quota: ProviderQuota) -> some View {
         let relative = quota.lastUpdated.formatted(.relative(presentation: .named))
@@ -289,30 +264,19 @@ struct QuotaView: View {
 
     // MARK: - Helpers
 
-    /// Green / orange / red tier shared by the percentage number and the bar,
-    /// so they can never disagree (ui 04 AC2, ui 11 AC1). Delegates to the
-    /// appearance-aware palette so light-mode foregrounds pass WCAG AA.
     private func percentageColor(_ pct: Double) -> Color {
         let tier = QuotaStatusResolver.tier(for: .window(percentage: pct))
         return ProviderVisualStyle.tierColor(tier ?? .good, scheme: colorScheme)
     }
 
-    /// Forwards to the shared resolver so the popover rows and the menu-bar
-    /// icon share one percentage derivation (ui 10 AC3, ui 04 AC1).
     private func percentage(for line: UsageLine) -> Double? {
         QuotaStatusResolver.percentage(for: line)
     }
 
-    /// Filters the provider's lines for display (ui 08 AC1), delegating to
-    /// the file-level helper that implements the dedup + non-positive rules.
     private func renderedLines(_ lines: [UsageLine]) -> [UsageLine] {
         filteredBalanceLines(lines, isPercentageLine: { percentage(for: $0) != nil })
     }
 
-    /// Tier color for the headline (ui 08 AC3). Derived from the first
-    /// balance-only line's total — the amount the headline summarizes.
-    /// Returns nil when the provider has no balance data (percentage-based
-    /// providers), so no Circle is drawn.
     private func headlineBalanceColor(for quota: ProviderQuota) -> Color? {
         guard let line = quota.lines.first(where: { percentage(for: $0) == nil }),
               let total = line.total
@@ -322,14 +286,12 @@ struct QuotaView: View {
         return ProviderVisualStyle.balanceTierColor(total, scheme: colorScheme)
     }
 
-    /// Forwards to the shared resolver so the popover rows and the menu-bar
-    /// icon share one currency formatter (ui 10 AC4, ui 08 AC3).
     private func amountText(for line: UsageLine) -> String? {
         QuotaStatusResolver.amountText(for: line)
     }
 }
 
-// MARK: - Per-provider card (ui 14)
+// MARK: - Per-provider card
 
 private extension QuotaView {
     @ViewBuilder
@@ -475,12 +437,8 @@ private struct CompactProviderStatus: View {
     }
 }
 
-/// Filters lines for display (ui 08 AC1). Drops balance-only lines (those for
-/// which `isPercentageLine` returns false) with nil or non-positive `total`.
-/// When two balance rows share the same positive amount, only the first (the
-/// Total balance in DeepSeek's ordering) survives — duplicate amounts are
-/// visually confusing and carry no extra information. Percentage rows always
-/// pass.
+/// Dedupes balance rows with the same positive amount — duplicate amounts
+/// are visually confusing. Percentage rows always pass.
 private func filteredBalanceLines(
     _ lines: [UsageLine],
     isPercentageLine: (UsageLine) -> Bool
@@ -498,7 +456,6 @@ private func filteredBalanceLines(
         guard !isPercentageLine(line) else { return true }
         guard let total = line.total, total > 0 else { return false }
         if hasDuplicates {
-            // Keep only the first positive balance line (Total balance).
             if firstBalanceKept {
                 return false
             }
@@ -509,16 +466,11 @@ private func filteredBalanceLines(
     }
 }
 
-// MARK: - Usage bar (ui 04 AC1/AC2)
+// MARK: - Usage bar
 
-/// Thin horizontal progress bar colored by usage tier. Takes the full width
-/// its parent gives it, so it auto-fits the popover (ui 04 AC6).
-///
-/// Avoids `GeometryReader` — inside the `MenuBarExtra` popover it collapses to
-/// zero width because the parent `VStack` doesn't propagate a concrete width
-/// before sizing the bar. The fill is a full-width `Capsule` scaled to the
-/// used fraction with `scaleEffect`, so it tracks whatever width the popover
-/// gives the row without measuring it explicitly.
+/// Avoids `GeometryReader` — inside the `MenuBarExtra` popover it collapses
+/// to zero width. The fill is a full-width `Capsule` scaled to the used
+/// fraction with `scaleEffect` instead.
 private struct UsageBar: View {
     let percentage: Double
     let color: Color
@@ -544,21 +496,16 @@ private struct UsageBar: View {
     }
 }
 
-// MARK: - Peak-hours block (ui 04 AC3/AC4)
+// MARK: - Peak-hours block
 
-/// Renders a provider-agnostic peak-hours status block — the peak window
-/// converted to local time, a live in-peak / off-peak indicator, and the
-/// current multiplier.
-///
-/// All pricing rules come from the `config` parameter; the view has zero
-/// knowledge of any specific provider. Computed from `Date()` on each
-/// render so the popover stays correct while open (ui 04 AC4).
+/// Provider-agnostic: all pricing rules come from `config`, so the view has
+/// zero knowledge of any specific provider. Computed from `Date()` on each
+/// render so the popover stays correct while open.
 private struct PeakHoursBlock: View {
     let config: PeakHoursConfig
 
-    /// The last time the provider quota was refreshed. SwiftUI uses this to
-    /// decide whether to re-evaluate the block's body — a new value on each
-    /// refresh guarantees `Date()` inside `body` is fresh.
+    /// SwiftUI uses this to decide whether to re-evaluate the block's body —
+    /// a new value on each refresh guarantees `Date()` inside `body` is fresh.
     let lastUpdated: Date
 
     var body: some View {
@@ -594,8 +541,6 @@ private struct PeakHoursBlock: View {
 
     // MARK: - Derived values
 
-    /// Builds a "start–end (your time)" label by computing today's peak window
-    /// boundaries in the config's time zone and formatting them locally.
     private var localWindowLabel: String {
         let formatter = DateFormatter()
         formatter.timeZone = .current
@@ -609,9 +554,6 @@ private struct PeakHoursBlock: View {
         return String(localized: "\(start)–\(end) (your time)")
     }
 
-    /// Today at `hour:00` in the config's time zone — an absolute instant
-    /// that, when formatted with the user's local time zone, shows the
-    /// converted time.
     private func peakWindowBoundary(hour: Int) -> Date {
         guard let tz = config.timeZone else { return Date() }
         var cal = Calendar(identifier: .gregorian)

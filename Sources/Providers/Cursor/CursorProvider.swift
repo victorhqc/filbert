@@ -1,12 +1,6 @@
 import Core
 import Foundation
 
-/// Provider-owned metadata and resources for Cursor (providers 07).
-///
-/// Reads Cursor subscription + on-demand spend from the user's locally stored
-/// Cursor auth token and displays the current billing-cycle usage as
-/// `ProviderQuota` lines. The provider is `.apiKeyFree`: the user never pastes
-/// a key — filbert reads the session Cursor's own apps created locally.
 public struct CursorProvider: AIProvider {
     public static let providerId = "cursor"
     public static let providerName = "Cursor"
@@ -48,7 +42,7 @@ public struct CursorProvider: AIProvider {
         self.rateLimitBackoff = rateLimitBackoff
     }
 
-    // MARK: - Configuration (providers 07 AC10)
+    // MARK: - Configuration
 
     public func isConfigured() -> Bool {
         (try? tokenStore.loadOrBootstrap()) != nil
@@ -63,8 +57,6 @@ public struct CursorProvider: AIProvider {
             return .error(error.localizedDescription)
         }
 
-        // No token — distinguish binary-present from binary-missing so the
-        // Settings link targets the right action (providers 07 AC10).
         if locator.resolve() != nil {
             return .setup(String(localized: "Sign in to Cursor"))
         }
@@ -77,7 +69,7 @@ public struct CursorProvider: AIProvider {
         try tokenStore.reimport()
     }
 
-    // MARK: - Fetch (providers 07 AC5/AC6)
+    // MARK: - Fetch
 
     public func fetchQuota(auth _: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
         try await rateLimitBackoff.checkRequestAllowed()
@@ -96,7 +88,6 @@ public struct CursorProvider: AIProvider {
             throw error
         }
 
-        // ── AC6: Connect-RPC call (providers 07) ──
         let endpoint = baseURL
             .appendingPathComponent("aiserver.v1.DashboardService")
             .appendingPathComponent("GetCurrentPeriodUsage")
@@ -125,7 +116,6 @@ public struct CursorProvider: AIProvider {
         }
         await rateLimitBackoff.recordSuccessfulResponse()
 
-        // ── AC10: typed errors for non-200 (providers 07) ──
         guard httpResponse.statusCode == 200 else {
             throw CursorError.http(httpResponse.statusCode)
         }
@@ -140,19 +130,17 @@ public struct CursorProvider: AIProvider {
         return map(usageResponse)
     }
 
-    // MARK: - Mapping (providers 07 AC7–AC9)
+    // MARK: - Mapping
 
     func map(_ response: CursorUsageResponse) -> ProviderQuota {
         let resetDate = Self.dateFromMsString(response.billingCycleEnd)
         let plan = normalizedPlan(from: response)
         var lines: [UsageLine] = []
 
-        // ── AC7: plan usage → percentage + reset UsageLines (providers 07) ──
         if let plan {
             lines.append(contentsOf: planLines(plan, resetDate: resetDate))
         }
 
-        // ── AC8: on-demand and pooled spend → currency UsageLines (providers 07) ──
         if let onDemand = normalizedOnDemand(from: response) {
             if let line = onDemandLine(onDemand) {
                 lines.append(line)
@@ -179,7 +167,7 @@ public struct CursorProvider: AIProvider {
         )
     }
 
-    // MARK: Plan usage lines (providers 07 AC7)
+    // MARK: Plan usage lines
 
     private func planLines(_ plan: PlanData, resetDate: Date?) -> [UsageLine] {
         var lines: [UsageLine] = []
@@ -208,7 +196,6 @@ public struct CursorProvider: AIProvider {
             details: details.isEmpty ? nil : details
         ))
 
-        // Bonus credits — shown as the bonus amount when present and positive.
         if let bonus = plan.bonusSpend, bonus > 0 {
             lines.append(UsageLine(
                 label: String(localized: "Bonus credits"),
@@ -222,10 +209,9 @@ public struct CursorProvider: AIProvider {
         return lines
     }
 
-    // MARK: On-demand line (providers 07 AC8)
+    // MARK: On-demand line
 
     private func onDemandLine(_ onDemand: OnDemandData) -> UsageLine? {
-        // Absent or zero-limit on-demand produces no line (providers 07 AC8).
         guard let limit = onDemand.limit, limit > 0 else { return nil }
         return UsageLine(
             label: String(localized: "On-demand spend"),
@@ -235,7 +221,7 @@ public struct CursorProvider: AIProvider {
         )
     }
 
-    // MARK: Pooled line (providers 07 AC8)
+    // MARK: Pooled line
 
     private func pooledLine(_ spend: CursorSpendLimitUsage) -> UsageLine? {
         guard let limit = spend.pooledLimit, limit > 0 else { return nil }
@@ -249,7 +235,7 @@ public struct CursorProvider: AIProvider {
         )
     }
 
-    // MARK: Headline (providers 07 AC9)
+    // MARK: Headline
 
     private func computeHeadline(
         response: CursorUsageResponse,
@@ -279,7 +265,7 @@ public struct CursorProvider: AIProvider {
     // MARK: - Normalization
 
     /// Unifies the new `planUsage` shape and the legacy `individualUsage.plan`
-    /// shape into one model (providers 07 AC7).
+    /// shape into one model.
     private func normalizedPlan(from response: CursorUsageResponse) -> PlanData? {
         if let plan = response.planUsage {
             return PlanData(
@@ -328,7 +314,6 @@ private extension CursorProvider {
         return formatter
     }
 
-    /// Converts a unix-milliseconds string to `Date` (providers 07 Context).
     static func dateFromMsString(_ milliseconds: String?) -> Date? {
         guard let milliseconds, let epoch = TimeInterval(milliseconds) else { return nil }
         return Date(timeIntervalSince1970: epoch / 1000)
@@ -351,17 +336,15 @@ private struct OnDemandData {
     let limit: Int?
 }
 
-// MARK: - Wire types (providers 07 AC7/AC8)
+// MARK: - Wire types
 
-/// Envelope for `GetCurrentPeriodUsage` (providers 07 AC7). Tolerant of
-/// unknown fields and missing optionals (providers 07 AC7).
 struct CursorUsageResponse: Decodable, Sendable {
     let billingCycleStart: String?
     let billingCycleEnd: String?
     let isUnlimited: Bool?
     let planUsage: CursorPlanUsage?
     let spendLimitUsage: CursorSpendLimitUsage?
-    /// Legacy shape tolerated for older API responses (providers 07 AC7).
+    /// Legacy shape tolerated for older API responses.
     let individualUsage: CursorIndividualUsage?
 }
 

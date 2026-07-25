@@ -20,7 +20,7 @@ final class ProviderOverridesTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC4/AC5: round-trip and clearing
+    // MARK: - round-trip and clearing
 
     func testBaseURL_returnsNilWhenUnset() {
         XCTAssertNil(ProviderOverrides.baseURL(for: "zai"))
@@ -52,7 +52,7 @@ final class ProviderOverridesTests: XCTestCase {
         XCTAssertEqual(ProviderOverrides.baseURL(for: "claude"), claude)
     }
 
-    // MARK: - AC5: only https is accepted on write
+    // MARK: - only https is accepted on write
 
     func testSetBaseURL_rejectsHttp() throws {
         let http = try XCTUnwrap(URL(string: "http://proxy.example.com"))
@@ -72,7 +72,7 @@ final class ProviderOverridesTests: XCTestCase {
         XCTAssertNil(ProviderOverrides.baseURL(for: "zai"))
     }
 
-    // MARK: - AC6: invalid stored values fall back to nil (defense in depth)
+    // MARK: - invalid stored values fall back to nil (defense in depth)
 
     func testBaseURL_treatsStoredHttpAsUnsetAndCleansUp() {
         defaults.set("http://proxy.example.com", forKey: "provider-zai-base-url")

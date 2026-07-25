@@ -1,11 +1,9 @@
 import Foundation
 
-/// MainActor-isolated registry of configured providers.
-///
 /// All mutation happens on the MainActor (`AppMain.init()` registers providers
 /// before the view model reads them; `QuotaViewModel` is `@MainActor`).
 /// MainActor isolation implies `Sendable` (SE-0306/SE-0338), so the registry
-/// crosses `Task` boundaries safely without an `@unchecked` escape hatch (ci 04).
+/// crosses `Task` boundaries without an `@unchecked` escape hatch.
 @MainActor
 public final class ProviderRegistry {
     private var providers: [String: any AIProvider] = [:]
@@ -18,7 +16,6 @@ public final class ProviderRegistry {
         providers[id] = provider
     }
 
-    /// List of all registered providers with their metadata (ui 02 AC2/AC9).
     public var registeredProviders: [ProviderInfo] {
         providers.values.map { provider in
             ProviderInfo(
@@ -35,11 +32,9 @@ public final class ProviderRegistry {
         }
     }
 
-    /// Whether the given provider is ready to fetch (ui 02 AC3/AC5, core 03 AC5).
-    ///
-    /// For `.apiKey` providers this checks the Keychain. For `.apiKeyFree`
-    /// providers this delegates to the provider's own `isConfigured()` —
-    /// the provider owns what "configured" means for its auth shape.
+    /// For `.apiKey` providers this checks the Keychain; for `.apiKeyFree`
+    /// providers it delegates to the provider's own `isConfigured()` — the
+    /// provider owns what "configured" means for its auth shape.
     public func isConfigured(_ providerId: String) -> Bool {
         guard let provider = providers[providerId] else { return false }
         let shape = type(of: provider).authShape
@@ -52,9 +47,8 @@ public final class ProviderRegistry {
     }
 
     public func fetchAll() async -> [String: Result<ProviderQuota, Error>] {
-        // Snapshot the dictionary and keychain into locals before crossing
-        // into the TaskGroup so child tasks never touch MainActor-isolated
-        // state (ci 04 Plan §4).
+        // Snapshot before crossing into the TaskGroup so child tasks never
+        // touch MainActor-isolated state.
         let snapshot = providers
         let keychain = keychain
 
@@ -74,8 +68,6 @@ public final class ProviderRegistry {
                         case .apiKeyFree:
                             auth = .apiKeyFree
                         }
-                        // Core resolves the effective URL: user override when
-                        // present and valid, else the provider's default (core 02 AC2/AC6).
                         let baseURL = ProviderOverrides.baseURL(for: providerId)
                             ?? type(of: provider).baseURL
                         let quota = try await provider.fetchQuota(
@@ -97,16 +89,15 @@ public final class ProviderRegistry {
         }
     }
 
-    // MARK: - Setup state (core 03 AC6)
+    // MARK: - Setup state
 
     /// Fires `currentSetupState()` on every registered `.apiKeyFree` provider
-    /// concurrently. `.apiKey` providers are not called — their setup state
-    /// is always `nil` (core 03 AC6).
-    ///
-    /// The view model calls this at launch and after install/uninstall actions
-    /// to re-sync setup state without blocking the main actor.
+    /// concurrently. `.apiKey` providers are not called — their setup state is
+    /// always `nil`. The view model calls this at launch and after
+    /// install/uninstall actions to re-sync without blocking the main actor.
     public func refreshSetupStates() async -> [String: ProviderState] {
-        // Snapshot before crossing into the TaskGroup (ci 04 Plan §4).
+        // Snapshot before crossing into the TaskGroup so child tasks never
+        // touch MainActor-isolated state.
         let snapshot = providers
 
         return await withTaskGroup(
@@ -132,26 +123,22 @@ public final class ProviderRegistry {
         }
     }
 
-    // MARK: - Helper management (ui 05)
+    // MARK: - Helper management
 
-    /// Returns `true` when the provider's auth shape is `.apiKeyFree`
-    /// (ui 05 AC8). The popover uses this to suppress the "Clear Key" button.
+    /// The popover uses this to suppress the "Clear Key" button.
     public func isAPIKeyFree(_ providerId: String) -> Bool {
         guard let provider = providers[providerId] else { return false }
         return type(of: provider).authShape == .apiKeyFree
     }
 
-    /// Returns `true` when the `.apiKeyFree` provider's helper can be
-    /// installed right now (binary is present). `.apiKey` providers always
-    /// return `false` — they have no helper (ui 05 AC3/AC4).
+    /// `.apiKey` providers always return `false` — they have no helper.
     public func canInstallHelper(for providerId: String) -> Bool {
         guard let provider = providers[providerId] else { return false }
         return provider.canInstallHelper()
     }
 
-    /// Delegates to the provider's `installHelper()`. Throws when the
-    /// provider is not registered or does not support helper installation
-    /// (ui 05 AC4).
+    /// Throws when the provider is not registered or does not support helper
+    /// installation.
     public func installHelper(for providerId: String) async throws {
         guard let provider = providers[providerId] else {
             throw ProviderSetupError.notSupported
@@ -159,9 +146,8 @@ public final class ProviderRegistry {
         try await provider.installHelper()
     }
 
-    /// Delegates to the provider's `removeHelper()`. Throws when the
-    /// provider is not registered or does not support helper removal
-    /// (ui 05 AC5).
+    /// Throws when the provider is not registered or does not support helper
+    /// removal.
     public func removeHelper(for providerId: String) async throws {
         guard let provider = providers[providerId] else {
             throw ProviderSetupError.notSupported
@@ -169,16 +155,15 @@ public final class ProviderRegistry {
         try await provider.removeHelper()
     }
 
-    // MARK: - Credential import (core 04)
+    // MARK: - Credential import
 
-    /// Returns the provider-owned title for an explicit credential import,
-    /// or `nil` when the provider does not support one (core 04 AC7).
+    /// Returns `nil` when the provider does not support credential import.
     public func credentialImportActionTitle(for providerId: String) -> String? {
         providers[providerId].map { type(of: $0).credentialImportActionTitle } ?? nil
     }
 
     /// Routes an explicit credential import without inspecting a provider ID
-    /// or provider-specific credential shape (core 04 AC7).
+    /// or provider-specific credential shape.
     public func importCredentials(for providerId: String) async throws {
         guard let provider = providers[providerId] else {
             throw ProviderSetupError.notSupported
@@ -186,14 +171,12 @@ public final class ProviderRegistry {
         try await provider.importCredentials()
     }
 
-    // MARK: - Proactive refresh (providers 03)
+    // MARK: - Proactive refresh
 
-    /// Triggers an out-of-band refresh on providers that conform to
-    /// `ProactiveRefreshable` (providers 03 AC3). Throws
-    /// `ProviderSetupError.notSupported` when the provider is not registered
-    /// or does not conform — the view model catches this and proceeds
-    /// straight to `fetchQuota`, so non-conforming providers behave
-    /// identically to before.
+    /// Throws `ProviderSetupError.notSupported` when the provider is not
+    /// registered or does not conform. The view model catches this and
+    /// proceeds straight to `fetchQuota`, so non-conforming providers are
+    /// unaffected.
     public func proactiveRefresh(for providerId: String) async throws {
         guard let provider = providers[providerId] else {
             throw ProviderSetupError.notSupported

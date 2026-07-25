@@ -4,11 +4,6 @@ import XCTest
 
 @MainActor
 final class ConfiguredProvidersOrderedTests: XCTestCase {
-    /// (ui 16) `configuredProvidersOrdered` must list only configured
-    /// providers, in the saved order, and stay in sync with
-    /// `configuredProviderIds`. The unconfigured `.apiKey` provider (no
-    /// Keychain entry) and the unconfigured `.apiKeyFree` provider must not
-    /// appear, while the configured `.apiKeyFree` provider must.
     func testConfiguredProvidersOrderedExcludesUnconfiguredProviders() {
         let registry = ProviderRegistry()
         registry.register(UnconfiguredAPIKeyProvider())
@@ -24,13 +19,10 @@ final class ConfiguredProvidersOrderedTests: XCTestCase {
         XCTAssertEqual(
             configuredOrderedIds,
             configuredIds,
-            "configuredProvidersOrdered must match configuredProviderIds (ui 16)"
+            "configuredProvidersOrdered must match configuredProviderIds"
         )
     }
 
-    /// (ui 16) The full registry order (`registeredProvidersOrdered`)
-    /// still includes unconfigured providers, so their saved positions are
-    /// preserved when only configured providers are visible.
     func testRegisteredOrderStillContainsUnconfiguredProviders() {
         let registry = ProviderRegistry()
         registry.register(UnconfiguredAPIKeyProvider())
@@ -43,8 +35,6 @@ final class ConfiguredProvidersOrderedTests: XCTestCase {
         XCTAssertTrue(registeredIds.contains(ConfiguredAPIKeyFreeProvider.providerId))
     }
 
-    /// (ui 16) With no configured providers, the configured list is empty so
-    /// the Appearance tab renders the empty hint instead of a list.
     func testConfiguredProvidersOrderedEmptyWhenNothingConfigured() {
         let registry = ProviderRegistry()
         registry.register(UnconfiguredAPIKeyProvider())

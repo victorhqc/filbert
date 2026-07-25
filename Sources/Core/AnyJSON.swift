@@ -1,18 +1,14 @@
 import Foundation
 
-/// A type-erased JSON value that round-trips arbitrary open-schema JSON
-/// without exposing the `Any` type (ci 04 AC7).
+/// Type-erased JSON value used when a JSON shape is user-owned or externally
+/// defined and may carry keys this app does not know about (e.g. Claude Code's
+/// `~/.claude/settings.json` accepts arbitrary sibling keys alongside
+/// `statusLine`). Holding it as `AnyJSON` — not `[String: Any]` — lets the
+/// `Codable` model preserve unknown keys through a read/modify/write cycle
+/// while keeping `Sources/` free of the `Any` type.
 ///
-/// Used when a JSON shape is user-owned or externally defined and may carry
-/// keys this app does not know about (e.g. Claude Code's `~/.claude/settings.json`
-/// accepts arbitrary sibling keys alongside `statusLine`). Holding such a value
-/// as `AnyJSON` — not `[String: Any]` — lets the `Codable` model preserve unknown
-/// keys through a read/modify/write cycle while keeping `Sources/` free of the
-/// `Any` type (ci 04 AC5/AC6).
-///
-/// Minimal by design: `Codable` + `Equatable` only. No convenience initializers,
-/// no `ExpressibleBy*Literal`, no query helpers — each addition broadens the
-/// public API surface of `Core` and belongs in its own decision (ci 04 Risks).
+/// Minimal by design: `Codable` + `Equatable` only. Each addition broadens
+/// the public API surface of `Core`.
 public enum AnyJSON: Codable, Sendable, Equatable {
     case null
     case bool(Bool)
@@ -23,7 +19,6 @@ public enum AnyJSON: Codable, Sendable, Equatable {
 
     // MARK: - Decoding
 
-    ///
     /// `decode(Bool.self)` must precede `decode(Double.self)`, and both must
     /// precede `decode(String.self)`, so the JSON kind is detected unambiguously
     /// — a JSON `true` is not a `1.0`, and a JSON `"42"` is not a number.

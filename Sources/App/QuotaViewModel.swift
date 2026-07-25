@@ -13,42 +13,30 @@ final class QuotaViewModel {
 
     // MARK: - State
 
-    /// Per-provider state map keyed by provider ID (ui 02 Plan 3).
-    ///
     /// Must be assigned as a whole value — dictionary subscript mutation
-    /// does not trigger @Observable's setter. Use setState(_:for:) for all
-    /// mutations; it also refreshes the derived stored properties.
+    /// does not trigger @Observable's setter.
     private(set) var providerStates: [String: ProviderState] = [:]
 
-    /// Derived: provider IDs in the user-saved order (ui 09 AC4/AC6). Drives
-    /// both the popover (`configuredProviderIds` is the configured subset)
-    /// and the Appearance tab. Reassigned as a whole value so @Observable
-    /// notifies observers — `ProviderOrder` and `registry` are not observable
-    /// themselves, so a computed property would not trigger re-renders.
+    /// Reassigned as a whole value so @Observable notifies observers —
+    /// `ProviderOrder` and `registry` are not observable, so a computed property
+    /// would not trigger re-renders.
     private(set) var orderedProviderIds: [String] = []
 
-    /// Derived: provider IDs with a saved key, sorted by display name (ui 02 AC4).
     private(set) var configuredProviderIds: [String] = []
 
-    /// Derived: whether any provider is configured (ui 02 AC3).
     private(set) var hasAnyConfiguredProvider: Bool = false
 
-    /// Observation token for UserDefaults-backed collapse choices (ui 14).
-    /// The values remain in Core; changing this token tells SwiftUI to resolve
-    /// them again.
+    /// Changing this token tells SwiftUI to re-resolve the UserDefaults-backed
+    /// collapse values that live in Core.
     private var collapseStateRevision = 0
 
-    // MARK: - Quiet refresh (ui 07)
+    // MARK: - Quiet refresh
 
-    /// Per-provider flag set while a refresh is in flight and last-known data
-    /// stays visible. Drives the Refresh icon's rotation + click-debounce (ui 07 AC3/AC4).
     private(set) var isRefreshing: [String: Bool] = [:]
 
-    /// Per-provider error from the most recent refresh that failed while last-known
-    /// data was retained. Shown as a non-blocking indicator; cleared on next success (ui 07 AC6).
     private(set) var refreshErrors: [String: String] = [:]
 
-    // MARK: - Auto-refresh (AC7: per-provider 5-minute cadence (ui 02))
+    // MARK: - Auto-refresh
 
     private var refreshLoops: [String: Task<Void, Never>] = [:]
 
@@ -76,7 +64,6 @@ final class QuotaViewModel {
                     setState(.loading, for: info.id)
                     startAutoRefresh(for: info.id)
                 } else {
-                    // Setup state will be filled by refreshAllSetupStates().
                     setState(.unconfigured, for: info.id)
                 }
             }
@@ -90,12 +77,9 @@ final class QuotaViewModel {
 
     // MARK: - Derived properties — public
 
-    /// All registered provider metadata in the user-saved order (ui 09 AC4/AC6).
-    ///
-    /// Display-name ascending is the fallback both for fresh installs (no
-    /// saved order) and for newly registered providers that have no saved
-    /// position (ui 09 AC5). Reads the stored `orderedProviderIds` cache so
-    /// SwiftUI re-renders when `moveProvider`/`persistOrder` reassign it.
+    /// Display-name ascending is the fallback for fresh installs and newly
+    /// registered providers. Reads `orderedProviderIds` (not `registry`) so
+    /// SwiftUI re-renders when the order changes.
     var registeredProvidersOrdered: [ProviderInfo] {
         let byId = Dictionary(
             uniqueKeysWithValues: registry.registeredProviders.map { ($0.id, $0) }
@@ -103,13 +87,8 @@ final class QuotaViewModel {
         return orderedProviderIds.compactMap { byId[$0] }
     }
 
-    /// Configured providers in the user-saved order (ui 16).
-    ///
-    /// Same source as `registeredProvidersOrdered`, filtered to the
-    /// configured subset so the Appearance tab's "Provider order" matches the
-    /// popover's configured providers exactly. The configured predicate is
-    /// shared with `refreshDerived()` so "what counts as configured" is
-    /// defined in one place — the view layer never re-encodes it.
+    /// Shares the configured predicate with `refreshDerived()` (via
+    /// `isConfiguredState`) so "what counts as configured" is defined in one place.
     var configuredProvidersOrdered: [ProviderInfo] {
         registeredProvidersOrdered.filter { info in
             guard let state = providerStates[info.id] else { return false }
@@ -117,12 +96,7 @@ final class QuotaViewModel {
         }
     }
 
-    /// The configured predicate shared by `refreshDerived()` and
-    /// `configuredProvidersOrdered` (ui 16).
-    ///
-    /// `.unconfigured` and `.setup` are excluded; everything else counts as
-    /// configured. Keep this in sync with the states set by `init` and
-    /// `setState(_:for:)`.
+    /// Must stay in sync with the states assigned by `init` and `setState(_:for:)`.
     private static func isConfiguredState(_ state: ProviderState) -> Bool {
         switch state {
         case .unconfigured, .setup:
@@ -132,7 +106,7 @@ final class QuotaViewModel {
         }
     }
 
-    // MARK: - Key management (AC3/AC5: save & clear per provider (ui 02))
+    // MARK: - Key management
 
     func saveKey(_ key: String, for providerId: String) throws {
         try keychain.save(key, for: providerId)
@@ -151,17 +125,12 @@ final class QuotaViewModel {
         stopAutoRefresh(for: providerId)
     }
 
-    // MARK: - Base-URL override (ui 03)
+    // MARK: - Base-URL override
 
-    /// Current override URL for a provider, or `nil` if none is saved (ui 03 Plan 2).
     func overrideURL(for providerId: String) -> URL? {
         ProviderOverrides.baseURL(for: providerId)
     }
 
-    /// Saves a base-URL override for a provider. Throws `ProviderOverrideError`
-    /// for non-`https` / empty-host URLs so the view can show an inline error
-    /// (ui 03 AC3). When the provider is already configured, triggers an
-    /// immediate re-fetch so the user sees the proxy take effect (ui 03 AC4).
     func saveOverrideURL(_ url: URL?, for providerId: String) throws {
         guard !registry.isAPIKeyFree(providerId) else { return }
         try ProviderOverrides.setBaseURL(url, for: providerId)
@@ -173,8 +142,6 @@ final class QuotaViewModel {
 
     // MARK: - Setup state refresh
 
-    /// Fires `refreshSetupStates()` on the registry and merges the results
-    /// into `providerStates` for every `.apiKeyFree` provider (ui 05 AC10).
     private func refreshAllSetupStates() {
         Task {
             let states = await registry.refreshSetupStates()
@@ -200,7 +167,7 @@ final class QuotaViewModel {
         }
     }
 
-    // MARK: - Fetch (AC5: manual refresh (ui 02))
+    // MARK: - Fetch
 
     func fetchQuota(for providerId: String) {
         guard registry.isConfigured(providerId) else {
@@ -211,7 +178,7 @@ final class QuotaViewModel {
             log("fetchQuota: provider=\(providerId) already loading, skipping")
             return
         }
-        // AC7: debounce — same guard as manual refresh (ui 07).
+        // debounce while refreshing
         if isRefreshing[providerId] == true {
             log("fetchQuota: provider=\(providerId) already refreshing, skipping")
             return
@@ -219,14 +186,10 @@ final class QuotaViewModel {
         performFetch(for: providerId)
     }
 
-    /// Manual-refresh entry point bound to the popover's Refresh button
-    /// (providers 03 AC3). Runs the provider's proactive refresh (if it
-    /// conforms to `ProactiveRefreshable`) before performing the cache read,
-    /// so a single click both spawns `claude -p` and re-reads the result.
-    ///
-    /// Auto-refresh and the initial app-launch fetch still call
-    /// `fetchQuota(for:)` directly — scheduling a proactive spawn is
-    /// deferred to a separate spec.
+    /// Runs the provider's proactive refresh before the cache read, so a single
+    /// click both spawns the helper and re-reads the result. Auto-refresh and
+    /// the initial fetch still call `fetchQuota(for:)` directly — proactive
+    /// spawn is manual-only.
     func manualRefresh(for providerId: String) {
         guard registry.isConfigured(providerId) else {
             log("manualRefresh: provider=\(providerId) not configured, skipping")
@@ -236,8 +199,7 @@ final class QuotaViewModel {
             log("manualRefresh: provider=\(providerId) already loading, skipping")
             return
         }
-        // AC1/AC4: debounce while refreshing; keep last-known data visible (.loaded/.error);
-        // first-ever fetch still uses .loading (ui 07).
+        // debounce while refreshing
         if isRefreshing[providerId] == true {
             log("manualRefresh: provider=\(providerId) already refreshing, skipping")
             return
@@ -255,9 +217,8 @@ final class QuotaViewModel {
         }
     }
 
-    /// Background half of `manualRefresh`. Awaits the proactive refresh
-    /// (catching `.notSupported` so non-conforming providers like ZAI fall
-    /// through to the standard fetch path) and then runs the fetch.
+    /// Catches `.notSupported` from the proactive refresh so non-conforming
+    /// providers fall through to the standard fetch path.
     private func performManualRefresh(providerId: String) async {
         do {
             try await registry.proactiveRefresh(for: providerId)
@@ -282,7 +243,6 @@ final class QuotaViewModel {
 
     private func performFetch(for providerId: String) {
         log("performFetch: provider=\(providerId)")
-        // AC1/AC7: pick the quiet path when last-known data exists (ui 07).
         switch providerStates[providerId] {
         case .loaded, .error:
             setRefreshing(true, for: providerId)
@@ -296,7 +256,7 @@ final class QuotaViewModel {
         }
     }
 
-    // MARK: - Auto-refresh loop (AC7: per-provider 5-minute loop (ui 02))
+    // MARK: - Auto-refresh loop
 
     private func startAutoRefresh(for providerId: String) {
         stopAutoRefresh(for: providerId)
@@ -320,17 +280,14 @@ final class QuotaViewModel {
 
     // MARK: - Helpers
 
-    /// Mutate a single provider's state while triggering @Observable's setter.
-    ///
-    /// Dictionary subscript mutations only invoke the getter, so the UI would
-    /// never see the change. Copy-write-back forces the property setter to fire.
+    /// Copy-write-back forces @Observable's setter to fire — dictionary subscript
+    /// mutations only invoke the getter, so the UI would never see the change.
     private func setState(_ state: ProviderState, for providerId: String) {
         var copy = providerStates
         copy[providerId] = state
         providerStates = copy
     }
 
-    /// Recompute stored derived properties from current state.
     private func refreshDerived() {
         let byId = Dictionary(
             uniqueKeysWithValues: registry.registeredProviders.map { ($0.id, $0) }
@@ -357,8 +314,7 @@ final class QuotaViewModel {
 // MARK: - Setup actions
 
 extension QuotaViewModel {
-    /// Returns `true` when the provider's helper can be installed right now
-    /// (binary present, helper not yet installed) (ui 05 AC3/AC4).
+    /// Returns `true` when the provider's helper can be installed right now.
     func canInstallHelper(for providerId: String) -> Bool {
         registry.canInstallHelper(for: providerId)
     }
@@ -367,8 +323,6 @@ extension QuotaViewModel {
         registry.credentialImportActionTitle(for: providerId)
     }
 
-    /// Installs the provider's helper, updates state to `.loading` during the
-    /// operation, and starts auto-refresh + fetch on success (ui 05 AC4).
     func installHelper(for providerId: String) async {
         log("installHelper: provider=\(providerId)")
         setState(.loading, for: providerId)
@@ -385,8 +339,6 @@ extension QuotaViewModel {
         }
     }
 
-    /// Removes the provider's helper, stops auto-refresh, and re-checks the
-    /// setup state (ui 05 AC5).
     func removeHelper(for providerId: String) async {
         log("removeHelper: provider=\(providerId)")
         setState(.loading, for: providerId)
@@ -425,7 +377,7 @@ extension QuotaViewModel {
     }
 }
 
-// MARK: - Provider cards (ui 14)
+// MARK: - Provider cards
 
 extension QuotaViewModel {
     func providerInfo(for providerId: String) -> ProviderInfo? {
@@ -455,12 +407,9 @@ extension QuotaViewModel {
     }
 }
 
-// MARK: - Provider ordering (ui 09)
+// MARK: - Provider ordering
 
 extension QuotaViewModel {
-    /// Re-orders the registry's providers per a drag-and-drop gesture in the
-    /// Appearance tab, persists the new order, and refreshes derived state so
-    /// both the Appearance tab and popover re-render live (ui 09 AC3/AC7).
     func moveProvider(from source: IndexSet, to destination: Int) {
         var ids = orderedProviderIds
         ids.move(fromOffsets: source, toOffset: destination)
@@ -469,20 +418,14 @@ extension QuotaViewModel {
         refreshDerived()
     }
 
-    /// Writes an explicit ordered list of provider IDs and refreshes derived
-    /// state so both the Appearance tab and popover pick up the new order
-    /// (ui 09 AC3/AC7).
     func persistOrder(_ ids: [String]) {
         ProviderOrder.setOrder(ids)
         orderedProviderIds = ids
         refreshDerived()
     }
 
-    /// Recomputes `orderedProviderIds` from the registry + saved order (ui 09).
-    ///
-    /// Display-name ascending is the fallback inside the App layer because
-    /// Core's `ProviderOrder.effectiveOrder(for:)` is name-agnostic. Must be
-    /// called whenever the registry or the saved order changes.
+    /// Display-name ascending is the App-layer fallback because Core's
+    /// `ProviderOrder.effectiveOrder(for:)` is name-agnostic.
     private func recomputeOrderedProviderIds() {
         let sortedByName = registry.registeredProviders.sorted {
             $0.displayName.localizedCaseInsensitiveCompare($1.displayName) == .orderedAscending
@@ -491,7 +434,7 @@ extension QuotaViewModel {
     }
 }
 
-// MARK: - Quiet-refresh state mutation + result processing (ui 07)
+// MARK: - Quiet-refresh state mutation + result processing
 
 private extension QuotaViewModel {
     func setRefreshing(_ refreshing: Bool, for providerId: String) {
@@ -517,7 +460,6 @@ private extension QuotaViewModel {
                 log("applyResults: provider=\(id) no longer configured, skipping")
                 continue
             }
-            // Every resolved result clears the in-flight flag (ui 07 AC5).
             setRefreshing(false, for: id)
 
             switch result {
@@ -528,15 +470,13 @@ private extension QuotaViewModel {
             case let .failure(error):
                 log("applyResults: provider=\(id) failed: \(error.localizedDescription)")
                 if error is KeychainError {
-                    // Key deleted externally — genuine state change (ui 07 AC6).
+                    // Key deleted externally — genuine state change, not a refresh failure.
                     setRefreshError(nil, for: id)
                     setState(.unconfigured, for: id)
                     stopAutoRefresh(for: id)
                 } else if case .loaded = providerStates[id] {
-                    // AC6: retain last-known quota; surface failure as indicator (ui 07).
                     setRefreshError(error.localizedDescription, for: id)
                 } else {
-                    // AC6 fall-through: no data to retain (ui 07).
                     setRefreshError(nil, for: id)
                     setState(.error(error.localizedDescription), for: id)
                 }

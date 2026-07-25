@@ -15,8 +15,8 @@ private final class SettingsWindowConfigurationView: NSView {
         super.viewDidMoveToWindow()
         guard let window else { return }
         Task { @MainActor [weak window] in
-            // Settings applies native tab geometry after attachment, so defer
-            // the resizable style and content minimum until that pass completes (ui 15).
+            // Settings applies native tab geometry after attachment, so defer the
+            // style changes until that pass completes.
             try? await Task.sleep(for: .milliseconds(100))
             window?.styleMask.insert(.resizable)
             window?.contentMinSize = NSSize(width: 520, height: 420)

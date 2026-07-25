@@ -2,11 +2,8 @@
 import Core
 import XCTest
 
-// MARK: - MenuBarStatusIcon resolution logic (ui 10)
+// MARK: - MenuBarStatusIcon resolution logic
 
-/// Exercises the pure `QuotaStatusResolver` that drives the menu-bar icon's
-/// branch selection (ui 10 Plan §6). The ring geometry itself is verified via
-/// `QuotaStatusResolver.clampedFraction` — the same function the view calls.
 final class MenuBarStatusIconTests: XCTestCase {
     private let suiteName = "filbert.tests.menu-bar-status-icon"
     private var defaults: UserDefaults!
@@ -26,7 +23,7 @@ final class MenuBarStatusIconTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC3: window-based provider → percentage mode
+    // MARK: - window-based provider → percentage mode
 
     func testResolve_windowPercentage_returnsWindowMode() {
         let quota = ProviderQuota(
@@ -44,10 +41,6 @@ final class MenuBarStatusIconTests: XCTestCase {
     }
 
     func testResolve_5HourBeforeWeekly_picks5HourFirst() {
-        // Mirrors the Claude Code provider's line ordering (providers 02 AC5):
-        // 5-hour window first, then weekly. The icon picks the first one with a
-        // non-nil percentage so it agrees with the popover's headline priority
-        // (ui 04 AC2, providers 01 AC5).
         let quota = ProviderQuota(
             providerId: "claude-code",
             providerName: "Claude Code",
@@ -78,12 +71,9 @@ final class MenuBarStatusIconTests: XCTestCase {
         XCTAssertEqual(status, .window(percentage: 25))
     }
 
-    // MARK: - AC4: balance-based provider → balance mode
+    // MARK: - balance-based provider → balance mode
 
     func testResolve_noPercentageButPositiveTotal_returnsBalanceMode() {
-        // DeepSeek emits balance lines with `used: nil` (providers 04) so the
-        // percentage derivation returns nil and the line is treated as a
-        // balance-only line (ui 08 AC3).
         let quota = ProviderQuota(
             providerId: "deepseek",
             providerName: "DeepSeek",
@@ -104,8 +94,6 @@ final class MenuBarStatusIconTests: XCTestCase {
     }
 
     func testResolve_multipleBalanceLines_picksFirstPositiveTotal() {
-        // Mirrors `headlineBalanceColor(for:)`'s selection rule (ui 08 AC3):
-        // the first balance-only line with a positive total drives the ring.
         let quota = ProviderQuota(
             providerId: "deepseek",
             providerName: "DeepSeek",
@@ -124,7 +112,7 @@ final class MenuBarStatusIconTests: XCTestCase {
         XCTAssertEqual(total, 12.34, accuracy: 0.001)
     }
 
-    // MARK: - AC5: fallback when no usable data
+    // MARK: - fallback when no usable data
 
     func testResolve_noLines_returnsFallback() {
         let quota = ProviderQuota(
@@ -153,9 +141,6 @@ final class MenuBarStatusIconTests: XCTestCase {
     }
 
     func testResolve_percentageWinsOverBalance_whenBothPresent() {
-        // Capped API plans can return both (per core 01). The icon picks the
-        // percentage line (ui 10 AC3) so it agrees with the popover's headline.
-        // The balance line keeps `used: nil` to stay a real balance line.
         let quota = ProviderQuota(
             providerId: "capped",
             providerName: "Capped",
@@ -170,12 +155,9 @@ final class MenuBarStatusIconTests: XCTestCase {
         XCTAssertEqual(QuotaStatusResolver.resolve(for: quota), .window(percentage: 30))
     }
 
-    // MARK: - AC4: balance ring fraction
+    // MARK: - balance ring fraction
 
     func testResolve_balanceWithNilUsed_drivesFullRingAtRender() {
-        // Real balance providers emit `used: nil` (providers 04). AC4: a full
-        // ring is drawn when `used` is nil but `total > 0`. The resolver hands
-        // the used value through; the ring view decides to draw a full circle.
         let quota = ProviderQuota(
             providerId: "deepseek",
             providerName: "DeepSeek",
@@ -193,7 +175,7 @@ final class MenuBarStatusIconTests: XCTestCase {
         XCTAssertEqual(total, 12.34, accuracy: 0.001)
     }
 
-    // MARK: - AC6: clamping
+    // MARK: - clamping
 
     func testClampedFraction_clampsNegativeToZero() {
         XCTAssertEqual(QuotaStatusResolver.clampedFraction(-5), 0)
@@ -209,9 +191,6 @@ final class MenuBarStatusIconTests: XCTestCase {
     }
 
     func testResolve_outOfRangePercentage_isPassedThroughAndClampedAtRender() {
-        // The resolver does not clamp the percentage itself — the ring view
-        // clamps at draw time (ui 10 AC6). Verify the resolver hands the raw
-        // value through and the clamp helper handles the edge.
         let quota = ProviderQuota(
             providerId: "buggy",
             providerName: "Buggy",

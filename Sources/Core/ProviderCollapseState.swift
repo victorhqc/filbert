@@ -1,12 +1,10 @@
 import Foundation
 
-/// Persists only collapse choices the user explicitly makes (ui 14).
-///
 /// A missing value stays `nil`; the App layer owns the positional default
 /// because only it knows the current provider order.
 public enum ProviderCollapseState {
-    /// `nonisolated(unsafe)`: production never mutates this after startup; only
-    /// the test-injection API writes, and XCTest runs serially.
+    // `nonisolated(unsafe)`: production never mutates after startup; only the
+    // test-injection API writes, and XCTest runs serially.
     private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
     public static func collapsedState(for providerId: String) -> Bool? {

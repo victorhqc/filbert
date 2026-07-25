@@ -2,13 +2,6 @@
 import Core
 import XCTest
 
-/// Tests for the working-directory isolation added in (providers 06 AC1).
-///
-/// These verify the spawn's CWD behavior specifically — that the child runs in
-/// the injected directory rather than the test runner's CWD, and that a
-/// directory-creation failure aborts the spawn without clobbering the cache.
-/// Kept in a separate file from `ClaudeCodeRefresherTests` to keep each test
-/// type under the `type_body_length` threshold.
 final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
     private var tmpDir: URL!
     private var cacheURL: URL!
@@ -33,7 +26,7 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
         super.tearDown()
     }
 
-    // MARK: - AC1 (providers 06): child runs in the injected working directory
+    // MARK: - child runs in the injected working directory
 
     func testRefresh_spawnsInInjectedWorkingDirectory() async throws {
         // Dedicated temp dir for the child's CWD — distinct from the test
@@ -83,10 +76,9 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
         )
     }
 
-    // MARK: - AC1 (providers 06): directory-creation failure leaves cache untouched
+    // MARK: - directory-creation failure leaves cache untouched
 
     func testRefresh_leavesCacheUntouchedWhenWorkingDirectoryCreationFails() async throws {
-        // Seed a good cache (as the statusline helper would).
         try StatuslineCacheStore(cacheURL: cacheURL).write(
             StatuslineCache(
                 writtenAt: 1000,
@@ -129,8 +121,6 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
 
     // MARK: - Helpers
 
-    /// Writes `body` to `<tmpDir>/<name>`, `chmod +x`s it, and returns the
-    /// file URL so it can be handed to `ClaudeCodeLocator(injectedPath:)`.
     private func writeFakeBinary(name: String, body: String) throws -> URL {
         let url = tmpDir.appendingPathComponent(name)
         try body.write(to: url, atomically: true, encoding: .utf8)
@@ -141,8 +131,6 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
         return url
     }
 
-    /// Reads the integer written by the counting fake binary. Returns 0 when
-    /// the file does not exist (i.e. the spawn never ran).
     private func readInvocationCount(at url: URL) -> Int {
         guard FileManager.default.fileExists(atPath: url.path) else {
             return 0

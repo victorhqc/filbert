@@ -17,13 +17,6 @@ enum CursorExternalCredentialError: Error, Equatable, LocalizedError {
     }
 }
 
-/// Loads Cursor credentials from Filbert's shared vault. When the vault has
-/// no Cursor record, one bootstrap attempt imports the first complete pair
-/// from Cursor Agent Keychain layouts, then Cursor Desktop SQLite.
-///
-/// External Keychain reads route through Core's `KeychainStorage` accessor
-/// with the session-scoped `KeychainAuthenticationContext` so Cursor stops
-/// owning `LAContext` or SecItem query code (core 07 AC4).
 struct CursorTokenStore: Sendable {
     private let vault: any CursorCredentialVault
     private let externalStorage: any KeychainStorage
@@ -69,7 +62,6 @@ struct CursorTokenStore: Sendable {
         importCoordinator = CursorImportCoordinator()
     }
 
-    /// Loads the shared Cursor pair and performs at most one initial import.
     func loadOrBootstrap() throws -> CursorTokenPair? {
         try importCoordinator.loadOrBootstrap(
             loadShared: { try vault.load() },
@@ -78,8 +70,7 @@ struct CursorTokenStore: Sendable {
         )
     }
 
-    /// Deliberately re-reads Cursor-owned stores and persists the result into
-    /// Filbert's vault. No normal configuration or refresh path calls this.
+    /// No normal configuration or refresh path calls this.
     func reimport() throws {
         _ = try importCoordinator.reimport(
             importExternal: { try loadExternalPair() },
@@ -87,8 +78,7 @@ struct CursorTokenStore: Sendable {
         )
     }
 
-    /// Drops the Cursor pair from Filbert's shared vault (bugs 01). Leaves
-    /// Cursor's own first-party stores untouched.
+    /// Leaves Cursor's own first-party stores untouched.
     func clearSharedCredentials() throws {
         try vault.clear()
     }
@@ -119,9 +109,7 @@ struct CursorTokenStore: Sendable {
     }
 
     /// Reads a UTF-8 token from an external Keychain item via Core's shared
-    /// accessor. Absence (`errSecItemNotFound`) returns `nil`; any other
-    /// status surfaces as `CursorExternalCredentialError.keychain`, and a
-    /// non-UTF-8 payload surfaces as `malformedKeychainRecord` (core 05 AC4).
+    /// accessor.
     private func readExternalToken(
         service: String,
         account: String
@@ -161,10 +149,8 @@ struct CursorTokenStore: Sendable {
         "\(homeDirectory)/Library/Application Support/Cursor/User/globalStorage/state.vscdb"
     }
 
-    // MARK: - Refresh (providers 07 AC5/AC11)
+    // MARK: - Refresh
 
-    /// Returns a valid access token, refreshing the JWT when the current one
-    /// is expired or within the skew window.
     func ensureValidAccessToken(_ pair: CursorTokenPair) async throws -> String {
         if let expiry = Self.jwtExpiry(pair.accessToken) {
             guard expiry > Date().addingTimeInterval(refreshSkew) else {
@@ -229,8 +215,6 @@ struct CursorTokenStore: Sendable {
     // MARK: - JWT expiry (no third-party library)
 
     /// Minimal subset of a JWT payload: only the `exp` (expiry) claim is read.
-    /// Replaces `JSONSerialization` + `[String: Any]` so `Sources/` stays free
-    /// of the `Any` type (ci 04 AC7).
     private struct JWTPayload: Decodable {
         let exp: Double
     }

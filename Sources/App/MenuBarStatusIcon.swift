@@ -1,17 +1,11 @@
 import Core
 import SwiftUI
 
-// MARK: - Menu-bar live status icon (ui 10)
+// MARK: - Menu-bar live status icon
 
-/// The menu-bar label: a ring + short text reflecting the top-most configured
-/// provider's live status (ui 10 AC1/AC2).
-///
 /// The ring is rendered into a bitmap `NSImage` instead of a SwiftUI `Shape`
 /// because `MenuBarExtra`'s label layer on macOS 14 silently drops arbitrary
-/// `Shape` / `Canvas` content — only `Text` and `Image` reliably render. The
-/// bitmap is cached per 10% bucket (ui 10 AC6 — rounding) so a refresh that
-/// stays inside the same bucket never re-rasterizes (ui 10 AC7 — no extra cost
-/// on the existing 5-minute cadence).
+/// `Shape` / `Canvas` content — only `Text` and `Image` reliably render.
 @MainActor
 struct MenuBarStatusIcon: View {
     let viewModel: QuotaViewModel
@@ -79,7 +73,6 @@ struct MenuBarStatusIcon: View {
         }
     }
 
-    /// AC5: no usable data — fall back to the static SF Symbol, no text (ui 10).
     private var fallbackIcon: some View {
         Image(systemName: "brain.head.profile")
             .accessibilityLabel(String(localized: "Filbert"))
@@ -87,7 +80,6 @@ struct MenuBarStatusIcon: View {
 
     // MARK: - Resolution
 
-    /// The top-most configured provider's resolved status (ui 10 AC2/AC5).
     private var resolvedStatus: Resolved? {
         guard let id = viewModel.configuredProviderIds.first,
               case let .loaded(quota) = viewModel.providerStates[id]
@@ -99,36 +91,28 @@ struct MenuBarStatusIcon: View {
         return Resolved(providerName: quota.providerName, status: status)
     }
 
-    /// Quantizes a `[0, 1]` fraction into a 10%-bucketed `clampedFraction`
-    /// (ui 10 AC6). Rounds to the nearest 10%: 0.03 → 0, 0.05 → 0.1, 0.22 → 0.2,
-    /// 0.97 → 1. Clamped to `[0, 1]` first so out-of-range values stay bounded.
     private func bucket(from fraction: Double) -> Double {
         let clamped = QuotaStatusResolver.clampedFraction(fraction)
         return (clamped * 10).rounded() / 10
     }
 
     private func percentageText(_ percentage: Double) -> String {
-        // AC9: rounded to the nearest whole percent for the visible label.
         let rounded = Int(percentage.rounded())
         return String(localized: "\(rounded)%")
     }
 
     private func accessibilityPercentage(providerName: String, percentage: Double) -> String {
-        // AC9/AC10: a localized human sentence, e.g. "Claude Code: 42% used".
         let pct = Int(percentage.rounded())
         return String(localized: "\(providerName): \(pct)% used")
     }
 
     private func accessibilityBalance(providerName: String, total: Double) -> String {
-        // AC9/AC10: a localized human sentence, e.g. "DeepSeek: $12.34 remaining".
         let amount = QuotaStatusResolver.amountText(
             for: UsageLine(label: "", total: total, unit: nil)
         ) ?? String(format: "%.2f", total)
         return String(localized: "\(providerName): \(amount) remaining")
     }
 
-    /// Bundles the resolved status with the provider name so accessibility
-    /// labels can produce a human sentence without re-reading the view model.
     private struct Resolved {
         let providerName: String
         let status: QuotaStatusResolver.Status
@@ -137,15 +121,9 @@ struct MenuBarStatusIcon: View {
 
 // MARK: - Ring image (bitmap-backed)
 
-/// SwiftUI wrapper around the cached bitmap ring for a given 10% bucket.
-///
-/// The image is drawn in solid black (`Color.black`); `MenuBarExtra` applies
-/// its own template tint (black in light mode, white in dark mode, blue while
-/// highlighted), so the menu-bar ring respects the OS chrome (ui 10 AC8).
+/// The image is drawn in solid black because `MenuBarExtra` applies its own
+/// template tint, so the menu-bar ring respects the OS chrome.
 private struct MenuBarRingImage: View {
-    /// `[0, 1]` quantized to 10% buckets. Expected to come from
-    /// `MenuBarStatusIcon.bucket(from:)`; passing an unquantized value still
-    /// works but defeats the cache.
     let bucket: Double
 
     var body: some View {
@@ -156,14 +134,9 @@ private struct MenuBarRingImage: View {
     }
 }
 
-/// Lazily-built, process-wide cache of ring bitmaps keyed by 10% bucket.
-///
-/// 11 images cover the full 0–100% range (ui 10 AC6). Re-renders only fire
-/// when the resolved bucket changes between refreshes, never on every tick
-/// (ui 10 AC7).
 private enum MenuBarRingImageCache {
     /// `nonisolated(unsafe)`: SwiftUI renders on the main actor, so the lazy
-    /// populate is single-threaded in practice (ci 04 Plan §4).
+    /// populate is single-threaded in practice.
     private nonisolated(unsafe) static var cache: [Int: Image] = [:]
 
     static func image(for bucket: Double) -> Image {
@@ -177,43 +150,29 @@ private enum MenuBarRingImageCache {
         return image
     }
 
-    /// Maps a quantized fraction to its 0…10 integer bucket key.
     private static func bucketKey(_ bucket: Double) -> Int {
         let clamped = QuotaStatusResolver.clampedFraction(bucket)
         return Int((clamped * 10).rounded())
     }
 }
 
-/// Draws the ring — a tracked background arc plus a filled foreground arc —
-/// into a bitmap `NSImage` using `CGContext`.
-///
-/// Drawn in solid black so `MenuBarExtra` can template-tint it (ui 10 AC8).
-/// The geometry matches the open-arc look the spec describes: ~85% of the
-/// circumference is the drawable arc, the remaining 15% is a fixed visual gap
-/// so 100% still reads as a ring with an opening rather than a closed pie
-/// (ui 10 AC3/Plan §2).
+/// Drawn in solid black so `MenuBarExtra` can template-tint it.
 private enum MenuBarRingRenderer {
-    /// Pixel side-length of the rendered bitmap. @2x for crispness on Retina.
     private static let pixels = 28
 
-    /// 85% of the circumference is drawable; 15% is the fixed gap.
     private static let drawableRatio: CGFloat = 0.85
 
-    /// Visible stroke width in points (the bitmap is `pixels / 2` points wide).
     private static let lineWidth: CGFloat = 4
 
     static func render(fraction: Double) -> NSImage {
         let points = CGFloat(pixels) / 2
         guard let context = makeContext() else {
-            // If bitmap allocation fails, return a transparent image — the
-            // fallback SF Symbol takes over via the icon's fallback branch.
             return NSImage(size: NSSize(width: points, height: points))
         }
         drawRing(into: context, fraction: fraction)
         return makeImage(from: context, points: points)
     }
 
-    /// Allocates the grayscale, alpha-only bitmap the ring is drawn into.
     private static func makeContext() -> CGContext? {
         CGContext(
             data: nil,
@@ -226,15 +185,12 @@ private enum MenuBarRingRenderer {
         )
     }
 
-    /// Strokes the tracked background arc and the foreground fill arc.
     /// `CGContext`'s default arc origin is 3 o'clock (0° = positive X), so the
-    /// context is rotated -90° first to make the arc start at 12 o'clock
-    /// (ui 10 AC3).
+    /// context is rotated -90° to make the arc start at 12 o'clock.
     ///
-    /// At 100% the gap closes — the arc spans the full `2π` so a complete
-    /// budget reads as a complete circle rather than a 99% ring. Buckets 0–90%
-    /// keep the 85% drawable ratio so partial progress still has the open-arc
-    /// look (ui 10 AC3/Plan §2).
+    /// At 100% the arc spans the full `2π` so a complete budget reads as a
+    /// complete circle rather than a 99% ring; buckets 0–90% keep the open-arc
+    /// gap.
     private static func drawRing(into context: CGContext, fraction: Double) {
         let clamped = QuotaStatusResolver.clampedFraction(fraction)
         let bounds = CGRect(x: 0, y: 0, width: pixels, height: pixels)
@@ -249,8 +205,7 @@ private enum MenuBarRingRenderer {
         context.rotate(by: -.pi / 2)
         context.translateBy(x: -center.x, y: -center.y)
 
-        // Track: the full drawable arc at low opacity. Always uses the gap
-        // look — even at 100% the track shows where the closing seam sits.
+        // Track: the full drawable arc at low opacity.
         context.addArc(
             center: center,
             radius: radius,
@@ -261,7 +216,6 @@ private enum MenuBarRingRenderer {
         context.setStrokeColor(CGColor(gray: 0, alpha: 0.2))
         context.strokePath()
 
-        // Fill: the foreground arc, solid black so MenuBarExtra can tint it.
         let fillEnd = 2 * .pi * spanRatio * clamped
         guard fillEnd > 0 else { return }
         context.addArc(
@@ -275,8 +229,6 @@ private enum MenuBarRingRenderer {
         context.strokePath()
     }
 
-    /// Wraps the rendered bitmap as a template `NSImage` so MenuBarExtra
-    /// applies its own OS tint (ui 10 AC8).
     private static func makeImage(from context: CGContext, points: CGFloat) -> NSImage {
         guard let cgImage = context.makeImage() else {
             return NSImage(size: NSSize(width: points, height: points))
@@ -303,7 +255,7 @@ private struct MenuBarMacFaceImage: View {
 
 private enum MenuBarMacFaceCache {
     /// `nonisolated(unsafe)`: SwiftUI renders on the main actor, so the lazy
-    /// populate is single-threaded in practice (ci 04 Plan §4).
+    /// populate is single-threaded in practice.
     private nonisolated(unsafe) static var cache: [QuotaStatusResolver.Tier: Image] = [:]
 
     static func image(for tier: QuotaStatusResolver.Tier) -> Image {

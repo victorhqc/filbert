@@ -18,23 +18,21 @@ import Security
 /// `applyResults`, the 5-minute auto-refresh) touch the keychain only once
 /// per session. Writes trust the Security framework status without a
 /// read-back; `Keychain.lock` is the sole integrity guarantee against
-/// concurrent in-process access (core 07 AC2).
+/// concurrent in-process access.
 public final class Keychain: @unchecked Sendable {
     public static let shared = Keychain()
 
     private let service: String
     private let storage: any KeychainStorage
-    /// Account under which the consolidated JSON blob is stored.
     private let account = "providers"
 
-    /// Decoded provider-ID → provider-owned secret-field map. `nil` until the
-    /// first keychain read; an empty dictionary is a valid loaded state.
+    /// `nil` = not yet loaded; an empty dict is a valid loaded state.
     private var cache: [String: [String: String]]?
-    /// Serializes every keychain touch. Held across the (potentially blocking)
-    /// `SecItem` calls so concurrent readers in `ProviderRegistry.fetchAll`
-    /// trigger at most one prompt — the first thread reads, the rest wait and
-    /// then hit the cache. Not reentrant: only the public entry points lock;
-    /// the private `…Store` helpers assume the lock is already held.
+    /// Held across the (potentially blocking) `SecItem` calls so concurrent
+    /// readers in `ProviderRegistry.fetchAll` trigger at most one prompt — the
+    /// first thread reads, the rest wait and hit the cache. Not reentrant: only
+    /// the public entry points lock; the private `…Store` helpers assume the
+    /// lock is already held.
     private let lock = NSLock()
 
     private convenience init() {
@@ -69,14 +67,11 @@ public final class Keychain: @unchecked Sendable {
         return key
     }
 
-    /// Stores provider-owned string fields while preserving every other
-    /// provider's field map. Core does not interpret field names or values.
+    /// Core does not interpret field names or values — it stores them opaquely.
     public func save(_ fields: [String: String], for providerId: String) throws {
         try mutateStore { $0[providerId] = fields }
     }
 
-    /// Loads a provider-owned field map without assigning meaning to its
-    /// fields. Missing maps use the same not-found error as API-key loads.
     public func loadFields(for providerId: String) throws -> [String: String] {
         lock.lock()
         defer { lock.unlock() }
@@ -94,7 +89,6 @@ public final class Keychain: @unchecked Sendable {
 private extension Keychain {
     // MARK: - Store access (all callers hold `lock`)
 
-    /// Returns the cached store, loading it from the keychain on first use.
     private func loadedStore() throws -> [String: [String: String]] {
         if let cache {
             return cache
@@ -104,9 +98,7 @@ private extension Keychain {
         return loaded
     }
 
-    /// Loads the store, applies `transform`, and writes it back. The write
-    /// trusts the Security framework status; on failure the in-memory cache
-    /// is left at its pre-write state (core 07 AC2).
+    /// On write failure the in-memory cache is left at its pre-write state.
     private func mutateStore(_ transform: (inout [String: [String: String]]) -> Void) throws {
         lock.lock()
         defer { lock.unlock() }

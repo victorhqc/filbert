@@ -95,7 +95,6 @@ struct KeychainCursorCredentialVault: CursorCredentialVault {
         }
     }
 
-    // AC1: drop the Cursor entry from the shared vault (bugs 01).
     func clear() throws {
         do {
             try keychain.delete(for: Self.providerId)
