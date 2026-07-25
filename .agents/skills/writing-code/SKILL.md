@@ -51,8 +51,12 @@ Code follows a spec. If there is no spec for the change, stop and use the
      e.g. `// peak-hours calculation follows the window defined in (providers 02)`.
      See [`writing-specs`](../writing-specs/SKILL.md).
    - **Any acceptance-criteria (AC) marker** — e.g. `// AC1`, `// ── AC1 ──`,
-     `/// AC3 — refresh cadence` — MUST include the MLA citation of the spec
-     that owns it. A bare `AC1` is meaningless without its spec; always write
+     `/// AC3 — refresh cadence` — Overall, acceptance criteria SHOULD not be
+     used unless they provide a clarification that is critical to understand
+     a piece of code. Must code DO NOT NEED IT, the spec reference (MLA) is
+     enough most of the time. If it needs to be used then itMUST include the MLA
+     citation of the spec that owns it. A bare `AC1` is meaningless without its
+     spec; always write
      `// AC1: totals invariant (core 01)` or
      `// ── AC3: refresh-on-foreground (core 01) ──`. Code review must reject
      any AC marker that lacks a parenthesised spec citation.

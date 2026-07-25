@@ -103,6 +103,35 @@ final class QuotaViewModel {
         return orderedProviderIds.compactMap { byId[$0] }
     }
 
+    /// Configured providers in the user-saved order (ui 16).
+    ///
+    /// Same source as `registeredProvidersOrdered`, filtered to the
+    /// configured subset so the Appearance tab's "Provider order" matches the
+    /// popover's configured providers exactly. The configured predicate is
+    /// shared with `refreshDerived()` so "what counts as configured" is
+    /// defined in one place — the view layer never re-encodes it.
+    var configuredProvidersOrdered: [ProviderInfo] {
+        registeredProvidersOrdered.filter { info in
+            guard let state = providerStates[info.id] else { return false }
+            return Self.isConfiguredState(state)
+        }
+    }
+
+    /// The configured predicate shared by `refreshDerived()` and
+    /// `configuredProvidersOrdered` (ui 16).
+    ///
+    /// `.unconfigured` and `.setup` are excluded; everything else counts as
+    /// configured. Keep this in sync with the states set by `init` and
+    /// `setState(_:for:)`.
+    private static func isConfiguredState(_ state: ProviderState) -> Bool {
+        switch state {
+        case .unconfigured, .setup:
+            false
+        case .loading, .loaded, .error:
+            true
+        }
+    }
+
     // MARK: - Key management (AC3/AC5: save & clear per provider (ui 02))
 
     func saveKey(_ key: String, for providerId: String) throws {
@@ -310,12 +339,7 @@ final class QuotaViewModel {
             .compactMap { byId[$0] }
             .filter { info in
                 guard let state = providerStates[info.id] else { return false }
-                switch state {
-                case .unconfigured, .setup:
-                    return false
-                case .loading, .loaded, .error:
-                    return true
-                }
+                return Self.isConfiguredState(state)
             }
             .map(\.id)
         configuredProviderIds = ids

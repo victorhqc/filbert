@@ -14,7 +14,13 @@ struct AppearanceTab: View {
                 heading: String(localized: "Provider order"),
                 description: String(localized: "Drag providers to change their order.")
             ) {
-                providerOrderRows
+                // (ui 16) Only configured providers are listed; an empty
+                // configured set shows a hint instead of a blank list.
+                if viewModel.configuredProvidersOrdered.isEmpty {
+                    providerOrderEmptyHint
+                } else {
+                    providerOrderRows
+                }
             }
 
             SettingsCard(heading: String(localized: "Balance thresholds")) {
@@ -39,16 +45,28 @@ struct AppearanceTab: View {
     }
 
     private var providerOrderRows: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(viewModel.registeredProvidersOrdered.enumerated()), id: \.element.id) { index, provider in
+        // (ui 16) The rendered list is the configured subset, but the drop
+        // delegate and `moveProvider` resolve indices against the full
+        // ordered list so saved positions of unconfigured (hidden) providers
+        // are preserved.
+        let visible = viewModel.configuredProvidersOrdered
+        return VStack(spacing: 0) {
+            ForEach(Array(visible.enumerated()), id: \.element.id) { index, provider in
                 providerOrderRow(provider, at: index)
 
-                if index < viewModel.registeredProvidersOrdered.count - 1 {
+                if index < visible.count - 1 {
                     Divider()
                         .padding(.leading, 33)
                 }
             }
         }
+    }
+
+    private var providerOrderEmptyHint: some View {
+        Text(String(localized: "Configure a provider on the Providers tab to start reordering."))
+            .font(.caption)
+            .foregroundColor(.secondary)
+            .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func providerOrderRow(_ provider: ProviderInfo, at index: Int) -> some View {
@@ -86,11 +104,22 @@ struct AppearanceTab: View {
         }
     }
 
-    private func moveProvider(at index: Int, direction: Int) {
-        let destinationIndex = index + direction
-        guard viewModel.registeredProvidersOrdered.indices.contains(destinationIndex) else { return }
+    /// Moves a visible row in the direction indicated. Indices are resolved
+    /// against the full ordered list (`registeredProvidersOrdered`) so the
+    /// saved positions of unconfigured (hidden) providers stay intact (ui 16).
+    private func moveProvider(at visibleIndex: Int, direction: Int) {
+        let visible = viewModel.configuredProvidersOrdered
+        let destinationVisibleIndex = visibleIndex + direction
+        guard visible.indices.contains(destinationVisibleIndex) else { return }
+        let sourceId = visible[visibleIndex].id
+        let destinationId = visible[destinationVisibleIndex].id
+        guard let sourceIndex = viewModel.registeredProvidersOrdered.firstIndex(where: { $0.id == sourceId }),
+              let destinationIndex = viewModel.registeredProvidersOrdered.firstIndex(where: { $0.id == destinationId })
+        else {
+            return
+        }
         let destination = direction < 0 ? destinationIndex : destinationIndex + 1
-        viewModel.moveProvider(from: IndexSet(integer: index), to: destination)
+        viewModel.moveProvider(from: IndexSet(integer: sourceIndex), to: destination)
     }
 
     private var vintageMacSubtitle: String {
