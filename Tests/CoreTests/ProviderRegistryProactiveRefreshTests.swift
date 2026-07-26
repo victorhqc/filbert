@@ -1,14 +1,33 @@
 import Core
+import Foundation
 import XCTest
 
 @MainActor
 final class ProviderRegistryProactiveRefreshTests: XCTestCase {
+    private let suiteName = "filbert.tests.provider-registry-proactive-refresh"
+    private var defaults: UserDefaults!
+
+    override func setUpWithError() throws {
+        try super.setUpWithError()
+        defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
+        ProviderEnablement.setUserDefaults(defaults)
+    }
+
+    override func tearDown() {
+        defaults.removePersistentDomain(forName: suiteName)
+        ProviderEnablement.setUserDefaults(.standard)
+        defaults = nil
+        super.tearDown()
+    }
+
     // MARK: - routes to a conforming provider
 
     func testProactiveRefresh_routesToConformingProvider() async throws {
         let registry = ProviderRegistry()
         let provider = FakeProactiveRefreshProvider()
         registry.register(provider)
+        ProviderEnablement.setEnabled(true, for: FakeProactiveRefreshProvider.providerId)
 
         try await registry.proactiveRefresh(for: FakeProactiveRefreshProvider.providerId)
 
@@ -20,6 +39,7 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
     func testProactiveRefresh_throwsNotSupported_forNonConformingProvider() async {
         let registry = ProviderRegistry()
         registry.register(FakeNonRefreshableProvider())
+        ProviderEnablement.setEnabled(true, for: FakeNonRefreshableProvider.providerId)
 
         do {
             try await registry.proactiveRefresh(for: FakeNonRefreshableProvider.providerId)
@@ -48,6 +68,7 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
         let registry = ProviderRegistry()
         let provider = FakeCredentialImportProvider()
         registry.register(provider)
+        ProviderEnablement.setEnabled(true, for: FakeCredentialImportProvider.providerId)
 
         XCTAssertEqual(
             registry.credentialImportActionTitle(for: FakeCredentialImportProvider.providerId),
@@ -61,6 +82,7 @@ final class ProviderRegistryProactiveRefreshTests: XCTestCase {
     func testCredentialImport_isUnavailableForDefaultProvider() async {
         let registry = ProviderRegistry()
         registry.register(FakeNonRefreshableProvider())
+        ProviderEnablement.setEnabled(true, for: FakeNonRefreshableProvider.providerId)
 
         XCTAssertNil(registry.credentialImportActionTitle(for: FakeNonRefreshableProvider.providerId))
         do {

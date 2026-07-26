@@ -1494,6 +1494,42 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Error" } }
       }
     },
+    "Disabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Deaktiviert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Disabled" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Desactivado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Desactivado" } }
+      }
+    },
+    "Enable %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ aktivieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activar %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activar %@" } }
+      }
+    },
+    "Enable this provider to view setup options." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere diesen Anbieter, um Einrichtungsoptionen anzuzeigen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable this provider to view setup options." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa este proveedor para ver las opciones de configuración." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa este proveedor para ver las opciones de configuración." } }
+      }
+    },
+    "Enabled" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Enabled" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activado" } }
+      }
+    },
     "Menu bar icon" : {
       "extractionState" : "manual",
       "localizations" : {

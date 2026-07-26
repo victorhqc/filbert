@@ -42,7 +42,7 @@ public final class Keychain: @unchecked Sendable {
         )
     }
 
-    init(
+    public init(
         storage: any KeychainStorage,
         service: String
     ) {
