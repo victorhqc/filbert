@@ -134,6 +134,8 @@ struct SettingsCardHeader: View {
                         )
                         .toggleStyle(.switch)
                         .controlSize(.small)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                         .accessibilityLabel(
                             String.localizedStringWithFormat(
                                 String(localized: "Enable %@"),
