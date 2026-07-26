@@ -104,6 +104,8 @@ struct SettingsCard<Content: View>: View {
 struct SettingsCardHeader: View {
     let provider: ProviderInfo
     let status: ProviderStatusPresentation
+    let isEnabled: Bool
+    let onEnabledChange: @MainActor @Sendable (Bool) -> Void
     var supplementaryLabel: String?
 
     var body: some View {
@@ -121,6 +123,28 @@ struct SettingsCardHeader: View {
 
                     VStack(alignment: .trailing, spacing: 4) {
                         ProviderStatusPill(status: status)
+                        Toggle(
+                            String(localized: "Enabled"),
+                            isOn: Binding(
+                                get: { isEnabled },
+                                set: { enabled in
+                                    onEnabledChange(enabled)
+                                }
+                            )
+                        )
+                        .toggleStyle(.switch)
+                        .controlSize(.small)
+                        .accessibilityLabel(
+                            String.localizedStringWithFormat(
+                                String(localized: "Enable %@"),
+                                provider.displayName
+                            )
+                        )
+                        .accessibilityValue(
+                            isEnabled
+                                ? String(localized: "Enabled")
+                                : String(localized: "Disabled")
+                        )
                         if let supplementaryLabel {
                             Text(supplementaryLabel)
                                 .font(.caption2.monospaced())
@@ -230,6 +254,12 @@ struct ProviderStatusPresentation {
             unconfigured
         }
     }
+
+    static let disabled = Self(
+        label: String(localized: "Disabled"),
+        symbolName: "pause.circle.fill",
+        role: .neutral
+    )
 
     private static let error = Self(
         label: String(localized: "Error"),

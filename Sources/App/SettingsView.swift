@@ -34,53 +34,98 @@ struct SettingsView: View {
     private var providersTab: some View {
         SettingsScrollColumn {
             ForEach(viewModel.registeredProvidersOrdered) { provider in
-                let state = viewModel.providerStates[provider.id] ?? .unconfigured
-                SettingsCard {
-                    switch provider.authShape {
-                    case .apiKey:
-                        ProviderSettingsRow(
-                            provider: provider,
-                            state: state,
-                            overrideURL: viewModel.overrideURL(for: provider.id),
-                            onSaveKey: { key in
-                                try viewModel.saveKey(key, for: provider.id)
-                            },
-                            onClearKey: {
-                                try viewModel.deleteKey(for: provider.id)
-                            },
-                            onSaveOverride: { url in
-                                try viewModel.saveOverrideURL(url, for: provider.id)
-                            }
-                        )
-                    case .apiKeyFree:
-                        APIKeyFreeSettingsRow(
-                            provider: provider,
-                            state: state,
-                            canInstall: viewModel.canInstallHelper(for: provider.id),
-                            credentialImportActionTitle: viewModel.credentialImportActionTitle(for: provider.id),
-                            onInstall: {
-                                Task { await viewModel.installHelper(for: provider.id) }
-                            },
-                            onRemove: {
-                                Task { await viewModel.removeHelper(for: provider.id) }
-                            },
-                            onImportCredentials: {
-                                Task { await viewModel.importCredentials(for: provider.id) }
-                            }
-                        )
-                    }
-
-                    if let disclaimer = provider.disclaimer {
-                        Divider()
-                        Label(disclaimer, systemImage: "info.circle")
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
+                providerCard(for: provider)
             }
         }
         .navigationTitle(String(localized: "Providers"))
+    }
+
+    @ViewBuilder
+    private func providerCard(for provider: ProviderInfo) -> some View {
+        let state = viewModel.providerStates[provider.id] ?? .unconfigured
+        let isEnabled = viewModel.isEnabled(provider.id)
+        SettingsCard {
+            providerSettingsRow(for: provider, state: state, isEnabled: isEnabled)
+            providerDisclaimer(for: provider)
+        }
+    }
+
+    @ViewBuilder
+    private func providerSettingsRow(
+        for provider: ProviderInfo,
+        state: ProviderState,
+        isEnabled: Bool
+    ) -> some View {
+        switch provider.authShape {
+        case .apiKey:
+            apiKeySettingsRow(for: provider, state: state, isEnabled: isEnabled)
+        case .apiKeyFree:
+            apiKeyFreeSettingsRow(for: provider, state: state, isEnabled: isEnabled)
+        }
+    }
+
+    private func apiKeySettingsRow(
+        for provider: ProviderInfo,
+        state: ProviderState,
+        isEnabled: Bool
+    ) -> ProviderSettingsRow {
+        ProviderSettingsRow(
+            provider: provider,
+            state: state,
+            isEnabled: isEnabled,
+            overrideURL: viewModel.overrideURL(for: provider.id),
+            onEnabledChange: { enabled in
+                viewModel.setProviderEnabled(enabled, for: provider.id)
+            },
+            onSaveKey: { key in
+                try viewModel.saveKey(key, for: provider.id)
+            },
+            onClearKey: {
+                try viewModel.deleteKey(for: provider.id)
+            },
+            onSaveOverride: { url in
+                try viewModel.saveOverrideURL(url, for: provider.id)
+            }
+        )
+    }
+
+    private func apiKeyFreeSettingsRow(
+        for provider: ProviderInfo,
+        state: ProviderState,
+        isEnabled: Bool
+    ) -> APIKeyFreeSettingsRow {
+        APIKeyFreeSettingsRow(
+            provider: provider,
+            state: state,
+            isEnabled: isEnabled,
+            canInstall: isEnabled && viewModel.canInstallHelper(for: provider.id),
+            credentialImportActionTitle: isEnabled
+                ? viewModel.credentialImportActionTitle(for: provider.id)
+                : nil,
+            onEnabledChange: { enabled in
+                viewModel.setProviderEnabled(enabled, for: provider.id)
+            },
+            onInstall: {
+                Task { await viewModel.installHelper(for: provider.id) }
+            },
+            onRemove: {
+                Task { await viewModel.removeHelper(for: provider.id) }
+            },
+            onImportCredentials: {
+                Task { await viewModel.importCredentials(for: provider.id) }
+            }
+        )
+    }
+
+    @ViewBuilder
+    private func providerDisclaimer(for provider: ProviderInfo) -> some View {
+        if let disclaimer = provider.disclaimer {
+            Divider()
+            Label(disclaimer, systemImage: "info.circle")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
     }
 }
 
@@ -88,7 +133,9 @@ struct SettingsView: View {
 private struct ProviderSettingsRow: View {
     let provider: ProviderInfo
     let state: ProviderState
+    let isEnabled: Bool
     let overrideURL: URL?
+    let onEnabledChange: @MainActor @Sendable (Bool) -> Void
     let onSaveKey: (String) throws -> Void
     let onClearKey: () throws -> Void
     let onSaveOverride: (URL?) throws -> Void
@@ -103,11 +150,13 @@ private struct ProviderSettingsRow: View {
         VStack(alignment: .leading, spacing: 12) {
             SettingsCardHeader(
                 provider: provider,
-                status: ProviderStatusPresentation.apiKey(state),
+                status: isEnabled ? ProviderStatusPresentation.apiKey(state) : .disabled,
+                isEnabled: isEnabled,
+                onEnabledChange: onEnabledChange,
                 supplementaryLabel: overrideURL == nil ? nil : String(localized: "custom URL")
             )
             Divider()
-            if isConfigured {
+            if isEnabled, isConfigured {
                 configuredContent
             } else {
                 keyEntry
@@ -278,123 +327,5 @@ private struct ProviderSettingsRow: View {
     private func refreshOverrideInput() {
         overrideInput = overrideURL?.absoluteString ?? ""
         overrideErrorMessage = nil
-    }
-}
-
-@MainActor
-private struct APIKeyFreeSettingsRow: View {
-    let provider: ProviderInfo
-    let state: ProviderState
-    let canInstall: Bool
-    let credentialImportActionTitle: String?
-    let onInstall: () -> Void
-    let onRemove: () -> Void
-    let onImportCredentials: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            SettingsCardHeader(
-                provider: provider,
-                status: ProviderStatusPresentation.apiKeyFree(state)
-            )
-
-            Divider()
-
-            switch state {
-            case .loading:
-                HStack(spacing: 6) {
-                    ProgressView()
-                        .controlSize(.small)
-                    Text(String(localized: "Working…"))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            case let .setup(reason):
-                VStack(alignment: .leading, spacing: 8) {
-                    if canInstall {
-                        installPromptView(reason: reason)
-                    } else {
-                        setupReasonView(reason: reason)
-                    }
-                    credentialImportButton
-                }
-            case .loaded:
-                removeHelperView
-            case let .error(message):
-                VStack(alignment: .leading, spacing: 8) {
-                    Label(message, systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
-                    credentialImportButton
-                }
-            case .unconfigured:
-                Text(String(localized: "Not configured"))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-    }
-
-    private func installPromptView(reason: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
-            setupReasonView(reason: reason)
-
-            Text(String(localized: "Filbert reads your Claude Code usage by hooking into its status line."))
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(String(localized: "This adds a small helper script to ~/.claude/."))
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            Button(String(localized: "Install Helper")) {
-                onInstall()
-            }
-            .buttonStyle(.borderedProminent)
-        }
-    }
-
-    private func setupReasonView(reason: String) -> some View {
-        HStack(spacing: 6) {
-            if let setupHelp = provider.setupHelp {
-                Button {
-                    NSWorkspace.shared.open(setupHelp.url)
-                } label: {
-                    Label(setupHelp.linkLabel, systemImage: "arrow.up.right")
-                }
-                .font(.caption)
-                .buttonStyle(.link)
-                .layoutPriority(1)
-            }
-
-            Text(reason)
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            Spacer(minLength: 0)
-        }
-    }
-
-    @ViewBuilder
-    private var credentialImportButton: some View {
-        if let credentialImportActionTitle {
-            Button(credentialImportActionTitle) {
-                onImportCredentials()
-            }
-            .buttonStyle(.bordered)
-        }
-    }
-
-    private var removeHelperView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(String(localized: "Helper installed and active."))
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            Button(String(localized: "Remove Helper"), role: .destructive) {
-                onRemove()
-            }
-        }
     }
 }
