@@ -17,6 +17,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label(String(localized: "Appearance"), systemImage: "list.bullet.indent")
                 }
+
+            RefreshSettingsView(viewModel: viewModel)
+                .tabItem {
+                    Label(String(localized: "Refresh Settings"), systemImage: "arrow.clockwise")
+                }
         }
         .frame(
             minWidth: 520,

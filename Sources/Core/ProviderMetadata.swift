@@ -10,12 +10,23 @@ public struct ProviderSetupHelp: Sendable, Equatable {
     }
 }
 
+public struct ProviderAutomaticRefreshDisclosure: Sendable, Equatable {
+    public let command: String
+    public let quotaName: String
+
+    public init(command: String, quotaName: String) {
+        self.command = command
+        self.quotaName = quotaName
+    }
+}
+
 public struct ProviderInfo: Sendable, Identifiable {
     public let id: String
     public let displayName: String
     public let glyph: ProviderGlyph
     public let description: String
     public let disclaimer: String?
+    public let automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure?
     public let defaultBaseURL: URL
     /// Payload-free discriminator so the App layer can dispatch row variants
     /// without inspecting a provider ID string.
@@ -29,6 +40,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         glyph: ProviderGlyph = .sfSymbol("cpu"),
         description: String,
         disclaimer: String? = nil,
+        automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? = nil,
         defaultBaseURL: URL,
         authShape: ProviderAuth.Shape,
         setupHelp: ProviderSetupHelp? = nil,
@@ -39,6 +51,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         self.glyph = glyph
         self.description = description
         self.disclaimer = disclaimer
+        self.automaticRefreshDisclosure = automaticRefreshDisclosure
         self.defaultBaseURL = defaultBaseURL
         self.authShape = authShape
         self.setupHelp = setupHelp

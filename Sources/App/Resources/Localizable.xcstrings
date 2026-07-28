@@ -1,6 +1,15 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "%1$@. %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } }
+      }
+    },
     "%1$@: %2$@ remaining" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -93,6 +102,15 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Expanded" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } }
+      }
+    },
+    "Fast refresh active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelle Aktualisierung aktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast refresh active" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } }
       }
     },
     "Show a classic Happy / Sad Mac face instead of the ring in the menu bar" : {
@@ -1600,6 +1618,195 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Working…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Procesando…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Procesando…" } }
+      }
+    },
+    "Automatic refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Aktualisierung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática" } }
+      }
+    },
+    "Refresh mode" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungsmodus" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh mode" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Modo de actualización" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Modo de actualización" } }
+      }
+    },
+    "Regular" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Regelmäßig" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Normal" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Normal" } }
+      }
+    },
+    "Smart" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Intelligent" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } }
+      }
+    },
+    "Choose which providers refresh automatically. Mode and intervals control how often." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, welche Anbieter automatisch aktualisiert werden. Modus und Intervalle bestimmen, wie oft." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose which providers refresh automatically. Mode and intervals control how often." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores se actualizan automáticamente. El modo y los intervalos controlan la frecuencia." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores se actualizan automáticamente. El modo y los intervalos controlan la frecuencia." } }
+      }
+    },
+    "Choose a shared cadence for opted-in providers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle einen gemeinsamen Aktualisierungsrhythmus für aktivierte Anbieter." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose a shared cadence for opted-in providers." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } }
+      }
+    },
+    "Slow interval" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Langsames Intervall" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Slow interval" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } }
+      }
+    },
+    "Fast interval" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelles Intervall" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast interval" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } }
+      }
+    },
+    "Turn on automatic refresh for each provider you want to check." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere die automatische Aktualisierung für jeden Anbieter, den du prüfen möchtest." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn on automatic refresh for each provider you want to check." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa la actualización automática para cada proveedor que quieras consultar." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa la actualización automática para cada proveedor que quieras consultar." } }
+      }
+    },
+    "Refresh Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungseinstellungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh Settings" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de actualización" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de actualización" } }
+      }
+    },
+    "Regular refresh checks opted-in providers every %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die regelmäßige Aktualisierung prüft aktivierte Anbieter alle %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular refresh checks opted-in providers every %@." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } }
+      }
+    },
+    "Smart refresh starts every %@. Usage changes switch that provider to every %@; three unchanged checks return it to slow." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die intelligente Aktualisierung beginnt alle %@. Nutzungsänderungen stellen diesen Anbieter auf alle %@ um; drei unveränderte Prüfungen stellen ihn wieder langsam." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh starts every %@. Usage changes switch that provider to every %@; three unchanged checks return it to slow." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@; tres consultas sin cambios lo devuelven al ritmo lento." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@; tres consultas sin cambios lo devuelven al ritmo lento." } }
+      }
+    },
+    "Selected interval: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ausgewähltes Intervall: %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected interval: %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo seleccionado: %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo seleccionado: %@" } }
+      }
+    },
+    "%1$@ runs %2$@ in the background. These checks may use some of your %3$@ quota. Shorter Smart intervals can increase the number of checks." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ führt %2$@ im Hintergrund aus. Diese Prüfungen können einen Teil deines %3$@-Kontingents verbrauchen. Kürzere intelligente Intervalle können die Anzahl der Prüfungen erhöhen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ runs %2$@ in the background. These checks may use some of your %3$@ quota. Shorter Smart intervals can increase the number of checks." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ ejecuta %2$@ en segundo plano. Estas consultas pueden usar parte de tu cuota de %3$@. Los intervalos inteligentes más cortos pueden aumentar el número de consultas." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ ejecuta %2$@ en segundo plano. Estas consultas pueden usar parte de tu cuota de %3$@. Los intervalos inteligentes más cortos pueden aumentar el número de consultas." } }
+      }
+    },
+    "Automatic refresh for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Aktualisierung für %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática para %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática para %@" } }
+      }
+    },
+    "Toggle periodic refresh for this provider." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schalte die regelmäßige Aktualisierung für diesen Anbieter um." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Toggle periodic refresh for this provider." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva la actualización periódica para este proveedor." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva la actualización periódica para este proveedor." } }
+      }
+    },
+    "Automatic refresh is paused because this provider is disabled." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Aktualisierung ist pausiert, weil dieser Anbieter deaktiviert ist." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is paused because this provider is disabled." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está en pausa porque este proveedor está desactivado." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está en pausa porque este proveedor está desactivado." } }
+      }
+    },
+    "Automatic refresh is waiting for setup." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Aktualisierung wartet auf die Einrichtung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is waiting for setup." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } }
+      }
+    },
+    "%lld seconds" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%lld Sekunden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld seconds" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%lld segundos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%lld segundos" } }
+      }
+    },
+    "1 minute" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "1 Minute" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "1 minute" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "1 minuto" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "1 minuto" } }
+      }
+    },
+    "%lld minutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%lld Minuten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld minutes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%lld minutos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%lld minutos" } }
       }
     }
   },
