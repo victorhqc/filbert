@@ -3,22 +3,29 @@ import Foundation
 
 extension QuotaViewModel {
     func startAutoRefresh(for providerId: String) {
-        guard isReadyToFetch(providerId) else { return }
+        guard isEligibleForAutoRefresh(providerId) else {
+            stopAutoRefresh(for: providerId)
+            return
+        }
         stopAutoRefresh(for: providerId)
-        let interval = refreshInterval
+        let interval = automaticRefreshInterval(for: providerId)
+        let schedulingRevision = schedulingRevisions[providerId, default: 0]
         refreshLoops[providerId] = Task { [weak self] in
-            guard let self else { return }
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(interval))
-                guard !Task.isCancelled else { break }
-                await MainActor.run { [weak self] in
-                    self?.fetchQuota(for: providerId)
-                }
+            do {
+                try await self?.autoRefreshSleeper(interval)
+            } catch {
+                return
             }
+            guard !Task.isCancelled else { return }
+            self?.performScheduledRefresh(
+                for: providerId,
+                expectedSchedulingRevision: schedulingRevision
+            )
         }
     }
 
     func stopAutoRefresh(for providerId: String) {
+        schedulingRevisions[providerId, default: 0] += 1
         refreshLoops[providerId]?.cancel()
         refreshLoops[providerId] = nil
     }
@@ -58,8 +65,7 @@ extension QuotaViewModel {
                 refreshDerived()
                 return
             }
-            startAutoRefresh(for: providerId)
-            performFetch(for: providerId)
+            performFetch(for: providerId, origin: .initial)
         case .apiKeyFree:
             let revision = lifecycleRevisions[providerId, default: 0]
             setupTasks[providerId]?.cancel()
@@ -92,13 +98,13 @@ extension QuotaViewModel {
 
         setState(.loading, for: providerId)
         refreshDerived()
-        startAutoRefresh(for: providerId)
-        performFetch(for: providerId)
+        performFetch(for: providerId, origin: .initial)
     }
 
     func invalidateProviderWork(for providerId: String) {
         lifecycleRevisions[providerId, default: 0] += 1
         stopAutoRefresh(for: providerId)
+        smartRefreshPolicy.reset(for: providerId)
         fetchTasks[providerId]?.cancel()
         fetchTasks[providerId] = nil
         setupTasks[providerId]?.cancel()
@@ -109,6 +115,104 @@ extension QuotaViewModel {
 
     func isReadyToFetch(_ providerId: String) -> Bool {
         isEnabled(providerId) && registry.isConfigured(providerId)
+    }
+
+    func isEligibleForAutoRefresh(_ providerId: String) -> Bool {
+        isReadyToFetch(providerId) && AutoRefreshPreferences.isEnabled(for: providerId)
+    }
+
+    func automaticRefreshInterval(for providerId: String) -> TimeInterval {
+        guard AutoRefreshPreferences.mode == .smart,
+              smartRefreshPolicy.cadence(for: providerId) == .fast
+        else {
+            return AutoRefreshPreferences.slowInterval
+        }
+        return AutoRefreshPreferences.fastInterval
+    }
+
+    func performScheduledRefresh(
+        for providerId: String,
+        expectedSchedulingRevision: Int
+    ) {
+        guard schedulingRevisions[providerId, default: 0] == expectedSchedulingRevision,
+              isEligibleForAutoRefresh(providerId),
+              fetchTasks[providerId] == nil
+        else {
+            return
+        }
+        refreshLoops[providerId] = nil
+        performFetch(for: providerId, origin: .automatic)
+    }
+
+    func prepareAutomaticRefresh(for providerId: String) {
+        guard isEligibleForAutoRefresh(providerId) else {
+            stopAutoRefresh(for: providerId)
+            return
+        }
+
+        if AutoRefreshPreferences.mode == .smart {
+            if case let .loaded(quota) = providerStates[providerId] {
+                _ = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+            }
+        }
+        if fetchTasks[providerId] == nil {
+            startAutoRefresh(for: providerId)
+        }
+    }
+
+    func establishSmartBaselines() {
+        for providerId in registeredProvidersOrdered.map(\.id) {
+            guard isEligibleForAutoRefresh(providerId),
+                  case let .loaded(quota) = providerStates[providerId]
+            else {
+                continue
+            }
+            _ = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+        }
+    }
+
+    func rescheduleAutomaticRefreshes() {
+        for providerId in registeredProvidersOrdered.map(\.id) {
+            guard isEligibleForAutoRefresh(providerId) else {
+                stopAutoRefresh(for: providerId)
+                continue
+            }
+            guard fetchTasks[providerId] == nil else {
+                stopAutoRefresh(for: providerId)
+                continue
+            }
+            startAutoRefresh(for: providerId)
+        }
+    }
+
+    func recordAutomaticFailure(for providerId: String) {
+        guard isEligibleForAutoRefresh(providerId) else { return }
+        if AutoRefreshPreferences.mode == .smart {
+            _ = smartRefreshPolicy.recordFailure(for: providerId)
+        }
+    }
+
+    func updateAutomaticRefreshScheduling(
+        for providerId: String,
+        result: Result<ProviderQuota, Error>,
+        suppressSmartSuccess: Bool
+    ) {
+        guard isEligibleForAutoRefresh(providerId) else {
+            stopAutoRefresh(for: providerId)
+            return
+        }
+
+        if AutoRefreshPreferences.mode == .smart {
+            switch result {
+            case let .success(quota):
+                if !suppressSmartSuccess {
+                    _ = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+                }
+            case .failure:
+                _ = smartRefreshPolicy.recordFailure(for: providerId)
+            }
+        }
+        startAutoRefresh(for: providerId)
     }
 
     /// Copy-write-back forces @Observable's setter to fire — dictionary subscript

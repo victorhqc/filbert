@@ -200,6 +200,10 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         XCTAssertEqual(count, 1, "Second call within debounce window should be skipped")
     }
 
+    func testDefaultDebounceSupportsMinimumFastInterval() {
+        XCTAssertEqual(ClaudeCodeRefresher.spawnDebounceSeconds, 10)
+    }
+
     // MARK: - Helpers
 
     private func writeCountingBinary() throws -> URL {

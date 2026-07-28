@@ -77,6 +77,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(info.id, "test")
         XCTAssertEqual(info.authShape, .apiKeyFree)
         XCTAssertNil(info.disclaimer)
+        XCTAssertNil(info.automaticRefreshDisclosure)
         XCTAssertNil(info.setupHelp)
         XCTAssertNil(info.credentialImportActionTitle)
     }
@@ -125,6 +126,19 @@ final class ProviderProtocolTests: XCTestCase {
         let info = try XCTUnwrap(registry.registeredProviders.first)
 
         XCTAssertEqual(info.disclaimer, DisclaimerProvider.providerDisclaimer)
+    }
+
+    @MainActor
+    func testRegistry_transportsAutomaticRefreshDisclosure() throws {
+        let registry = ProviderRegistry()
+        registry.register(AutomaticRefreshDisclosureProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+
+        XCTAssertEqual(
+            info.automaticRefreshDisclosure,
+            AutomaticRefreshDisclosureProvider.automaticRefreshDisclosure
+        )
     }
 
     @MainActor
@@ -205,6 +219,27 @@ private struct DisclaimerProvider: AIProvider {
     static let providerDescription = "Description"
     static let providerDisclaimer: String? = "Undocumented integration"
     static let baseURL = URL(string: "https://example.com")!
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        ProviderQuota(
+            providerId: Self.providerId,
+            providerName: Self.providerName,
+            headline: "No data",
+            lines: [],
+            lastUpdated: Date()
+        )
+    }
+}
+
+private struct AutomaticRefreshDisclosureProvider: AIProvider {
+    static let providerId = "automatic-refresh-disclosure"
+    static let providerName = "Automatic Refresh Disclosure"
+    static let providerDescription = "Description"
+    static let baseURL = URL(string: "https://example.com")!
+    static let automaticRefreshDisclosure = ProviderAutomaticRefreshDisclosure(
+        command: "example usage",
+        quotaName: "Example"
+    )
 
     func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
         ProviderQuota(

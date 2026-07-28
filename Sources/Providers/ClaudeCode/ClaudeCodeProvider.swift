@@ -48,6 +48,11 @@ public struct ClaudeCodeProvider: AIProvider {
     public static let providerDescription = String(
         localized: "Monitor Claude Pro/Max subscription usage"
     )
+    public static let automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? =
+        ProviderAutomaticRefreshDisclosure(
+            command: "claude -p \"/usage\"",
+            quotaName: "Claude Code"
+        )
     /// Placeholder — this provider never makes network calls.
     public static let baseURL = URL(string: "https://api.anthropic.com")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree

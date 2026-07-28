@@ -2,6 +2,12 @@ import Core
 import Foundation
 import Observation
 
+enum RefreshOrigin: Equatable {
+    case initial
+    case manual
+    case automatic
+}
+
 @MainActor
 @Observable
 final class QuotaViewModel {
@@ -9,7 +15,7 @@ final class QuotaViewModel {
 
     private let keychain: Keychain
     let registry: ProviderRegistry
-    let refreshInterval: TimeInterval = 300
+    let autoRefreshSleeper: @Sendable (TimeInterval) async throws -> Void
 
     // MARK: - State
 
@@ -48,17 +54,26 @@ final class QuotaViewModel {
 
     var lifecycleRevisions: [String: Int] = [:]
 
+    var schedulingRevisions: [String: Int] = [:]
+
+    var smartRefreshPolicy = SmartRefreshPolicy()
+
+    var autoRefreshSettingsRevision = 0
+
     // MARK: - Init
 
     init(
         keychain: Keychain = .shared,
-        registry: ProviderRegistry
+        registry: ProviderRegistry,
+        autoRefreshSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
+            try await Task.sleep(for: .seconds(interval))
+        }
     ) {
         self.keychain = keychain
         self.registry = registry
+        self.autoRefreshSleeper = autoRefreshSleeper
 
         var enabledIds: Set<String> = []
-        var configuredIds: Set<String> = []
         for info in registry.registeredProviders {
             guard registry.isEnabled(info.id) else {
                 setState(.unconfigured, for: info.id)
@@ -69,19 +84,12 @@ final class QuotaViewModel {
             let configured = registry.isConfigured(info.id)
             log("init: provider=\(info.id) configured=\(configured)")
             setState(configured ? .loading : .unconfigured, for: info.id)
-            if configured {
-                configuredIds.insert(info.id)
-            }
         }
         enabledProviderIds = enabledIds
-        for providerId in configuredIds {
-            startAutoRefresh(for: providerId)
-        }
 
         recomputeOrderedProviderIds()
         refreshDerived()
-        fetchAllQuotas()
-        for info in registry.registeredProviders where info.authShape == .apiKeyFree {
+        for info in registry.registeredProviders where enabledIds.contains(info.id) {
             startEnabledProvider(for: info.id)
         }
     }
@@ -114,6 +122,68 @@ final class QuotaViewModel {
         case .loading, .loaded, .error:
             true
         }
+    }
+
+    var autoRefreshMode: AutoRefreshMode {
+        _ = autoRefreshSettingsRevision
+        return AutoRefreshPreferences.mode
+    }
+
+    var autoRefreshSlowInterval: TimeInterval {
+        _ = autoRefreshSettingsRevision
+        return AutoRefreshPreferences.slowInterval
+    }
+
+    var autoRefreshFastInterval: TimeInterval {
+        _ = autoRefreshSettingsRevision
+        return AutoRefreshPreferences.fastInterval
+    }
+
+    func isAutoRefreshEnabled(for providerId: String) -> Bool {
+        _ = autoRefreshSettingsRevision
+        return AutoRefreshPreferences.isEnabled(for: providerId)
+    }
+
+    func setAutoRefreshEnabled(_ enabled: Bool, for providerId: String) {
+        guard providerInfo(for: providerId) != nil else { return }
+        AutoRefreshPreferences.setEnabled(enabled, for: providerId)
+        autoRefreshSettingsRevision += 1
+
+        guard enabled else {
+            smartRefreshPolicy.reset(for: providerId)
+            stopAutoRefresh(for: providerId)
+            return
+        }
+
+        prepareAutomaticRefresh(for: providerId)
+    }
+
+    func setAutoRefreshMode(_ mode: AutoRefreshMode) {
+        guard AutoRefreshPreferences.mode != mode else { return }
+        AutoRefreshPreferences.mode = mode
+        smartRefreshPolicy.resetAll()
+        autoRefreshSettingsRevision += 1
+
+        if mode == .smart {
+            establishSmartBaselines()
+        }
+        rescheduleAutomaticRefreshes()
+    }
+
+    func setAutoRefreshSlowInterval(_ interval: TimeInterval) {
+        let supportedInterval = AutoRefreshPreferences.supportedSlowInterval(interval)
+        guard AutoRefreshPreferences.slowInterval != supportedInterval else { return }
+        AutoRefreshPreferences.slowInterval = supportedInterval
+        autoRefreshSettingsRevision += 1
+        rescheduleAutomaticRefreshes()
+    }
+
+    func setAutoRefreshFastInterval(_ interval: TimeInterval) {
+        let supportedInterval = AutoRefreshPreferences.supportedFastInterval(interval)
+        guard AutoRefreshPreferences.fastInterval != supportedInterval else { return }
+        AutoRefreshPreferences.fastInterval = supportedInterval
+        autoRefreshSettingsRevision += 1
+        rescheduleAutomaticRefreshes()
     }
 
     // MARK: - Key management
@@ -150,81 +220,21 @@ final class QuotaViewModel {
     // MARK: - Fetch
 
     func fetchQuota(for providerId: String) {
-        guard isReadyToFetch(providerId) else {
-            log("fetchQuota: provider=\(providerId) is not ready, skipping")
-            return
-        }
-        if case .loading = providerStates[providerId] {
-            log("fetchQuota: provider=\(providerId) already loading, skipping")
-            return
-        }
-        // debounce while refreshing
-        if isRefreshing[providerId] == true {
-            log("fetchQuota: provider=\(providerId) already refreshing, skipping")
-            return
-        }
-        performFetch(for: providerId)
+        performFetch(for: providerId, origin: .initial)
     }
 
-    /// Runs the provider's proactive refresh before the cache read, so a single
-    /// click both spawns the helper and re-reads the result. Auto-refresh and
-    /// the initial fetch still call `fetchQuota(for:)` directly — proactive
-    /// spawn is manual-only.
     func manualRefresh(for providerId: String) {
-        guard isReadyToFetch(providerId) else {
-            log("manualRefresh: provider=\(providerId) is not ready, skipping")
-            return
-        }
-        if case .loading = providerStates[providerId] {
-            log("manualRefresh: provider=\(providerId) already loading, skipping")
-            return
-        }
-        // debounce while refreshing
-        if isRefreshing[providerId] == true {
-            log("manualRefresh: provider=\(providerId) already refreshing, skipping")
-            return
-        }
-
-        switch providerStates[providerId] {
-        case .loaded, .error:
-            setRefreshing(true, for: providerId)
-        default:
-            setState(.loading, for: providerId)
-            refreshDerived()
-        }
-        Task { [weak self] in
-            await self?.performManualRefresh(providerId: providerId)
-        }
-    }
-
-    /// Catches `.notSupported` from the proactive refresh so non-conforming
-    /// providers fall through to the standard fetch path.
-    private func performManualRefresh(providerId: String) async {
-        do {
-            try await registry.proactiveRefresh(for: providerId)
-            log("performManualRefresh: provider=\(providerId) proactive refresh ok")
-        } catch ProviderSetupError.notSupported {
-            log("performManualRefresh: provider=\(providerId) does not support proactive refresh")
-        } catch {
-            log("performManualRefresh: provider=\(providerId) proactive refresh failed: \(error.localizedDescription)")
-        }
-        await MainActor.run { [weak self] in
-            self?.performFetch(for: providerId)
-        }
+        performFetch(for: providerId, origin: .manual)
     }
 
     func fetchAllQuotas() {
-        log("fetchAllQuotas: starting")
-        let revisions = lifecycleRevisions
-        Task { @MainActor [weak self] in
-            guard let self else { return }
-            let results = await registry.fetchAll()
-            applyResults(results, expectedRevisions: revisions)
+        for providerId in registeredProvidersOrdered.map(\.id) {
+            fetchQuota(for: providerId)
         }
     }
 
-    func performFetch(for providerId: String) {
-        guard isReadyToFetch(providerId) else { return }
+    func performFetch(for providerId: String, origin: RefreshOrigin = .initial) {
+        guard isReadyToFetch(providerId), fetchTasks[providerId] == nil else { return }
         log("performFetch: provider=\(providerId)")
         switch providerStates[providerId] {
         case .loaded, .error:
@@ -234,18 +244,60 @@ final class QuotaViewModel {
             refreshDerived()
         }
         let revision = lifecycleRevisions[providerId, default: 0]
-        fetchTasks[providerId]?.cancel()
         fetchTasks[providerId] = Task { @MainActor [weak self] in
-            guard let self,
-                  let result = await registry.fetchQuota(for: providerId),
-                  !Task.isCancelled
-            else {
+            guard let self else { return }
+            let suppressSmartSuccess = await proactiveRefreshIfNeeded(
+                for: providerId,
+                origin: origin,
+                expectedRevision: revision
+            )
+            guard let result = await registry.fetchQuota(for: providerId) else {
+                if lifecycleRevisions[providerId, default: 0] == revision {
+                    fetchTasks[providerId] = nil
+                    if !isReadyToFetch(providerId) {
+                        setRefreshing(false, for: providerId)
+                        setState(.unconfigured, for: providerId)
+                        refreshDerived()
+                    }
+                }
                 return
             }
-            applyResults([providerId: result], expectedRevisions: [providerId: revision])
+            guard !Task.isCancelled else {
+                return
+            }
+            applyResults(
+                [providerId: result],
+                expectedRevisions: [providerId: revision],
+                suppressSmartSuccessFor: suppressSmartSuccess ? [providerId] : []
+            )
             if lifecycleRevisions[providerId, default: 0] == revision {
                 fetchTasks[providerId] = nil
             }
+        }
+    }
+
+    private func proactiveRefreshIfNeeded(
+        for providerId: String,
+        origin: RefreshOrigin,
+        expectedRevision: Int
+    ) async -> Bool {
+        guard origin == .automatic || origin == .manual else { return false }
+
+        do {
+            try await registry.proactiveRefresh(for: providerId)
+            log("proactiveRefresh: provider=\(providerId) ok")
+            return false
+        } catch ProviderSetupError.notSupported {
+            return false
+        } catch {
+            log("proactiveRefresh: provider=\(providerId) failed: \(error.localizedDescription)")
+            guard origin == .automatic,
+                  lifecycleRevisions[providerId, default: 0] == expectedRevision
+            else {
+                return false
+            }
+            recordAutomaticFailure(for: providerId)
+            return true
         }
     }
 }

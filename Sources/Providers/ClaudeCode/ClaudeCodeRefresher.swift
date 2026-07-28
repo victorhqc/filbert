@@ -41,7 +41,7 @@ public actor ClaudeCodeRefresher {
 
     static let terminateGraceSeconds: TimeInterval = 2
 
-    static let spawnDebounceSeconds: TimeInterval = 60
+    static let spawnDebounceSeconds: TimeInterval = 10
 
     /// Notes on the non-obvious flags:
     ///   - `--tools ""` is variadic, so it must be followed by another *flag* —

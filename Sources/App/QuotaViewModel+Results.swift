@@ -19,7 +19,8 @@ extension QuotaViewModel {
 
     func applyResults(
         _ results: [String: Result<ProviderQuota, Error>],
-        expectedRevisions: [String: Int]
+        expectedRevisions: [String: Int],
+        suppressSmartSuccessFor: Set<String>
     ) {
         log("applyResults: got \(results.count) result(s)")
         for (id, result) in results {
@@ -50,6 +51,12 @@ extension QuotaViewModel {
                     setState(.error(error.localizedDescription), for: id)
                 }
             }
+
+            updateAutomaticRefreshScheduling(
+                for: id,
+                result: result,
+                suppressSmartSuccess: suppressSmartSuccessFor.contains(id)
+            )
         }
         refreshDerived()
     }

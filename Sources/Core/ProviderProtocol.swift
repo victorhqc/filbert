@@ -161,6 +161,7 @@ public protocol AIProvider: Sendable {
     static var providerGlyph: ProviderGlyph { get }
     static var providerDescription: String { get }
     static var providerDisclaimer: String? { get }
+    static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? { get }
     /// Host root only; path segments stay inside `fetchQuota`.
     static var baseURL: URL { get }
     /// Non-payload discriminator the registry branches on so it never
@@ -228,6 +229,10 @@ public extension AIProvider {
     }
 
     static var providerDisclaimer: String? {
+        nil
+    }
+
+    static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? {
         nil
     }
 
