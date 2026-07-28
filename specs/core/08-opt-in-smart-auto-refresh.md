@@ -9,8 +9,10 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - `Sources/Core/ProviderProtocol.swift` — supplies the provider-neutral quota fields from which a stable usage snapshot is derived (core 01).
 - `Sources/Core/ProviderRegistry.swift` — remains the only route to provider fetch and proactive-refresh operations, preserving the enablement boundary from (ui 17 AC6, ui 17 AC10).
 - `Sources/App/QuotaViewModel.swift`, `Sources/App/QuotaViewModel+Lifecycle.swift`, and `Sources/App/QuotaViewModel+Results.swift` — replace the unconditional five-minute loops with opt-in, completion-driven scheduling and feed successful results into the Smart policy.
+- `Sources/App/QuotaView.swift` — shows a compact per-provider status in the popover while that provider is using the fast Smart cadence.
+- `Sources/App/MenuBarStatusIcon.swift` — remains unchanged by refresh cadence; fast-mode status is not added to the menu-bar icon.
 - `Sources/App/RefreshSettingsView.swift` and `Sources/App/SettingsView.swift` — add a Refresh tab with per-provider opt-in controls, a Regular/Smart mode picker, interval controls, and an explanation of the current behavior.
-- `Sources/App/Resources/Localizable.xcstrings` — localizes the new labels, interval descriptions, paused states, Claude Code quota warning, help text, and accessibility text.
+- `Sources/App/Resources/Localizable.xcstrings` — localizes the new labels, interval descriptions, paused states, Claude Code quota warning, fast-mode status, help text, and accessibility text.
 - `Sources/Providers/ClaudeCode/ClaudeCodeRefresher.swift` — allows scheduled proactive refresh at the minimum supported fast cadence while retaining process coalescing and bounded execution (providers 03, providers 06).
 - `Tests/CoreTests/AutoRefreshPreferencesTests.swift` and `Tests/CoreTests/SmartRefreshPolicyTests.swift` — cover persistence, defaults, snapshot comparison, and every policy transition without real timers.
 - `Tests/AppTests/AutoRefreshViewModelTests.swift` — covers scheduling, provider isolation, lifecycle cancellation, and Settings mutations with an injected clock and provider spies.
@@ -175,18 +177,31 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - **And** tests perform no real network request, Keychain mutation, child-process spawn, or wall-clock sleep
 - **And** all existing provider suites continue to pass without adding refresh-policy logic to individual provider modules.
 
+### AC17: The popover identifies providers currently refreshing fast
+
+- **Given** a provider is currently in Smart fast mode
+- **When** the menu-bar popover is open
+- **Then** that provider's header shows a compact lightning-bolt icon and the localized label `Fast refresh active`
+- **And** the status remains visible when that provider's quota details are collapsed
+- **And** the icon and label identify the affected provider rather than implying that every provider is in fast mode
+- **And** the status disappears as soon as that provider returns to slow mode, automatic refresh is turned off, the shared mode changes to Regular, or the provider becomes ineligible for automatic work
+- **And** no fast-mode badge, lightning icon, or other cadence state is added to the menu-bar top-bar icon
+- **And** assistive technology announces the status as part of that provider's header, without relying on the icon or color alone
+- **And** App tests verify the status visibility for fast and non-fast provider states, including two providers in different cadences.
+
 ## Plan
 
 1. Add `AutoRefreshPreferences` in Core. Store a provider-ID Boolean map plus one shared mode (`regular` or `smart`), slow interval, and fast interval in `UserDefaults`. Missing provider values resolve to `false`; missing or invalid shared values resolve to Regular, five minutes, and 30 seconds.
 2. Add a pure `SmartRefreshPolicy` state machine in Core. Keep a runtime record per provider containing the last successful canonical usage snapshot, current slow/fast mode, and consecutive unchanged count. Expose events for successful quota, failure, provider reset, and global mode change.
 3. Derive the canonical snapshot from existing provider-neutral quota lines. Treat lines and details as canonical multisets so response ordering does not cause false activity; exclude timestamps and presentation-only fields listed in AC7.
-4. Replace `QuotaViewModel`'s fixed `refreshInterval` loop with one cancellable completion-driven task per eligible opted-in provider. Inject the sleep/clock boundary for deterministic tests. Route both scheduled and manual work through one result pipeline so Smart state sees successful checks consistently.
+4. Replace `QuotaViewModel`'s fixed `refreshInterval` loop with one cancellable completion-driven task per eligible opted-in provider. Inject the sleep/clock boundary for deterministic tests. Route both scheduled and manual work through one result pipeline so Smart state sees successful checks consistently, and expose each provider's current cadence as observable read-only presentation state.
 5. Add an automatic refresh entry point that attempts `proactiveRefresh(for:)`, catches only `.notSupported` as capability absence, and then runs the normal provider-scoped fetch. Keep manual presentation and automatic presentation on the quiet-refresh path from (ui 07).
 6. Reconcile provider enablement, setup, automatic-refresh opt-in, and scheduling in lifecycle helpers. A task exists only when all gates permit it. Use lifecycle revisions and task cancellation to prevent late results from reviving stopped schedules.
 7. Reduce Claude Code's completed-attempt debounce to 10 seconds while retaining its single in-flight task and process timeout/cleanup behavior. Do not add scheduling knowledge or Smart policy to the provider module.
 8. Add a Refresh Settings tab. Present provider toggles separately from one shared policy card, use a segmented mode picker, and use stepped sliders for slow and fast choices. Render dynamic explanatory copy with the selected durations and the fixed three-unchanged transition. Show a persistent inline warning on the Claude Code row that names `claude -p "/usage"`, says checks may use Claude Code quota, and explains that shorter Smart intervals cause more checks.
-9. Add localized and accessible copy, then cover preference, policy, lifecycle, UI mutation, provider capability routing, and Claude debounce behavior with isolated stores, spies, and a controllable clock.
-10. Run the full validation gate from the `writing-code` skill only after this spec is reviewed and implementation is explicitly approved.
+9. Add a compact lightning-bolt and `Fast refresh active` label to each fast provider's popover header, including its collapsed state. Keep `MenuBarStatusIcon` independent of cadence.
+10. Add localized and accessible copy, then cover preference, policy, lifecycle, popover status, UI mutation, provider capability routing, and Claude debounce behavior with isolated stores, spies, and a controllable clock.
+11. Run the full validation gate from the `writing-code` skill only after this spec is reviewed and implementation is explicitly approved.
 
 ## Risks
 
@@ -197,3 +212,4 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - Reset dates participate in comparison. A new quota window can therefore enter fast mode even when its percentage happens to match the old window; this is desirable because the underlying usage window changed.
 - Falling back to slow after any failure favors provider safety over rapid recovery. The next successful slow check compares against the last successful baseline and can re-enter fast mode.
 - Shared intervals are simpler to understand and prevent configuration sprawl, but they cannot accommodate a provider with a stricter minimum cadence. Provider rate limits and backoff remain authoritative, and a future capability may need to expose a provider-specific minimum without weakening provider orthogonality.
+- The fast-mode label adds width to a provider header. It must remain legible without crowding the provider name or refresh controls, especially when the popover is narrow.

@@ -80,8 +80,76 @@ final class AutoRefreshViewModelTests: XCTestCase {
         await waitForIntervals(on: recorder, count: 3)
 
         XCTAssertEqual(viewModel.smartRefreshPolicy.cadence(for: RefreshSpyProvider.providerId), .fast)
+        XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
         let intervals = await recorder.intervals()
         XCTAssertEqual(intervals.last, 30)
+    }
+
+    func testFastRefreshStatusIdentifiesOnlyTheActiveProvider() async {
+        AutoRefreshPreferences.mode = .smart
+        AutoRefreshPreferences.setEnabled(true, for: RefreshSpyProvider.providerId)
+        AutoRefreshPreferences.setEnabled(true, for: SecondaryRefreshSpyProvider.providerId)
+        ProviderEnablement.setEnabled(true, for: RefreshSpyProvider.providerId)
+        ProviderEnablement.setEnabled(true, for: SecondaryRefreshSpyProvider.providerId)
+
+        let activeProvider = RefreshSpyProvider()
+        let inactiveProvider = SecondaryRefreshSpyProvider()
+        let registry = ProviderRegistry()
+        registry.register(activeProvider)
+        registry.register(inactiveProvider)
+        let viewModel = QuotaViewModel(registry: registry) { _ in
+            throw CancellationError()
+        }
+
+        await waitForFetches(on: activeProvider, count: 1)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+        activeProvider.percentage = 20
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: activeProvider, count: 2)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+
+        XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+        XCTAssertFalse(viewModel.isFastAutomaticRefreshActive(for: SecondaryRefreshSpyProvider.providerId))
+    }
+
+    func testFastRefreshStatusClearsWhenModeOrEligibilityChanges() async {
+        AutoRefreshPreferences.mode = .smart
+        AutoRefreshPreferences.setEnabled(true, for: RefreshSpyProvider.providerId)
+        let provider = RefreshSpyProvider()
+        let viewModel = makeViewModel(provider: provider) { _ in
+            throw CancellationError()
+        }
+
+        await waitForFetches(on: provider, count: 1)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+        provider.percentage = 20
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 2)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+        XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+
+        viewModel.setAutoRefreshMode(.regular)
+        XCTAssertFalse(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+
+        viewModel.setAutoRefreshMode(.smart)
+        provider.percentage = 30
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 3)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+        XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+
+        viewModel.setAutoRefreshEnabled(false, for: RefreshSpyProvider.providerId)
+        XCTAssertFalse(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+
+        viewModel.setAutoRefreshEnabled(true, for: RefreshSpyProvider.providerId)
+        provider.percentage = 40
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 4)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+        XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+
+        viewModel.setProviderEnabled(false, for: RefreshSpyProvider.providerId)
+        XCTAssertFalse(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
     }
 
     func testScheduledRefreshUsesProactiveCapabilityBeforeQuotaFetch() async {
@@ -115,6 +183,13 @@ final class AutoRefreshViewModelTests: XCTestCase {
             await Task.yield()
         }
         XCTAssertGreaterThanOrEqual(provider.fetchCallCount, count)
+    }
+
+    private func waitForFetchCompletion(on viewModel: QuotaViewModel, providerId: String) async {
+        for _ in 0 ..< 100 where viewModel.fetchTasks[providerId] != nil {
+            await Task.yield()
+        }
+        XCTAssertNil(viewModel.fetchTasks[providerId])
     }
 
     private func waitForIntervals(on recorder: IntervalRecorder, count: Int) async {
@@ -187,5 +262,30 @@ private final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unche
 
     func proactiveRefresh() async throws {
         proactiveRefreshCallCount += 1
+    }
+}
+
+private final class SecondaryRefreshSpyProvider: AIProvider, @unchecked Sendable {
+    static let providerId = "secondary-auto-refresh-spy"
+    static let providerName = "Secondary Auto Refresh Spy"
+    static let providerDescription = "Test fixture"
+    static let baseURL = URL(string: "https://example.com")!
+    static let authShape: ProviderAuth.Shape = .apiKeyFree
+
+    var fetchCallCount = 0
+
+    func isConfigured() -> Bool {
+        true
+    }
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        fetchCallCount += 1
+        return ProviderQuota(
+            providerId: Self.providerId,
+            providerName: Self.providerName,
+            headline: "10%",
+            lines: [UsageLine(label: "Usage", percentage: 10)],
+            lastUpdated: Date()
+        )
     }
 }

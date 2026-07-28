@@ -105,6 +105,7 @@ extension QuotaViewModel {
         lifecycleRevisions[providerId, default: 0] += 1
         stopAutoRefresh(for: providerId)
         smartRefreshPolicy.reset(for: providerId)
+        syncFastRefreshStatus(for: providerId)
         fetchTasks[providerId]?.cancel()
         fetchTasks[providerId] = nil
         setupTasks[providerId]?.cancel()
@@ -189,6 +190,7 @@ extension QuotaViewModel {
         guard isEligibleForAutoRefresh(providerId) else { return }
         if AutoRefreshPreferences.mode == .smart {
             _ = smartRefreshPolicy.recordFailure(for: providerId)
+            syncFastRefreshStatus(for: providerId)
         }
     }
 
@@ -198,6 +200,7 @@ extension QuotaViewModel {
         suppressSmartSuccess: Bool
     ) {
         guard isEligibleForAutoRefresh(providerId) else {
+            syncFastRefreshStatus(for: providerId)
             stopAutoRefresh(for: providerId)
             return
         }
@@ -211,8 +214,22 @@ extension QuotaViewModel {
             case .failure:
                 _ = smartRefreshPolicy.recordFailure(for: providerId)
             }
+            syncFastRefreshStatus(for: providerId)
         }
         startAutoRefresh(for: providerId)
+    }
+
+    func syncFastRefreshStatus(for providerId: String) {
+        let shouldShowStatus = AutoRefreshPreferences.mode == .smart
+            && isEligibleForAutoRefresh(providerId)
+            && smartRefreshPolicy.cadence(for: providerId) == .fast
+        setFastRefreshStatusVisible(shouldShowStatus, for: providerId)
+    }
+
+    func syncFastRefreshStatuses() {
+        for providerId in registeredProvidersOrdered.map(\.id) {
+            syncFastRefreshStatus(for: providerId)
+        }
     }
 
     /// Copy-write-back forces @Observable's setter to fire — dictionary subscript

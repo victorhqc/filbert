@@ -155,20 +155,33 @@ struct QuotaView: View {
     private func headerAccessibilityLabel(
         info: ProviderInfo,
         state: ProviderState,
-        collapsed: Bool
+        collapsed: Bool,
+        fastRefreshStatus: String?
     ) -> String {
+        let headerLabel: String
         guard collapsed, case let .loaded(quota) = state else {
-            return info.displayName
+            headerLabel = info.displayName
+            return headerAccessibilityLabel(headerLabel, fastRefreshStatus: fastRefreshStatus)
         }
 
         switch QuotaStatusResolver.resolve(for: quota) {
         case let .window(percentage):
-            return String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
+            headerLabel = String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
         case let .balance(_, _, formattedAmount):
-            return String(localized: "\(info.displayName): \(formattedAmount) remaining")
+            headerLabel = String(localized: "\(info.displayName): \(formattedAmount) remaining")
         case .fallback:
-            return info.displayName
+            headerLabel = info.displayName
         }
+        return headerAccessibilityLabel(headerLabel, fastRefreshStatus: fastRefreshStatus)
+    }
+
+    private func headerAccessibilityLabel(_ headerLabel: String, fastRefreshStatus: String?) -> String {
+        guard let fastRefreshStatus else { return headerLabel }
+        return String.localizedStringWithFormat(
+            String(localized: "%1$@. %2$@"),
+            headerLabel,
+            fastRefreshStatus
+        )
     }
 
     private func usageLineRow(_ line: UsageLine) -> some View {
@@ -298,11 +311,15 @@ private extension QuotaView {
     func providerSection(providerId: String, state: ProviderState) -> some View {
         if let info = viewModel.providerInfo(for: providerId) {
             let collapsed = viewModel.isCollapsed(providerId)
+            let fastRefreshStatus = viewModel.isFastAutomaticRefreshActive(for: providerId)
+                ? String(localized: "Fast refresh active")
+                : nil
             VStack(alignment: .leading, spacing: 8) {
                 providerHeader(
                     info: info,
                     state: state,
-                    collapsed: collapsed
+                    collapsed: collapsed,
+                    fastRefreshStatus: fastRefreshStatus
                 )
 
                 if !collapsed {
@@ -320,7 +337,8 @@ private extension QuotaView {
     func providerHeader(
         info: ProviderInfo,
         state: ProviderState,
-        collapsed: Bool
+        collapsed: Bool,
+        fastRefreshStatus: String?
     ) -> some View {
         HStack(spacing: 6) {
             Button {
@@ -331,10 +349,19 @@ private extension QuotaView {
                 HStack(spacing: 7) {
                     ProviderLogoBadge(glyph: info.glyph)
 
-                    Text(info.displayName)
-                        .font(.headline)
-                        .lineLimit(1)
-                        .truncationMode(.tail)
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(info.displayName)
+                            .font(.headline)
+                            .lineLimit(1)
+                            .truncationMode(.tail)
+
+                        if let fastRefreshStatus {
+                            Label(fastRefreshStatus, systemImage: "bolt.fill")
+                                .font(.caption2)
+                                .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                        }
+                    }
 
                     Spacer(minLength: 4)
 
@@ -351,7 +378,14 @@ private extension QuotaView {
                 .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .accessibilityLabel(headerAccessibilityLabel(info: info, state: state, collapsed: collapsed))
+            .accessibilityLabel(
+                headerAccessibilityLabel(
+                    info: info,
+                    state: state,
+                    collapsed: collapsed,
+                    fastRefreshStatus: fastRefreshStatus
+                )
+            )
             .accessibilityValue(collapsed ? String(localized: "Collapsed") : String(localized: "Expanded"))
             .accessibilityAction(
                 named: collapsed ? String(localized: "Expand") : String(localized: "Collapse")

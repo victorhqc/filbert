@@ -58,6 +58,8 @@ final class QuotaViewModel {
 
     var smartRefreshPolicy = SmartRefreshPolicy()
 
+    private(set) var fastRefreshingProviderIds: Set<String> = []
+
     var autoRefreshSettingsRevision = 0
 
     // MARK: - Init
@@ -144,6 +146,22 @@ final class QuotaViewModel {
         return AutoRefreshPreferences.isEnabled(for: providerId)
     }
 
+    func isFastAutomaticRefreshActive(for providerId: String) -> Bool {
+        fastRefreshingProviderIds.contains(providerId)
+    }
+
+    func setFastRefreshStatusVisible(_ visible: Bool, for providerId: String) {
+        guard fastRefreshingProviderIds.contains(providerId) != visible else { return }
+
+        var providerIds = fastRefreshingProviderIds
+        if visible {
+            providerIds.insert(providerId)
+        } else {
+            providerIds.remove(providerId)
+        }
+        fastRefreshingProviderIds = providerIds
+    }
+
     func setAutoRefreshEnabled(_ enabled: Bool, for providerId: String) {
         guard providerInfo(for: providerId) != nil else { return }
         AutoRefreshPreferences.setEnabled(enabled, for: providerId)
@@ -151,6 +169,7 @@ final class QuotaViewModel {
 
         guard enabled else {
             smartRefreshPolicy.reset(for: providerId)
+            syncFastRefreshStatus(for: providerId)
             stopAutoRefresh(for: providerId)
             return
         }
@@ -162,6 +181,7 @@ final class QuotaViewModel {
         guard AutoRefreshPreferences.mode != mode else { return }
         AutoRefreshPreferences.mode = mode
         smartRefreshPolicy.resetAll()
+        syncFastRefreshStatuses()
         autoRefreshSettingsRevision += 1
 
         if mode == .smart {
