@@ -96,8 +96,55 @@ public struct OpenAICodexProvider: AIProvider {
             providerName: Self.providerName,
             headline: headline(for: windows),
             lines: lines,
-            lastUpdated: Date()
+            lastUpdated: Date(),
+            activityObservation: activityObservation(for: snapshot)
         )
+    }
+
+    private func activityObservation(
+        for snapshot: CodexRateLimitSnapshot?
+    ) -> ProviderActivityObservation {
+        var metrics: [ProviderActivityMetric] = []
+
+        if let primary = snapshot?.primary?.usedPercent {
+            metrics.append(ProviderActivityMetric(
+                id: "primary-window-usage",
+                kind: .usage,
+                value: .number(Decimal(primary))
+            ))
+        }
+        if let secondary = snapshot?.secondary?.usedPercent {
+            metrics.append(ProviderActivityMetric(
+                id: "secondary-window-usage",
+                kind: .usage,
+                value: .number(Decimal(secondary))
+            ))
+        }
+        if snapshot?.credits?.unlimited == true {
+            metrics.append(ProviderActivityMetric(
+                id: "credits",
+                kind: .credits,
+                value: .discrete("unlimited")
+            ))
+        } else if let balance = snapshot?.credits?.balance {
+            appendNumericCreditMetric(balance, to: &metrics)
+        }
+
+        return ProviderActivityObservation(metrics: metrics)
+    }
+
+    private func appendNumericCreditMetric(
+        _ balance: String,
+        to metrics: inout [ProviderActivityMetric]
+    ) {
+        guard let value = Decimal(string: balance, locale: Locale(identifier: "en_US_POSIX")) else {
+            return
+        }
+        metrics.append(ProviderActivityMetric(
+            id: "credits",
+            kind: .credits,
+            value: .number(value)
+        ))
     }
 
     private func usageLine(_ window: CodexRateLimitWindow) -> UsageLine {

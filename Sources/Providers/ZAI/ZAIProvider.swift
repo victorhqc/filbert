@@ -244,8 +244,38 @@ public struct ZAIProvider: AIProvider {
             headline: headline,
             lines: lines,
             lastUpdated: Date(),
+            activityObservation: activityObservation(from: limits),
             peakHoursConfig: Self.peakHoursConfig
         )
+    }
+
+    private func activityObservation(from limits: [ZAILimit]) -> ProviderActivityObservation {
+        let metrics = limits.compactMap { limit -> ProviderActivityMetric? in
+            guard let id = activityMetricID(for: limit),
+                  let value = limit.currentValue ?? limit.usage ?? limit.percentage
+            else {
+                return nil
+            }
+            return ProviderActivityMetric(
+                id: id,
+                kind: .usage,
+                value: .number(Decimal(value))
+            )
+        }
+        return ProviderActivityObservation(metrics: metrics)
+    }
+
+    private func activityMetricID(for limit: ZAILimit) -> String? {
+        switch (limit.type, limit.unit) {
+        case ("TOKENS_LIMIT", 3):
+            "five-hour-usage"
+        case ("TOKENS_LIMIT", 6):
+            "weekly-usage"
+        case ("TIME_LIMIT", 5):
+            "monthly-web-tool-usage"
+        default:
+            nil
+        }
     }
 
     private func mapLimit(_ limit: ZAILimit) -> UsageLine? {

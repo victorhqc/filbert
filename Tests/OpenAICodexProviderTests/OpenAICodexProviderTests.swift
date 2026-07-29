@@ -164,6 +164,11 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].details?.first?.label, "Credits")
         XCTAssertEqual(quota.lines[0].details?.first?.value, "12.5")
         XCTAssertTrue(quota.headline.hasPrefix("20%"))
+        XCTAssertEqual(quota.activityObservation?.metrics, [
+            ProviderActivityMetric(id: "primary-window-usage", kind: .usage, value: .number(20)),
+            ProviderActivityMetric(id: "secondary-window-usage", kind: .usage, value: .number(40)),
+            ProviderActivityMetric(id: "credits", kind: .credits, value: .number(12.5)),
+        ])
     }
 
     func testProvider_omitsMissingWindowsAndUsesUnlimitedCredits() {
@@ -183,6 +188,9 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines.count, 1)
         XCTAssertEqual(quota.lines[0].label, "Credits")
         XCTAssertEqual(quota.lines[0].details?.first?.value, "Unlimited credits")
+        XCTAssertEqual(quota.activityObservation?.metrics, [
+            ProviderActivityMetric(id: "credits", kind: .credits, value: .discrete("unlimited")),
+        ])
     }
 
     // MARK: - coalesced fetches

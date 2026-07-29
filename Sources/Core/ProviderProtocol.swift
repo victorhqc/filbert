@@ -8,6 +8,7 @@ public struct ProviderQuota: Sendable {
     public let lastUpdated: Date
     public let error: String?
     public let isStale: Bool
+    public let activityObservation: ProviderActivityObservation?
     /// Optional peak-hours pricing config. Providers that have time-based
     /// multipliers (e.g. z.ai's GLM Coding Plan) populate this so the view
     /// can render a peak/off-peak block without any provider-specific code.
@@ -21,6 +22,7 @@ public struct ProviderQuota: Sendable {
         lastUpdated: Date,
         error: String? = nil,
         isStale: Bool = false,
+        activityObservation: ProviderActivityObservation? = nil,
         peakHoursConfig: PeakHoursConfig? = nil
     ) {
         self.providerId = providerId
@@ -30,8 +32,50 @@ public struct ProviderQuota: Sendable {
         self.lastUpdated = lastUpdated
         self.error = error
         self.isStale = isStale
+        self.activityObservation = activityObservation
         self.peakHoursConfig = peakHoursConfig
     }
+}
+
+public struct ProviderActivityObservation: Equatable, Sendable {
+    public let metrics: [ProviderActivityMetric]
+    public let availability: ProviderAvailability?
+
+    public init(
+        metrics: [ProviderActivityMetric] = [],
+        availability: ProviderAvailability? = nil
+    ) {
+        self.metrics = metrics
+        self.availability = availability
+    }
+}
+
+public struct ProviderActivityMetric: Equatable, Sendable {
+    public enum Kind: String, Equatable, Sendable {
+        case usage
+        case credits
+    }
+
+    public enum Value: Equatable, Sendable {
+        case number(Decimal)
+        case discrete(String)
+    }
+
+    public let id: String
+    public let kind: Kind
+    public let value: Value
+
+    public init(id: String, kind: Kind, value: Value) {
+        self.id = id
+        self.kind = kind
+        self.value = value
+    }
+}
+
+public enum ProviderAvailability: Equatable, Sendable {
+    case available
+    case unavailable
+    case unknown
 }
 
 // MARK: - Peak-hours config

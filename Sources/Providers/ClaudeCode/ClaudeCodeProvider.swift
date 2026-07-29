@@ -216,7 +216,25 @@ public struct ClaudeCodeProvider: AIProvider {
             headline: headline,
             lines: lines,
             lastUpdated: lastUpdated,
-            isStale: isStale
+            isStale: isStale,
+            activityObservation: activityObservation(from: cache.rateLimits)
+        )
+    }
+
+    private func activityObservation(from rateLimits: RateLimits?) -> ProviderActivityObservation {
+        let metrics = [
+            activityMetric(id: "five-hour-usage", window: rateLimits?.fiveHour),
+            activityMetric(id: "weekly-usage", window: rateLimits?.sevenDay),
+        ].compactMap { $0 }
+        return ProviderActivityObservation(metrics: metrics)
+    }
+
+    private func activityMetric(id: String, window: Window?) -> ProviderActivityMetric? {
+        guard let percentage = window?.usedPercentage else { return nil }
+        return ProviderActivityMetric(
+            id: id,
+            kind: .usage,
+            value: .number(Decimal(percentage))
         )
     }
 

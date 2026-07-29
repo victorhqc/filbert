@@ -42,18 +42,27 @@ final class AutoRefreshPreferencesTests: XCTestCase {
 
     func testSharedValuesPersistWhenSupported() {
         AutoRefreshPreferences.mode = .smart
-        AutoRefreshPreferences.slowInterval = 15 * 60
-        AutoRefreshPreferences.fastInterval = 45
+        AutoRefreshPreferences.slowInterval = 17 * 60
+        AutoRefreshPreferences.fastInterval = 25
 
         XCTAssertEqual(AutoRefreshPreferences.mode, .smart)
-        XCTAssertEqual(AutoRefreshPreferences.slowInterval, 15 * 60)
-        XCTAssertEqual(AutoRefreshPreferences.fastInterval, 45)
+        XCTAssertEqual(AutoRefreshPreferences.slowInterval, 17 * 60)
+        XCTAssertEqual(AutoRefreshPreferences.fastInterval, 25)
+    }
+
+    func testIntervalOptionsCoverEverySupportedStop() {
+        XCTAssertEqual(AutoRefreshPreferences.slowIntervalOptions.count, 60)
+        XCTAssertEqual(AutoRefreshPreferences.slowIntervalOptions.first, 60)
+        XCTAssertEqual(AutoRefreshPreferences.slowIntervalOptions.last, 60 * 60)
+        XCTAssertEqual(AutoRefreshPreferences.slowIntervalOptions[16], 17 * 60)
+
+        XCTAssertEqual(AutoRefreshPreferences.fastIntervalOptions, [10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60])
     }
 
     func testInvalidStoredValuesResolveToDefaults() {
         defaults.set("unknown", forKey: "automatic-refresh-mode")
-        defaults.set(7, forKey: "automatic-refresh-slow-interval")
-        defaults.set(90, forKey: "automatic-refresh-fast-interval")
+        defaults.set(7 * 60 + 1, forKey: "automatic-refresh-slow-interval")
+        defaults.set(27, forKey: "automatic-refresh-fast-interval")
 
         XCTAssertEqual(AutoRefreshPreferences.mode, .regular)
         XCTAssertEqual(AutoRefreshPreferences.slowInterval, 5 * 60)

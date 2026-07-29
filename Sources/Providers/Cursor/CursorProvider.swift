@@ -135,13 +135,14 @@ public struct CursorProvider: AIProvider {
     func map(_ response: CursorUsageResponse) -> ProviderQuota {
         let resetDate = Self.dateFromMsString(response.billingCycleEnd)
         let plan = normalizedPlan(from: response)
+        let onDemand = normalizedOnDemand(from: response)
         var lines: [UsageLine] = []
 
         if let plan {
             lines.append(contentsOf: planLines(plan, resetDate: resetDate))
         }
 
-        if let onDemand = normalizedOnDemand(from: response) {
+        if let onDemand {
             if let line = onDemandLine(onDemand) {
                 lines.append(line)
             }
@@ -163,7 +164,12 @@ public struct CursorProvider: AIProvider {
             providerName: Self.providerName,
             headline: headline,
             lines: lines,
-            lastUpdated: Date()
+            lastUpdated: Date(),
+            activityObservation: activityObservation(
+                plan: plan,
+                onDemand: onDemand,
+                spendLimitUsage: response.spendLimitUsage
+            )
         )
     }
 
@@ -261,47 +267,6 @@ public struct CursorProvider: AIProvider {
         }
         return amountLeft
     }
-
-    // MARK: - Normalization
-
-    /// Unifies the new `planUsage` shape and the legacy `individualUsage.plan`
-    /// shape into one model.
-    private func normalizedPlan(from response: CursorUsageResponse) -> PlanData? {
-        if let plan = response.planUsage {
-            return PlanData(
-                totalPercentUsed: plan.totalPercentUsed,
-                includedSpend: plan.includedSpend,
-                limit: plan.limit,
-                bonusSpend: plan.bonusSpend,
-                autoPercentUsed: plan.autoPercentUsed,
-                apiPercentUsed: plan.apiPercentUsed
-            )
-        }
-        if let legacy = response.individualUsage?.plan {
-            return PlanData(
-                totalPercentUsed: legacy.totalPercentUsed,
-                includedSpend: legacy.used,
-                limit: legacy.limit,
-                bonusSpend: nil,
-                autoPercentUsed: nil,
-                apiPercentUsed: nil
-            )
-        }
-        return nil
-    }
-
-    private func normalizedOnDemand(from response: CursorUsageResponse) -> OnDemandData? {
-        if let spend = response.spendLimitUsage {
-            return OnDemandData(
-                used: spend.individualUsed,
-                limit: spend.individualLimit
-            )
-        }
-        if let legacy = response.individualUsage?.onDemand {
-            return OnDemandData(used: legacy.used, limit: legacy.limit)
-        }
-        return nil
-    }
 }
 
 // MARK: - Helpers
@@ -322,7 +287,7 @@ private extension CursorProvider {
 
 // MARK: - Normalized models
 
-private struct PlanData {
+struct PlanData {
     let totalPercentUsed: Double?
     let includedSpend: Int?
     let limit: Int?
@@ -331,7 +296,7 @@ private struct PlanData {
     let apiPercentUsed: Double?
 }
 
-private struct OnDemandData {
+struct OnDemandData {
     let used: Int?
     let limit: Int?
 }

@@ -77,6 +77,17 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(quota.lines[2].total), 100.00, accuracy: 0.001)
     }
 
+    func testFetchQuota_mapsCreditsAndAvailabilityIntoActivityObservation() async throws {
+        let quota = try await fetchWithMock(validResponseJSON())
+
+        XCTAssertEqual(quota.activityObservation?.availability, .available)
+        XCTAssertEqual(quota.activityObservation?.metrics, [
+            ProviderActivityMetric(id: "total-balance-cny", kind: .credits, value: .number(110)),
+            ProviderActivityMetric(id: "granted-balance-cny", kind: .credits, value: .number(10)),
+            ProviderActivityMetric(id: "topped-up-balance-cny", kind: .credits, value: .number(100)),
+        ])
+    }
+
     func testFetchQuota_tagsEachLineWithRawCurrencyCode() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
 
@@ -115,6 +126,7 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(quota.headline, "No balance available")
         // Lines are still returned so the user can see what's left.
         XCTAssertEqual(quota.lines.count, 3)
+        XCTAssertEqual(quota.activityObservation?.availability, .unavailable)
     }
 
     // MARK: - Headline shows total balance, currency-aware
