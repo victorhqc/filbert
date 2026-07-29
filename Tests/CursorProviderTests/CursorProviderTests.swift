@@ -49,6 +49,18 @@ final class CursorProviderTests: XCTestCase {
         XCTAssertNotNil(includedLine.resetDate)
     }
 
+    func testFetchQuota_mapsSemanticUsageAndCreditsIntoActivityObservation() async throws {
+        let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
+
+        XCTAssertNil(quota.activityObservation?.availability)
+        XCTAssertEqual(quota.activityObservation?.metrics, [
+            ProviderActivityMetric(id: "included-usage", kind: .usage, value: .number(50)),
+            ProviderActivityMetric(id: "on-demand-spend", kind: .usage, value: .number(15)),
+            ProviderActivityMetric(id: "spend-limit-usage", kind: .usage, value: .number(5)),
+            ProviderActivityMetric(id: "bonus-credits", kind: .credits, value: .number(20)),
+        ])
+    }
+
     func testFetchQuota_addsBonusCreditsLineWhenPresent() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 

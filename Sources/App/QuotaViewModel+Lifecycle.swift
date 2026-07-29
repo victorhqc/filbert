@@ -153,7 +153,7 @@ extension QuotaViewModel {
 
         if AutoRefreshPreferences.mode == .smart {
             if case let .loaded(quota) = providerStates[providerId] {
-                _ = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+                _ = recordSmartSuccess(quota, for: providerId)
             }
         }
         if fetchTasks[providerId] == nil {
@@ -168,7 +168,7 @@ extension QuotaViewModel {
             else {
                 continue
             }
-            _ = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+            _ = recordSmartSuccess(quota, for: providerId)
         }
     }
 
@@ -209,7 +209,7 @@ extension QuotaViewModel {
             switch result {
             case let .success(quota):
                 if !suppressSmartSuccess {
-                    _ = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+                    _ = recordSmartSuccess(quota, for: providerId)
                 }
             case .failure:
                 _ = smartRefreshPolicy.recordFailure(for: providerId)
@@ -217,6 +217,20 @@ extension QuotaViewModel {
             syncFastRefreshStatus(for: providerId)
         }
         startAutoRefresh(for: providerId)
+    }
+
+    @discardableResult
+    func recordSmartSuccess(
+        _ quota: ProviderQuota,
+        for providerId: String
+    ) -> SmartRefreshPolicy.Decision {
+        let decision = smartRefreshPolicy.recordSuccess(quota, for: providerId)
+        let reasons = decision.reasons.map(\.rawValue).sorted().joined(separator: ",")
+        log(
+            "smartRefresh: provider=\(providerId) classification=\(decision.classification) "
+                + "cadence=\(decision.cadence) reasons=\(reasons)"
+        )
+        return decision
     }
 
     func syncFastRefreshStatus(for providerId: String) {

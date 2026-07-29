@@ -8,8 +8,8 @@ public enum AutoRefreshMode: String, CaseIterable, Hashable, Sendable {
 public enum AutoRefreshPreferences {
     public static let defaultSlowInterval: TimeInterval = 5 * 60
     public static let defaultFastInterval: TimeInterval = 30
-    public static let slowIntervalOptions: [TimeInterval] = [60, 5 * 60, 15 * 60, 30 * 60, 60 * 60]
-    public static let fastIntervalOptions: [TimeInterval] = [10, 15, 30, 45, 60]
+    public static let slowIntervalOptions: [TimeInterval] = (1 ... 60).map { TimeInterval($0 * 60) }
+    public static let fastIntervalOptions: [TimeInterval] = stride(from: 10, through: 60, by: 5).map(TimeInterval.init)
 
     private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 

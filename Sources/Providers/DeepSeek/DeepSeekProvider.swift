@@ -184,8 +184,41 @@ public struct DeepSeekProvider: AIProvider {
             providerName: Self.providerName,
             headline: headline,
             lines: lines,
-            lastUpdated: Date()
+            lastUpdated: Date(),
+            activityObservation: activityObservation(from: response)
         )
+    }
+
+    private func activityObservation(
+        from response: DeepSeekBalanceResponse
+    ) -> ProviderActivityObservation {
+        let metrics = response.balanceInfos.flatMap { balanceInfo in
+            [
+                activityMetric(
+                    id: "total-balance-\(balanceInfo.currency.lowercased())",
+                    value: balanceInfo.totalBalance
+                ),
+                activityMetric(
+                    id: "granted-balance-\(balanceInfo.currency.lowercased())",
+                    value: balanceInfo.grantedBalance
+                ),
+                activityMetric(
+                    id: "topped-up-balance-\(balanceInfo.currency.lowercased())",
+                    value: balanceInfo.toppedUpBalance
+                ),
+            ].compactMap { $0 }
+        }
+        return ProviderActivityObservation(
+            metrics: metrics,
+            availability: response.isAvailable ? .available : .unavailable
+        )
+    }
+
+    private func activityMetric(id: String, value: String) -> ProviderActivityMetric? {
+        guard let value = Decimal(string: value, locale: Locale(identifier: "en_US_POSIX")) else {
+            return nil
+        }
+        return ProviderActivityMetric(id: id, kind: .credits, value: .number(value))
     }
 
     private func computeHeadline(

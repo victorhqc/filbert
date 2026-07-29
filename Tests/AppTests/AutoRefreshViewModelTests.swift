@@ -52,11 +52,11 @@ final class AutoRefreshViewModelTests: XCTestCase {
         viewModel.setAutoRefreshEnabled(true, for: RefreshSpyProvider.providerId)
         await waitForIntervals(on: recorder, count: 1)
 
-        viewModel.setAutoRefreshSlowInterval(15 * 60)
+        viewModel.setAutoRefreshSlowInterval(17 * 60)
         await waitForIntervals(on: recorder, count: 2)
 
         let intervals = await recorder.intervals()
-        XCTAssertEqual(intervals, [5 * 60, 15 * 60])
+        XCTAssertEqual(intervals, [5 * 60, 17 * 60])
         XCTAssertEqual(provider.fetchCallCount, 1)
     }
 
@@ -83,6 +83,31 @@ final class AutoRefreshViewModelTests: XCTestCase {
         XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
         let intervals = await recorder.intervals()
         XCTAssertEqual(intervals.last, 30)
+    }
+
+    func testPresentationOnlySmartRefreshKeepsSlowSchedule() async {
+        AutoRefreshPreferences.setEnabled(true, for: RefreshSpyProvider.providerId)
+        let provider = RefreshSpyProvider()
+        let recorder = IntervalRecorder()
+        let viewModel = makeViewModel(provider: provider) { interval in
+            await recorder.record(interval)
+            throw CancellationError()
+        }
+
+        await waitForFetches(on: provider, count: 1)
+        await waitForIntervals(on: recorder, count: 1)
+        viewModel.setAutoRefreshMode(.smart)
+        await waitForIntervals(on: recorder, count: 2)
+        provider.presentationRevision += 1
+
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 2)
+        await waitForIntervals(on: recorder, count: 3)
+
+        XCTAssertEqual(viewModel.smartRefreshPolicy.cadence(for: RefreshSpyProvider.providerId), .slow)
+        XCTAssertFalse(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+        let intervals = await recorder.intervals()
+        XCTAssertEqual(intervals.last, 5 * 60)
     }
 
     func testFastRefreshStatusIdentifiesOnlyTheActiveProvider() async {
@@ -242,6 +267,7 @@ private final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unche
     static let authShape: ProviderAuth.Shape = .apiKeyFree
 
     var percentage = 10.0
+    var presentationRevision = 0
     var fetchCallCount = 0
     var proactiveRefreshCallCount = 0
 
@@ -254,9 +280,16 @@ private final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unche
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "\(percentage)%",
-            lines: [UsageLine(label: "Usage", percentage: percentage)],
-            lastUpdated: Date()
+            headline: "\(percentage)% \(presentationRevision)",
+            lines: [UsageLine(label: "Usage \(presentationRevision)", percentage: percentage)],
+            lastUpdated: Date(),
+            activityObservation: ProviderActivityObservation(metrics: [
+                ProviderActivityMetric(
+                    id: "usage",
+                    kind: .usage,
+                    value: .number(Decimal(percentage))
+                ),
+            ])
         )
     }
 
@@ -285,7 +318,10 @@ private final class SecondaryRefreshSpyProvider: AIProvider, @unchecked Sendable
             providerName: Self.providerName,
             headline: "10%",
             lines: [UsageLine(label: "Usage", percentage: 10)],
-            lastUpdated: Date()
+            lastUpdated: Date(),
+            activityObservation: ProviderActivityObservation(metrics: [
+                ProviderActivityMetric(id: "usage", kind: .usage, value: .number(10)),
+            ])
         )
     }
 }

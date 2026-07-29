@@ -93,6 +93,23 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(fiveHour.used, 420)
     }
 
+    func testFetchQuota_mapsOnlyConsumptionIntoActivityObservation() async throws {
+        MockURLProtocol.responseData = validResponseJSON()
+        MockURLProtocol.responseStatusCode = 200
+
+        let quota = try await provider.fetchQuota(
+            auth: .apiKey("test-key"),
+            baseURL: ZAIProvider.baseURL
+        )
+
+        XCTAssertEqual(quota.activityObservation?.availability, nil)
+        XCTAssertEqual(quota.activityObservation?.metrics, [
+            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(420)),
+            ProviderActivityMetric(id: "weekly-usage", kind: .usage, value: .number(600)),
+            ProviderActivityMetric(id: "monthly-web-tool-usage", kind: .usage, value: .number(15)),
+        ])
+    }
+
     /// z.ai's monthly web-tool line carries `currentValue` (actual used) and
     /// `usage` (the allowance/cap). `currentValue` must map to `used` and
     /// `usage` to `total` — not the reverse.
