@@ -185,50 +185,7 @@ struct QuotaView: View {
     }
 
     private func usageLineRow(_ line: UsageLine) -> some View {
-        VStack(alignment: .leading, spacing: 3) {
-            HStack {
-                Text(line.label)
-                    .font(.subheadline)
-                    .fontWeight(.medium)
-                Spacer()
-                if let pct = percentage(for: line) {
-                    Text(String(format: "%.0f%%", pct))
-                        .font(.subheadline.monospacedDigit())
-                        .foregroundColor(percentageColor(pct))
-                } else if let amount = amountText(for: line) {
-                    Text(amount)
-                        .font(.subheadline.monospacedDigit())
-                }
-            }
-
-            if let pct = percentage(for: line) {
-                UsageBar(percentage: pct, color: percentageColor(pct))
-            }
-
-            if let resetDate = line.resetDate {
-                Text(QuotaFormatting.countdown(to: resetDate))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-
-            if let details = line.details, !details.isEmpty {
-                VStack(alignment: .leading, spacing: 1) {
-                    ForEach(details, id: \.label) { detail in
-                        HStack {
-                            Text(detail.label)
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                            Spacer()
-                            Text(detail.value)
-                                .font(.caption2.monospacedDigit())
-                                .foregroundColor(.secondary)
-                        }
-                        .padding(.leading, 12)
-                    }
-                }
-            }
-        }
-        .padding(.vertical, 2)
+        UsageLineRow(line: line)
     }
 
     // MARK: - Error
@@ -277,11 +234,6 @@ struct QuotaView: View {
 
     // MARK: - Helpers
 
-    private func percentageColor(_ pct: Double) -> Color {
-        let tier = QuotaStatusResolver.tier(for: .window(percentage: pct))
-        return ProviderVisualStyle.tierColor(tier ?? .good, scheme: colorScheme)
-    }
-
     private func percentage(for line: UsageLine) -> Double? {
         QuotaStatusResolver.percentage(for: line)
     }
@@ -297,10 +249,6 @@ struct QuotaView: View {
             return nil
         }
         return ProviderVisualStyle.balanceTierColor(total, scheme: colorScheme)
-    }
-
-    private func amountText(for line: UsageLine) -> String? {
-        QuotaStatusResolver.amountText(for: line)
     }
 }
 
@@ -366,7 +314,7 @@ private extension QuotaView {
                     Spacer(minLength: 4)
 
                     if collapsed, case let .loaded(quota) = state {
-                        CompactProviderStatus(status: QuotaStatusResolver.resolve(for: quota))
+                        CompactProviderStatus(quota: quota)
                     }
 
                     Image(systemName: "chevron.right")
@@ -422,14 +370,23 @@ private extension QuotaView {
 }
 
 private struct CompactProviderStatus: View {
-    let status: QuotaStatusResolver.Status
+    let quota: ProviderQuota
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            compactStatus(at: context.date)
+        }
+    }
+
+    @ViewBuilder
+    private func compactStatus(at now: Date) -> some View {
+        let status = QuotaStatusResolver.resolve(for: quota)
+        let tier = QuotaStatusResolver.compactTier(for: quota, at: now)
         switch status {
         case let .window(percentage):
-            if let tier = QuotaStatusResolver.tier(for: status) {
+            if let tier {
                 HStack(spacing: 4) {
                     compactRing(
                         percentage: percentage,
@@ -442,7 +399,7 @@ private struct CompactProviderStatus: View {
                 .accessibilityHidden(true)
             }
         case let .balance(_, _, formattedAmount):
-            if let tier = QuotaStatusResolver.tier(for: status) {
+            if let tier {
                 HStack(spacing: 4) {
                     Circle()
                         .fill(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))
@@ -497,36 +454,6 @@ private func filteredBalanceLines(
             return true
         }
         return true
-    }
-}
-
-// MARK: - Usage bar
-
-/// Avoids `GeometryReader` — inside the `MenuBarExtra` popover it collapses
-/// to zero width. The fill is a full-width `Capsule` scaled to the used
-/// fraction with `scaleEffect` instead.
-private struct UsageBar: View {
-    let percentage: Double
-    let color: Color
-
-    var body: some View {
-        ZStack(alignment: .leading) {
-            Capsule().fill(Color.secondary.opacity(0.15))
-            Capsule()
-                .fill(color)
-                .scaleEffect(x: clampedFraction, anchor: .leading)
-                .opacity(clampedFraction <= 0 ? 0 : 1)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(height: 4)
-        .accessibilityElement()
-        .accessibilityLabel(
-            String(localized: "Usage: \(Int(clampedFraction * 100))%")
-        )
-    }
-
-    private var clampedFraction: Double {
-        min(max(percentage / 100, 0), 1)
     }
 }
 

@@ -54,6 +54,17 @@ enum QuotaStatusResolver {
         }
     }
 
+    static func compactTier(for quota: ProviderQuota, at now: Date) -> Tier? {
+        let status = resolve(for: quota)
+        guard case .window = status,
+              let line = firstPercentageLine(in: quota.lines),
+              let weeklyPace = WeeklyBudgetPace(line: line, now: now)
+        else {
+            return tier(for: status)
+        }
+        return weeklyPace.tier
+    }
+
     private static func firstPercentageLine(in lines: [UsageLine]) -> UsageLine? {
         lines.first { percentage(for: $0) != nil }
     }

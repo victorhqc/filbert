@@ -12,6 +12,7 @@ final class ProviderProtocolTests: XCTestCase {
             percentage: 42,
             unit: "requests",
             resetDate: now.addingTimeInterval(3600),
+            windowDuration: UsageWindowDuration.fiveHours,
             details: [detail]
         )
         let quota = ProviderQuota(
@@ -27,6 +28,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(quota.headline, "42% · resets in 1h")
         XCTAssertEqual(quota.lines.count, 1)
         XCTAssertEqual(quota.lines[0].percentage, 42)
+        XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
         XCTAssertEqual(quota.lines[0].details?.first?.label, "RPM")
         XCTAssertEqual(quota.lastUpdated, now)
         XCTAssertNil(quota.error)
@@ -41,6 +43,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertNil(line.percentage)
         XCTAssertNil(line.unit)
         XCTAssertNil(line.resetDate)
+        XCTAssertNil(line.windowDuration)
         XCTAssertNil(line.details)
     }
 

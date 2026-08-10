@@ -10,6 +10,33 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } }
       }
     },
+    "%@ left" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ verbleibend" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ left" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ restantes" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ restantes" } }
+      }
+    },
+    "%@%% available until reset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% bis zur Zurücksetzung verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@%% available until reset" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% disponibles hasta el restablecimiento" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% disponibles hasta el restablecimiento" } }
+      }
+    },
+    "%@%% used" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% verwendet" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@%% used" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% usado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% usado" } }
+      }
+    },
     "%1$@: %2$@ remaining" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -86,6 +113,15 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Contraído" } }
       }
     },
+    "About %@%%/day available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Etwa %@ %%/Tag verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@%%/day available" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/día disponibles" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/día disponibles" } }
+      }
+    },
     "Expand" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -111,6 +147,24 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast refresh active" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } }
+      }
+    },
+    "On pace" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Plan" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "On pace" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "En ritmo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "En ritmo" } }
+      }
+    },
+    "Over pace" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Über dem Plan" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Over pace" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Por encima del ritmo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Por encima del ritmo" } }
       }
     },
     "Show a classic Happy / Sad Mac face instead of the ring in the menu bar" : {
