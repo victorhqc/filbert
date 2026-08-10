@@ -314,7 +314,7 @@ private extension QuotaView {
                     Spacer(minLength: 4)
 
                     if collapsed, case let .loaded(quota) = state {
-                        CompactProviderStatus(status: QuotaStatusResolver.resolve(for: quota))
+                        CompactProviderStatus(quota: quota)
                     }
 
                     Image(systemName: "chevron.right")
@@ -370,14 +370,23 @@ private extension QuotaView {
 }
 
 private struct CompactProviderStatus: View {
-    let status: QuotaStatusResolver.Status
+    let quota: ProviderQuota
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            compactStatus(at: context.date)
+        }
+    }
+
+    @ViewBuilder
+    private func compactStatus(at now: Date) -> some View {
+        let status = QuotaStatusResolver.resolve(for: quota)
+        let tier = QuotaStatusResolver.compactTier(for: quota, at: now)
         switch status {
         case let .window(percentage):
-            if let tier = QuotaStatusResolver.tier(for: status) {
+            if let tier {
                 HStack(spacing: 4) {
                     compactRing(
                         percentage: percentage,
@@ -390,7 +399,7 @@ private struct CompactProviderStatus: View {
                 .accessibilityHidden(true)
             }
         case let .balance(_, _, formattedAmount):
-            if let tier = QuotaStatusResolver.tier(for: status) {
+            if let tier {
                 HStack(spacing: 4) {
                     Circle()
                         .fill(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))

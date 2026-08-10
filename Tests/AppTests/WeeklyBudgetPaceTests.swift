@@ -49,6 +49,43 @@ final class WeeklyBudgetPaceTests: XCTestCase {
         XCTAssertEqual(pace.remainingPercentage, 70)
     }
 
+    func testCompactTierUsesWeeklyPaceForThePrimaryWeeklyLine() {
+        let quota = ProviderQuota(
+            providerId: "openai-codex",
+            providerName: "OpenAI Codex",
+            headline: "29%",
+            lines: [
+                weeklyLine(
+                    usedPercentage: 29,
+                    resetDate: now.addingTimeInterval(5 * 24 * 60 * 60 + 8 * 60 * 60)
+                ),
+            ],
+            lastUpdated: now
+        )
+
+        XCTAssertEqual(QuotaStatusResolver.compactTier(for: quota, at: now), .warn)
+    }
+
+    func testCompactTierKeepsRawTierWhenThePrimaryLineIsNotWeekly() {
+        let quota = ProviderQuota(
+            providerId: "claude-code",
+            providerName: "Claude Code",
+            headline: "29%",
+            lines: [
+                UsageLine(
+                    label: "5-hour window",
+                    percentage: 29,
+                    resetDate: now.addingTimeInterval(60 * 60),
+                    windowDuration: UsageWindowDuration.fiveHours
+                ),
+                weeklyLine(usedPercentage: 90, resetDate: now.addingTimeInterval(5 * 24 * 60 * 60)),
+            ],
+            lastUpdated: now
+        )
+
+        XCTAssertEqual(QuotaStatusResolver.compactTier(for: quota, at: now), .good)
+    }
+
     func testRejectsLinesWithoutCompleteSevenDayTiming() {
         XCTAssertNil(WeeklyBudgetPace(
             line: UsageLine(label: "Weekly", percentage: 30),

@@ -71,6 +71,7 @@ Weekly                                  30% used
 - **Then** the pace fill uses the warning tier color
 - **When** percentage used reaches or exceeds 100%
 - **Then** the pace fill uses the critical tier color
+- **And** when a collapsed card's compact percentage represents that same eligible weekly line, its ring and percentage use the identical pace tier and refresh from the local clock at least once per minute
 - **And** non-weekly bars retain the existing raw-percentage color thresholds from (ui 04)
 
 ### [x] AC7: Time-driven values remain current without a quota request
@@ -106,7 +107,7 @@ Add optional `windowDuration: TimeInterval?` metadata to `UsageLine`, defaulting
 
 Create a pure `WeeklyBudgetPace` value in the App target. It accepts a line and an injected `now`, validates eligibility, and exposes clamped usage, remaining time, remaining allowance, allowance per day, elapsed marker position, and pace tier. Keeping date arithmetic outside SwiftUI makes the rules deterministic and directly testable.
 
-Add a `WeeklyPaceBar` beside the existing `UsageBar`. It uses full-width shapes and scale/offset layout compatible with the window-style `MenuBarExtra`, draws the six daily dividers above the track, and draws a higher-contrast elapsed-time marker. Wrap the weekly row in a minute-based `TimelineView` so time-derived presentation advances without network work.
+Add a `WeeklyPaceBar` beside the existing `UsageBar`. It uses full-width shapes and scale/offset layout compatible with the window-style `MenuBarExtra`, draws the six daily dividers above the track, and draws a higher-contrast elapsed-time marker. Wrap the weekly row and its corresponding collapsed compact status in minute-based `TimelineView`s so time-derived presentation advances without network work.
 
 Keep the existing `usageLineRow` structure and select the paced presentation only when `WeeklyBudgetPace` validates the line. Add focused tests for start, middle, and end of window; ahead/behind pace; sub-day display; clamping; expired and inconsistent timestamps; provider metadata; and the unchanged fallback path.
 
@@ -116,3 +117,4 @@ Keep the existing `usageLineRow` structure and select the paced presentation onl
 - Provider reset timestamps can be stale or temporarily inconsistent during reset. Strict validation and the existing fallback prevent a misleading marker until fresh data arrives.
 - Seven marks plus a moving marker can become visually noisy in the 280-point popover. Dividers must stay subtle, the current-time marker must dominate, and the layout needs verification in light mode, dark mode, and increased-contrast mode.
 - A minute-based timeline adds local view updates while the popover is open. It must remain scoped to eligible weekly rows and perform no I/O.
+- A compact card may summarize a shorter primary window before a weekly line. Pace color applies only when the compact number itself comes from the weekly line, so unrelated windows do not inherit weekly guidance.
