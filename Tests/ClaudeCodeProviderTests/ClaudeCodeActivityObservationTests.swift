@@ -30,5 +30,7 @@ final class ClaudeCodeActivityObservationTests: XCTestCase {
             ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(42)),
             ProviderActivityMetric(id: "weekly-usage", kind: .usage, value: .number(60)),
         ])
+        XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
+        XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
     }
 }

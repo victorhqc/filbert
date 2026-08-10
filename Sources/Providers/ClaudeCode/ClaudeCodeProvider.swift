@@ -193,11 +193,19 @@ public struct ClaudeCodeProvider: AIProvider {
         var lines: [UsageLine] = []
 
         if let fiveHour = cache.rateLimits?.fiveHour {
-            lines.append(usageLine(label: String(localized: "5-hour window"), window: fiveHour))
+            lines.append(usageLine(
+                label: String(localized: "5-hour window"),
+                window: fiveHour,
+                windowDuration: UsageWindowDuration.fiveHours
+            ))
         }
 
         if let sevenDay = cache.rateLimits?.sevenDay {
-            lines.append(usageLine(label: String(localized: "Weekly"), window: sevenDay))
+            lines.append(usageLine(
+                label: String(localized: "Weekly"),
+                window: sevenDay,
+                windowDuration: UsageWindowDuration.week
+            ))
         }
 
         let headline = computeHeadline(
@@ -238,11 +246,16 @@ public struct ClaudeCodeProvider: AIProvider {
         )
     }
 
-    private func usageLine(label: String, window: Window) -> UsageLine {
+    private func usageLine(
+        label: String,
+        window: Window,
+        windowDuration: TimeInterval
+    ) -> UsageLine {
         UsageLine(
             label: label,
             percentage: window.usedPercentage,
-            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) }
+            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) },
+            windowDuration: windowDuration
         )
     }
 

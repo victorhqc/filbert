@@ -146,7 +146,7 @@ final class OpenAICodexProviderTests: XCTestCase {
             rateLimitsByLimitId: [
                 "codex": CodexRateLimitSnapshot(
                     primary: CodexRateLimitWindow(usedPercent: 20, resetsAt: 3000, windowDurationMins: 60),
-                    secondary: CodexRateLimitWindow(usedPercent: 40, resetsAt: 4000, windowDurationMins: 1440),
+                    secondary: CodexRateLimitWindow(usedPercent: 40, resetsAt: 4000, windowDurationMins: 10080),
                     credits: CodexCredits(balance: "12.5", unlimited: false)
                 ),
             ]
@@ -158,6 +158,8 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].percentage, 20)
         XCTAssertEqual(quota.lines[0].label, "60-minute window")
         XCTAssertEqual(quota.lines[0].resetDate, Date(timeIntervalSince1970: 3000))
+        XCTAssertEqual(quota.lines[0].windowDuration, 60 * 60)
+        XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
         XCTAssertNil(quota.lines[0].used)
         XCTAssertNil(quota.lines[0].total)
         XCTAssertNil(quota.lines[0].unit)

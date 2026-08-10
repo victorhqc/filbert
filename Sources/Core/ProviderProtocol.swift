@@ -136,6 +136,11 @@ public struct PeakHoursConfig: Sendable {
     }
 }
 
+public enum UsageWindowDuration {
+    public static let fiveHours: TimeInterval = 5 * 60 * 60
+    public static let week: TimeInterval = 7 * 24 * 60 * 60
+}
+
 public struct UsageLine: Sendable {
     public let label: String
     public let used: Double?
@@ -143,6 +148,7 @@ public struct UsageLine: Sendable {
     public let percentage: Double?
     public let unit: String?
     public let resetDate: Date?
+    public let windowDuration: TimeInterval?
     public let details: [UsageDetail]?
 
     public init(
@@ -152,6 +158,7 @@ public struct UsageLine: Sendable {
         percentage: Double? = nil,
         unit: String? = nil,
         resetDate: Date? = nil,
+        windowDuration: TimeInterval? = nil,
         details: [UsageDetail]? = nil
     ) {
         self.label = label
@@ -160,6 +167,7 @@ public struct UsageLine: Sendable {
         self.percentage = percentage
         self.unit = unit
         self.resetDate = resetDate
+        self.windowDuration = windowDuration
         self.details = details
     }
 }

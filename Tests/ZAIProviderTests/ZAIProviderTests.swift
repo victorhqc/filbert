@@ -77,6 +77,9 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[0].label, "5-hour window")
         XCTAssertEqual(quota.lines[1].label, "Weekly")
         XCTAssertEqual(quota.lines[2].label, "Monthly web-tool calls")
+        XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
+        XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
+        XCTAssertNil(quota.lines[2].windowDuration)
     }
 
     func testFetchQuota_mapsPercentageAndUsage() async throws {

@@ -84,6 +84,7 @@ public struct OpenAICodexProvider: AIProvider {
                     label: firstLine.label,
                     percentage: firstLine.percentage,
                     resetDate: firstLine.resetDate,
+                    windowDuration: firstLine.windowDuration,
                     details: details
                 )
             } else {
@@ -151,7 +152,8 @@ public struct OpenAICodexProvider: AIProvider {
         UsageLine(
             label: windowLabel(for: window.windowDurationMins),
             percentage: window.usedPercent,
-            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) }
+            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) },
+            windowDuration: window.windowDurationMins.map { TimeInterval($0) * 60 }
         )
     }
 

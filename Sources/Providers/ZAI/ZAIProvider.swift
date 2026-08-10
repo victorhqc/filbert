@@ -81,16 +81,31 @@ private struct ZAILimitLabel {
     let type: String
     let unit: Int
     let label: String
+    let windowDuration: TimeInterval?
 
-    /// Unknown (type, unit) pairs are silently ignored during mapping.
     static let known: [ZAILimitLabel] = [
-        ZAILimitLabel(type: "TOKENS_LIMIT", unit: 3, label: "5-hour window"),
-        ZAILimitLabel(type: "TOKENS_LIMIT", unit: 6, label: "Weekly"),
-        ZAILimitLabel(type: "TIME_LIMIT", unit: 5, label: "Monthly web-tool calls"),
+        ZAILimitLabel(
+            type: "TOKENS_LIMIT",
+            unit: 3,
+            label: "5-hour window",
+            windowDuration: UsageWindowDuration.fiveHours
+        ),
+        ZAILimitLabel(
+            type: "TOKENS_LIMIT",
+            unit: 6,
+            label: "Weekly",
+            windowDuration: UsageWindowDuration.week
+        ),
+        ZAILimitLabel(
+            type: "TIME_LIMIT",
+            unit: 5,
+            label: "Monthly web-tool calls",
+            windowDuration: nil
+        ),
     ]
 
-    static func lookup(type: String, unit: Int) -> String? {
-        known.first { $0.type == type && $0.unit == unit }?.label
+    static func lookup(type: String, unit: Int) -> ZAILimitLabel? {
+        known.first { $0.type == type && $0.unit == unit }
     }
 }
 
@@ -279,7 +294,7 @@ public struct ZAIProvider: AIProvider {
     }
 
     private func mapLimit(_ limit: ZAILimit) -> UsageLine? {
-        guard let labelKey = ZAILimitLabel.lookup(type: limit.type, unit: limit.unit) else {
+        guard let limitLabel = ZAILimitLabel.lookup(type: limit.type, unit: limit.unit) else {
             return nil
         }
 
@@ -314,12 +329,13 @@ public struct ZAIProvider: AIProvider {
         }
 
         return UsageLine(
-            label: String(localized: String.LocalizationValue(labelKey)),
+            label: String(localized: String.LocalizationValue(limitLabel.label)),
             used: used,
             total: total,
             percentage: limit.percentage,
             unit: nil,
             resetDate: resetDate,
+            windowDuration: limitLabel.windowDuration,
             details: details
         )
     }
