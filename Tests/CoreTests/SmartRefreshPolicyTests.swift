@@ -280,8 +280,12 @@ final class SmartRefreshPolicyTests: XCTestCase {
     private func presentationPeakHours(isUpdated: Bool) -> PeakHoursConfig {
         PeakHoursConfig(
             timeZone: TimeZone(identifier: isUpdated ? "Asia/Shanghai" : "UTC"),
-            peakStartHour: isUpdated ? 14 : 1,
-            peakEndHour: isUpdated ? 18 : 2,
+            windows: [
+                PeakHoursWindow(
+                    startHour: isUpdated ? 14 : 1,
+                    endHour: isUpdated ? 18 : 2
+                ),
+            ],
             peakMultiplier: isUpdated ? 4 : 3,
             offPeakMultiplier: isUpdated ? 1 : 2
         )

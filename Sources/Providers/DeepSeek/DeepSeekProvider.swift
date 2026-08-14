@@ -77,6 +77,17 @@ private struct DeepSeekBalanceInfo: Decodable {
     }
 }
 
+public enum DeepSeekPeakHours {
+    public static let timeZone = TimeZone(identifier: "UTC")
+    public static let windows = [
+        PeakHoursWindow(startHour: 1, endHour: 4),
+        PeakHoursWindow(startHour: 6, endHour: 10),
+    ]
+    public static let peakMultiplier = 2
+    public static let offPeakMultiplier = 1
+    public static let effectiveDate = Date(timeIntervalSince1970: 1_786_896_000)
+}
+
 // MARK: - Provider
 
 public struct DeepSeekProvider: AIProvider {
@@ -86,6 +97,13 @@ public struct DeepSeekProvider: AIProvider {
     public static let providerDescription = String(localized: "Monitor prepaid balance")
     /// Host root for DeepSeek requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.deepseek.com")!
+    public static let peakHoursConfig = PeakHoursConfig(
+        timeZone: DeepSeekPeakHours.timeZone,
+        windows: DeepSeekPeakHours.windows,
+        peakMultiplier: DeepSeekPeakHours.peakMultiplier,
+        offPeakMultiplier: DeepSeekPeakHours.offPeakMultiplier,
+        effectiveDate: DeepSeekPeakHours.effectiveDate
+    )
 
     private let session: URLSession
 
@@ -185,7 +203,8 @@ public struct DeepSeekProvider: AIProvider {
             headline: headline,
             lines: lines,
             lastUpdated: Date(),
-            activityObservation: activityObservation(from: response)
+            activityObservation: activityObservation(from: response),
+            peakHoursConfig: Self.peakHoursConfig
         )
     }
 

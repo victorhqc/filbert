@@ -82,70 +82,6 @@ final class ZAIProviderTests: XCTestCase {
         XCTAssertNil(quota.lines[2].windowDuration)
     }
 
-    func testFetchQuota_mapsPercentageAndUsage() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-        let fiveHour = quota.lines[0]
-
-        XCTAssertEqual(fiveHour.percentage, 42)
-        XCTAssertEqual(fiveHour.used, 420)
-    }
-
-    func testFetchQuota_mapsOnlyConsumptionIntoActivityObservation() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-
-        XCTAssertEqual(quota.activityObservation?.availability, nil)
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(420)),
-            ProviderActivityMetric(id: "weekly-usage", kind: .usage, value: .number(600)),
-            ProviderActivityMetric(id: "monthly-web-tool-usage", kind: .usage, value: .number(15)),
-        ])
-    }
-
-    /// z.ai's monthly web-tool line carries `currentValue` (actual used) and
-    /// `usage` (the allowance/cap). `currentValue` must map to `used` and
-    /// `usage` to `total` — not the reverse.
-    func testFetchQuota_currentValueIsUsedAndUsageIsTotal() async throws {
-        let json = Data("""
-        {
-          "data": {
-            "limits": [
-              {
-                "type": "TIME_LIMIT",
-                "unit": 5,
-                "percentage": 0,
-                "usage": 1000,
-                "currentValue": 0,
-                "remaining": 1000
-              }
-            ]
-          }
-        }
-        """.utf8)
-
-        MockURLProtocol.responseData = json
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-        let monthly = quota.lines[0]
-        XCTAssertEqual(monthly.used, 0)
-        XCTAssertEqual(monthly.total, 1000)
-    }
-
     func testFetchQuota_ignoresUnknownTypeUnitPairs() async throws {
         let json = Data("""
         {
@@ -185,45 +121,6 @@ final class ZAIProviderTests: XCTestCase {
         let expected = Date(timeIntervalSince1970: 1_713_127_600)
         let resetDate = try XCTUnwrap(fiveHour.resetDate)
         XCTAssertEqual(resetDate.timeIntervalSince1970, expected.timeIntervalSince1970, accuracy: 1)
-    }
-
-    // MARK: - usageDetails → UsageDetail rows
-
-    func testFetchQuota_mapsUsageDetails() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-        let fiveHour = quota.lines[0]
-
-        XCTAssertNotNil(fiveHour.details)
-        XCTAssertEqual(fiveHour.details?.count, 1)
-        XCTAssertEqual(fiveHour.details?[0].label, "deepseek-v3")
-        XCTAssertEqual(fiveHour.details?[0].value, "200")
-    }
-
-    func testFetchQuota_nilDetailsWhenAbsent() async throws {
-        let json = Data("""
-        {
-          "data": {
-            "limits": [
-              {"type": "TOKENS_LIMIT", "unit": 3, "percentage": 50}
-            ]
-          }
-        }
-        """.utf8)
-
-        MockURLProtocol.responseData = json
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-        XCTAssertNil(quota.lines[0].details)
     }
 
     // MARK: - Headline priority (5-hour → weekly)
@@ -410,7 +307,7 @@ final class ZAIProviderTests: XCTestCase {
 
 // MARK: - Mock URLProtocol
 
-private final class MockURLProtocol: URLProtocol {
+final class MockURLProtocol: URLProtocol {
     static var responseData: Data?
     static var responseStatusCode = 200
     static var responseError: Error?

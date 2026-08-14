@@ -114,17 +114,13 @@ private struct ZAILimitLabel {
 /// GLM Coding Plan peak-hours rules sourced from zai-bar's README.
 /// Last verified: 2026-07-21.
 public enum ZAIPeakHours {
-    /// China Standard Time (UTC+8, no DST).
     public static let timeZone = TimeZone(identifier: "Asia/Shanghai")
 
-    public static let peakStartHour = 14
-    public static let peakEndHour = 18
-
-    /// Advanced-model (GLM-5.2 / GLM-5-Turbo) multiplier during peak hours.
+    public static let windows = [
+        PeakHoursWindow(startHour: 14, endHour: 18),
+    ]
     public static let peakMultiplier = 3
-
     public static let offPeakMultiplier = 2
-
     public static let promoMultiplier = 1
 
     /// After this date the off-peak multiplier flips from `promoMultiplier`
@@ -153,8 +149,7 @@ public struct ZAIProvider: AIProvider {
 
     public static let peakHoursConfig = PeakHoursConfig(
         timeZone: ZAIPeakHours.timeZone,
-        peakStartHour: ZAIPeakHours.peakStartHour,
-        peakEndHour: ZAIPeakHours.peakEndHour,
+        windows: ZAIPeakHours.windows,
         peakMultiplier: ZAIPeakHours.peakMultiplier,
         offPeakMultiplier: ZAIPeakHours.offPeakMultiplier,
         promoMultiplier: ZAIPeakHours.promoMultiplier,
