@@ -104,10 +104,8 @@ struct QuotaView: View {
                 usageLineRow(line)
             }
 
-            // `lastUpdated` forces SwiftUI to re-evaluate the block on every
-            // refresh so the in-peak / off-peak status always uses the current time.
             if let peakConfig = quota.peakHoursConfig {
-                PeakHoursBlock(config: peakConfig, lastUpdated: quota.lastUpdated)
+                PeakHoursBlock(config: peakConfig)
                     .padding(.top, 2)
             }
 
@@ -294,36 +292,12 @@ private extension QuotaView {
                     viewModel.toggleCollapsed(info.id)
                 }
             } label: {
-                HStack(spacing: 7) {
-                    ProviderLogoBadge(glyph: info.glyph)
-
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(info.displayName)
-                            .font(.headline)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-
-                        if let fastRefreshStatus {
-                            Label(fastRefreshStatus, systemImage: "bolt.fill")
-                                .font(.caption2)
-                                .foregroundStyle(.secondary)
-                                .lineLimit(1)
-                        }
-                    }
-
-                    Spacer(minLength: 4)
-
-                    if collapsed, case let .loaded(quota) = state {
-                        CompactProviderStatus(quota: quota)
-                    }
-
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 12)
-                        .rotationEffect(.degrees(collapsed ? 0 : 90))
-                }
-                .contentShape(Rectangle())
+                providerHeaderLabel(
+                    info: info,
+                    state: state,
+                    collapsed: collapsed,
+                    fastRefreshStatus: fastRefreshStatus
+                )
             }
             .buttonStyle(.plain)
             .accessibilityLabel(
@@ -352,6 +326,44 @@ private extension QuotaView {
         }
     }
 
+    private func providerHeaderLabel(
+        info: ProviderInfo,
+        state: ProviderState,
+        collapsed: Bool,
+        fastRefreshStatus: String?
+    ) -> some View {
+        HStack(spacing: 7) {
+            ProviderLogoBadge(glyph: info.glyph)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(info.displayName)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+
+                if let fastRefreshStatus {
+                    Label(fastRefreshStatus, systemImage: "bolt.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+
+            Spacer(minLength: 4)
+
+            if collapsed, case let .loaded(quota) = state {
+                CompactProviderStatus(quota: quota)
+            }
+
+            Image(systemName: "chevron.right")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.secondary)
+                .frame(width: 12)
+                .rotationEffect(.degrees(collapsed ? 0 : 90))
+        }
+        .contentShape(Rectangle())
+    }
+
     @ViewBuilder
     func providerBody(providerId: String, state: ProviderState) -> some View {
         switch state {
@@ -366,167 +378,5 @@ private extension QuotaView {
         case let .error(message):
             errorContent(message, providerId: providerId)
         }
-    }
-}
-
-private struct CompactProviderStatus: View {
-    let quota: ProviderQuota
-
-    @Environment(\.colorScheme) private var colorScheme: ColorScheme
-
-    var body: some View {
-        TimelineView(.periodic(from: .now, by: 60)) { context in
-            compactStatus(at: context.date)
-        }
-    }
-
-    @ViewBuilder
-    private func compactStatus(at now: Date) -> some View {
-        let status = QuotaStatusResolver.resolve(for: quota)
-        let tier = QuotaStatusResolver.compactTier(for: quota, at: now)
-        switch status {
-        case let .window(percentage):
-            if let tier {
-                HStack(spacing: 4) {
-                    compactRing(
-                        percentage: percentage,
-                        color: ProviderVisualStyle.tierColor(tier, scheme: colorScheme)
-                    )
-                    Text(String(format: "%.0f%%", percentage))
-                        .font(.caption.monospacedDigit())
-                        .foregroundStyle(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))
-                }
-                .accessibilityHidden(true)
-            }
-        case let .balance(_, _, formattedAmount):
-            if let tier {
-                HStack(spacing: 4) {
-                    Circle()
-                        .fill(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))
-                        .frame(width: 7, height: 7)
-                    Text(formattedAmount)
-                        .font(.caption.monospacedDigit())
-                }
-                .accessibilityHidden(true)
-            }
-        case .fallback:
-            EmptyView()
-        }
-    }
-
-    private func compactRing(percentage: Double, color: Color) -> some View {
-        let fraction = QuotaStatusResolver.clampedFraction(percentage / 100)
-        return ZStack {
-            Circle()
-                .stroke(.secondary.opacity(0.2), lineWidth: 2)
-            Circle()
-                .trim(from: 0, to: fraction)
-                .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-        }
-        .frame(width: 14, height: 14)
-    }
-}
-
-/// Dedupes balance rows with the same positive amount — duplicate amounts
-/// are visually confusing. Percentage rows always pass.
-private func filteredBalanceLines(
-    _ lines: [UsageLine],
-    isPercentageLine: (UsageLine) -> Bool
-) -> [UsageLine] {
-    let positiveBalanceTotals = lines.compactMap { line -> Double? in
-        guard !isPercentageLine(line) else { return nil }
-        guard let total = line.total, total > 0 else { return nil }
-        return total
-    }
-    let cents = positiveBalanceTotals.map { Int(($0 * 100).rounded()) }
-    let hasDuplicates = Set(cents).count < cents.count
-
-    var firstBalanceKept = false
-    return lines.filter { line in
-        guard !isPercentageLine(line) else { return true }
-        guard let total = line.total, total > 0 else { return false }
-        if hasDuplicates {
-            if firstBalanceKept {
-                return false
-            }
-            firstBalanceKept = true
-            return true
-        }
-        return true
-    }
-}
-
-// MARK: - Peak-hours block
-
-/// Provider-agnostic: all pricing rules come from `config`, so the view has
-/// zero knowledge of any specific provider. Computed from `Date()` on each
-/// render so the popover stays correct while open.
-private struct PeakHoursBlock: View {
-    let config: PeakHoursConfig
-
-    /// SwiftUI uses this to decide whether to re-evaluate the block's body —
-    /// a new value on each refresh guarantees `Date()` inside `body` is fresh.
-    let lastUpdated: Date
-
-    var body: some View {
-        let now = Date()
-        let inPeak = config.isInPeak(at: now)
-        VStack(alignment: .leading, spacing: 2) {
-            Text(String(localized: "Peak hours"))
-                .font(.caption)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-            Text(localWindowLabel)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-            HStack(spacing: 4) {
-                Circle()
-                    .fill(inPeak ? Color.orange : Color.green)
-                    .frame(width: 6, height: 6)
-                Text(inPeak
-                    ? String(localized: "In peak")
-                    : String(localized: "Off peak"))
-                    .font(.caption2)
-                    .fontWeight(.medium)
-                Spacer()
-                Text(String(localized: "\(config.multiplier(at: now))× multiplier"))
-                    .font(.caption2.monospacedDigit())
-                    .foregroundColor(.secondary)
-            }
-        }
-        .padding(8)
-        .background(Color.secondary.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 6, style: .continuous))
-    }
-
-    // MARK: - Derived values
-
-    private var localWindowLabel: String {
-        let formatter = DateFormatter()
-        formatter.timeZone = .current
-        formatter.dateStyle = .none
-        formatter.timeStyle = .short
-
-        let localStart = peakWindowBoundary(hour: config.peakStartHour)
-        let localEnd = peakWindowBoundary(hour: config.peakEndHour)
-        let start = formatter.string(from: localStart)
-        let end = formatter.string(from: localEnd)
-        return String(localized: "\(start)–\(end) (your time)")
-    }
-
-    private func peakWindowBoundary(hour: Int) -> Date {
-        guard let tz = config.timeZone else { return Date() }
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = tz
-        let today = cal.dateComponents([.year, .month, .day], from: Date())
-        var components = DateComponents()
-        components.year = today.year
-        components.month = today.month
-        components.day = today.day
-        components.hour = hour
-        components.minute = 0
-        components.timeZone = tz
-        return cal.date(from: components) ?? Date()
     }
 }
