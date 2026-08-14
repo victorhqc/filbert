@@ -1,3 +1,13 @@
+> **Status: BLOCKED — discovery-only (decided 2026-08-15).** No AC5 path is
+> approved: the API-key path has no server endpoint to call, and the
+> dashboard-session path was assessed against live evidence and rejected as
+> too fragile (build-generated RPC ids, turbo-stream script responses, cookie
+> authority). Unblock trigger: OpenCode ships a key-authenticated Zen balance
+> endpoint — subscribe to the upstream request at
+> <https://github.com/anomalyco/opencode/issues/10448> — then re-verify the
+> contracts recorded below and implement using the (providers 04) balance
+> pattern.
+
 ## Objective
 
 Define a safe, evidence-backed path for an OpenCode Zen provider that reports account balance and billed usage without presenting local estimates as server-authoritative data.
@@ -13,8 +23,27 @@ Define a safe, evidence-backed path for an OpenCode Zen provider that reports ac
 - **Product boundary:** OpenCode is a client for many providers. OpenCode Zen is its optional prepaid model gateway. `opencode stats` reports costs recorded by local OpenCode sessions across providers; it is not an OpenCode Zen account balance and misses use from other clients.
 - **Zen billing model:** Zen is pay as you go. The account holds USD credits, each request is charged using the selected model's per-million-token rates, and the published token categories are input, output, cached read, and cached write. The default auto-reload behavior adds $20 when the balance falls below $5; both values are configurable. A workspace or member may also have a monthly spending limit.
 - **Pricing variability:** no peak-hour, off-peak, surge, or time-of-day pricing is documented for Zen. Cost varies by model, token category, and sometimes request context size. Published examples include higher tiers above 200K or 272K tokens. Free models and their availability are temporary. Filbert must therefore consume server-reported balance and billed cost rather than reproduce Zen's pricing table.
-- **Separate Go product:** OpenCode Go is a subscription, not Zen's default billing mode. Its documented limits are dollar-valued usage windows ($12 per five hours, $30 weekly, and $60 monthly), and it may fall back to the Zen balance when `Use balance` is enabled. Go quota support is outside this provider's first version and requires a separate spec so a Zen balance is never confused with Go subscription capacity.
+- **Separate Go product:** OpenCode Go is a subscription, not Zen's default billing mode. Its documented limits are dollar-valued usage windows ($12 per five hours, $30 weekly, and $60 monthly), and it may fall back to the Zen balance when `Use balance` is enabled. Go quota support is outside this provider's first version and is specified separately in (providers 10) so a Zen balance is never confused with Go subscription capacity.
 - **Current API gap:** Zen documents inference endpoints and `GET /zen/v1/models`, but no balance or billing-usage endpoint authenticated by the Zen API key. The upstream balance-API request remains open and explicitly says the web dashboard is currently the only server-authoritative source. The documented OpenCode Console CSV Usage API is a separate organization/service-account product and is not evidence of a personal Zen balance API.
+- **Discovery 2026-08-15 — dashboard contract, verified from public source** (`anomalyco/opencode`, commit `4643e65`, `packages/console/`): the billing page (`app/src/routes/workspace/[id]/billing/`) reads a SolidStart server query `queryBillingInfo` (query key `"billing.get"`, defined in `app/src/routes/workspace/common.tsx`). It is not a REST route — the result is embedded in the server-rendered page and revalidated through the build-internal `/_server` RPC. Redacted shape (field names verbatim, values elided):
+  ```json
+  {
+    "customerID": "redacted", "paymentMethodID": "redacted",
+    "paymentMethodType": "redacted", "paymentMethodLast4": "redacted",
+    "balance": 0,
+    "reload": false, "reloadAmount": 0, "reloadAmountMin": 0,
+    "reloadTrigger": 0, "reloadTriggerMin": 0,
+    "monthlyLimit": null, "monthlyUsage": null, "timeMonthlyUsageUpdated": null,
+    "reloadError": null, "timeReloadError": null,
+    "subscription": null, "subscriptionID": null, "subscriptionPlan": null,
+    "timeSubscriptionBooked": null, "timeSubscriptionSelected": null,
+    "lite": null, "liteSubscriptionID": null
+  }
+  ```
+  One response supplies current balance, current-month spend, monthly limit, auto-reload state, and timestamps; currency is USD (the dashboard hardcodes `$` in `formatBalance`); there is no pagination. Units (`common.tsx`, `core/src/schema/billing.sql.ts`, `core/src/billing.ts`): `balance` and `monthlyUsage` are micro-cents (USD = value / 100,000,000); `monthlyLimit`, `reloadAmount`, `reloadTrigger` are whole dollars. Payment identifiers, reload-error state, subscription (Go "black"), and lite fields are ignored by Filbert.
+- **Discovery 2026-08-15 — dashboard authentication and scoping:** console server queries authenticate only through an httpOnly session cookie named `auth` (OpenAuth-issued, 365-day max age) read by `getActor` in `app/src/context/auth.ts`; there is no `Authorization` header path. The workspace ID (`wrk_…`) is a URL parameter, and the session's account must map to a member row of that workspace — otherwise the server redirects to `/auth/authorize` rather than returning a JSON 401.
+- **Discovery 2026-08-15 — no key-authenticated balance route exists:** the complete `/zen` route tree is inference endpoints, `models`, and the Go product's `go/v1/*`. However `GET /zen/go/v1/usage` proves the server pattern exists: a plain JSON GET authenticated by `Authorization: Bearer <Zen API key>` (401 `AuthError` JSON when the key is missing or invalid, 403 `EntitlementError` without a Go subscription), with keys stored per user per workspace in `KeyTable`. That endpoint — added by community PR [anomalyco/opencode#16513](https://github.com/anomalyco/opencode/pull/16513) (merged 2026-08-11) and specified for Filbert in (providers 10) — measures Go subscription windows, not the Zen balance (AC3), but it is the natural precedent for the upstream-requested `GET /zen/v1/balance`.
+- **AC4 live wire capture (2026-08-15), sanitized:** the dashboard revalidates `billing.get` as `GET https://opencode.ai/_server?id=<64-hex build-generated function id>&args=<urlencoded typed-args envelope>` carrying `X-Server-Id: <same id>`, `X-Server-Instance: server-fn:<N>`, and `Cookie: auth=<session>` — no `Authorization` path exists, and the sole argument is the workspace ID (`wrk_<redacted>`) embedded as the string at `a[0].s` inside the envelope. The response is **not JSON**: it is a turbo-stream-style script chunk (a `;0x<hex>;` boundary followed by JavaScript assigning the payload into `self.$R["server-fn:<N>"][0]`), so a client must parse a JS object literal rather than decode JSON. The captured fresh-account payload serves as the sanitized empty-account fixture: every optional field `null`, `balance: 0`, and the server fills reload defaults (`reloadAmount: 20`, `reloadAmountMin: 10`, `reloadTrigger: 5`, `reloadTriggerMin: 5`) while `monthlyLimit`/`monthlyUsage` remain genuinely `null` — the response-side defaults a Filbert mapping must not misread as configured values (AC8). The same query fires from any workspace page (header balance widget), not only the billing page. Unobserved: populated-account encodings (e.g. how a non-null `timeMonthlyUsageUpdated` Date serializes inside the script chunk), expired-session wire bytes, and 429 behavior; the `/zen/go/v1/usage` probe (401 invalid / 403 valid-without-Go / 200 valid-with-Go) remains optional completeness evidence for key validity.
 
 ## Acceptance Criteria
 
@@ -124,11 +153,34 @@ Define a safe, evidence-backed path for an OpenCode Zen provider that reports ac
 6. If the selected credential is not an API key, add only the smallest provider-neutral credential-label/setup metadata needed by Settings and keep the secret in the consolidated Keychain item (core 04, ui 05).
 7. Register the provider in `AppMain`, add package and test targets, run the repository validation gate, and update the acceptance criteria as they land.
 
+### Discovery status (2026-08-15)
+
+Steps 1–3 were executed against the public console source instead of a live
+session; findings are recorded in Context. Conclusion for the AC5 gate:
+**path 1 is not selectable today** — no balance endpoint exists anywhere in
+the route tree for the API key to authenticate against. Path 2 would mean
+replaying the cookie-authenticated `/_server` RPC described above. The AC5
+decision is deferred to the user together with the remaining live-capture
+items listed in Context.
+
+2026-08-15 update: the live `/_server` wire capture landed (Context). AC4's
+evidence set is now complete enough for the AC5 decision — path 2 is fully
+specified: GET with a build-generated function id, cookie auth, and a
+turbo-stream script response. Expired-session bytes and populated Date
+encodings remain unobserved; either way a path-2 implementation would need
+tolerant decoding and drift fixtures (AC9, AC11).
+
+**AC5 decision (2026-08-15):** after reviewing the live capture the user
+rejected path 2; with path 1 unavailable, neither AC5 path is approved and
+this feature is BLOCKED as discovery-only. Revisit when the upstream
+endpoint ships.
+
 No production code is written until this spec is reviewed, AC4 is completed with sanitized evidence, and the user explicitly selects an AC5 path.
 
 ## Risks
 
-- **No public Zen balance API exists today.** The preferred API-key integration cannot be implemented until OpenCode exposes one; the upstream request remains open.
+- **No public Zen balance API exists today.** The preferred API-key integration cannot be implemented until OpenCode exposes one; the upstream request remains open. Source-verified 2026-08-15: the only key-authenticated non-inference endpoint anywhere under `/zen` is the Go usage route.
+- **The `/_server` RPC is a build-internal contract.** Live-confirmed 2026-08-15: the function is addressed by a 64-hex build-generated id (echoed in `X-Server-Id`/`X-Server-Instance`), the response is a turbo-stream script rather than JSON, and the id regenerates whenever the console's function source changes. A path-2 client would need to scrape the current id from the deployed page before use and parse a JS object literal — a deeper private-contract dependency than Cursor's (providers 07), with no discovery endpoint to ease it.
 - **The dashboard is a private contract.** HTML, serialized server functions, workspace routes, and response fields may change without notice. A dashboard implementation needs a visible disclaimer, tolerant decoding, fixtures, and a clean failure state.
 - **A browser session has broader authority than an inference key.** Manual opt-in, Keychain-only storage, strict host validation, redacted errors, and read-only requests are mandatory. Automatic browser-cookie extraction is deliberately excluded from v1.
 - **Balance, spend limit, and charges are different values.** Auto-reload can charge a card even when a monthly usage limit prevents further model spend; Filbert must not combine them into one percentage or promise a maximum charge.
