@@ -8,6 +8,7 @@ struct WeeklyBudgetPace: Equatable {
     let elapsedFraction: Double
     let remainingTime: TimeInterval
     let availablePercentagePerDay: Double?
+    let warningBoundary: Double
     let tier: QuotaStatusResolver.Tier
 
     init?(line: UsageLine, now: Date) {
@@ -39,10 +40,12 @@ struct WeeklyBudgetPace: Equatable {
         availablePercentagePerDay = remainingTime >= 24 * 60 * 60
             ? remainingPercentage / (remainingTime / (24 * 60 * 60))
             : nil
+        let allowance = availablePercentagePerDay ?? remainingPercentage
+        warningBoundary = min(elapsedFraction * 100 + allowance, 100)
 
         if usedPercentage >= 100 {
             tier = .critical
-        } else if usedFraction <= elapsedFraction + 0.01 {
+        } else if usedPercentage <= warningBoundary + 1 {
             tier = .good
         } else {
             tier = .warn

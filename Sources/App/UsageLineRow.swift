@@ -145,9 +145,9 @@ private struct WeeklyUsageLineRow: View {
     private func weeklyAccessibilityValue(_ pace: WeeklyBudgetPace) -> String {
         let paceStatus = switch pace.tier {
         case .good:
-            String(localized: "On pace")
+            String(localized: "Within current allowance")
         case .warn, .critical:
-            String(localized: "Over pace")
+            String(localized: "Over current allowance")
         }
         let value = String.localizedStringWithFormat(
             String(localized: "%1$@. %2$@"),

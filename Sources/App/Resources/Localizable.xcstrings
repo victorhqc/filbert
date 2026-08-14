@@ -149,22 +149,22 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } }
       }
     },
-    "On pace" : {
+    "Within current allowance" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Plan" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "On pace" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "En ritmo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "En ritmo" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Innerhalb des aktuellen Kontingents" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Within current allowance" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Dentro de la asignación actual" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Dentro de la asignación actual" } }
       }
     },
-    "Over pace" : {
+    "Over current allowance" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Über dem Plan" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Over pace" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Por encima del ritmo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Por encima del ritmo" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Über dem aktuellen Kontingent" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Over current allowance" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Por encima de la asignación actual" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Por encima de la asignación actual" } }
       }
     },
     "Show a classic Happy / Sad Mac face instead of the ring in the menu bar" : {
