@@ -3,6 +3,7 @@ import Core
 import CursorProvider
 import DeepSeekProvider
 import OpenAICodexProvider
+import OpenCodeGoProvider
 import SwiftUI
 import ZAIProvider
 
@@ -18,6 +19,7 @@ struct AppMain: App {
         registry.register(ClaudeCodeProvider())
         registry.register(DeepSeekProvider())
         registry.register(OpenAICodexProvider())
+        registry.register(OpenCodeGoProvider())
         registry.register(CursorProvider())
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }

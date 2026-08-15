@@ -1,5 +1,5 @@
-> Draft for review. Contract fully verified 2026-08-15 — source, merged PR
-> #16513, and live `200`/`401` samples from a Go-entitled key.
+> Implemented 2026-08-15. Contract fully verified 2026-08-15 — source, merged
+> PR #16513, and live `200`/`401` samples from a Go-entitled key.
 
 ## Objective
 
@@ -11,6 +11,10 @@ Add an `OpenCodeGoProvider` that reports OpenCode Go subscription usage windows 
 - `Package.swift` and `Sources/App/AppMain.swift` — gain an orthogonal `OpenCodeGoProvider` target and one registration line, mirroring (providers 04).
 - `Sources/Core/ProviderProtocol.swift` — unchanged; `UsageLine` already carries `percentage`, `windowDuration`, and `resetDate` — exactly what this endpoint returns (core 01).
 - `Sources/Core/Keychain.swift` — the OpenCode API key stays in Filbert's consolidated Keychain item (core 04).
+- **Host boundary:** proxy permission for this bearer-authenticated endpoint
+  was not confirmed in review, so the provider rejects non-`opencode.ai` base
+  URLs and cross-host redirects before they can receive the API key. Core's
+  provider-neutral override mechanism remains unchanged.
 - **Wire contract, live since 2026-08-11** — added by community PR [anomalyco/opencode#16513](https://github.com/anomalyco/opencode/pull/16513) (merged to `dev`, closing #16017), source-verified at commit `4643e65` in `packages/console/app/src/routes/zen/go/v1/usage.ts`:
   - `GET https://opencode.ai/zen/go/v1/usage` with `Authorization: Bearer <OpenCode API key>` — the same `KeyTable` lookup the Zen gateway uses.
   - `200 application/json`:
@@ -57,8 +61,8 @@ Add an `OpenCodeGoProvider` that reports OpenCode Go subscription usage windows 
 ## Plan
 
 1. [x] Capture one live `200` sample with a Go-entitled key to confirm the source-derived details (`percent` scale, `resetsAt` format) — done 2026-08-15, recorded in Context.
-2. Add the `OpenCodeGoProvider` target, private wire types, typed errors, localized strings, and tests, mirroring (providers 04).
-3. Register in `AppMain`, run the repository validation gate, and mark criteria as they land.
+2. [x] Add the `OpenCodeGoProvider` target, private wire types, typed errors, localized strings, and tests, mirroring (providers 04) — completed 2026-08-15.
+3. [x] Register in `AppMain`, run the repository validation gate, and mark criteria as they land — completed 2026-08-15; SwiftFormat, SwiftLint, debug/release builds, and 338 tests passed.
 
 ## Risks
 

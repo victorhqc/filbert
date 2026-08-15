@@ -53,6 +53,13 @@ let package = Package(
             swiftSettings: strictSourceSettings
         ),
         .target(
+            name: "OpenCodeGoProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/OpenCodeGo",
+            resources: [.process("Resources")],
+            swiftSettings: strictSourceSettings
+        ),
+        .target(
             name: "CursorProvider",
             dependencies: ["Core"],
             path: "Sources/Providers/Cursor",
@@ -67,6 +74,7 @@ let package = Package(
                 "ClaudeCodeProvider",
                 "DeepSeekProvider",
                 "OpenAICodexProvider",
+                "OpenCodeGoProvider",
                 "CursorProvider",
             ],
             resources: [.process("Resources")],
@@ -95,6 +103,12 @@ let package = Package(
             name: "OpenAICodexProviderTests",
             dependencies: ["OpenAICodexProvider"],
             path: "Tests/OpenAICodexProviderTests"
+        ),
+        .testTarget(
+            name: "OpenCodeGoProviderTests",
+            dependencies: ["OpenCodeGoProvider"],
+            path: "Tests/OpenCodeGoProviderTests",
+            resources: [.process("Fixtures")]
         ),
         .testTarget(
             name: "CursorProviderTests",
