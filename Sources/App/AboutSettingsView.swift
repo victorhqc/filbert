@@ -67,7 +67,7 @@ struct AboutSettingsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 runtimeLibraries
 
-                Text(String(localized: "Claude and DeepSeek provider glyphs are derived from Simple Icons."))
+                Text(String(localized: "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons."))
                     .foregroundStyle(.secondary)
 
                 ForEach(AboutAcknowledgements.assetCredits, id: \.name) { credit in

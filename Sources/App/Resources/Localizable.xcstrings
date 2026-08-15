@@ -1539,13 +1539,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } }
       }
     },
-    "Claude and DeepSeek provider glyphs are derived from Simple Icons." : {
+    "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Anbieter-Symbole für Claude und DeepSeek basieren auf Simple Icons." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Claude and DeepSeek provider glyphs are derived from Simple Icons." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude y DeepSeek se derivan de Simple Icons." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude y DeepSeek se derivan de Simple Icons." } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Anbieter-Symbole für Claude, DeepSeek und OpenCode basieren auf Simple Icons." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } }
       }
     },
     "Filbert has no third-party runtime library dependencies and is built with Apple system frameworks." : {
