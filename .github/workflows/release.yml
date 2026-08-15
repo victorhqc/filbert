@@ -1,9 +1,8 @@
 name: Release
 
-# Fires when a maintainer publishes a GitHub Release on a `v*` tag.
-# Bare tag push does nothing — the maintainer must publish a release to
-# fire the pipeline (ci 02 AC7). The job-level `if:` gates on the tag
-# prefix because `release` events have no tag filter of their own.
+# A published GitHub Release triggers this workflow; bare tag pushes do not.
+# The job condition applies the tag prefix because release events cannot filter
+# on tag names.
 
 on:
   release:
@@ -37,8 +36,6 @@ jobs:
         env:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
-          # Tag is `v<version>`; strip the leading `v` so the DMG is
-          # Filbert-<version>-arm64.dmg, not Filbert-v<version>-arm64.dmg.
           echo "version=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
 
       - name: Build DMG
@@ -55,11 +52,53 @@ jobs:
           DMG="dist/Filbert-${VERSION}-arm64.dmg"
           gh release upload --clobber "$TAG_NAME" "$DMG" "$DMG.sha256"
 
-      - name: Set release notes
+      - name: Update generated release notes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VERSION: ${{ steps.version.outputs.version }}
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
           NOTES="dist/Filbert-${VERSION}-arm64.release-notes.md"
-          gh release edit --notes-file "$NOTES" "$TAG_NAME"
+          TEMP_DIR="$(mktemp -d)"
+          trap 'rm -rf "$TEMP_DIR"' EXIT
+          CURRENT_BODY="$TEMP_DIR/current.md"
+          COMPOSED_BODY="$TEMP_DIR/composed.md"
+
+          gh release view "$TAG_NAME" --json body --jq '.body' > "$CURRENT_BODY"
+
+          python3 - "$CURRENT_BODY" "$NOTES" "$COMPOSED_BODY" <<'PY'
+          from pathlib import Path
+          import sys
+
+          current_path, generated_path, output_path = map(Path, sys.argv[1:])
+          begin = "<!-- filbert-release-notes:start -->"
+          end = "<!-- filbert-release-notes:end -->"
+          current = current_path.read_text()
+          generated = generated_path.read_text().strip()
+
+          if not generated:
+              sys.exit("Generated release notes are empty")
+          if begin in generated or end in generated:
+              sys.exit("Generated release notes contain reserved boundary markers")
+
+          start_count = current.count(begin)
+          end_count = current.count(end)
+          if start_count == 0 and end_count == 0:
+              authored = current.strip()
+          elif start_count == 1 and end_count == 1:
+              start = current.index(begin)
+              finish = current.index(end)
+              if finish < start:
+                  sys.exit("Existing Filbert release-note markers are out of order")
+              before = current[:start].rstrip()
+              after = current[finish + len(end):].lstrip()
+              authored = "\n\n".join(part for part in (before, after) if part)
+          else:
+              sys.exit("Existing Filbert release-note markers are malformed")
+
+          section = f"{begin}\n{generated}\n{end}"
+          body = f"{authored}\n\n{section}\n" if authored else f"{section}\n"
+          output_path.write_text(body)
+          PY
+
+          gh release edit "$TAG_NAME" --notes-file "$COMPOSED_BODY"
