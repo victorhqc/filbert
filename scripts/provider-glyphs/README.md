@@ -22,6 +22,10 @@ declared outputs.
 - `deepseek.svg` is the DeepSeek glyph from Simple Icons 16.21.0. Simple Icons
   is distributed under CC0 1.0, but its trademark disclaimer still applies.
   Source: <https://github.com/simple-icons/simple-icons>
+- `opencode.svg` is the OpenCode glyph from Simple Icons at revision
+  `34c22501f9ac9f22b12f825677ccbab1fb22e14b`. Simple Icons is distributed
+  under CC0 1.0, but its trademark disclaimer still applies. Source:
+  <https://github.com/simple-icons/simple-icons/blob/34c22501f9ac9f22b12f825677ccbab1fb22e14b/icons/opencode.svg>
 - `openai-codex.svg` is an original code-bracket glyph. It does not reproduce
   the OpenAI Blossom or wordmark.
 - `zai.svg` is an original geometric `Z` glyph. It does not reproduce z.ai's
@@ -31,4 +35,3 @@ The Simple Icons license and trademark disclaimer are available at:
 
 - <https://github.com/simple-icons/simple-icons/blob/16.21.0/LICENSE.md>
 - <https://github.com/simple-icons/simple-icons/blob/16.21.0/DISCLAIMER.md>
-

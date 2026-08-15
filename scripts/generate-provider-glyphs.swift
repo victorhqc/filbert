@@ -25,6 +25,10 @@ private let glyphs = [
         source: "scripts/provider-glyphs/openai-codex.svg",
         outputDirectory: "Sources/Providers/OpenAICodex/Resources"
     ),
+    Glyph(
+        source: "scripts/provider-glyphs/opencode.svg",
+        outputDirectory: "Sources/Providers/OpenCodeGo/Resources"
+    ),
 ]
 
 private let fileManager = FileManager.default
