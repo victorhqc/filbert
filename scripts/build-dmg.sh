@@ -208,24 +208,25 @@ Xcode 26 runner."
 patch_resource_bundle_accessors() {
     local release_tree="$REPO_ROOT/.build/$ARCH-apple-macosx/release"
     local manifest="$REPO_ROOT/.build/release.yaml"
+    local app_link_file_list="$release_tree/App.product/Objects.LinkFileList"
     local original='Bundle\.main\.bundleURL\.appendingPathComponent'
     local patched='(Bundle.main.resourceURL ?? Bundle.main.bundleURL).appendingPathComponent'
 
     [[ -f "$manifest" ]] \
         || fatal "Missing llbuild manifest at $manifest — cannot replay relink"
+    [[ -f "$app_link_file_list" ]] \
+        || fatal "Missing App link file list at $app_link_file_list"
     command -v python3 >/dev/null \
         || fatal "python3 is required to replay the SPM build commands"
 
-    # Collect every generated accessor and its owning module name (from the
-    # <Module>.build/ path). One per module with resources: App, Core,
-    # ClaudeCodeProvider, DeepSeekProvider, ZAIProvider.
     local accessors=()
     local modules=()
     while IFS= read -r accessor; do
-        accessors+=("$accessor")
-        # .../release/<Module>.build/DerivedSources/resource_bundle_accessor.swift
         local mod="${accessor#"$release_tree"/}"
         mod="${mod%%.build/*}"
+        local object="$release_tree/$mod.build/resource_bundle_accessor.swift.o"
+        grep -Fqx -- "$object" "$app_link_file_list" || continue
+        accessors+=("$accessor")
         modules+=("$mod")
     done < <(find "$release_tree" \
         -path '*/DerivedSources/resource_bundle_accessor.swift' \
