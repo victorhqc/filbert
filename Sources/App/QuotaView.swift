@@ -25,18 +25,27 @@ struct QuotaView: View {
 
             Divider()
 
-            HStack {
-                Text(String(localized: "Settings…"))
+            ZStack {
+                HStack {
+                    Text(String(localized: "Settings…"))
+                        .font(.caption)
+                        .layoutPriority(1)
+                        .openAndRaiseSettings()
+
+                    Spacer()
+
+                    Button(String(localized: "Quit")) {
+                        NSApplication.shared.terminate(nil)
+                    }
                     .font(.caption)
-                    .openAndRaiseSettings()
-
-                Spacer()
-
-                Button(String(localized: "Quit")) {
-                    NSApplication.shared.terminate(nil)
+                    .keyboardShortcut("q")
+                    .layoutPriority(1)
                 }
-                .font(.caption)
-                .keyboardShortcut("q")
+
+                Text(AppVersion.currentPresentation)
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+                    .allowsHitTesting(false)
             }
         }
         .padding()

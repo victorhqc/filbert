@@ -1530,6 +1530,132 @@
         }
       }
     },
+    "About" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Über" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } }
+      }
+    },
+    "Claude and DeepSeek provider glyphs are derived from Simple Icons." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Anbieter-Symbole für Claude und DeepSeek basieren auf Simple Icons." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Claude and DeepSeek provider glyphs are derived from Simple Icons." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude y DeepSeek se derivan de Simple Icons." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude y DeepSeek se derivan de Simple Icons." } }
+      }
+    },
+    "Filbert has no third-party runtime library dependencies and is built with Apple system frameworks." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert hat keine Runtime-Abhängigkeiten von Drittanbieterbibliotheken und wird mit Apple-Systemframeworks erstellt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert has no third-party runtime library dependencies and is built with Apple system frameworks." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no tiene dependencias de bibliotecas de ejecución de terceros y se crea con frameworks del sistema de Apple." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no tiene dependencias de bibliotecas de ejecución de terceros y se compila con frameworks del sistema de Apple." } }
+      }
+    },
+    "Filbert is a native macOS AI usage tracker." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert ist ein nativer macOS-Tracker für die KI-Nutzung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert is a native macOS AI usage tracker." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es un rastreador nativo de uso de IA para macOS." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es un rastreador nativo de uso de IA para macOS." } }
+      }
+    },
+    "Filbert is open source under the MIT License." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert ist Open Source unter der MIT License." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert is open source under the MIT License." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es de código abierto bajo la MIT License." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es de código abierto bajo la MIT License." } }
+      }
+    },
+    "Open Filbert on GitHub" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert auf GitHub öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Filbert on GitHub" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en GitHub" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en GitHub" } }
+      }
+    },
+    "Open Simple Icons on GitHub" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Simple Icons auf GitHub öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Simple Icons on GitHub" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Simple Icons en GitHub" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Simple Icons en GitHub" } }
+      }
+    },
+    "Open Source" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Open Source" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Source" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Código abierto" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Código abierto" } }
+      }
+    },
+    "Open the MIT License on GitHub" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die MIT License auf GitHub öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open the MIT License on GitHub" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir la MIT License en GitHub" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir la MIT License en GitHub" } }
+      }
+    },
+    "Project" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Projekt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Project" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Proyecto" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Proyecto" } }
+      }
+    },
+    "View on GitHub" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Auf GitHub ansehen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "View on GitHub" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ver en GitHub" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ver en GitHub" } }
+      }
+    },
+    "View the MIT License" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "MIT License ansehen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "View the MIT License" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ver la MIT License" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ver la MIT License" } }
+      }
+    },
+    "filbert development" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "filbert Entwicklung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "filbert development" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "filbert en desarrollo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "filbert en desarrollo" } }
+      }
+    },
+    "filbert v%@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } }
+      }
+    },
     "under %lld" : {
       "extractionState" : "manual",
       "localizations" : {
