@@ -22,6 +22,11 @@ struct SettingsView: View {
                 .tabItem {
                     Label(String(localized: "Refresh Settings"), systemImage: "arrow.clockwise")
                 }
+
+            AboutSettingsView()
+                .tabItem {
+                    Label(String(localized: "About"), systemImage: "info.circle")
+                }
         }
         .frame(
             minWidth: 520,
