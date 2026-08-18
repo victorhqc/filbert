@@ -78,69 +78,7 @@ public enum ProviderAvailability: Equatable, Sendable {
     case unknown
 }
 
-// MARK: - Peak-hours config
-
-public struct PeakHoursWindow: Equatable, Sendable {
-    public let startHour: Int
-    public let endHour: Int
-
-    public init(startHour: Int, endHour: Int) {
-        self.startHour = startHour
-        self.endHour = endHour
-    }
-}
-
-public struct PeakHoursConfig: Sendable {
-    public let timeZone: TimeZone?
-    public let windows: [PeakHoursWindow]
-    public let peakMultiplier: Int
-    public let offPeakMultiplier: Int
-    public let promoMultiplier: Int?
-    public let promoEndDate: Date?
-    public let effectiveDate: Date?
-
-    public init(
-        timeZone: TimeZone?,
-        windows: [PeakHoursWindow],
-        peakMultiplier: Int,
-        offPeakMultiplier: Int,
-        promoMultiplier: Int? = nil,
-        promoEndDate: Date? = nil,
-        effectiveDate: Date? = nil
-    ) {
-        self.timeZone = timeZone
-        self.windows = windows
-        self.peakMultiplier = peakMultiplier
-        self.offPeakMultiplier = offPeakMultiplier
-        self.promoMultiplier = promoMultiplier
-        self.promoEndDate = promoEndDate
-        self.effectiveDate = effectiveDate
-    }
-
-    public func isScheduleActive(at date: Date) -> Bool {
-        guard let effectiveDate else { return true }
-        return date >= effectiveDate
-    }
-
-    public func isInPeak(at date: Date) -> Bool {
-        guard isScheduleActive(at: date), let timeZone else { return false }
-        var cal = Calendar(identifier: .gregorian)
-        cal.timeZone = timeZone
-        let hour = cal.component(.hour, from: date)
-        return windows.contains { hour >= $0.startHour && hour < $0.endHour }
-    }
-
-    public func multiplier(at date: Date) -> Int? {
-        guard isScheduleActive(at: date) else { return nil }
-        if isInPeak(at: date) {
-            return peakMultiplier
-        }
-        if let promoEnd = promoEndDate, date < promoEnd {
-            return promoMultiplier ?? offPeakMultiplier
-        }
-        return offPeakMultiplier
-    }
-}
+// MARK: - Usage windows
 
 public enum UsageWindowDuration {
     public static let fiveHours: TimeInterval = 5 * 60 * 60

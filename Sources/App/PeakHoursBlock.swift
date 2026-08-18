@@ -46,13 +46,10 @@ struct PeakHoursBlock: View {
                 .font(.caption2)
                 .fontWeight(.medium)
             Spacer()
-            if let multiplier = config.multiplier(at: date) {
-                Text(String.localizedStringWithFormat(
-                    String(localized: "%lld× multiplier"),
-                    multiplier
-                ))
-                .font(.caption2.monospacedDigit())
-                .foregroundColor(.secondary)
+            if let rate = config.rate(at: date) {
+                Text(PeakHoursPresentation.rateText(for: rate))
+                    .font(.caption2.monospacedDigit())
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -86,9 +83,11 @@ struct PeakHoursBlock: View {
         let windows = config.windows.map { window in
             let localStart = peakWindowBoundary(hour: window.startHour)
             let localEnd = peakWindowBoundary(hour: window.endHour)
-            let start = formatter.string(from: localStart)
-            let end = formatter.string(from: localEnd)
-            return "\(start)–\(end)"
+            let times = "\(formatter.string(from: localStart))–\(formatter.string(from: localEnd))"
+            guard let days = window.weekdays.flatMap(PeakHoursPresentation.weekdayRangeText) else {
+                return times
+            }
+            return String.localizedStringWithFormat(String(localized: "%1$@ %2$@"), days, times)
         }
         let localizedWindows = ListFormatter.localizedString(byJoining: windows)
         return String.localizedStringWithFormat(

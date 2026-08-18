@@ -1,0 +1,37 @@
+{
+  "code" : 200,
+  "msg" : "Operation successful",
+  "data" : [
+    {
+      "id" : "000000",
+      "customerId" : "000000000000000000",
+      "agreementNo" : "sanitized",
+      "orderNo" : "sanitized",
+      "productId" : "product-sanitized",
+      "productName" : "GLM Coding Pro",
+      "description" : "-All Lite plan benefits\n-5× Lite plan usage\n-faster compared to Lite\n-Built-in image & video understanding and web search MCP",
+      "status" : "VALID",
+      "purchaseTime" : "2026-07-02 02:56:47",
+      "valid" : "2026-09-02 02:56:41-2026-10-02 02:56:41",
+      "autoRenew" : 1,
+      "initialPrice" : 72.0,
+      "standardPrice" : 72.0,
+      "useInitialPrice" : false,
+      "actualPrice" : 64.8,
+      "renewPrice" : 64.8,
+      "currentPeriod" : 3,
+      "currentRenewTime" : "2026-08-02",
+      "nextRenewTime" : "2026-09-02",
+      "paymentType" : "WAIT_PAY",
+      "billingCycle" : "monthly",
+      "inCurrentPeriod" : true,
+      "paymentChannel" : "STRIPE",
+      "refundable" : false,
+      "refundableReason" : "REFUND_ACTIVITY_ENDED",
+      "banStatus" : 0,
+      "banExpireTime" : null,
+      "version" : "V2"
+    }
+  ],
+  "success" : true
+}

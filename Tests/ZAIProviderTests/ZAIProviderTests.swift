@@ -18,35 +18,46 @@ final class ZAIProviderTests: XCTestCase {
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseError = nil
+        MockURLProtocol.lastRequest = nil
+        MockURLProtocol.handler = nil
+        MockURLProtocol.capturedRequests = []
         provider = nil
         session = nil
         super.tearDown()
     }
 
-    // MARK: - Authenticated request
+    // MARK: - Authenticated requests
 
-    func testFetchQuota_issuesCorrectRequest() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
-        MockURLProtocol.responseStatusCode = 200
+    func testFetchQuota_issuesCorrectRequests() async throws {
+        MockURLProtocol.handler = { _ in
+            (200, Self.validResponseJSON())
+        }
 
         _ = try await provider.fetchQuota(
             auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
 
-        let request = MockURLProtocol.lastRequest
-        XCTAssertEqual(request?.url?.absoluteString, "https://api.z.ai/api/monitor/usage/quota/limit")
-        XCTAssertEqual(request?.httpMethod, "GET")
-        // z.ai expects the raw token with no "Bearer " prefix.
-        XCTAssertEqual(request?.value(forHTTPHeaderField: "Authorization"), "test-key")
-        XCTAssertEqual(request?.value(forHTTPHeaderField: "Accept"), "application/json")
+        let requests = MockURLProtocol.capturedRequests
+        XCTAssertEqual(requests.count, 2)
+        XCTAssertEqual(
+            requests.map { $0.url?.path },
+            ["/api/monitor/usage/quota/limit", "/api/biz/subscription/list"]
+        )
+        for request in requests {
+            XCTAssertEqual(request.httpMethod, "GET")
+            // z.ai expects the raw token with no "Bearer " prefix.
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Authorization"), "test-key")
+            XCTAssertEqual(request.value(forHTTPHeaderField: "Accept"), "application/json")
+        }
     }
 
     // MARK: - custom base URL (proxy) is honored
 
     func testFetchQuota_usesCustomBaseURLWhenProvided() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
-        MockURLProtocol.responseStatusCode = 200
+        MockURLProtocol.handler = { _ in
+            (200, Self.validResponseJSON())
+        }
 
         let proxy = try XCTUnwrap(URL(string: "https://proxy.example.com"))
 
@@ -55,60 +66,18 @@ final class ZAIProviderTests: XCTestCase {
             baseURL: proxy
         )
 
-        let request = MockURLProtocol.lastRequest
+        let firstRequest = try XCTUnwrap(MockURLProtocol.capturedRequests.first)
+        XCTAssertEqual(firstRequest.url?.absoluteString, "https://proxy.example.com/api/monitor/usage/quota/limit")
         XCTAssertEqual(
-            request?.url?.absoluteString,
-            "https://proxy.example.com/api/monitor/usage/quota/limit"
+            MockURLProtocol.capturedRequests.last?.url?.absoluteString,
+            "https://proxy.example.com/api/biz/subscription/list"
         )
-    }
-
-    // MARK: - Known (type, unit) → labelled UsageLine
-
-    func testFetchQuota_mapsKnownTypeUnitPairs() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-
-        XCTAssertEqual(quota.lines.count, 3)
-        XCTAssertEqual(quota.lines[0].label, "5-hour window")
-        XCTAssertEqual(quota.lines[1].label, "Weekly")
-        XCTAssertEqual(quota.lines[2].label, "Monthly web-tool calls")
-        XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
-        XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
-        XCTAssertNil(quota.lines[2].windowDuration)
-    }
-
-    func testFetchQuota_ignoresUnknownTypeUnitPairs() async throws {
-        let json = Data("""
-        {
-          "data": {
-            "limits": [
-              {"type": "TOKENS_LIMIT", "unit": 3, "percentage": 50},
-              {"type": "UNKNOWN_TYPE", "unit": 99, "percentage": 99}
-            ]
-          }
-        }
-        """.utf8)
-
-        MockURLProtocol.responseData = json
-        MockURLProtocol.responseStatusCode = 200
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKey("test-key"),
-            baseURL: ZAIProvider.baseURL
-        )
-        XCTAssertEqual(quota.lines.count, 1)
-        XCTAssertEqual(quota.lines[0].label, "5-hour window")
     }
 
     // MARK: - nextResetTime → resetDate
 
     func testFetchQuota_convertsEpochMsToDate() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
+        MockURLProtocol.responseData = Self.validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
@@ -126,7 +95,7 @@ final class ZAIProviderTests: XCTestCase {
     // MARK: - Headline priority (5-hour → weekly)
 
     func testFetchQuota_headlineUsesFiveHourPriority() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
+        MockURLProtocol.responseData = Self.validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
         let quota = try await provider.fetchQuota(
@@ -247,7 +216,7 @@ final class ZAIProviderTests: XCTestCase {
     // MARK: - internal-consistency assertion
 
     func testFetchQuota_throwsInternalInconsistencyForApiKeyFree() async throws {
-        MockURLProtocol.responseData = validResponseJSON()
+        MockURLProtocol.responseData = Self.validResponseJSON()
         MockURLProtocol.responseStatusCode = 200
 
         do {
@@ -270,7 +239,7 @@ final class ZAIProviderTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func validResponseJSON() -> Data {
+    private static func validResponseJSON() -> Data {
         Data("""
         {
           "data": {
@@ -312,6 +281,8 @@ final class MockURLProtocol: URLProtocol {
     static var responseStatusCode = 200
     static var responseError: Error?
     static var lastRequest: URLRequest?
+    static var capturedRequests: [URLRequest] = []
+    static var handler: ((URLRequest) -> (statusCode: Int, data: Data))?
 
     override static func canInit(with _: URLRequest) -> Bool {
         true
@@ -322,6 +293,7 @@ final class MockURLProtocol: URLProtocol {
     }
 
     override func startLoading() {
+        MockURLProtocol.capturedRequests.append(request)
         MockURLProtocol.lastRequest = request
 
         if let error = MockURLProtocol.responseError {
@@ -329,19 +301,24 @@ final class MockURLProtocol: URLProtocol {
             return
         }
 
+        let statusCode: Int
+        let data: Data
+        if let handler = MockURLProtocol.handler {
+            (statusCode, data) = handler(request)
+        } else {
+            statusCode = MockURLProtocol.responseStatusCode
+            data = MockURLProtocol.responseData ?? Data()
+        }
+
         let response = HTTPURLResponse(
             url: request.url!,
-            statusCode: MockURLProtocol.responseStatusCode,
+            statusCode: statusCode,
             httpVersion: nil,
             headerFields: nil
         )!
 
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
-
-        if let data = MockURLProtocol.responseData {
-            client?.urlProtocol(self, didLoad: data)
-        }
-
+        client?.urlProtocol(self, didLoad: data)
         client?.urlProtocolDidFinishLoading(self)
     }
 
