@@ -43,15 +43,15 @@ Filbert is a native macOS app built to stay out of your way:
 
 ## Supported providers
 
-| Provider     | Status    | What it tracks                                  |
-|--------------|-----------|-------------------------------------------------|
-| z.ai         | ✅ Done   | GLM Coding Plan quota, token window, peak hours |
-| Claude       | ✅ Done¹  | Claude Code plan usage via the `claude` CLI     |
-| DeepSeek     | ✅ Done   | Prepaid balance — total, granted, topped-up     |
-| OpenAI Codex | ✅ Done²  | Subscription usage via the local `codex` CLI    |
-| Cursor       | ✅ Done³  | Subscription + on-demand spend via local token  |
-| OpenCode Go  | ✅ Done⁴  | Go subscription windows — rolling, weekly, monthly |
-| Moonshot     | Planned   | API usage, token consumption                    |
+| Provider     | Status    | What it tracks                                             |
+|--------------|-----------|------------------------------------------------------------|
+| z.ai         | ✅ Done   | GLM Coding Plan quota — token or credits plans, peak hours |
+| Claude       | ✅ Done¹  | Claude Code plan usage via the `claude` CLI                |
+| DeepSeek     | ✅ Done   | Prepaid balance — total, granted, topped-up                |
+| OpenAI Codex | ✅ Done²  | Subscription usage via the local `codex` CLI               |
+| Cursor       | ✅ Done³  | Subscription + on-demand spend via local token             |
+| OpenCode Go  | ✅ Done⁴  | Go subscription windows — rolling, weekly, monthly         |
+| Moonshot     | Planned   | API usage, token consumption                               |
 
 > ¹ Claude reads usage from the **Claude Code CLI**. See
 > [Claude Code setup](#claude-code-setup) below.
