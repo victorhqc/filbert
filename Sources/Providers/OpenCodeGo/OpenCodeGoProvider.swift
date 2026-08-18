@@ -139,8 +139,6 @@ public struct OpenCodeGoProvider: AIProvider {
     public static let providerDescription = String(localized: "Monitor OpenCode Go subscription usage")
     public static let baseURL = URL(string: "https://opencode.ai")!
 
-    private static let monthlyWindowDuration: TimeInterval = 30 * 24 * 60 * 60
-
     private let session: URLSession
     private let rateLimitBackoff: OpenCodeGoRateLimitBackoff
 
@@ -181,7 +179,7 @@ public struct OpenCodeGoProvider: AIProvider {
             (
                 id: "monthly-window-usage",
                 label: String(localized: "Monthly"),
-                duration: Self.monthlyWindowDuration,
+                duration: UsageWindowDuration.month,
                 usage: response.usage.monthly
             ),
         ]

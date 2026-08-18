@@ -6,16 +6,15 @@ struct UsageLineRow: View {
     let line: UsageLine
 
     var body: some View {
-        if shouldUseWeeklyPacing {
-            WeeklyUsageLineRow(line: line)
+        if shouldUseBudgetPacing {
+            PacedUsageLineRow(line: line)
         } else {
             StandardUsageLineRow(line: line)
         }
     }
 
-    private var shouldUseWeeklyPacing: Bool {
-        line.windowDuration == UsageWindowDuration.week
-            && WeeklyBudgetPace(line: line, now: Date()) != nil
+    private var shouldUseBudgetPacing: Bool {
+        BudgetPace(line: line, now: Date()) != nil
     }
 }
 
@@ -62,14 +61,14 @@ private struct StandardUsageLineRow: View {
     }
 }
 
-private struct WeeklyUsageLineRow: View {
+private struct PacedUsageLineRow: View {
     let line: UsageLine
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
-            if let pace = WeeklyBudgetPace(line: line, now: context.date) {
+            if let pace = BudgetPace(line: line, now: context.date) {
                 paceContent(pace)
             } else {
                 StandardUsageLineRow(line: line)
@@ -77,7 +76,7 @@ private struct WeeklyUsageLineRow: View {
         }
     }
 
-    private func paceContent(_ pace: WeeklyBudgetPace) -> some View {
+    private func paceContent(_ pace: BudgetPace) -> some View {
         let color = ProviderVisualStyle.tierColor(pace.tier, scheme: colorScheme)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -90,12 +89,12 @@ private struct WeeklyUsageLineRow: View {
                     .foregroundColor(color)
             }
 
-            WeeklyPaceBar(pace: pace, color: color)
+            BudgetPaceBar(pace: pace, color: color)
 
             HStack(spacing: 8) {
                 Text(remainingTimeText(pace.remainingTime))
                 Spacer(minLength: 4)
-                Text(remainingAllowanceText(pace))
+                Text(remainingAllowanceText(pace.allowance))
                     .multilineTextAlignment(.trailing)
             }
             .font(.caption.monospacedDigit())
@@ -106,7 +105,7 @@ private struct WeeklyUsageLineRow: View {
         .padding(.vertical, 2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(line.label)
-        .accessibilityValue(weeklyAccessibilityValue(pace))
+        .accessibilityValue(paceAccessibilityValue(pace))
     }
 
     private func usedPercentageText(_ percentage: Double) -> String {
@@ -116,7 +115,9 @@ private struct WeeklyUsageLineRow: View {
 
     private func remainingTimeText(_ remainingTime: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = remainingTime >= 24 * 60 * 60 ? [.day, .hour] : [.hour, .minute]
+        formatter.allowedUnits = remainingTime >= 7 * 24 * 60 * 60
+            ? [.weekOfYear, .day]
+            : remainingTime >= 24 * 60 * 60 ? [.day, .hour] : [.hour, .minute]
         formatter.maximumUnitCount = 2
         formatter.unitsStyle = .abbreviated
         formatter.zeroFormattingBehavior = .dropAll
@@ -124,25 +125,27 @@ private struct WeeklyUsageLineRow: View {
         return String.localizedStringWithFormat(String(localized: "%@ left"), formatted)
     }
 
-    private func remainingAllowanceText(_ pace: WeeklyBudgetPace) -> String {
-        if let availablePercentagePerDay = pace.availablePercentagePerDay {
-            let formatted = availablePercentagePerDay.formatted(
-                .number.precision(.fractionLength(1))
-            )
+    private func remainingAllowanceText(_ allowance: BudgetPace.Allowance) -> String {
+        switch allowance {
+        case let .perUnit(percentage, unit):
+            let format = switch unit {
+            case .day: String(localized: "About %@%%/day available")
+            case .week: String(localized: "About %@%%/week available")
+            }
             return String.localizedStringWithFormat(
-                String(localized: "About %@%%/day available"),
+                format,
+                percentage.formatted(.number.precision(.fractionLength(1)))
+            )
+        case let .untilReset(percentage):
+            let formatted = percentage.formatted(.number.precision(.fractionLength(0)))
+            return String.localizedStringWithFormat(
+                String(localized: "%@%% available until reset"),
                 formatted
             )
         }
-
-        let formatted = pace.remainingPercentage.formatted(.number.precision(.fractionLength(0)))
-        return String.localizedStringWithFormat(
-            String(localized: "%@%% available until reset"),
-            formatted
-        )
     }
 
-    private func weeklyAccessibilityValue(_ pace: WeeklyBudgetPace) -> String {
+    private func paceAccessibilityValue(_ pace: BudgetPace) -> String {
         let paceStatus = switch pace.tier {
         case .good:
             String(localized: "Within current allowance")
@@ -157,7 +160,7 @@ private struct WeeklyUsageLineRow: View {
         let allowance = String.localizedStringWithFormat(
             String(localized: "%1$@. %2$@"),
             paceStatus,
-            remainingAllowanceText(pace)
+            remainingAllowanceText(pace.allowance)
         )
         return String.localizedStringWithFormat(String(localized: "%1$@. %2$@"), value, allowance)
     }
@@ -211,8 +214,8 @@ private struct UsageBar: View {
     }
 }
 
-private struct WeeklyPaceBar: View {
-    let pace: WeeklyBudgetPace
+private struct BudgetPaceBar: View {
+    let pace: BudgetPace
     let color: Color
 
     var body: some View {
@@ -233,8 +236,8 @@ private struct WeeklyPaceBar: View {
                 )
             }
 
-            for day in 1 ..< 7 {
-                let dividerPosition = size.width * CGFloat(day) / 7
+            for dividerFraction in pace.configuration.dividerFractions {
+                let dividerPosition = size.width * dividerFraction
                 var divider = Path()
                 divider.move(to: CGPoint(x: dividerPosition, y: 1))
                 divider.addLine(to: CGPoint(x: dividerPosition, y: size.height - 1))
