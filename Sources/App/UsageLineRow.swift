@@ -115,8 +115,10 @@ private struct PacedUsageLineRow: View {
 
     private func remainingTimeText(_ remainingTime: TimeInterval) -> String {
         let formatter = DateComponentsFormatter()
+        // DateComponentsFormatter throws NSInternalInconsistencyException for
+        // .weekOfYear; .weekOfMonth is the only supported week unit.
         formatter.allowedUnits = remainingTime >= 7 * 24 * 60 * 60
-            ? [.weekOfYear, .day]
+            ? [.weekOfMonth, .day]
             : remainingTime >= 24 * 60 * 60 ? [.day, .hour] : [.hour, .minute]
         formatter.maximumUnitCount = 2
         formatter.unitsStyle = .abbreviated
