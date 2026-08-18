@@ -122,6 +122,15 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/día disponibles" } }
       }
     },
+    "About %@%%/week available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Etwa %@ %%/Woche verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@%%/week available" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/semana disponibles" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/semana disponibles" } }
+      }
+    },
     "Expand" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -58,11 +58,11 @@ enum QuotaStatusResolver {
         let status = resolve(for: quota)
         guard case .window = status,
               let line = firstPercentageLine(in: quota.lines),
-              let weeklyPace = WeeklyBudgetPace(line: line, now: now)
+              let pace = BudgetPace(line: line, now: now)
         else {
             return tier(for: status)
         }
-        return weeklyPace.tier
+        return pace.tier
     }
 
     private static func firstPercentageLine(in lines: [UsageLine]) -> UsageLine? {

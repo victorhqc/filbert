@@ -60,6 +60,12 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(quota.error, "401 Unauthorized")
     }
 
+    func testUsageWindowDuration_definesSharedDurations() {
+        XCTAssertEqual(UsageWindowDuration.fiveHours, 5 * 60 * 60)
+        XCTAssertEqual(UsageWindowDuration.week, 7 * 24 * 60 * 60)
+        XCTAssertEqual(UsageWindowDuration.month, 30 * 24 * 60 * 60)
+    }
+
     func testUsageDetail_roundtripsLabelAndValue() {
         let detail = UsageDetail(label: "RPM", value: "42 / 500")
 
