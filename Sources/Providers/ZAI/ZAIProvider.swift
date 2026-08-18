@@ -49,92 +49,26 @@ extension ZAIError: LocalizedError {
     }
 }
 
-// MARK: - Wire types (private to this module)
-
-private struct ZAIQuotaResponse: Decodable {
-    let data: ZAIData
-}
-
-private struct ZAIData: Decodable {
-    let limits: [ZAILimit]
-}
-
-private struct ZAILimit: Decodable {
-    let type: String
-    let unit: Int
-    let percentage: Double?
-    let usage: Double?
-    let currentValue: Double?
-    let remaining: Double?
-    let nextResetTime: Int64?
-    let usageDetails: [ZAIUsageDetail]?
-}
-
-private struct ZAIUsageDetail: Decodable {
-    let modelCode: String
-    let usage: Double?
-}
-
-// MARK: - Label lookup
-
-private struct ZAILimitLabel {
-    let type: String
-    let unit: Int
-    let label: String
-    let windowDuration: TimeInterval?
-
-    static let known: [ZAILimitLabel] = [
-        ZAILimitLabel(
-            type: "TOKENS_LIMIT",
-            unit: 3,
-            label: "5-hour window",
-            windowDuration: UsageWindowDuration.fiveHours
-        ),
-        ZAILimitLabel(
-            type: "TOKENS_LIMIT",
-            unit: 6,
-            label: "Weekly",
-            windowDuration: UsageWindowDuration.week
-        ),
-        ZAILimitLabel(
-            type: "TIME_LIMIT",
-            unit: 5,
-            label: "Monthly web-tool calls",
-            windowDuration: nil
-        ),
-    ]
-
-    static func lookup(type: String, unit: Int) -> ZAILimitLabel? {
-        known.first { $0.type == type && $0.unit == unit }
-    }
-}
-
 // MARK: - Peak-hours metadata
 
-/// GLM Coding Plan peak-hours rules sourced from zai-bar's README.
-/// Last verified: 2026-07-21.
 public enum ZAIPeakHours {
-    public static let timeZone = TimeZone(identifier: "Asia/Shanghai")
+    /// Legacy V2 calculation: daily 14:00–18:00 China Standard Time at
+    /// 3× peak / 1× off-peak.
+    public static let legacyV2 = PeakHoursConfig(
+        timeZone: TimeZone(identifier: "Asia/Shanghai"),
+        windows: [PeakHoursWindow(startHour: 14, endHour: 18)],
+        peakMultiplier: 3,
+        offPeakMultiplier: 1
+    )
 
-    public static let windows = [
-        PeakHoursWindow(startHour: 14, endHour: 18),
-    ]
-    public static let peakMultiplier = 3
-    public static let offPeakMultiplier = 2
-    public static let promoMultiplier = 1
-
-    /// After this date the off-peak multiplier flips from `promoMultiplier`
-    /// to `offPeakMultiplier`.
-    public static let promoEndDate: Date = {
-        var components = DateComponents()
-        components.year = 2026
-        components.month = 10
-        components.day = 1
-        components.hour = 0
-        components.minute = 0
-        components.timeZone = timeZone
-        return Calendar(identifier: .gregorian).date(from: components) ?? .distantFuture
-    }()
+    /// Credits calculation: Mon–Fri 14:00–18:00 Singapore time, with off-peak
+    /// consumption at 50% of the standard credit rate.
+    public static let credits = PeakHoursConfig(
+        timeZone: TimeZone(identifier: "Asia/Singapore"),
+        windows: [PeakHoursWindow(startHour: 14, endHour: 18, weekdays: [2, 3, 4, 5, 6])],
+        peakRate: .fractionOfStandardRate(1),
+        offPeakRate: .fractionOfStandardRate(0.5)
+    )
 }
 
 // MARK: - Provider
@@ -146,15 +80,6 @@ public struct ZAIProvider: AIProvider {
     public static let providerDescription = String(localized: "Monitor API usage and quotas")
     /// Host root for z.ai requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.z.ai")!
-
-    public static let peakHoursConfig = PeakHoursConfig(
-        timeZone: ZAIPeakHours.timeZone,
-        windows: ZAIPeakHours.windows,
-        peakMultiplier: ZAIPeakHours.peakMultiplier,
-        offPeakMultiplier: ZAIPeakHours.offPeakMultiplier,
-        promoMultiplier: ZAIPeakHours.promoMultiplier,
-        promoEndDate: ZAIPeakHours.promoEndDate
-    )
 
     private let session: URLSession
 
@@ -175,18 +100,60 @@ public struct ZAIProvider: AIProvider {
             throw ZAIError.missingKey
         }
 
+        let quotaResponse = try await fetchQuotaResponse(baseURL: baseURL, apiKey: apiKey)
+        let subscriptionVersion = await fetchSubscriptionVersion(baseURL: baseURL, apiKey: apiKey)
+        return map(quotaResponse, subscriptionVersion: subscriptionVersion)
+    }
+
+    private func fetchQuotaResponse(baseURL: URL, apiKey: String) async throws -> ZAIQuotaResponse {
         let endpoint = baseURL
             .appendingPathComponent("api")
             .appendingPathComponent("monitor")
             .appendingPathComponent("usage")
             .appendingPathComponent("quota")
             .appendingPathComponent("limit")
+        let data = try await get(endpoint: endpoint, apiKey: apiKey)
+
+        do {
+            return try JSONDecoder().decode(ZAIQuotaResponse.self, from: data)
+        } catch {
+            ZAILog.log("decoding error: \(error)")
+            throw ZAIError.decoding(error)
+        }
+    }
+
+    /// Best-effort: any failure degrades to `nil`, which suppresses pricing
+    /// metadata without failing the refresh.
+    private func fetchSubscriptionVersion(baseURL: URL, apiKey: String) async -> String? {
+        let endpoint = baseURL
+            .appendingPathComponent("api")
+            .appendingPathComponent("biz")
+            .appendingPathComponent("subscription")
+            .appendingPathComponent("list")
+        let data: Data
+        do {
+            data = try await get(endpoint: endpoint, apiKey: apiKey, logsBody: false)
+        } catch {
+            ZAILog.log("subscription fetch failed: \(error)")
+            return nil
+        }
+
+        do {
+            let response = try JSONDecoder().decode(ZAISubscriptionResponse.self, from: data)
+            return response.data?.first { $0.status == "VALID" }?.version
+        } catch {
+            ZAILog.log("subscription decoding error: \(error)")
+            return nil
+        }
+    }
+
+    private func get(endpoint: URL, apiKey: String, logsBody: Bool = true) async throws -> Data {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "GET"
-        // z.ai's monitor endpoint expects the raw token, NOT an
+        // z.ai's monitor endpoints expect the raw token, NOT an
         // "Authorization: Bearer …" scheme. Sending a "Bearer " prefix is
         // rejected as unauthenticated. This holds for both regular API and
-        // Coding Plan keys — the endpoint is plan-agnostic.
+        // Coding Plan keys — the endpoints are plan-agnostic.
         request.setValue(apiKey, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -206,39 +173,34 @@ public struct ZAIProvider: AIProvider {
             throw ZAIError.network(URLError(.badServerResponse))
         }
 
-        let bodyPreview = String(data: data, encoding: .utf8) ?? "<non-utf8 \(data.count) bytes>"
-        ZAILog.log("status=\(httpResponse.statusCode) body=\(bodyPreview)")
+        if logsBody {
+            let bodyPreview = String(data: data, encoding: .utf8) ?? "<non-utf8 \(data.count) bytes>"
+            ZAILog.log("status=\(httpResponse.statusCode) body=\(bodyPreview)")
+        } else {
+            ZAILog.log("status=\(httpResponse.statusCode) bytes=\(data.count)")
+        }
 
         guard httpResponse.statusCode == 200 else {
             throw ZAIError.http(httpResponse.statusCode)
         }
-
-        let quotaResponse: ZAIQuotaResponse
-        do {
-            quotaResponse = try JSONDecoder().decode(ZAIQuotaResponse.self, from: data)
-        } catch {
-            ZAILog.log("decoding error: \(error)")
-            throw ZAIError.decoding(error)
-        }
-
-        return map(quotaResponse)
+        return data
     }
 
     // MARK: - Mapping
 
-    private func map(_ response: ZAIQuotaResponse) -> ProviderQuota {
+    private func map(_ response: ZAIQuotaResponse, subscriptionVersion: String?) -> ProviderQuota {
         let limits = response.data.limits
         var lines: [UsageLine] = []
         var fiveHourLimit: ZAILimit?
         var weeklyLimit: ZAILimit?
 
         for limit in limits {
-            guard let line = mapLimit(limit) else { continue }
-            lines.append(line)
+            guard let window = ZAIWindowDescriptor.recognize(limit) else { continue }
+            lines.append(mapLimit(limit, window: window))
 
-            if limit.type == "TOKENS_LIMIT", limit.unit == 3 {
+            if window.isFiveHour {
                 fiveHourLimit = limit
-            } else if limit.type == "TOKENS_LIMIT", limit.unit == 6 {
+            } else if window.isWeekly {
                 weeklyLimit = limit
             }
         }
@@ -255,8 +217,30 @@ public struct ZAIProvider: AIProvider {
             lines: lines,
             lastUpdated: Date(),
             activityObservation: activityObservation(from: limits),
-            peakHoursConfig: Self.peakHoursConfig
+            peakHoursConfig: Self.peakHoursConfig(for: limits, subscriptionVersion: subscriptionVersion)
         )
+    }
+
+    /// A credits-shaped response identifies the credits calculation on its
+    /// own; a tokens-shaped response is only legacy V2 when the subscription
+    /// endpoint positively reports version "V2". Anything else — mixed
+    /// shapes, unknown versions, or a failed subscription fetch — gets no
+    /// pricing metadata.
+    private static func peakHoursConfig(
+        for limits: [ZAILimit],
+        subscriptionVersion: String?
+    ) -> PeakHoursConfig? {
+        let types = Set(limits.map(\.type))
+        let hasCreditWindows = types.contains(ZAILimitType.credits.rawValue)
+        let hasTokenWindows = types.contains(ZAILimitType.tokens.rawValue)
+
+        if hasCreditWindows, !hasTokenWindows {
+            return ZAIPeakHours.credits
+        }
+        if hasTokenWindows, !hasCreditWindows, subscriptionVersion == "V2" {
+            return ZAIPeakHours.legacyV2
+        }
+        return nil
     }
 
     private func activityObservation(from limits: [ZAILimit]) -> ProviderActivityObservation {
@@ -276,32 +260,29 @@ public struct ZAIProvider: AIProvider {
     }
 
     private func activityMetricID(for limit: ZAILimit) -> String? {
-        switch (limit.type, limit.unit) {
-        case ("TOKENS_LIMIT", 3):
+        switch (ZAILimitType(rawValue: limit.type), limit.unit) {
+        case (.tokens, 3), (.credits, 3):
             "five-hour-usage"
-        case ("TOKENS_LIMIT", 6):
+        case (.tokens, 6), (.credits, 6):
             "weekly-usage"
-        case ("TIME_LIMIT", 5):
+        case (.time, 5):
             "monthly-web-tool-usage"
         default:
             nil
         }
     }
 
-    private func mapLimit(_ limit: ZAILimit) -> UsageLine? {
-        guard let limitLabel = ZAILimitLabel.lookup(type: limit.type, unit: limit.unit) else {
-            return nil
-        }
-
+    private func mapLimit(_ limit: ZAILimit, window: ZAIWindowDescriptor) -> UsageLine {
         let resetDate = limit.nextResetTime.map {
             Date(timeIntervalSince1970: Double($0) / 1000)
         }
 
         // z.ai overloads these fields by limit type:
         //  - token windows (unit 3/6): only `percentage`, no usage/currentValue
+        //  - credit windows (unit 3/6): `currentValue` = credits used,
+        //    `usage` = the credit allowance
         //  - monthly web-tool line (unit 5): `currentValue` = actual used,
-        //    `usage` = the allowance (cap), `remaining` = what's left. So here
-        //    `currentValue` is "used" and `usage` is "total" — not the reverse.
+        //    `usage` = the allowance (cap), `remaining` = what's left.
         let used: Double?
         let total: Double?
         if let currentValue = limit.currentValue {
@@ -324,13 +305,13 @@ public struct ZAIProvider: AIProvider {
         }
 
         return UsageLine(
-            label: String(localized: String.LocalizationValue(limitLabel.label)),
+            label: window.label,
             used: used,
             total: total,
             percentage: limit.percentage,
             unit: nil,
             resetDate: resetDate,
-            windowDuration: limitLabel.windowDuration,
+            windowDuration: window.windowDuration,
             details: details
         )
     }

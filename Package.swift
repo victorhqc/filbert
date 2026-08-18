@@ -87,7 +87,8 @@ let package = Package(
         .testTarget(
             name: "ZAIProviderTests",
             dependencies: ["ZAIProvider"],
-            path: "Tests/ZAIProviderTests"
+            path: "Tests/ZAIProviderTests",
+            resources: [.process("Fixtures")]
         ),
         .testTarget(
             name: "ClaudeCodeProviderTests",

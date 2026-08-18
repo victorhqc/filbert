@@ -1,31 +1,31 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "5-hour window" : {
+    "%lld-hour window" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "5-hour window"
+            "value" : "%lld-hour window"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ventana de 5 horas"
+            "value" : "Ventana de %lld horas"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ventana de 5 horas"
+            "value" : "Ventana de %lld horas"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "5-Stunden-Fenster"
+            "value" : "%lld-Stunden-Fenster"
           }
         }
       }
