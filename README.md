@@ -50,6 +50,7 @@ Filbert is a native macOS app built to stay out of your way:
 | DeepSeek     | ✅ Done   | Prepaid balance — total, granted, topped-up     |
 | OpenAI Codex | ✅ Done²  | Subscription usage via the local `codex` CLI    |
 | Cursor       | ✅ Done³  | Subscription + on-demand spend via local token  |
+| OpenCode Go  | ✅ Done⁴  | Go subscription windows — rolling, weekly, monthly |
 | Moonshot     | Planned   | API usage, token consumption                    |
 
 > ¹ Claude reads usage from the **Claude Code CLI**. See
@@ -60,6 +61,10 @@ Filbert is a native macOS app built to stay out of your way:
 >
 > ³ Cursor reads usage from your local Cursor session token. See
 > [Cursor setup](#cursor-setup) below.
+>
+> ⁴ OpenCode Go needs an OpenCode API key tied to a Go subscription. The API
+> reports usage percentages and reset times only — no dollar amounts — and
+> Filbert does not estimate spend.
 
 Add only the providers you use. The menu bar, popover, and widgets adapt to
 your setup.
@@ -290,8 +295,9 @@ scripts/build-dmg.sh --version 0.1.0 --no-sign
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
-Claude, DeepSeek, OpenAI Codex, and Cursor providers are in place. The app
-builds and runs as a menu-bar item. More providers and widgets come next.
+Claude, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers are in
+place. The app builds and runs as a menu-bar item. More providers and widgets
+come next.
 
 See [`specs/`](specs/) for the spec files that drive the work.
 
