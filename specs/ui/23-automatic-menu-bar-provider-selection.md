@@ -1,16 +1,16 @@
 ## Objective
 
-Let the user choose between a manually ordered provider and a deterministic automatic policy for the provider represented in the macOS menu bar while making the selected provider's fast-refresh state visible there.
+Let the user choose between a manually ordered provider and a deterministic automatic policy for the provider represented in the macOS menu bar while making the selected provider's identity and fast-refresh state visible there.
 
 ## Context
 
 - `Sources/App/AppearanceSettingsView.swift` — adds the Automatic control and explains how provider order behaves in each mode.
-- `Sources/App/MenuBarStatusIcon.swift` — currently reads `configuredProviderIds.first`; it will consume one shared selection result before resolving the existing ring, amount, Vintage Mac face, accessibility output, and fast-refresh indicator (ui 10, ui 12).
+- `Sources/App/MenuBarStatusIcon.swift` — currently reads `configuredProviderIds.first`; it will consume one shared selection result before resolving the provider glyph, existing ring, amount, Vintage Mac face, accessibility output, and fast-refresh indicator (ui 10, ui 12, ui 14).
 - `Sources/App/QuotaViewModel.swift` — owns the observable configured order, loaded provider states, and per-provider fast-refresh status needed by the selection policy.
 - New `Sources/App/MenuBarProviderSelector.swift` — keeps priority and tie-breaking in a pure, provider-neutral resolver.
 - New `Sources/Core/MenuBarProviderSelectionPreferences.swift` — persists whether selection is automatic without exposing the raw `UserDefaults` key to App code.
 - `Sources/App/Resources/Localizable.xcstrings` — localizes the control, explanation, current-selection text, and accessibility values.
-- Builds on saved provider ordering (ui 09), configured-only ordering (ui 16), live menu-bar status resolution (ui 10), and provider-scoped Smart fast mode (core 08, core 09). Its menu-bar fast indicator supersedes the prohibition in (core 08 AC17) while retaining that criterion's provider-specific popover status.
+- Builds on saved provider ordering (ui 09), configured-only ordering (ui 16), live menu-bar status resolution (ui 10), provider-owned glyphs (ui 14), and provider-scoped Smart fast mode (core 08, core 09). Its menu-bar fast indicator supersedes the prohibition in (core 08 AC17) while retaining that criterion's provider-specific popover status.
 
 ## Acceptance Criteria
 
@@ -97,7 +97,18 @@ Let the user choose between a manually ordered provider and a deterministic auto
 - **And** in Automatic mode the text updates when the winning provider changes
 - **And** VoiceOver announces the toggle state, its behavior, and the current selected provider without relying on row position or an icon alone.
 
-### AC11: Menu bar identifies fast mode
+### AC11: Menu bar identifies the selected provider
+
+- **Given** the provider selected in either Automatic or manual mode resolves to a percentage or balance status
+- **When** its menu-bar status renders
+- **Then** that provider's own `ProviderInfo.glyph` appears immediately before the existing ring or Vintage Mac face and status text
+- **And** the glyph is a compact, unboxed menu-bar image rather than the larger background badge used in the popover and Settings
+- **And** the glyph uses template rendering and the existing neutral glyph fallback, remains legible at the menu bar's standard content height, and never branches on provider ID or provider type (ui 14 AC3)
+- **And** changing the selected provider changes the glyph on the same render as the percentage or balance text, so identity and status cannot disagree
+- **And** the Filbert fallback icon shows no provider glyph because it represents no live provider status
+- **And** the glyph is hidden from VoiceOver because the existing localized accessibility label already announces the selected provider by name.
+
+### AC12: Menu bar identifies fast mode
 
 - **Given** the provider selected in either Automatic or manual mode is currently in Smart fast mode
 - **When** its menu-bar status renders
@@ -109,20 +120,21 @@ Let the user choose between a manually ordered provider and a deterministic auto
 - **And** the indicator uses template rendering and does not rely on color, matching the menu-bar monochrome rule in (ui 10 AC8)
 - **And** this deliberately extends the popover-only fast status from (core 08 AC17) to the menu bar.
 
-### AC12: Existing menu-bar presentations otherwise remain unchanged
+### AC13: Existing menu-bar presentations otherwise remain unchanged
 
 - **Given** a provider has been selected by either mode
 - **When** its status renders
 - **Then** percentage, balance, fallback, Vintage Mac, monochrome, and accessibility behavior remain governed by (ui 10, ui 12)
-- **And** apart from the fast indicator in AC11, selection changes only which provider supplies the existing presentation
+- **And** apart from the provider glyph in AC11 and fast indicator in AC12, selection changes only which provider supplies the existing presentation
 - **And** the popover provider order and provider-card contents are unchanged.
 
-### AC13: Selection, persistence, and fast indication are covered by focused tests
+### AC14: Selection, persistence, provider identity, and fast indication are covered by focused tests
 
 - **Given** isolated preferences and pure selector inputs
 - **When** the test suites run
 - **Then** they cover default-on persistence, explicit off/on round trips, manual first-provider selection, empty lists, candidate filtering, one fast provider, multiple fast providers resolved by saved order regardless of timestamps, latest-update selection only with no fast candidates, equal-date saved-order ties, malformed-order defensive ties, no-candidate fallback, and transitions into and out of fast mode
-- **And** menu-bar presentation tests cover indicator visibility for selected fast, selected non-fast, unselected fast, percentage, balance, fallback, and accessibility states
+- **And** menu-bar presentation tests cover the selected provider's glyph in percentage, balance, Vintage Mac, provider-change, missing-asset fallback, and Filbert fallback states
+- **And** they cover fast-indicator visibility for selected fast, selected non-fast, unselected fast, percentage, balance, fallback, and accessibility states
 - **And** the tests perform no network request, Keychain mutation, child-process spawn, or wall-clock wait
 - **And** existing menu-bar icon, provider ordering, and Smart refresh tests continue to pass.
 
@@ -132,7 +144,7 @@ Add a Core preference wrapper with a missing-value default of `true`, a setter, 
 
 Add a pure App-layer selector that receives the configured IDs, provider states, fast-provider IDs, and mode. In manual mode it returns the first configured ID. In Automatic mode it filters to displayable loaded candidates. When fast candidates exist, it chooses the earliest one in configured order without consulting timestamps. Otherwise it sorts by `lastUpdated` descending, configured-order index ascending, then provider ID ascending. If filtering produces no candidates, it returns the first configured ID.
 
-Update `MenuBarStatusIcon` to resolve its provider ID through the selector. When that selected provider is fast and has a resolved percentage or balance status, append a template lightning-bolt image after the existing text and extend its accessibility label. Add the toggle, explanatory copy, and effective-provider text to the Provider order card. Add focused Core and App tests for persistence, the complete priority table, live state transitions, fast-indicator presentation, and current manual behavior before running the repository validation gate after review.
+Update `MenuBarStatusIcon` to resolve its provider ID through the selector and obtain the matching provider-owned glyph from existing registry metadata. For a resolved percentage or balance status, prepend a compact template glyph to the existing presentation; keep it decorative because the accessibility label already names the provider. When that selected provider is fast, append a template lightning-bolt image after the existing text and extend its accessibility label. Add the toggle, explanatory copy, and effective-provider text to the Provider order card. Add focused Core and App tests for persistence, the complete priority table, live state transitions, provider-glyph presentation, fast-indicator presentation, and current manual behavior before running the repository validation gate after review.
 
 ## Risks
 
@@ -140,4 +152,4 @@ Update `MenuBarStatusIcon` to resolve its provider ID through the selector. When
 - Providers do not necessarily source `lastUpdated` from identical clocks. A future-dated provider timestamp can remain selected until another candidate reports a later value; saved order still makes equal timestamps deterministic, but correcting provider timestamps is outside this presentation feature.
 - Concurrent launch refreshes can move the selection as results arrive when no provider is fast. This is intentional because the latest successful non-fast candidate wins, but the menu-bar label may change width when providers use different status formats.
 - A provider may remain displayable with stale last-known data after a quiet refresh failure. It remains an Automatic candidate under the same stale-data behavior already used by the popover and menu-bar; a failure removes fast priority through the Smart policy but does not erase useful last-known quota.
-- The lightning bolt adds width to an already constrained menu-bar label. It must use the smallest legible native symbol spacing without shrinking the existing percentage or balance text.
+- The provider glyph and lightning bolt add width to an already constrained menu-bar label. They must use the smallest legible native sizing and spacing without shrinking the existing percentage or balance text; the provider glyph remains valuable because Automatic mode can change which provider supplies that text.
