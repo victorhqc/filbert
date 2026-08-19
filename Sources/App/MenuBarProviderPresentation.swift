@@ -53,6 +53,48 @@ enum MenuBarProviderPresentation {
 }
 
 enum MenuBarProviderGlyphResolver {
+    static let glyphSide: CGFloat = 9
+    static let fastIndicatorSide: CGFloat = 7
+
+    static func menuBarImageSize(isFastRefreshActive: Bool) -> CGSize {
+        CGSize(
+            width: glyphSide,
+            height: isFastRefreshActive ? fastIndicatorSide + glyphSide : glyphSide
+        )
+    }
+
+    /// Drawn into one bitmap template `NSImage` — bolt above glyph while
+    /// fast — because `MenuBarExtra`'s label layer silently drops
+    /// symbol-backed images.
+    static func menuBarImage(
+        for glyph: ProviderGlyph,
+        isFastRefreshActive: Bool
+    ) -> NSImage {
+        let size = menuBarImageSize(isFastRefreshActive: isFastRefreshActive)
+        let renderedImage = NSImage(size: size)
+        renderedImage.lockFocus()
+
+        if isFastRefreshActive {
+            drawAspectFit(
+                fastIndicatorImage(),
+                in: CGRect(
+                    x: (size.width - fastIndicatorSide) / 2,
+                    y: glyphSide,
+                    width: fastIndicatorSide,
+                    height: fastIndicatorSide
+                )
+            )
+        }
+        drawAspectFit(
+            image(for: glyph),
+            in: CGRect(x: 0, y: 0, width: glyphSide, height: glyphSide)
+        )
+
+        renderedImage.unlockFocus()
+        renderedImage.isTemplate = true
+        return renderedImage
+    }
+
     static func fallbackSymbolName(for glyph: ProviderGlyph) -> String? {
         guard case let .asset(name, bundle) = glyph,
               bundle.image(forResource: NSImage.Name(name)) == nil
@@ -75,17 +117,33 @@ enum MenuBarProviderGlyphResolver {
         }
     }
 
-    static func menuBarImage(for glyph: ProviderGlyph) -> NSImage {
-        let sourceImage = image(for: glyph)
-        let image = sourceImage.copy() as? NSImage ?? sourceImage
-        image.size = NSSize(width: 12, height: 12)
-        image.isTemplate = true
-        return image
-    }
-
     private static func systemImage(named name: String) -> NSImage {
         NSImage(systemSymbolName: name, accessibilityDescription: nil)
             ?? NSImage(systemSymbolName: "cpu", accessibilityDescription: nil)
             ?? NSImage(size: .zero)
+    }
+
+    private static func fastIndicatorImage() -> NSImage {
+        NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: nil)
+            ?? NSImage(size: .zero)
+    }
+
+    private static func drawAspectFit(_ source: NSImage, in rect: CGRect) {
+        let sourceSize = source.size
+        guard sourceSize.width > 0, sourceSize.height > 0 else { return }
+        let scale = min(
+            rect.width / sourceSize.width,
+            rect.height / sourceSize.height
+        )
+        let fittedWidth = sourceSize.width * scale
+        let fittedHeight = sourceSize.height * scale
+        source.draw(
+            in: CGRect(
+                x: rect.midX - fittedWidth / 2,
+                y: rect.midY - fittedHeight / 2,
+                width: fittedWidth,
+                height: fittedHeight
+            )
+        )
     }
 }

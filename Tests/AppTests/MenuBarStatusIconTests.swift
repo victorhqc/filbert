@@ -1,4 +1,5 @@
 @testable import App
+import AppKit
 import Core
 import XCTest
 
@@ -265,5 +266,55 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testTier_fallbackReturnsNil() {
         XCTAssertNil(QuotaStatusResolver.tier(for: .fallback))
+    }
+}
+
+// MARK: - Leading composite bitmap
+
+final class MenuBarStatusCompositeTests: XCTestCase {
+    func testCompositeSizePlacesTheIdentityColumnBeforeTheRing() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.compositeSize(
+                statusImage: .ring(bucket: 0.8),
+                isFastRefreshActive: false
+            ),
+            CGSize(width: 25, height: 14)
+        )
+    }
+
+    func testCompositeSizeGrowsTallAndKeepsWidthWhenFast() {
+        let notFast = MenuBarStatusVisual.compositeSize(
+            statusImage: .ring(bucket: 0.8),
+            isFastRefreshActive: false
+        )
+        let fast = MenuBarStatusVisual.compositeSize(
+            statusImage: .ring(bucket: 0.8),
+            isFastRefreshActive: true
+        )
+
+        XCTAssertEqual(fast.width, notFast.width)
+        XCTAssertEqual(fast.height, 16)
+    }
+
+    func testCompositeSizeWithoutStatusVisualIsTheIdentityColumnAlone() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.compositeSize(
+                statusImage: nil,
+                isFastRefreshActive: false
+            ),
+            CGSize(width: 9, height: 9)
+        )
+    }
+
+    func testCompositeImageIsABitmapTemplateAtTheCompositeSize() {
+        let image = MenuBarStatusVisual.compositeImage(
+            statusImage: .ring(bucket: 0.8),
+            glyph: .sfSymbol("sparkles"),
+            isFastRefreshActive: true
+        )
+
+        XCTAssertTrue(image.isTemplate)
+        XCTAssertFalse(image.representations.isEmpty)
+        XCTAssertEqual(image.size, CGSize(width: 25, height: 16))
     }
 }

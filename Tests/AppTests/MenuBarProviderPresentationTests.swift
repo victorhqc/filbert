@@ -1,4 +1,5 @@
 @testable import App
+import AppKit
 import Core
 import Foundation
 import XCTest
@@ -95,11 +96,43 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         )
     }
 
-    func testMenuBarGlyphUsesTemplateRenderingAtTheStatusHeight() {
-        let image = MenuBarProviderGlyphResolver.menuBarImage(for: .sfSymbol("sparkles"))
+    func testMenuBarGlyphRendersAsABitmapTemplateImage() {
+        let image = MenuBarProviderGlyphResolver.menuBarImage(
+            for: .sfSymbol("sparkles"),
+            isFastRefreshActive: false
+        )
 
         XCTAssertTrue(image.isTemplate)
-        XCTAssertEqual(image.size, NSSize(width: 12, height: 12))
+        XCTAssertEqual(
+            image.size,
+            CGSize(
+                width: MenuBarProviderGlyphResolver.glyphSide,
+                height: MenuBarProviderGlyphResolver.glyphSide
+            )
+        )
+        XCTAssertFalse(image.representations.isEmpty)
+    }
+
+    func testFastRefreshStacksTheBoltAboveTheGlyph() {
+        let image = MenuBarProviderGlyphResolver.menuBarImage(
+            for: .sfSymbol("sparkles"),
+            isFastRefreshActive: true
+        )
+
+        XCTAssertTrue(image.isTemplate)
+        XCTAssertEqual(
+            image.size,
+            CGSize(
+                width: MenuBarProviderGlyphResolver.glyphSide,
+                height: MenuBarProviderGlyphResolver.fastIndicatorSide
+                    + MenuBarProviderGlyphResolver.glyphSide
+            )
+        )
+        XCTAssertEqual(
+            MenuBarProviderGlyphResolver.menuBarImageSize(isFastRefreshActive: true).width,
+            MenuBarProviderGlyphResolver.menuBarImageSize(isFastRefreshActive: false).width
+        )
+        XCTAssertFalse(image.representations.isEmpty)
     }
 
     func testFallbackProviderStateDoesNotCreateProviderPresentation() {

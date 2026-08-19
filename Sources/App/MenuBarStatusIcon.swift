@@ -3,9 +3,11 @@ import SwiftUI
 
 // MARK: - Menu-bar live status icon
 
-/// The ring is rendered into a bitmap `NSImage` instead of a SwiftUI `Shape`
-/// because `MenuBarExtra`'s label layer on macOS 14 silently drops arbitrary
-/// `Shape` / `Canvas` content — only `Text` and `Image` reliably render.
+/// The provider glyph, fast-refresh bolt, ring, and Vintage Mac face are
+/// composited into one leading bitmap `NSImage` because `MenuBarExtra`'s
+/// label layer on macOS 14 silently drops `Shape`, `Canvas`, and symbol-backed
+/// `Image` content, and drops `Image` content placed after `Text` — only a
+/// leading bitmap-backed `Image` followed by `Text` reliably renders.
 @MainActor
 struct MenuBarStatusIcon: View {
     let viewModel: QuotaViewModel
@@ -20,27 +22,9 @@ struct MenuBarStatusIcon: View {
         if let resolved = resolvedStatus {
             switch resolved.status {
             case let .window(percentage):
-                HStack(spacing: 3) {
-                    statusImage(for: resolved.status)
-                    statusContent(
-                        percentageText(percentage),
-                        resolved: resolved
-                    )
-                }
-                .accessibilityLabel(
-                    MenuBarProviderPresentation.accessibilityLabel(for: resolved)
-                )
+                statusRow(percentageText(percentage), resolved: resolved)
             case let .balance(_, _, formattedAmount):
-                HStack(spacing: 3) {
-                    statusImage(for: resolved.status)
-                    statusContent(
-                        formattedAmount,
-                        resolved: resolved
-                    )
-                }
-                .accessibilityLabel(
-                    MenuBarProviderPresentation.accessibilityLabel(for: resolved)
-                )
+                statusRow(formattedAmount, resolved: resolved)
             case .fallback:
                 fallbackIcon
             }
@@ -70,35 +54,36 @@ struct MenuBarStatusIcon: View {
         return String(localized: "\(rounded)%")
     }
 
-    @ViewBuilder
-    private func statusImage(for status: QuotaStatusResolver.Status) -> some View {
-        if let statusImage = MenuBarStatusVisual.statusImage(
-            for: status,
-            isVintageMacEnabled: viewModel.isVintageMacIconEnabled
-        ) {
-            MenuBarStatusVisualImage(statusImage: statusImage)
-        }
-    }
-
-    @ViewBuilder
-    private func statusContent(
+    private func statusRow(
         _ text: String,
         resolved: MenuBarProviderPresentation.Resolved
     ) -> some View {
-        Text(text)
-            .font(.caption2.monospacedDigit())
-            .foregroundStyle(.primary)
-
-        if resolved.isFastRefreshActive {
-            Image(systemName: "bolt.fill")
-                .font(.caption2)
+        HStack(spacing: 3) {
+            compositeImage(for: resolved)
+            Text(text)
+                .font(.caption2.monospacedDigit())
                 .foregroundStyle(.primary)
-                .accessibilityHidden(true)
         }
+        .accessibilityLabel(
+            MenuBarProviderPresentation.accessibilityLabel(for: resolved)
+        )
+    }
 
-        Image(nsImage: MenuBarProviderGlyphResolver.menuBarImage(for: resolved.glyph))
+    private func compositeImage(
+        for resolved: MenuBarProviderPresentation.Resolved
+    ) -> some View {
+        let image = MenuBarStatusVisual.compositeImage(
+            statusImage: MenuBarStatusVisual.statusImage(
+                for: resolved.status,
+                isVintageMacEnabled: viewModel.isVintageMacIconEnabled
+            ),
+            glyph: resolved.glyph,
+            isFastRefreshActive: resolved.isFastRefreshActive
+        )
+        return Image(nsImage: image)
+            .resizable()
             .renderingMode(.template)
-            .frame(width: 12, height: 12)
+            .frame(width: image.size.width, height: image.size.height)
             .accessibilityHidden(true)
     }
 }
@@ -108,6 +93,8 @@ enum MenuBarStatusVisual {
         case ring(bucket: Double)
         case macFace(tier: QuotaStatusResolver.Tier)
     }
+
+    private static let compositeSpacing: CGFloat = 2
 
     static func statusImage(
         for status: QuotaStatusResolver.Status,
@@ -129,20 +116,62 @@ enum MenuBarStatusVisual {
             return nil
         }
     }
-}
 
-private struct MenuBarStatusVisualImage: View {
-    let statusImage: MenuBarStatusVisual.StatusImage
+    static func compositeSize(
+        statusImage: StatusImage?,
+        isFastRefreshActive: Bool
+    ) -> CGSize {
+        let identity = MenuBarProviderGlyphResolver.menuBarImageSize(
+            isFastRefreshActive: isFastRefreshActive
+        )
+        guard let statusImage else { return identity }
+        let visual = MenuBarStatusVisualRenderer.size(for: statusImage)
+        return CGSize(
+            width: identity.width + compositeSpacing + visual.width,
+            height: max(identity.height, visual.height)
+        )
+    }
 
-    var body: some View {
-        Image(nsImage: MenuBarStatusVisualRenderer.render(statusImage: statusImage))
-            .resizable()
-            .renderingMode(.template)
-            .frame(
-                width: MenuBarStatusVisualRenderer.size(for: statusImage).width,
-                height: MenuBarStatusVisualRenderer.size(for: statusImage).height
+    /// The identity column (fast bolt above provider glyph) and the status
+    /// visual are drawn into one bitmap because the `MenuBarExtra` label layer
+    /// only renders a leading bitmap `Image` followed by `Text`.
+    static func compositeImage(
+        statusImage: StatusImage?,
+        glyph: ProviderGlyph,
+        isFastRefreshActive: Bool
+    ) -> NSImage {
+        let size = compositeSize(statusImage: statusImage, isFastRefreshActive: isFastRefreshActive)
+        let image = NSImage(size: size)
+        image.lockFocus()
+
+        let identity = MenuBarProviderGlyphResolver.menuBarImage(
+            for: glyph,
+            isFastRefreshActive: isFastRefreshActive
+        )
+        identity.draw(
+            in: CGRect(
+                x: 0,
+                y: (size.height - identity.size.height) / 2,
+                width: identity.size.width,
+                height: identity.size.height
             )
-            .accessibilityHidden(true)
+        )
+
+        if let statusImage {
+            let visual = MenuBarStatusVisualRenderer.render(statusImage: statusImage)
+            visual.draw(
+                in: CGRect(
+                    x: identity.size.width + compositeSpacing,
+                    y: (size.height - visual.size.height) / 2,
+                    width: visual.size.width,
+                    height: visual.size.height
+                )
+            )
+        }
+
+        image.unlockFocus()
+        image.isTemplate = true
+        return image
     }
 }
 

@@ -101,8 +101,8 @@ Let the user choose between a manually ordered provider and a deterministic auto
 
 - **Given** the provider selected in either Automatic or manual mode resolves to a percentage or balance status
 - **When** its menu-bar status renders
-- **Then** the existing ring or Vintage Mac face and status text retain their order, followed immediately by that provider's own `ProviderInfo.glyph` unless the fast-refresh indicator is present
-- **And** the glyph is a compact, unboxed menu-bar image rather than the larger background badge used in the popover and Settings
+- **Then** that provider's own `ProviderInfo.glyph` appears before the existing ring or Vintage Mac face and status text, stacked below the fast-refresh bolt whenever the bolt is present
+- **And** the glyph, bolt, ring, and face render together as one compact, unboxed, leading pre-rendered bitmap template image rather than the larger background badge used in the popover and Settings, because `MenuBarExtra`'s label layer silently drops symbol-backed `Image` content and any `Image` placed after `Text`
 - **And** the glyph uses template rendering and the existing neutral glyph fallback, remains legible at the menu bar's standard content height, and never branches on provider ID or provider type (ui 14 AC3)
 - **And** changing the selected provider changes the glyph on the same render as the percentage or balance text, so identity and status cannot disagree
 - **And** the Filbert fallback icon shows no provider glyph because it represents no live provider status
@@ -112,7 +112,7 @@ Let the user choose between a manually ordered provider and a deterministic auto
 
 - **Given** the provider selected in either Automatic or manual mode is currently in Smart fast mode
 - **When** its menu-bar status renders
-- **Then** a compact monochrome lightning-bolt icon appears immediately after the existing percentage or balance text
+- **Then** a compact monochrome lightning-bolt icon appears stacked directly above the provider glyph in the same leading bitmap image, keeping the added width to a single small column
 - **And** the indicator disappears on the next render when that provider leaves fast mode, automatic refresh is disabled for it, the shared mode changes to Regular, or another non-fast provider becomes selected
 - **And** a different provider being fast does not show the indicator when the selected provider is not fast
 - **And** the fallback Filbert icon does not show the indicator because no provider status is being represented
@@ -144,7 +144,7 @@ Add a Core preference wrapper with a missing-value default of `true`, a setter, 
 
 Add a pure App-layer selector that receives the configured IDs, provider states, fast-provider IDs, and mode. In manual mode it returns the first configured ID. In Automatic mode it filters to displayable loaded candidates. When fast candidates exist, it chooses the earliest one in configured order without consulting timestamps. Otherwise it sorts by `lastUpdated` descending, configured-order index ascending, then provider ID ascending. If filtering produces no candidates, it returns the first configured ID.
 
-Update `MenuBarStatusIcon` to resolve its provider ID through the selector and obtain the matching provider-owned glyph from existing registry metadata. For a resolved percentage or balance status, retain the existing ring or Vintage Mac face and text order, then append a compact template glyph; keep it decorative because the accessibility label already names the provider. When that selected provider is fast, retain its template lightning-bolt image immediately after the existing text, before the provider glyph, and extend its accessibility label. Add the toggle, explanatory copy, and effective-provider text to the Provider order card. Add focused Core and App tests for persistence, the complete priority table, live state transitions, provider-glyph presentation, fast-indicator presentation, and current manual behavior before running the repository validation gate after review.
+Update `MenuBarStatusIcon` to resolve its provider ID through the selector and obtain the matching provider-owned glyph from existing registry metadata. For a resolved percentage or balance status, prepend one compact leading bitmap template image that composes the identity column — lightning bolt stacked above the provider glyph while the selected provider is fast, the glyph alone otherwise — with the ring or Vintage Mac face, because the `MenuBarExtra` label layer drops symbol-backed images and any image placed after text. Keep it decorative because the accessibility label already names the provider and announces fast refresh. Add the toggle, explanatory copy, and effective-provider text to the Provider order card. Add focused Core and App tests for persistence, the complete priority table, live state transitions, provider-glyph presentation, fast-indicator presentation, and current manual behavior before running the repository validation gate after review.
 
 ## Risks
 
@@ -152,4 +152,4 @@ Update `MenuBarStatusIcon` to resolve its provider ID through the selector and o
 - Providers do not necessarily source `lastUpdated` from identical clocks. A future-dated provider timestamp can remain selected until another candidate reports a later value; saved order still makes equal timestamps deterministic, but correcting provider timestamps is outside this presentation feature.
 - Concurrent launch refreshes can move the selection as results arrive when no provider is fast. This is intentional because the latest successful non-fast candidate wins, but the menu-bar label may change width when providers use different status formats.
 - A provider may remain displayable with stale last-known data after a quiet refresh failure. It remains an Automatic candidate under the same stale-data behavior already used by the popover and menu-bar; a failure removes fast priority through the Smart policy but does not erase useful last-known quota.
-- The provider glyph and lightning bolt add width to an already constrained menu-bar label. They must use the smallest legible native sizing and spacing without shrinking the existing percentage or balance text; the provider glyph remains valuable because Automatic mode can change which provider supplies that text.
+- The provider glyph and lightning bolt add width to an already constrained menu-bar label. They render inside one leading pre-rendered bitmap image — the bolt stacked above the glyph — so the label keeps the proven leading-bitmap-plus-text shape and adds only a single small column of width without shrinking the existing percentage or balance text; the provider glyph remains valuable because Automatic mode can change which provider supplies that text.
