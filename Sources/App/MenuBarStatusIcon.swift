@@ -22,13 +22,10 @@ struct MenuBarStatusIcon: View {
             case let .window(percentage):
                 HStack(spacing: 3) {
                     statusImage(for: resolved.status)
-                    statusText(
+                    statusContent(
                         percentageText(percentage),
-                        glyph: resolved.glyph,
-                        isFastRefreshActive: resolved.isFastRefreshActive
+                        resolved: resolved
                     )
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.primary)
                 }
                 .accessibilityLabel(
                     MenuBarProviderPresentation.accessibilityLabel(for: resolved)
@@ -36,13 +33,10 @@ struct MenuBarStatusIcon: View {
             case let .balance(_, _, formattedAmount):
                 HStack(spacing: 3) {
                     statusImage(for: resolved.status)
-                    statusText(
+                    statusContent(
                         formattedAmount,
-                        glyph: resolved.glyph,
-                        isFastRefreshActive: resolved.isFastRefreshActive
+                        resolved: resolved
                     )
-                    .font(.caption2.monospacedDigit())
-                    .foregroundStyle(.primary)
                 }
                 .accessibilityLabel(
                     MenuBarProviderPresentation.accessibilityLabel(for: resolved)
@@ -86,21 +80,26 @@ struct MenuBarStatusIcon: View {
         }
     }
 
-    private func statusText(
+    @ViewBuilder
+    private func statusContent(
         _ text: String,
-        glyph: ProviderGlyph,
-        isFastRefreshActive: Bool
-    ) -> Text {
-        let providerGlyph = Text(
-            Image(nsImage: MenuBarProviderGlyphResolver.menuBarImage(for: glyph))
-        )
-        let status = Text(text)
-        let statusWithRefreshIndicator = if isFastRefreshActive {
-            status + Text(" ") + Text(Image(systemName: "bolt.fill"))
-        } else {
-            status
+        resolved: MenuBarProviderPresentation.Resolved
+    ) -> some View {
+        Text(text)
+            .font(.caption2.monospacedDigit())
+            .foregroundStyle(.primary)
+
+        if resolved.isFastRefreshActive {
+            Image(systemName: "bolt.fill")
+                .font(.caption2)
+                .foregroundStyle(.primary)
+                .accessibilityHidden(true)
         }
-        return statusWithRefreshIndicator + Text(" ") + providerGlyph
+
+        Image(nsImage: MenuBarProviderGlyphResolver.menuBarImage(for: resolved.glyph))
+            .renderingMode(.template)
+            .frame(width: 12, height: 12)
+            .accessibilityHidden(true)
     }
 }
 
