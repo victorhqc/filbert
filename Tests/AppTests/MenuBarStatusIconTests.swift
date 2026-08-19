@@ -23,6 +23,26 @@ final class MenuBarStatusIconTests: XCTestCase {
         super.tearDown()
     }
 
+    func testStatusVisualKeepsThePercentageRingWhenVintageMacIsDisabled() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.statusImage(
+                for: .window(percentage: 84),
+                isVintageMacEnabled: false
+            ),
+            .ring(bucket: 0.8)
+        )
+    }
+
+    func testStatusVisualUsesVintageMacFaceForAnAutomaticProviderStatus() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.statusImage(
+                for: .window(percentage: 84),
+                isVintageMacEnabled: true
+            ),
+            .macFace(tier: .critical)
+        )
+    }
+
     // MARK: - window-based provider → percentage mode
 
     func testResolve_windowPercentage_returnsWindowMode() {

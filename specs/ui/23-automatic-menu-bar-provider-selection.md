@@ -101,7 +101,7 @@ Let the user choose between a manually ordered provider and a deterministic auto
 
 - **Given** the provider selected in either Automatic or manual mode resolves to a percentage or balance status
 - **When** its menu-bar status renders
-- **Then** that provider's own `ProviderInfo.glyph` appears immediately before the existing ring or Vintage Mac face and status text
+- **Then** the existing ring or Vintage Mac face and status text retain their order, followed immediately by that provider's own `ProviderInfo.glyph` unless the fast-refresh indicator is present
 - **And** the glyph is a compact, unboxed menu-bar image rather than the larger background badge used in the popover and Settings
 - **And** the glyph uses template rendering and the existing neutral glyph fallback, remains legible at the menu bar's standard content height, and never branches on provider ID or provider type (ui 14 AC3)
 - **And** changing the selected provider changes the glyph on the same render as the percentage or balance text, so identity and status cannot disagree
@@ -144,7 +144,7 @@ Add a Core preference wrapper with a missing-value default of `true`, a setter, 
 
 Add a pure App-layer selector that receives the configured IDs, provider states, fast-provider IDs, and mode. In manual mode it returns the first configured ID. In Automatic mode it filters to displayable loaded candidates. When fast candidates exist, it chooses the earliest one in configured order without consulting timestamps. Otherwise it sorts by `lastUpdated` descending, configured-order index ascending, then provider ID ascending. If filtering produces no candidates, it returns the first configured ID.
 
-Update `MenuBarStatusIcon` to resolve its provider ID through the selector and obtain the matching provider-owned glyph from existing registry metadata. For a resolved percentage or balance status, prepend a compact template glyph to the existing presentation; keep it decorative because the accessibility label already names the provider. When that selected provider is fast, append a template lightning-bolt image after the existing text and extend its accessibility label. Add the toggle, explanatory copy, and effective-provider text to the Provider order card. Add focused Core and App tests for persistence, the complete priority table, live state transitions, provider-glyph presentation, fast-indicator presentation, and current manual behavior before running the repository validation gate after review.
+Update `MenuBarStatusIcon` to resolve its provider ID through the selector and obtain the matching provider-owned glyph from existing registry metadata. For a resolved percentage or balance status, retain the existing ring or Vintage Mac face and text order, then append a compact template glyph; keep it decorative because the accessibility label already names the provider. When that selected provider is fast, retain its template lightning-bolt image immediately after the existing text, before the provider glyph, and extend its accessibility label. Add the toggle, explanatory copy, and effective-provider text to the Provider order card. Add focused Core and App tests for persistence, the complete priority table, live state transitions, provider-glyph presentation, fast-indicator presentation, and current manual behavior before running the repository validation gate after review.
 
 ## Risks
 

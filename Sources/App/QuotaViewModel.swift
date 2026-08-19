@@ -34,6 +34,10 @@ final class QuotaViewModel {
 
     var hasAnyConfiguredProvider: Bool = false
 
+    var isAutomaticMenuBarProviderSelection = MenuBarProviderSelectionPreferences.isAutomatic
+
+    var isVintageMacIconEnabled = VintageMacIcon.isEnabled
+
     /// Changing this token tells SwiftUI to re-resolve the UserDefaults-backed
     /// collapse values that live in Core.
     var collapseStateRevision = 0
