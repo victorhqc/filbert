@@ -306,14 +306,14 @@ final class MenuBarStatusCompositeTests: XCTestCase {
         )
     }
 
-    func testCompositeImageIsABitmapTemplateAtTheCompositeSize() {
+    func testCompositeImageIsAColoredBitmapAtTheCompositeSize() {
         let image = MenuBarStatusVisual.compositeImage(
             statusImage: .ring(bucket: 0.8),
             glyph: .sfSymbol("sparkles"),
             isFastRefreshActive: true
         )
 
-        XCTAssertTrue(image.isTemplate)
+        XCTAssertFalse(image.isTemplate)
         XCTAssertFalse(image.representations.isEmpty)
         XCTAssertEqual(image.size, CGSize(width: 30, height: 14))
     }

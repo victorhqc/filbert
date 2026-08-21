@@ -52,6 +52,96 @@ enum MenuBarProviderPresentation {
     }
 }
 
+enum MenuBarBitmapRenderer {
+    private static let bitmapScale: CGFloat = 2
+
+    static func image(size: CGSize, drawing: () -> Void) -> NSImage {
+        guard size.width > 0, size.height > 0 else {
+            return NSImage(size: size)
+        }
+
+        let pixelsWide = Int((size.width * bitmapScale).rounded(.up))
+        let pixelsHigh = Int((size.height * bitmapScale).rounded(.up))
+        guard let representation = NSBitmapImageRep(
+            bitmapDataPlanes: nil,
+            pixelsWide: pixelsWide,
+            pixelsHigh: pixelsHigh,
+            bitsPerSample: 8,
+            samplesPerPixel: 4,
+            hasAlpha: true,
+            isPlanar: false,
+            colorSpaceName: .deviceRGB,
+            bitmapFormat: [],
+            bytesPerRow: 0,
+            bitsPerPixel: 0
+        ), let graphicsContext = NSGraphicsContext(bitmapImageRep: representation) else {
+            return NSImage(size: size)
+        }
+
+        NSGraphicsContext.saveGraphicsState()
+        NSGraphicsContext.current = graphicsContext
+        graphicsContext.cgContext.scaleBy(x: bitmapScale, y: bitmapScale)
+        drawing()
+        NSGraphicsContext.restoreGraphicsState()
+
+        let image = NSImage(size: size)
+        image.addRepresentation(representation)
+        return image
+    }
+
+    static func draw(_ source: NSImage, in rect: CGRect, color: NSColor) {
+        guard let context = NSGraphicsContext.current?.cgContext,
+              let sourceImage = cgImage(for: source),
+              let fittedRect = fittedRect(for: source, in: rect)
+        else {
+            return
+        }
+
+        context.saveGState()
+        context.draw(sourceImage, in: fittedRect)
+        context.setBlendMode(.sourceIn)
+        context.setFillColor(color.cgColor)
+        context.fill(fittedRect)
+        context.restoreGState()
+    }
+
+    static func clear(using source: NSImage, in rect: CGRect) {
+        guard let context = NSGraphicsContext.current?.cgContext,
+              let sourceImage = cgImage(for: source),
+              let fittedRect = fittedRect(for: source, in: rect)
+        else {
+            return
+        }
+
+        context.saveGState()
+        context.setBlendMode(.destinationOut)
+        context.draw(sourceImage, in: fittedRect)
+        context.restoreGState()
+    }
+
+    private static func cgImage(for source: NSImage) -> CGImage? {
+        var proposedRect = NSRect(origin: .zero, size: source.size)
+        return source.cgImage(forProposedRect: &proposedRect, context: nil, hints: nil)
+    }
+
+    private static func fittedRect(for source: NSImage, in rect: CGRect) -> CGRect? {
+        let sourceSize = source.size
+        guard sourceSize.width > 0, sourceSize.height > 0 else { return nil }
+        let scale = min(
+            rect.width / sourceSize.width,
+            rect.height / sourceSize.height
+        )
+        let fittedWidth = sourceSize.width * scale
+        let fittedHeight = sourceSize.height * scale
+        return CGRect(
+            x: rect.midX - fittedWidth / 2,
+            y: rect.midY - fittedHeight / 2,
+            width: fittedWidth,
+            height: fittedHeight
+        )
+    }
+}
+
 enum MenuBarProviderGlyphResolver {
     static let identityCanvasSide: CGFloat = 14
     static let glyphSide: CGFloat = 12
@@ -89,28 +179,30 @@ enum MenuBarProviderGlyphResolver {
 
     static func menuBarImage(
         for glyph: ProviderGlyph,
-        isFastRefreshActive: Bool
+        isFastRefreshActive: Bool,
+        foregroundColor: NSColor = .black,
+        fastIndicatorColor: NSColor = .white
     ) -> NSImage {
         let size = menuBarImageSize(isFastRefreshActive: isFastRefreshActive)
-        let renderedImage = NSImage(size: size)
-        renderedImage.lockFocus()
-
-        drawAspectFit(
-            image(for: glyph),
-            in: glyphRect
-        )
-        if isFastRefreshActive {
-            let fastIndicator = fastIndicatorImage()
-            clear(using: fastIndicator, in: fastIndicatorClearanceRect)
-            drawAspectFit(
-                fastIndicator,
-                in: fastIndicatorRect
+        return MenuBarBitmapRenderer.image(size: size) {
+            MenuBarBitmapRenderer.draw(
+                image(for: glyph),
+                in: glyphRect,
+                color: foregroundColor
             )
+            if isFastRefreshActive {
+                let fastIndicator = fastIndicatorImage()
+                MenuBarBitmapRenderer.clear(
+                    using: fastIndicator,
+                    in: fastIndicatorClearanceRect
+                )
+                MenuBarBitmapRenderer.draw(
+                    fastIndicator,
+                    in: fastIndicatorRect,
+                    color: fastIndicatorColor
+                )
+            }
         }
-
-        renderedImage.unlockFocus()
-        renderedImage.isTemplate = true
-        return renderedImage
     }
 
     static func fallbackSymbolName(for glyph: ProviderGlyph) -> String? {
@@ -144,32 +236,5 @@ enum MenuBarProviderGlyphResolver {
     private static func fastIndicatorImage() -> NSImage {
         NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: nil)
             ?? NSImage(size: .zero)
-    }
-
-    private static func clear(using source: NSImage, in rect: CGRect) {
-        guard let context = NSGraphicsContext.current?.cgContext else { return }
-        context.saveGState()
-        context.setBlendMode(.clear)
-        drawAspectFit(source, in: rect)
-        context.restoreGState()
-    }
-
-    private static func drawAspectFit(_ source: NSImage, in rect: CGRect) {
-        let sourceSize = source.size
-        guard sourceSize.width > 0, sourceSize.height > 0 else { return }
-        let scale = min(
-            rect.width / sourceSize.width,
-            rect.height / sourceSize.height
-        )
-        let fittedWidth = sourceSize.width * scale
-        let fittedHeight = sourceSize.height * scale
-        source.draw(
-            in: CGRect(
-                x: rect.midX - fittedWidth / 2,
-                y: rect.midY - fittedHeight / 2,
-                width: fittedWidth,
-                height: fittedHeight
-            )
-        )
     }
 }

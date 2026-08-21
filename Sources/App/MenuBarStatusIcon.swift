@@ -1,3 +1,4 @@
+import AppKit
 import Core
 import SwiftUI
 
@@ -11,6 +12,7 @@ import SwiftUI
 @MainActor
 struct MenuBarStatusIcon: View {
     let viewModel: QuotaViewModel
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         content
@@ -78,13 +80,23 @@ struct MenuBarStatusIcon: View {
                 isVintageMacEnabled: viewModel.isVintageMacIconEnabled
             ),
             glyph: resolved.glyph,
-            isFastRefreshActive: resolved.isFastRefreshActive
+            isFastRefreshActive: resolved.isFastRefreshActive,
+            foregroundColor: menuBarForegroundColor,
+            fastIndicatorColor: menuBarFastIndicatorColor
         )
         return Image(nsImage: image)
             .resizable()
-            .renderingMode(.template)
+            .renderingMode(.original)
             .frame(width: image.size.width, height: image.size.height)
             .accessibilityHidden(true)
+    }
+
+    private var menuBarForegroundColor: NSColor {
+        colorScheme == .dark ? .white : .black
+    }
+
+    private var menuBarFastIndicatorColor: NSColor {
+        colorScheme == .dark ? .black : .white
     }
 }
 
@@ -138,57 +150,59 @@ enum MenuBarStatusVisual {
     static func compositeImage(
         statusImage: StatusImage?,
         glyph: ProviderGlyph,
-        isFastRefreshActive: Bool
+        isFastRefreshActive: Bool,
+        foregroundColor: NSColor = .black,
+        fastIndicatorColor: NSColor = .white
     ) -> NSImage {
         let size = compositeSize(statusImage: statusImage, isFastRefreshActive: isFastRefreshActive)
-        let image = NSImage(size: size)
-        image.lockFocus()
-
-        let identity = MenuBarProviderGlyphResolver.menuBarImage(
-            for: glyph,
-            isFastRefreshActive: isFastRefreshActive
-        )
-        identity.draw(
-            in: CGRect(
-                x: 0,
-                y: (size.height - identity.size.height) / 2,
-                width: identity.size.width,
-                height: identity.size.height
+        return MenuBarBitmapRenderer.image(size: size) {
+            let identity = MenuBarProviderGlyphResolver.menuBarImage(
+                for: glyph,
+                isFastRefreshActive: isFastRefreshActive,
+                foregroundColor: foregroundColor,
+                fastIndicatorColor: fastIndicatorColor
             )
-        )
-
-        if let statusImage {
-            let visual = MenuBarStatusVisualRenderer.render(statusImage: statusImage)
-            visual.draw(
+            identity.draw(
                 in: CGRect(
-                    x: identity.size.width + compositeSpacing,
-                    y: (size.height - visual.size.height) / 2,
-                    width: visual.size.width,
-                    height: visual.size.height
+                    x: 0,
+                    y: (size.height - identity.size.height) / 2,
+                    width: identity.size.width,
+                    height: identity.size.height
                 )
             )
-        }
 
-        image.unlockFocus()
-        image.isTemplate = true
-        return image
+            if let statusImage {
+                let visual = MenuBarStatusVisualRenderer.render(
+                    statusImage: statusImage,
+                    foregroundColor: foregroundColor
+                )
+                visual.draw(
+                    in: CGRect(
+                        x: identity.size.width + compositeSpacing,
+                        y: (size.height - visual.size.height) / 2,
+                        width: visual.size.width,
+                        height: visual.size.height
+                    )
+                )
+            }
+        }
     }
 }
 
 private enum MenuBarStatusVisualRenderer {
-    static func render(statusImage: MenuBarStatusVisual.StatusImage) -> NSImage {
+    static func render(
+        statusImage: MenuBarStatusVisual.StatusImage,
+        foregroundColor: NSColor
+    ) -> NSImage {
         let size = size(for: statusImage)
-        let image = NSImage(size: size)
-        image.lockFocus()
-
-        let statusImageSize = statusImageSize(for: statusImage)
-        renderedStatusImage(for: statusImage).draw(
-            in: CGRect(origin: .zero, size: statusImageSize)
-        )
-
-        image.unlockFocus()
-        image.isTemplate = true
-        return image
+        return MenuBarBitmapRenderer.image(size: size) {
+            let statusImageSize = statusImageSize(for: statusImage)
+            MenuBarBitmapRenderer.draw(
+                renderedStatusImage(for: statusImage),
+                in: CGRect(origin: .zero, size: statusImageSize),
+                color: foregroundColor
+            )
+        }
     }
 
     static func size(for statusImage: MenuBarStatusVisual.StatusImage) -> CGSize {
@@ -214,7 +228,7 @@ private enum MenuBarStatusVisualRenderer {
     }
 }
 
-/// Drawn in solid black so `MenuBarExtra` can template-tint it.
+/// Rendered as an alpha mask so composition can apply the menu-bar foreground color.
 private enum MenuBarRingRenderer {
     private static let pixels = 28
 

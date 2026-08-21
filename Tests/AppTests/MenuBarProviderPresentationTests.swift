@@ -96,13 +96,13 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         )
     }
 
-    func testMenuBarGlyphRendersAsABitmapTemplateImage() {
+    func testMenuBarGlyphRendersAsAColoredBitmapImage() {
         let image = MenuBarProviderGlyphResolver.menuBarImage(
             for: .sfSymbol("sparkles"),
             isFastRefreshActive: false
         )
 
-        XCTAssertTrue(image.isTemplate)
+        XCTAssertFalse(image.isTemplate)
         XCTAssertEqual(
             image.size,
             CGSize(
@@ -119,7 +119,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
             isFastRefreshActive: true
         )
 
-        XCTAssertTrue(image.isTemplate)
+        XCTAssertFalse(image.isTemplate)
         XCTAssertEqual(
             image.size,
             CGSize(
