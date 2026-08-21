@@ -151,6 +151,20 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         XCTAssertFalse(image.representations.isEmpty)
     }
 
+    func testFastRefreshKeepsGlyphPixelsOutsideTheBoltSilhouette() throws {
+        let image = MenuBarProviderGlyphResolver.menuBarImage(
+            for: .sfSymbol("square.fill"),
+            isFastRefreshActive: true
+        )
+        let tiffRepresentation = try XCTUnwrap(image.tiffRepresentation)
+        let representation = try XCTUnwrap(NSBitmapImageRep(data: tiffRepresentation))
+
+        XCTAssertGreaterThan(
+            try XCTUnwrap(representation.colorAt(x: 11, y: 7)).alphaComponent,
+            0
+        )
+    }
+
     func testFallbackProviderStateDoesNotCreateProviderPresentation() {
         XCTAssertNil(
             MenuBarProviderPresentation.resolve(

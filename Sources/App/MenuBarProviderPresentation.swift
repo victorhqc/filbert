@@ -100,9 +100,10 @@ enum MenuBarProviderGlyphResolver {
             in: glyphRect
         )
         if isFastRefreshActive {
-            clear(fastIndicatorClearanceRect)
+            let fastIndicator = fastIndicatorImage()
+            clear(using: fastIndicator, in: fastIndicatorClearanceRect)
             drawAspectFit(
-                fastIndicatorImage(),
+                fastIndicator,
                 in: fastIndicatorRect
             )
         }
@@ -145,11 +146,11 @@ enum MenuBarProviderGlyphResolver {
             ?? NSImage(size: .zero)
     }
 
-    private static func clear(_ rect: CGRect) {
+    private static func clear(using source: NSImage, in rect: CGRect) {
         guard let context = NSGraphicsContext.current?.cgContext else { return }
         context.saveGState()
         context.setBlendMode(.clear)
-        context.fill(rect)
+        drawAspectFit(source, in: rect)
         context.restoreGState()
     }
 
