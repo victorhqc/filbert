@@ -5,7 +5,6 @@ import UniformTypeIdentifiers
 @MainActor
 struct AppearanceTab: View {
     let viewModel: QuotaViewModel
-    @State private var isVintageMacEnabled = VintageMacIcon.isEnabled
     @State private var draggedProviderId: String?
 
     var body: some View {
@@ -17,7 +16,14 @@ struct AppearanceTab: View {
                 if viewModel.configuredProvidersOrdered.isEmpty {
                     providerOrderEmptyHint
                 } else {
-                    providerOrderRows
+                    VStack(alignment: .leading, spacing: 10) {
+                        automaticMenuBarSelection
+                        Text(menuBarSelectionText)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Divider()
+                        providerOrderRows
+                    }
                 }
             }
 
@@ -26,16 +32,18 @@ struct AppearanceTab: View {
             }
 
             SettingsCard(heading: String(localized: "Menu bar icon")) {
-                Toggle(isOn: $isVintageMacEnabled) {
+                Toggle(
+                    isOn: Binding(
+                        get: { viewModel.isVintageMacIconEnabled },
+                        set: { viewModel.setVintageMacIconEnabled($0) }
+                    )
+                ) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(String(localized: "Vintage Mac"))
                         Text(vintageMacSubtitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
-                }
-                .onChange(of: isVintageMacEnabled) { _, isEnabled in
-                    VintageMacIcon.setEnabled(isEnabled)
                 }
             }
         }
@@ -54,6 +62,45 @@ struct AppearanceTab: View {
                 }
             }
         }
+    }
+
+    private var automaticMenuBarSelection: some View {
+        Toggle(
+            isOn: Binding(
+                get: { viewModel.isAutomaticMenuBarProviderSelection },
+                set: { viewModel.setAutomaticMenuBarProviderSelection($0) }
+            )
+        ) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(String(localized: "Automatic"))
+                Text(automaticSelectionDescription)
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+        }
+        .accessibilityHint(automaticSelectionHint)
+    }
+
+    private var menuBarSelectionText: String {
+        guard let provider = viewModel.menuBarProviderInfo else { return "" }
+        if viewModel.isAutomaticMenuBarProviderSelection {
+            return String(localized: "Menu bar automatically selects \(provider.displayName)")
+        }
+        return String(localized: "Menu bar uses the first provider: \(provider.displayName)")
+    }
+
+    private var automaticSelectionHint: String {
+        guard let provider = viewModel.menuBarProviderInfo else {
+            return automaticSelectionDescription
+        }
+        return String.localizedStringWithFormat(
+            String(localized: "Automatic selection accessibility hint"),
+            provider.displayName
+        )
+    }
+
+    private var automaticSelectionDescription: String {
+        String(localized: "Automatic selection description")
     }
 
     private var providerOrderEmptyHint: some View {

@@ -6,6 +6,34 @@ extension QuotaViewModel {
         registry.registeredProviders.first { $0.id == providerId }
     }
 
+    var menuBarProviderId: String? {
+        MenuBarProviderSelector.providerId(
+            configuredProviderIds: configuredProviderIds,
+            enabledProviderIds: enabledProviderIds,
+            providerStates: providerStates,
+            effectiveActivityScores: effectiveActivityScores,
+            isAutomatic: isAutomaticMenuBarProviderSelection
+        )
+    }
+
+    var menuBarProviderInfo: ProviderInfo? {
+        guard let menuBarProviderId else { return nil }
+        return providerInfo(for: menuBarProviderId)
+    }
+
+    func setAutomaticMenuBarProviderSelection(_ isAutomatic: Bool) {
+        guard isAutomaticMenuBarProviderSelection != isAutomatic else { return }
+        MenuBarProviderSelectionPreferences.isAutomatic = isAutomatic
+        isAutomaticMenuBarProviderSelection = isAutomatic
+        rescheduleActivityExpiration()
+    }
+
+    func setVintageMacIconEnabled(_ isEnabled: Bool) {
+        guard isVintageMacIconEnabled != isEnabled else { return }
+        VintageMacIcon.setEnabled(isEnabled)
+        isVintageMacIconEnabled = isEnabled
+    }
+
     func isCollapsed(_ providerId: String) -> Bool {
         _ = collapseStateRevision
         return Self.resolvedCollapseState(

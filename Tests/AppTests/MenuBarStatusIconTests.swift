@@ -1,4 +1,5 @@
 @testable import App
+import AppKit
 import Core
 import XCTest
 
@@ -21,6 +22,26 @@ final class MenuBarStatusIconTests: XCTestCase {
         BalanceThresholds.setUserDefaults(.standard)
         defaults = nil
         super.tearDown()
+    }
+
+    func testStatusVisualKeepsThePercentageRingWhenVintageMacIsDisabled() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.statusImage(
+                for: .window(percentage: 84),
+                isVintageMacEnabled: false
+            ),
+            .ring(bucket: 0.8)
+        )
+    }
+
+    func testStatusVisualUsesVintageMacFaceForAnAutomaticProviderStatus() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.statusImage(
+                for: .window(percentage: 84),
+                isVintageMacEnabled: true
+            ),
+            .macFace(tier: .critical)
+        )
     }
 
     // MARK: - window-based provider → percentage mode
@@ -245,5 +266,55 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testTier_fallbackReturnsNil() {
         XCTAssertNil(QuotaStatusResolver.tier(for: .fallback))
+    }
+}
+
+// MARK: - Leading composite bitmap
+
+final class MenuBarStatusCompositeTests: XCTestCase {
+    func testCompositeSizePlacesTheIdentityColumnBeforeTheRing() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.compositeSize(
+                statusImage: .ring(bucket: 0.8),
+                isFastRefreshActive: false
+            ),
+            CGSize(width: 30, height: 14)
+        )
+    }
+
+    func testCompositeSizeKeepsTheIdentityCanvasWhenFast() {
+        let notFast = MenuBarStatusVisual.compositeSize(
+            statusImage: .ring(bucket: 0.8),
+            isFastRefreshActive: false
+        )
+        let fast = MenuBarStatusVisual.compositeSize(
+            statusImage: .ring(bucket: 0.8),
+            isFastRefreshActive: true
+        )
+
+        XCTAssertEqual(fast.width, notFast.width)
+        XCTAssertEqual(fast.height, 14)
+    }
+
+    func testCompositeSizeWithoutStatusVisualIsTheIdentityColumnAlone() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.compositeSize(
+                statusImage: nil,
+                isFastRefreshActive: false
+            ),
+            CGSize(width: 14, height: 14)
+        )
+    }
+
+    func testCompositeImageIsAColoredBitmapAtTheCompositeSize() {
+        let image = MenuBarStatusVisual.compositeImage(
+            statusImage: .ring(bucket: 0.8),
+            glyph: .sfSymbol("sparkles"),
+            isFastRefreshActive: true
+        )
+
+        XCTAssertFalse(image.isTemplate)
+        XCTAssertFalse(image.representations.isEmpty)
+        XCTAssertEqual(image.size, CGSize(width: 30, height: 14))
     }
 }

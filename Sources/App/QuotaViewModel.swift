@@ -34,6 +34,10 @@ final class QuotaViewModel {
 
     var hasAnyConfiguredProvider: Bool = false
 
+    var isAutomaticMenuBarProviderSelection = MenuBarProviderSelectionPreferences.isAutomatic
+
+    var isVintageMacIconEnabled = VintageMacIcon.isEnabled
+
     /// Changing this token tells SwiftUI to re-resolve the UserDefaults-backed
     /// collapse values that live in Core.
     var collapseStateRevision = 0
@@ -60,6 +64,8 @@ final class QuotaViewModel {
 
     private(set) var fastRefreshingProviderIds: Set<String> = []
 
+    var activityRuntime: MenuBarProviderActivityRuntime
+
     var autoRefreshSettingsRevision = 0
 
     // MARK: - Init
@@ -69,11 +75,21 @@ final class QuotaViewModel {
         registry: ProviderRegistry,
         autoRefreshSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
-        }
+        },
+        activityExpirationSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
+            try await Task.sleep(for: .seconds(interval))
+        },
+        activityNow: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.keychain = keychain
         self.registry = registry
         self.autoRefreshSleeper = autoRefreshSleeper
+        activityRuntime = MenuBarProviderActivityRuntime(
+            expirationSleeper: activityExpirationSleeper,
+            now: activityNow
+        )
+
+        installActivityLifecycleObservers()
 
         var enabledIds: Set<String> = []
         for info in registry.registeredProviders {
@@ -153,6 +169,9 @@ final class QuotaViewModel {
     func setFastRefreshStatusVisible(_ visible: Bool, for providerId: String) {
         guard fastRefreshingProviderIds.contains(providerId) != visible else { return }
 
+        let date = activityRuntime.now()
+        _ = activityRuntime.policy.recordFastRefreshState(visible, for: providerId, at: date)
+
         var providerIds = fastRefreshingProviderIds
         if visible {
             providerIds.insert(providerId)
@@ -160,6 +179,7 @@ final class QuotaViewModel {
             providerIds.remove(providerId)
         }
         fastRefreshingProviderIds = providerIds
+        refreshActivitySelection(at: date)
     }
 
     func setAutoRefreshEnabled(_ enabled: Bool, for providerId: String) {

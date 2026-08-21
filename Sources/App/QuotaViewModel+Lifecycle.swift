@@ -105,6 +105,7 @@ extension QuotaViewModel {
         lifecycleRevisions[providerId, default: 0] += 1
         stopAutoRefresh(for: providerId)
         smartRefreshPolicy.reset(for: providerId)
+        activityRuntime.policy.reset(for: providerId)
         syncFastRefreshStatus(for: providerId)
         fetchTasks[providerId]?.cancel()
         fetchTasks[providerId] = nil
@@ -258,6 +259,7 @@ extension QuotaViewModel {
         let byId = Dictionary(
             uniqueKeysWithValues: registry.registeredProviders.map { ($0.id, $0) }
         )
+        resetActivityForInvalidProviders(registeredProviderIds: Set(byId.keys))
         let ids = orderedProviderIds
             .compactMap { byId[$0] }
             .filter { info in
@@ -267,6 +269,7 @@ extension QuotaViewModel {
         configuredProviderIds = ids
         hasAnyConfiguredProvider = !ids.isEmpty
         log("refreshDerived: configuredProviderIds=\(ids) hasAny=\(hasAnyConfiguredProvider)")
+        rescheduleActivityExpiration()
     }
 
     func log(_ message: @autoclosure () -> String) {

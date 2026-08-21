@@ -1848,6 +1848,33 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Apariencia" } }
       }
     },
+    "Automatic" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } }
+      }
+    },
+    "Automatic selection description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch kürzlich aktive Anbieter bevorzugen; wenn die Aktivität nachlässt, zur gespeicherten Reihenfolge zurückkehren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Favor recently active providers automatically; as activity fades, return to saved order." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado." } }
+      }
+    },
+    "Automatic selection accessibility hint" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch kürzlich aktive Anbieter bevorzugen; wenn die Aktivität nachlässt, zur gespeicherten Reihenfolge zurückkehren. Aktueller Anbieter in der Menüleiste: %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Favor recently active providers automatically; as activity fades, return to saved order. Current menu-bar provider: %@." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menús: %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menú: %@." } }
+      }
+    },
     "Drag providers to change their order." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1918,6 +1945,24 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar icon" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Icono de la barra de menús" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ícono de la barra de menú" } }
+      }
+    },
+    "Menu bar automatically selects %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Menüleiste wählt automatisch %@ aus" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar automatically selects %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menú selecciona automáticamente %@" } }
+      }
+    },
+    "Menu bar uses the first provider: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Menüleiste verwendet den ersten Anbieter: %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar uses the first provider: %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menú usa el primer proveedor: %@" } }
       }
     },
     "Move down" : {

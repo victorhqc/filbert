@@ -1,22 +1,22 @@
+import AppKit
 import Core
 import SwiftUI
 
 // MARK: - Menu-bar live status icon
 
-/// The ring is rendered into a bitmap `NSImage` instead of a SwiftUI `Shape`
-/// because `MenuBarExtra`'s label layer on macOS 14 silently drops arbitrary
-/// `Shape` / `Canvas` content — only `Text` and `Image` reliably render.
+/// The provider glyph, fast-refresh bolt, ring, and Vintage Mac face are
+/// composited into one leading bitmap `NSImage` because `MenuBarExtra`'s
+/// label layer on macOS 14 silently drops `Shape`, `Canvas`, and symbol-backed
+/// `Image` content, and drops `Image` content placed after `Text` — only a
+/// leading bitmap-backed `Image` followed by `Text` reliably renders.
 @MainActor
 struct MenuBarStatusIcon: View {
     let viewModel: QuotaViewModel
-    @State private var isVintageMacEnabled = VintageMacIcon.isEnabled
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         content
             .accessibilityElement(children: .combine)
-            .onReceive(NotificationCenter.default.publisher(for: VintageMacIcon.didChangeNotification)) { _ in
-                isVintageMacEnabled = VintageMacIcon.isEnabled
-            }
     }
 
     @ViewBuilder
@@ -24,47 +24,9 @@ struct MenuBarStatusIcon: View {
         if let resolved = resolvedStatus {
             switch resolved.status {
             case let .window(percentage):
-                HStack(spacing: 3) {
-                    if isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: resolved.status) {
-                        MenuBarMacFaceImage(tier: tier)
-                    } else {
-                        MenuBarRingImage(bucket: bucket(from: percentage / 100))
-                    }
-                    Text(percentageText(percentage))
-                        .font(.caption2.monospacedDigit())
-                        .foregroundStyle(.primary)
-                }
-                .accessibilityLabel(
-                    accessibilityPercentage(
-                        providerName: resolved.providerName,
-                        percentage: percentage
-                    )
-                )
-            case let .balance(_, total, formattedAmount):
-                if isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: resolved.status) {
-                    HStack(spacing: 3) {
-                        MenuBarMacFaceImage(tier: tier)
-                        Text(formattedAmount)
-                            .font(.caption2.monospacedDigit())
-                            .foregroundStyle(.primary)
-                    }
-                    .accessibilityLabel(
-                        accessibilityBalance(
-                            providerName: resolved.providerName,
-                            total: total
-                        )
-                    )
-                } else {
-                    Text(formattedAmount)
-                        .font(.caption2.monospacedDigit())
-                        .foregroundStyle(.primary)
-                        .accessibilityLabel(
-                            accessibilityBalance(
-                                providerName: resolved.providerName,
-                                total: total
-                            )
-                        )
-                }
+                statusRow(percentageText(percentage), resolved: resolved)
+            case let .balance(_, _, formattedAmount):
+                statusRow(formattedAmount, resolved: resolved)
             case .fallback:
                 fallbackIcon
             }
@@ -80,20 +42,13 @@ struct MenuBarStatusIcon: View {
 
     // MARK: - Resolution
 
-    private var resolvedStatus: Resolved? {
-        guard let id = viewModel.configuredProviderIds.first,
-              case let .loaded(quota) = viewModel.providerStates[id]
-        else {
-            return nil
-        }
-        let status = QuotaStatusResolver.resolve(for: quota)
-        guard status != .fallback else { return nil }
-        return Resolved(providerName: quota.providerName, status: status)
-    }
-
-    private func bucket(from fraction: Double) -> Double {
-        let clamped = QuotaStatusResolver.clampedFraction(fraction)
-        return (clamped * 10).rounded() / 10
+    private var resolvedStatus: MenuBarProviderPresentation.Resolved? {
+        guard let providerId = viewModel.menuBarProviderId else { return nil }
+        return MenuBarProviderPresentation.resolve(
+            providerInfo: viewModel.providerInfo(for: providerId),
+            providerState: viewModel.providerStates[providerId],
+            isFastRefreshActive: viewModel.isFastAutomaticRefreshActive(for: providerId)
+        )
     }
 
     private func percentageText(_ percentage: Double) -> String {
@@ -101,62 +56,172 @@ struct MenuBarStatusIcon: View {
         return String(localized: "\(rounded)%")
     }
 
-    private func accessibilityPercentage(providerName: String, percentage: Double) -> String {
-        let pct = Int(percentage.rounded())
-        return String(localized: "\(providerName): \(pct)% used")
-    }
-
-    private func accessibilityBalance(providerName: String, total: Double) -> String {
-        let amount = QuotaStatusResolver.amountText(
-            for: UsageLine(label: "", total: total, unit: nil)
-        ) ?? String(format: "%.2f", total)
-        return String(localized: "\(providerName): \(amount) remaining")
-    }
-
-    private struct Resolved {
-        let providerName: String
-        let status: QuotaStatusResolver.Status
-    }
-}
-
-// MARK: - Ring image (bitmap-backed)
-
-/// The image is drawn in solid black because `MenuBarExtra` applies its own
-/// template tint, so the menu-bar ring respects the OS chrome.
-private struct MenuBarRingImage: View {
-    let bucket: Double
-
-    var body: some View {
-        MenuBarRingImageCache.image(for: bucket)
-            .resizable()
-            .renderingMode(.template)
-            .frame(width: 14, height: 14)
-    }
-}
-
-private enum MenuBarRingImageCache {
-    /// `nonisolated(unsafe)`: SwiftUI renders on the main actor, so the lazy
-    /// populate is single-threaded in practice.
-    private nonisolated(unsafe) static var cache: [Int: Image] = [:]
-
-    static func image(for bucket: Double) -> Image {
-        let key = bucketKey(bucket)
-        if let cached = cache[key] {
-            return cached
+    private func statusRow(
+        _ text: String,
+        resolved: MenuBarProviderPresentation.Resolved
+    ) -> some View {
+        HStack(spacing: 3) {
+            compositeImage(for: resolved)
+            Text(text)
+                .font(.caption2.monospacedDigit())
+                .foregroundStyle(.primary)
         }
-        let rendered = MenuBarRingRenderer.render(fraction: Double(key) / 10)
-        let image = Image(nsImage: rendered)
-        cache[key] = image
-        return image
+        .accessibilityLabel(
+            MenuBarProviderPresentation.accessibilityLabel(for: resolved)
+        )
     }
 
-    private static func bucketKey(_ bucket: Double) -> Int {
-        let clamped = QuotaStatusResolver.clampedFraction(bucket)
-        return Int((clamped * 10).rounded())
+    private func compositeImage(
+        for resolved: MenuBarProviderPresentation.Resolved
+    ) -> some View {
+        let image = MenuBarStatusVisual.compositeImage(
+            statusImage: MenuBarStatusVisual.statusImage(
+                for: resolved.status,
+                isVintageMacEnabled: viewModel.isVintageMacIconEnabled
+            ),
+            glyph: resolved.glyph,
+            isFastRefreshActive: resolved.isFastRefreshActive,
+            foregroundColor: menuBarForegroundColor
+        )
+        return Image(nsImage: image)
+            .resizable()
+            .renderingMode(.original)
+            .frame(width: image.size.width, height: image.size.height)
+            .accessibilityHidden(true)
+    }
+
+    private var menuBarForegroundColor: NSColor {
+        colorScheme == .dark ? .white : .black
     }
 }
 
-/// Drawn in solid black so `MenuBarExtra` can template-tint it.
+enum MenuBarStatusVisual {
+    enum StatusImage: Equatable {
+        case ring(bucket: Double)
+        case macFace(tier: QuotaStatusResolver.Tier)
+    }
+
+    private static let compositeSpacing: CGFloat = 2
+
+    static func statusImage(
+        for status: QuotaStatusResolver.Status,
+        isVintageMacEnabled: Bool
+    ) -> StatusImage? {
+        switch status {
+        case let .window(percentage):
+            if isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: status) {
+                return .macFace(tier: tier)
+            }
+            let clamped = QuotaStatusResolver.clampedFraction(percentage / 100)
+            return .ring(bucket: (clamped * 10).rounded() / 10)
+        case .balance:
+            guard isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: status) else {
+                return nil
+            }
+            return .macFace(tier: tier)
+        case .fallback:
+            return nil
+        }
+    }
+
+    static func compositeSize(
+        statusImage: StatusImage?,
+        isFastRefreshActive: Bool
+    ) -> CGSize {
+        let identity = MenuBarProviderGlyphResolver.menuBarImageSize(
+            isFastRefreshActive: isFastRefreshActive
+        )
+        guard let statusImage else { return identity }
+        let visual = MenuBarStatusVisualRenderer.size(for: statusImage)
+        return CGSize(
+            width: identity.width + compositeSpacing + visual.width,
+            height: max(identity.height, visual.height)
+        )
+    }
+
+    /// The identity canvas and the status visual are drawn into one bitmap
+    /// because the `MenuBarExtra` label layer only renders a leading bitmap
+    /// `Image` followed by `Text`.
+    static func compositeImage(
+        statusImage: StatusImage?,
+        glyph: ProviderGlyph,
+        isFastRefreshActive: Bool,
+        foregroundColor: NSColor = .black
+    ) -> NSImage {
+        let size = compositeSize(statusImage: statusImage, isFastRefreshActive: isFastRefreshActive)
+        return MenuBarBitmapRenderer.image(size: size) {
+            let identity = MenuBarProviderGlyphResolver.menuBarImage(
+                for: glyph,
+                isFastRefreshActive: isFastRefreshActive,
+                foregroundColor: foregroundColor
+            )
+            identity.draw(
+                in: CGRect(
+                    x: 0,
+                    y: (size.height - identity.size.height) / 2,
+                    width: identity.size.width,
+                    height: identity.size.height
+                )
+            )
+
+            if let statusImage {
+                let visual = MenuBarStatusVisualRenderer.render(
+                    statusImage: statusImage,
+                    foregroundColor: foregroundColor
+                )
+                visual.draw(
+                    in: CGRect(
+                        x: identity.size.width + compositeSpacing,
+                        y: (size.height - visual.size.height) / 2,
+                        width: visual.size.width,
+                        height: visual.size.height
+                    )
+                )
+            }
+        }
+    }
+}
+
+private enum MenuBarStatusVisualRenderer {
+    static func render(
+        statusImage: MenuBarStatusVisual.StatusImage,
+        foregroundColor: NSColor
+    ) -> NSImage {
+        let size = size(for: statusImage)
+        return MenuBarBitmapRenderer.image(size: size) {
+            let statusImageSize = statusImageSize(for: statusImage)
+            MenuBarBitmapRenderer.draw(
+                renderedStatusImage(for: statusImage),
+                in: CGRect(origin: .zero, size: statusImageSize),
+                color: foregroundColor
+            )
+        }
+    }
+
+    static func size(for statusImage: MenuBarStatusVisual.StatusImage) -> CGSize {
+        statusImageSize(for: statusImage)
+    }
+
+    private static func renderedStatusImage(for statusImage: MenuBarStatusVisual.StatusImage) -> NSImage {
+        switch statusImage {
+        case let .ring(bucket):
+            MenuBarRingRenderer.render(fraction: bucket)
+        case let .macFace(tier):
+            MenuBarMacFaceRenderer.render(tier: tier)
+        }
+    }
+
+    private static func statusImageSize(for statusImage: MenuBarStatusVisual.StatusImage) -> CGSize {
+        switch statusImage {
+        case .ring:
+            CGSize(width: 14, height: 14)
+        case .macFace:
+            CGSize(width: 16, height: 16)
+        }
+    }
+}
+
+/// Rendered as an alpha mask so composition can apply the menu-bar foreground color.
 private enum MenuBarRingRenderer {
     private static let pixels = 28
 
@@ -239,32 +304,6 @@ private enum MenuBarRingRenderer {
         )
         nsImage.isTemplate = true
         return nsImage
-    }
-}
-
-private struct MenuBarMacFaceImage: View {
-    let tier: QuotaStatusResolver.Tier
-
-    var body: some View {
-        MenuBarMacFaceCache.image(for: tier)
-            .resizable()
-            .renderingMode(.template)
-            .frame(width: 16, height: 16)
-    }
-}
-
-private enum MenuBarMacFaceCache {
-    /// `nonisolated(unsafe)`: SwiftUI renders on the main actor, so the lazy
-    /// populate is single-threaded in practice.
-    private nonisolated(unsafe) static var cache: [QuotaStatusResolver.Tier: Image] = [:]
-
-    static func image(for tier: QuotaStatusResolver.Tier) -> Image {
-        if let cached = cache[tier] {
-            return cached
-        }
-        let image = Image(nsImage: MenuBarMacFaceRenderer.render(tier: tier))
-        cache[tier] = image
-        return image
     }
 }
 
