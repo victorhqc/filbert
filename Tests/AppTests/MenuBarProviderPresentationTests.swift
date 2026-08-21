@@ -137,7 +137,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         )
         XCTAssertEqual(
             MenuBarProviderGlyphResolver.fastIndicatorRect,
-            CGRect(x: 7, y: 7, width: 7, height: 7)
+            CGRect(x: 5, y: 5, width: 9, height: 9)
         )
         XCTAssertTrue(
             MenuBarProviderGlyphResolver.glyphRect.intersects(
@@ -146,7 +146,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         )
         XCTAssertEqual(
             MenuBarProviderGlyphResolver.fastIndicatorClearanceRect,
-            CGRect(x: 6, y: 6, width: 8, height: 8)
+            CGRect(x: 4, y: 4, width: 10, height: 10)
         )
         XCTAssertFalse(image.representations.isEmpty)
     }

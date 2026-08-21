@@ -145,7 +145,7 @@ enum MenuBarBitmapRenderer {
 enum MenuBarProviderGlyphResolver {
     static let identityCanvasSide: CGFloat = 14
     static let glyphSide: CGFloat = 12
-    static let fastIndicatorSide: CGFloat = 7
+    static let fastIndicatorSide: CGFloat = 9
     static let fastIndicatorClearance: CGFloat = 1
 
     static let identityCanvasRect = CGRect(
@@ -180,8 +180,7 @@ enum MenuBarProviderGlyphResolver {
     static func menuBarImage(
         for glyph: ProviderGlyph,
         isFastRefreshActive: Bool,
-        foregroundColor: NSColor = .black,
-        fastIndicatorColor: NSColor = .white
+        foregroundColor: NSColor = .black
     ) -> NSImage {
         let size = menuBarImageSize(isFastRefreshActive: isFastRefreshActive)
         return MenuBarBitmapRenderer.image(size: size) {
@@ -199,7 +198,7 @@ enum MenuBarProviderGlyphResolver {
                 MenuBarBitmapRenderer.draw(
                     fastIndicator,
                     in: fastIndicatorRect,
-                    color: fastIndicatorColor
+                    color: foregroundColor
                 )
             }
         }

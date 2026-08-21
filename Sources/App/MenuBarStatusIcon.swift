@@ -81,8 +81,7 @@ struct MenuBarStatusIcon: View {
             ),
             glyph: resolved.glyph,
             isFastRefreshActive: resolved.isFastRefreshActive,
-            foregroundColor: menuBarForegroundColor,
-            fastIndicatorColor: menuBarFastIndicatorColor
+            foregroundColor: menuBarForegroundColor
         )
         return Image(nsImage: image)
             .resizable()
@@ -93,10 +92,6 @@ struct MenuBarStatusIcon: View {
 
     private var menuBarForegroundColor: NSColor {
         colorScheme == .dark ? .white : .black
-    }
-
-    private var menuBarFastIndicatorColor: NSColor {
-        colorScheme == .dark ? .black : .white
     }
 }
 
@@ -151,16 +146,14 @@ enum MenuBarStatusVisual {
         statusImage: StatusImage?,
         glyph: ProviderGlyph,
         isFastRefreshActive: Bool,
-        foregroundColor: NSColor = .black,
-        fastIndicatorColor: NSColor = .white
+        foregroundColor: NSColor = .black
     ) -> NSImage {
         let size = compositeSize(statusImage: statusImage, isFastRefreshActive: isFastRefreshActive)
         return MenuBarBitmapRenderer.image(size: size) {
             let identity = MenuBarProviderGlyphResolver.menuBarImage(
                 for: glyph,
                 isFastRefreshActive: isFastRefreshActive,
-                foregroundColor: foregroundColor,
-                fastIndicatorColor: fastIndicatorColor
+                foregroundColor: foregroundColor
             )
             identity.draw(
                 in: CGRect(
