@@ -278,11 +278,11 @@ final class MenuBarStatusCompositeTests: XCTestCase {
                 statusImage: .ring(bucket: 0.8),
                 isFastRefreshActive: false
             ),
-            CGSize(width: 25, height: 14)
+            CGSize(width: 30, height: 14)
         )
     }
 
-    func testCompositeSizeGrowsTallAndKeepsWidthWhenFast() {
+    func testCompositeSizeKeepsTheIdentityCanvasWhenFast() {
         let notFast = MenuBarStatusVisual.compositeSize(
             statusImage: .ring(bucket: 0.8),
             isFastRefreshActive: false
@@ -293,7 +293,7 @@ final class MenuBarStatusCompositeTests: XCTestCase {
         )
 
         XCTAssertEqual(fast.width, notFast.width)
-        XCTAssertEqual(fast.height, 16)
+        XCTAssertEqual(fast.height, 14)
     }
 
     func testCompositeSizeWithoutStatusVisualIsTheIdentityColumnAlone() {
@@ -302,7 +302,7 @@ final class MenuBarStatusCompositeTests: XCTestCase {
                 statusImage: nil,
                 isFastRefreshActive: false
             ),
-            CGSize(width: 9, height: 9)
+            CGSize(width: 14, height: 14)
         )
     }
 
@@ -315,6 +315,6 @@ final class MenuBarStatusCompositeTests: XCTestCase {
 
         XCTAssertTrue(image.isTemplate)
         XCTAssertFalse(image.representations.isEmpty)
-        XCTAssertEqual(image.size, CGSize(width: 25, height: 16))
+        XCTAssertEqual(image.size, CGSize(width: 30, height: 14))
     }
 }

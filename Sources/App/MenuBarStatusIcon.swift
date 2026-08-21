@@ -132,9 +132,9 @@ enum MenuBarStatusVisual {
         )
     }
 
-    /// The identity column (fast bolt above provider glyph) and the status
-    /// visual are drawn into one bitmap because the `MenuBarExtra` label layer
-    /// only renders a leading bitmap `Image` followed by `Text`.
+    /// The identity canvas and the status visual are drawn into one bitmap
+    /// because the `MenuBarExtra` label layer only renders a leading bitmap
+    /// `Image` followed by `Text`.
     static func compositeImage(
         statusImage: StatusImage?,
         glyph: ProviderGlyph,

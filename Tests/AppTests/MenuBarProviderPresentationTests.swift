@@ -106,14 +106,14 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         XCTAssertEqual(
             image.size,
             CGSize(
-                width: MenuBarProviderGlyphResolver.glyphSide,
-                height: MenuBarProviderGlyphResolver.glyphSide
+                width: MenuBarProviderGlyphResolver.identityCanvasSide,
+                height: MenuBarProviderGlyphResolver.identityCanvasSide
             )
         )
         XCTAssertFalse(image.representations.isEmpty)
     }
 
-    func testFastRefreshStacksTheBoltAboveTheGlyph() {
+    func testFastRefreshOverlapsTheGlyphAtTheTopRight() {
         let image = MenuBarProviderGlyphResolver.menuBarImage(
             for: .sfSymbol("sparkles"),
             isFastRefreshActive: true
@@ -123,14 +123,30 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         XCTAssertEqual(
             image.size,
             CGSize(
-                width: MenuBarProviderGlyphResolver.glyphSide,
-                height: MenuBarProviderGlyphResolver.fastIndicatorSide
-                    + MenuBarProviderGlyphResolver.glyphSide
+                width: MenuBarProviderGlyphResolver.identityCanvasSide,
+                height: MenuBarProviderGlyphResolver.identityCanvasSide
             )
         )
         XCTAssertEqual(
             MenuBarProviderGlyphResolver.menuBarImageSize(isFastRefreshActive: true).width,
             MenuBarProviderGlyphResolver.menuBarImageSize(isFastRefreshActive: false).width
+        )
+        XCTAssertEqual(
+            MenuBarProviderGlyphResolver.glyphRect,
+            CGRect(x: 1, y: 1, width: 12, height: 12)
+        )
+        XCTAssertEqual(
+            MenuBarProviderGlyphResolver.fastIndicatorRect,
+            CGRect(x: 7, y: 7, width: 7, height: 7)
+        )
+        XCTAssertTrue(
+            MenuBarProviderGlyphResolver.glyphRect.intersects(
+                MenuBarProviderGlyphResolver.fastIndicatorRect
+            )
+        )
+        XCTAssertEqual(
+            MenuBarProviderGlyphResolver.fastIndicatorClearanceRect,
+            CGRect(x: 6, y: 6, width: 8, height: 8)
         )
         XCTAssertFalse(image.representations.isEmpty)
     }

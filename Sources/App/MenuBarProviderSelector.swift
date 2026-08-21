@@ -1,12 +1,11 @@
 import Core
-import Foundation
 
 enum MenuBarProviderSelector {
     static func providerId(
         configuredProviderIds: [String],
         enabledProviderIds: Set<String>,
         providerStates: [String: ProviderState],
-        fastRefreshingProviderIds: Set<String>,
+        effectiveActivityScores: [String: Double],
         isAutomatic: Bool
     ) -> String? {
         guard isAutomatic else { return configuredProviderIds.first }
@@ -23,21 +22,14 @@ enum MenuBarProviderSelector {
             }
             return Candidate(
                 providerId: providerId,
-                lastUpdated: quota.lastUpdated,
+                effectiveActivityScore: effectiveActivityScores[providerId] ?? 0,
                 configuredOrderIndex: orderIndices[providerId] ?? .max
             )
         }
 
         guard !candidates.isEmpty else { return configuredProviderIds.first }
 
-        let fastCandidates = candidates.filter {
-            fastRefreshingProviderIds.contains($0.providerId)
-        }
-        if !fastCandidates.isEmpty {
-            return fastCandidates.sorted(by: fastCandidatePrecedes).first?.providerId
-        }
-
-        return candidates.sorted(by: updatedCandidatePrecedes).first?.providerId
+        return candidates.sorted(by: candidatePrecedes).first?.providerId
     }
 
     private static func configuredOrderIndices(for providerIds: [String]) -> [String: Int] {
@@ -48,23 +40,19 @@ enum MenuBarProviderSelector {
         return indices
     }
 
-    static func fastCandidatePrecedes(_ lhs: Candidate, _ rhs: Candidate) -> Bool {
+    static func candidatePrecedes(_ lhs: Candidate, _ rhs: Candidate) -> Bool {
+        if lhs.effectiveActivityScore != rhs.effectiveActivityScore {
+            return lhs.effectiveActivityScore > rhs.effectiveActivityScore
+        }
         if lhs.configuredOrderIndex != rhs.configuredOrderIndex {
             return lhs.configuredOrderIndex < rhs.configuredOrderIndex
         }
         return lhs.providerId < rhs.providerId
     }
 
-    static func updatedCandidatePrecedes(_ lhs: Candidate, _ rhs: Candidate) -> Bool {
-        if lhs.lastUpdated != rhs.lastUpdated {
-            return lhs.lastUpdated > rhs.lastUpdated
-        }
-        return fastCandidatePrecedes(lhs, rhs)
-    }
-
     struct Candidate {
         let providerId: String
-        let lastUpdated: Date
+        let effectiveActivityScore: Double
         let configuredOrderIndex: Int
     }
 }

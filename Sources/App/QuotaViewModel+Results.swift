@@ -37,13 +37,17 @@ extension QuotaViewModel {
                 log("applyResults: provider=\(id) success, headline=\(quota.headline)")
                 setRefreshError(nil, for: id)
                 setState(.loaded(quota), for: id)
+                recordActivityObservation(
+                    for: id,
+                    observation: quota.activityObservation,
+                    at: activityRuntime.now()
+                )
             case let .failure(error):
                 log("applyResults: provider=\(id) failed: \(error.localizedDescription)")
                 if error is KeychainError {
-                    // Key deleted externally — genuine state change, not a refresh failure.
+                    invalidateProviderWork(for: id)
                     setRefreshError(nil, for: id)
                     setState(.unconfigured, for: id)
-                    stopAutoRefresh(for: id)
                 } else if case .loaded = providerStates[id] {
                     setRefreshError(error.localizedDescription, for: id)
                 } else {

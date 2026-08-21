@@ -53,19 +53,40 @@ enum MenuBarProviderPresentation {
 }
 
 enum MenuBarProviderGlyphResolver {
-    static let glyphSide: CGFloat = 9
+    static let identityCanvasSide: CGFloat = 14
+    static let glyphSide: CGFloat = 12
     static let fastIndicatorSide: CGFloat = 7
+    static let fastIndicatorClearance: CGFloat = 1
 
-    static func menuBarImageSize(isFastRefreshActive: Bool) -> CGSize {
-        CGSize(
-            width: glyphSide,
-            height: isFastRefreshActive ? fastIndicatorSide + glyphSide : glyphSide
-        )
+    static let identityCanvasRect = CGRect(
+        x: 0,
+        y: 0,
+        width: identityCanvasSide,
+        height: identityCanvasSide
+    )
+
+    static let glyphRect = CGRect(
+        x: (identityCanvasSide - glyphSide) / 2,
+        y: (identityCanvasSide - glyphSide) / 2,
+        width: glyphSide,
+        height: glyphSide
+    )
+
+    static let fastIndicatorRect = CGRect(
+        x: identityCanvasSide - fastIndicatorSide,
+        y: identityCanvasSide - fastIndicatorSide,
+        width: fastIndicatorSide,
+        height: fastIndicatorSide
+    )
+
+    static let fastIndicatorClearanceRect = fastIndicatorRect
+        .insetBy(dx: -fastIndicatorClearance, dy: -fastIndicatorClearance)
+        .intersection(identityCanvasRect)
+
+    static func menuBarImageSize(isFastRefreshActive _: Bool) -> CGSize {
+        identityCanvasRect.size
     }
 
-    /// Drawn into one bitmap template `NSImage` — bolt above glyph while
-    /// fast — because `MenuBarExtra`'s label layer silently drops
-    /// symbol-backed images.
     static func menuBarImage(
         for glyph: ProviderGlyph,
         isFastRefreshActive: Bool
@@ -74,21 +95,17 @@ enum MenuBarProviderGlyphResolver {
         let renderedImage = NSImage(size: size)
         renderedImage.lockFocus()
 
-        if isFastRefreshActive {
-            drawAspectFit(
-                fastIndicatorImage(),
-                in: CGRect(
-                    x: (size.width - fastIndicatorSide) / 2,
-                    y: glyphSide,
-                    width: fastIndicatorSide,
-                    height: fastIndicatorSide
-                )
-            )
-        }
         drawAspectFit(
             image(for: glyph),
-            in: CGRect(x: 0, y: 0, width: glyphSide, height: glyphSide)
+            in: glyphRect
         )
+        if isFastRefreshActive {
+            clear(fastIndicatorClearanceRect)
+            drawAspectFit(
+                fastIndicatorImage(),
+                in: fastIndicatorRect
+            )
+        }
 
         renderedImage.unlockFocus()
         renderedImage.isTemplate = true
@@ -126,6 +143,14 @@ enum MenuBarProviderGlyphResolver {
     private static func fastIndicatorImage() -> NSImage {
         NSImage(systemSymbolName: "bolt.fill", accessibilityDescription: nil)
             ?? NSImage(size: .zero)
+    }
+
+    private static func clear(_ rect: CGRect) {
+        guard let context = NSGraphicsContext.current?.cgContext else { return }
+        context.saveGState()
+        context.setBlendMode(.clear)
+        context.fill(rect)
+        context.restoreGState()
     }
 
     private static func drawAspectFit(_ source: NSImage, in rect: CGRect) {

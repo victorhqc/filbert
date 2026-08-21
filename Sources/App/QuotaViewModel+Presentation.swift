@@ -11,7 +11,7 @@ extension QuotaViewModel {
             configuredProviderIds: configuredProviderIds,
             enabledProviderIds: enabledProviderIds,
             providerStates: providerStates,
-            fastRefreshingProviderIds: fastRefreshingProviderIds,
+            effectiveActivityScores: effectiveActivityScores,
             isAutomatic: isAutomaticMenuBarProviderSelection
         )
     }
@@ -25,6 +25,7 @@ extension QuotaViewModel {
         guard isAutomaticMenuBarProviderSelection != isAutomatic else { return }
         MenuBarProviderSelectionPreferences.isAutomatic = isAutomatic
         isAutomaticMenuBarProviderSelection = isAutomatic
+        rescheduleActivityExpiration()
     }
 
     func setVintageMacIconEnabled(_ isEnabled: Bool) {

@@ -42,7 +42,7 @@ final class MenuBarProviderSelectorTests: XCTestCase {
         )
     }
 
-    func testAutomaticSelectionPrioritizesOneFastProviderOverNewerCandidates() {
+    func testAutomaticSelectionPrioritizesHigherActivityScore() {
         XCTAssertEqual(
             providerId(
                 configuredProviderIds: ["fast", "newer"],
@@ -50,14 +50,14 @@ final class MenuBarProviderSelectorTests: XCTestCase {
                     "fast": loadedState(for: "fast", updatedAt: 1),
                     "newer": loadedState(for: "newer", updatedAt: 100),
                 ],
-                fastRefreshingProviderIds: ["fast"],
+                activityScores: ["fast": 30],
                 isAutomatic: true
             ),
             "fast"
         )
     }
 
-    func testAutomaticSelectionUsesSavedOrderBetweenFastProviders() {
+    func testAutomaticSelectionUsesSavedOrderBetweenEqualActivityScores() {
         XCTAssertEqual(
             providerId(
                 configuredProviderIds: ["first", "second"],
@@ -65,14 +65,14 @@ final class MenuBarProviderSelectorTests: XCTestCase {
                     "first": loadedState(for: "first", updatedAt: 1),
                     "second": loadedState(for: "second", updatedAt: 100),
                 ],
-                fastRefreshingProviderIds: ["first", "second"],
+                activityScores: ["first": 30, "second": 30],
                 isAutomatic: true
             ),
             "first"
         )
     }
 
-    func testAutomaticSelectionUsesLatestUpdateWhenNoProviderIsFast() {
+    func testAutomaticSelectionUsesSavedOrderWhenScoresAreAtEquilibrium() {
         XCTAssertEqual(
             providerId(
                 configuredProviderIds: ["older", "newer"],
@@ -82,11 +82,11 @@ final class MenuBarProviderSelectorTests: XCTestCase {
                 ],
                 isAutomatic: true
             ),
-            "newer"
+            "older"
         )
     }
 
-    func testAutomaticSelectionUsesSavedOrderForEqualUpdates() {
+    func testAutomaticSelectionUsesSavedOrderForEqualScores() {
         XCTAssertEqual(
             providerId(
                 configuredProviderIds: ["first", "second"],
@@ -101,30 +101,29 @@ final class MenuBarProviderSelectorTests: XCTestCase {
     }
 
     func testDefensiveTieBreakingSortsUnlistedCandidatesLastThenByProviderID() {
-        let timestamp = Date(timeIntervalSinceReferenceDate: 1)
         let listed = MenuBarProviderSelector.Candidate(
             providerId: "listed",
-            lastUpdated: timestamp,
+            effectiveActivityScore: 1,
             configuredOrderIndex: 0
         )
         let unlisted = MenuBarProviderSelector.Candidate(
             providerId: "unlisted",
-            lastUpdated: timestamp,
+            effectiveActivityScore: 1,
             configuredOrderIndex: .max
         )
         let alpha = MenuBarProviderSelector.Candidate(
             providerId: "alpha",
-            lastUpdated: timestamp,
+            effectiveActivityScore: 1,
             configuredOrderIndex: .max
         )
         let beta = MenuBarProviderSelector.Candidate(
             providerId: "beta",
-            lastUpdated: timestamp,
+            effectiveActivityScore: 1,
             configuredOrderIndex: .max
         )
 
-        XCTAssertTrue(MenuBarProviderSelector.updatedCandidatePrecedes(listed, unlisted))
-        XCTAssertTrue(MenuBarProviderSelector.updatedCandidatePrecedes(alpha, beta))
+        XCTAssertTrue(MenuBarProviderSelector.candidatePrecedes(listed, unlisted))
+        XCTAssertTrue(MenuBarProviderSelector.candidatePrecedes(alpha, beta))
     }
 
     func testAutomaticSelectionFallsBackToFirstConfiguredProviderWhenNoCandidateIsDisplayable() {
@@ -141,7 +140,7 @@ final class MenuBarProviderSelectorTests: XCTestCase {
         )
     }
 
-    func testAutomaticSelectionReevaluatesWhenFastStatusChanges() {
+    func testAutomaticSelectionReevaluatesWhenScoresChange() {
         let states: [String: ProviderState] = [
             "fast": loadedState(for: "fast", updatedAt: 1),
             "newer": loadedState(for: "newer", updatedAt: 2),
@@ -151,18 +150,19 @@ final class MenuBarProviderSelectorTests: XCTestCase {
             providerId(
                 configuredProviderIds: ["fast", "newer"],
                 states: states,
-                fastRefreshingProviderIds: ["fast"],
+                activityScores: ["fast": 10, "newer": 20],
                 isAutomatic: true
             ),
-            "fast"
+            "newer"
         )
         XCTAssertEqual(
             providerId(
                 configuredProviderIds: ["fast", "newer"],
                 states: states,
+                activityScores: ["fast": 30, "newer": 20],
                 isAutomatic: true
             ),
-            "newer"
+            "fast"
         )
     }
 
@@ -170,14 +170,14 @@ final class MenuBarProviderSelectorTests: XCTestCase {
         configuredProviderIds: [String],
         enabledProviderIds: Set<String>? = nil,
         states: [String: ProviderState],
-        fastRefreshingProviderIds: Set<String> = [],
+        activityScores: [String: Double] = [:],
         isAutomatic: Bool
     ) -> String? {
         MenuBarProviderSelector.providerId(
             configuredProviderIds: configuredProviderIds,
             enabledProviderIds: enabledProviderIds ?? Set(configuredProviderIds),
             providerStates: states,
-            fastRefreshingProviderIds: fastRefreshingProviderIds,
+            effectiveActivityScores: activityScores,
             isAutomatic: isAutomatic
         )
     }
