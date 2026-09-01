@@ -2,6 +2,7 @@ import ClaudeCodeProvider
 import Core
 import CursorProvider
 import DeepSeekProvider
+import GeminiCLIProvider
 import OpenAICodexProvider
 import OpenCodeGoProvider
 import SwiftUI
@@ -21,6 +22,7 @@ struct AppMain: App {
         registry.register(OpenAICodexProvider())
         registry.register(OpenCodeGoProvider())
         registry.register(CursorProvider())
+        registry.register(GeminiCLIProvider())
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
     }
 
