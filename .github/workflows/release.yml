@@ -24,6 +24,11 @@ jobs:
     # pre-Tahoe codepath at runtime: wrong popover material and a
     # MenuBarExtra(.window) that won't resize. build-dmg.sh asserts the SDK.
     runs-on: macos-26
+    # Holds the six Apple signing/notarization secrets (ci 05). The build
+    # step maps them into the DMG build only; --require-signing makes the
+    # job fail closed if any is missing. Setup:
+    # docs/signing-and-notarization.md
+    environment: release-signing
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,10 +43,16 @@ jobs:
         run: |
           echo "version=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      - name: Build DMG
+      - name: Build signed and notarized DMG
         env:
           VERSION: ${{ steps.version.outputs.version }}
-        run: scripts/build-dmg.sh --version "$VERSION"
+          APPLE_DEVELOPER_ID_P12: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
+          APPLE_DEVELOPER_ID_P12_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
+          APPLE_DEVELOPER_ID_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_ID_TEAM_ID }}
+          APPLE_DEVELOPER_ID_NAME: ${{ secrets.APPLE_DEVELOPER_ID_NAME }}
+          APP_NOTARY_APPLE_ID: ${{ secrets.APP_NOTARY_APPLE_ID }}
+          APP_NOTARY_APP_SPECIFIC_PASSWORD: ${{ secrets.APP_NOTARY_APP_SPECIFIC_PASSWORD }}
+        run: scripts/build-dmg.sh --version "$VERSION" --require-signing
 
       - name: Upload DMG and checksum
         env:
