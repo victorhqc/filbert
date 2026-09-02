@@ -42,5 +42,46 @@ struct GeminiLoadCodeAssistRequest: Encodable, Sendable {
 }
 
 struct GeminiLoadCodeAssistResponse: Decodable, Sendable {
-    let cloudaicompanionProject: String?
+    let cloudaicompanionProject: GeminiProjectReference?
+    let currentCloudaicompanionProject: GeminiProjectReference?
+
+    var projectIdentifier: String? {
+        cloudaicompanionProject?.value
+            ?? currentCloudaicompanionProject?.value
+    }
+}
+
+enum GeminiProjectReference: Decodable, Sendable {
+    case string(String)
+    case object(id: String?, projectId: String?)
+
+    init(from decoder: Decoder) throws {
+        if let value = try? decoder.singleValueContainer().decode(String.self) {
+            self = .string(value)
+            return
+        }
+
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self = try .object(
+            id: container.decodeIfPresent(String.self, forKey: .id),
+            projectId: container.decodeIfPresent(String.self, forKey: .projectId)
+        )
+    }
+
+    var value: String? {
+        let candidates: [String?] = switch self {
+        case let .string(value):
+            [value]
+        case let .object(id, projectId):
+            [id, projectId]
+        }
+        return candidates
+            .compactMap { $0?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty }
+    }
+
+    private enum CodingKeys: String, CodingKey {
+        case id
+        case projectId
+    }
 }

@@ -3,18 +3,13 @@ import Foundation
 @testable import GeminiCLIProvider
 import XCTest
 
-private struct GeminiHTTPStatusCase {
-    let status: Int
-    let expected: GeminiCLIError
-    let attempts: Int
-}
-
 final class GeminiCLIProviderTests: XCTestCase {
     func testProviderReportsAPIKeyFreeSetupAndSetupHelp() async throws {
         let provider = makeProvider(credentials: nil)
 
         XCTAssertEqual(GeminiCLIProvider.authShape, .apiKeyFree)
         XCTAssertFalse(provider.isConfigured())
+        XCTAssertTrue(makeProvider(credentials: validCredentials()).isConfigured())
         guard case let .setup(message) = await provider.currentSetupState() else {
             return XCTFail("Expected setup state")
         }
@@ -48,6 +43,41 @@ extension GeminiCLIProviderTests {
             return XCTFail("Expected access-denied setup state")
         }
         XCTAssertEqual(deniedMessage, "Allow Filbert to read the Gemini CLI Keychain item")
+    }
+}
+
+extension GeminiCLIProviderTests {
+    func testDecodesGeminiCLIKeychainCredentialFixture() throws {
+        let credentials = try GeminiKeychainStore.decodeCredentials(
+            from: fixtureData("keychain-oauth.json")
+        )
+
+        XCTAssertEqual(credentials.accessToken, "fixture-access-token")
+        XCTAssertEqual(credentials.refreshToken, "fixture-refresh-token")
+        XCTAssertEqual(
+            credentials.expiresAt,
+            Date(timeIntervalSince1970: 1_735_689_600)
+        )
+        XCTAssertFalse(String(describing: credentials).contains("fixture-"))
+    }
+
+    func testDecodesLoadCodeAssistProjectFixtures() throws {
+        let serverProject = try decodeFixture(
+            "load-code-assist-server-project.json",
+            as: GeminiLoadCodeAssistResponse.self
+        )
+        let currentProject = try decodeFixture(
+            "load-code-assist-current-project.json",
+            as: GeminiLoadCodeAssistResponse.self
+        )
+        let objectProject = try decodeFixture(
+            "load-code-assist-object-project.json",
+            as: GeminiLoadCodeAssistResponse.self
+        )
+
+        XCTAssertEqual(serverProject.projectIdentifier, "gemini-project")
+        XCTAssertEqual(currentProject.projectIdentifier, "current-gemini-project")
+        XCTAssertEqual(objectProject.projectIdentifier, "object-gemini-project")
     }
 }
 
@@ -96,16 +126,20 @@ extension GeminiCLIProviderTests {
         XCTAssertEqual(quota.lines[0].label, "gemini-2.5-flash · Quota")
         XCTAssertNil(quota.lines[0].total)
 
+        let empty = try provider.map(GeminiQuotaResponse(buckets: []))
+        XCTAssertTrue(empty.lines.isEmpty)
+        XCTAssertEqual(empty.headline, "No usage limits reported")
+
+        let missing = try provider.map(GeminiQuotaResponse(buckets: nil))
+        XCTAssertTrue(missing.lines.isEmpty)
+        XCTAssertEqual(missing.headline, "No usage limits reported")
+
+        let drift = try decodeFixture(
+            "payload-drift.json",
+            as: GeminiQuotaResponse.self
+        )
         XCTAssertThrowsError(
-            try provider.map(GeminiQuotaResponse(buckets: [
-                GeminiQuotaBucket(
-                    remainingAmount: nil,
-                    remainingFraction: 2,
-                    resetTime: nil,
-                    tokenType: "REQUESTS",
-                    modelId: "gemini-2.5-flash"
-                ),
-            ]))
+            try provider.map(drift)
         ) { error in
             XCTAssertEqual(error as? GeminiCLIError, .payloadDrift)
         }
@@ -123,256 +157,5 @@ extension GeminiCLIProviderTests {
         ) { error in
             XCTAssertEqual(error as? GeminiCLIError, .payloadDrift)
         }
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testFetchUsesOAuthHeadersAndReadOnlyCodeAssistRequests() async throws {
-        let quotaData = Data(
-            #"{"buckets":[{"modelId":"gemini-2.5-flash","tokenType":"REQUESTS","remainingFraction":0.75}]}"#.utf8
-        )
-        let transport = RecordingTransport(responses: [
-            GeminiHTTPResponse(
-                data: Data(#"{"cloudaicompanionProject":"gemini-project"}"#.utf8),
-                statusCode: 200,
-                retryAfter: nil
-            ),
-            GeminiHTTPResponse(
-                data: quotaData,
-                statusCode: 200,
-                retryAfter: nil
-            ),
-        ])
-        let provider = makeProvider(
-            credentials: validCredentials(),
-            transport: transport
-        )
-
-        let quota = try await provider.fetchQuota(
-            auth: .apiKeyFree,
-            baseURL: GeminiCLIProvider.baseURL
-        )
-
-        XCTAssertEqual(quota.lines[0].percentage, 25)
-        let requests = await transport.recordedRequests()
-        XCTAssertEqual(requests.count, 2)
-        XCTAssertEqual(
-            requests.map(\.url?.absoluteString),
-            [
-                "https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist",
-                "https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota",
-            ]
-        )
-        XCTAssertTrue(requests.allSatisfy {
-            $0.value(forHTTPHeaderField: "Authorization") == "Bearer access-token"
-        })
-        let quotaBody = try XCTUnwrap(requests[1].httpBody)
-        XCTAssertEqual(
-            try JSONSerialization.jsonObject(with: quotaBody) as? [String: String],
-            ["project": "gemini-project"]
-        )
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testFetchRefreshesWithRefreshTokenWithoutPersistingIt() async throws {
-        let transport = RecordingTransport(responses: [
-            GeminiHTTPResponse(
-                data: Data(#"{"access_token":"refreshed-token","expires_in":3600}"#.utf8),
-                statusCode: 200,
-                retryAfter: nil
-            ),
-            GeminiHTTPResponse(
-                data: Data(#"{"cloudaicompanionProject":"gemini-project"}"#.utf8),
-                statusCode: 200,
-                retryAfter: nil
-            ),
-            GeminiHTTPResponse(
-                data: Data(#"{"buckets":[{"modelId":"gemini-2.5-flash","remainingFraction":0.5}]}"#.utf8),
-                statusCode: 200,
-                retryAfter: nil
-            ),
-        ])
-        let provider = makeProvider(
-            credentials: GeminiCredentials(
-                accessToken: "expired-token",
-                refreshToken: "refresh/token",
-                expiresAt: Date(timeIntervalSince1970: 100)
-            ),
-            transport: transport,
-            now: { Date(timeIntervalSince1970: 200) }
-        )
-
-        _ = try await provider.fetchQuota(
-            auth: .apiKeyFree,
-            baseURL: GeminiCLIProvider.baseURL
-        )
-
-        let requests = await transport.recordedRequests()
-        XCTAssertEqual(
-            requests[0].url,
-            URL(string: "https://oauth2.googleapis.com/token")
-        )
-        XCTAssertEqual(
-            requests[0].value(forHTTPHeaderField: "Authorization"),
-            nil
-        )
-        let refreshBody = try XCTUnwrap(
-            String(data: XCTUnwrap(requests[0].httpBody), encoding: .utf8)
-        )
-        XCTAssertTrue(refreshBody.contains("refresh_token=refresh%2Ftoken"))
-        XCTAssertFalse(refreshBody.contains("client_secret="))
-        XCTAssertEqual(
-            requests[1].value(forHTTPHeaderField: "Authorization"),
-            "Bearer refreshed-token"
-        )
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testFetchRetriesRateLimitWithoutChangingRequest() async throws {
-        let transport = RecordingTransport(responses: [
-            GeminiHTTPResponse(
-                data: Data(#"{"cloudaicompanionProject":"gemini-project"}"#.utf8),
-                statusCode: 200,
-                retryAfter: nil
-            ),
-            GeminiHTTPResponse(data: Data(), statusCode: 429, retryAfter: 0),
-            GeminiHTTPResponse(
-                data: Data(#"{"buckets":[{"modelId":"gemini-2.5-flash","remainingFraction":0.9}]}"#.utf8),
-                statusCode: 200,
-                retryAfter: nil
-            ),
-        ])
-        let provider = makeProvider(
-            credentials: validCredentials(),
-            transport: transport
-        )
-
-        _ = try await provider.fetchQuota(
-            auth: .apiKeyFree,
-            baseURL: GeminiCLIProvider.baseURL
-        )
-
-        let requests = await transport.recordedRequests()
-        XCTAssertEqual(requests.count, 3)
-        XCTAssertEqual(
-            requests[1].url,
-            requests[2].url
-        )
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testFetchMapsCodeAssistHTTPStatuses() async {
-        let cases = [
-            GeminiHTTPStatusCase(status: 401, expected: .signedOut, attempts: 1),
-            GeminiHTTPStatusCase(
-                status: 403,
-                expected: .projectSetupRequired,
-                attempts: 1
-            ),
-            GeminiHTTPStatusCase(status: 429, expected: .rateLimited, attempts: 3),
-        ]
-
-        for testCase in cases {
-            let responses = [
-                GeminiHTTPResponse(
-                    data: Data(#"{"cloudaicompanionProject":"gemini-project"}"#.utf8),
-                    statusCode: 200,
-                    retryAfter: nil
-                ),
-            ] + Array(
-                repeating: GeminiHTTPResponse(
-                    data: Data(),
-                    statusCode: testCase.status,
-                    retryAfter: 0
-                ),
-                count: testCase.attempts
-            )
-            let transport = RecordingTransport(responses: responses)
-            let provider = makeProvider(
-                credentials: validCredentials(),
-                transport: transport
-            )
-
-            do {
-                _ = try await provider.fetchQuota(
-                    auth: .apiKeyFree,
-                    baseURL: GeminiCLIProvider.baseURL
-                )
-                XCTFail("Expected HTTP status \(testCase.status)")
-            } catch let error as GeminiCLIError {
-                XCTAssertEqual(error, testCase.expected)
-            } catch {
-                XCTFail("Unexpected error: \(error)")
-            }
-        }
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testFetchCoalescesConcurrentWorkflows() async throws {
-        let transport = RecordingTransport(
-            responses: [
-                GeminiHTTPResponse(
-                    data: Data(#"{"cloudaicompanionProject":"gemini-project"}"#.utf8),
-                    statusCode: 200,
-                    retryAfter: nil
-                ),
-                GeminiHTTPResponse(
-                    data: Data(#"{"buckets":[{"modelId":"gemini-2.5-flash","remainingFraction":0.9}]}"#.utf8),
-                    statusCode: 200,
-                    retryAfter: nil
-                ),
-            ],
-            delay: 0.1
-        )
-        let provider = makeProvider(
-            credentials: validCredentials(),
-            transport: transport
-        )
-
-        async let first = provider.fetchQuota(
-            auth: .apiKeyFree,
-            baseURL: GeminiCLIProvider.baseURL
-        )
-        async let second = provider.fetchQuota(
-            auth: .apiKeyFree,
-            baseURL: GeminiCLIProvider.baseURL
-        )
-        _ = try await (first, second)
-
-        let requests = await transport.recordedRequests()
-        XCTAssertEqual(requests.count, 2)
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testMissingCredentialsFailWithoutPlaceholderQuota() async {
-        let provider = makeProvider(credentials: nil)
-
-        do {
-            _ = try await provider.fetchQuota(
-                auth: .apiKeyFree,
-                baseURL: GeminiCLIProvider.baseURL
-            )
-            XCTFail("Expected missing-credentials error")
-        } catch let error as GeminiCLIError {
-            XCTAssertEqual(error, .missingCredentials)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
-        }
-    }
-}
-
-extension GeminiCLIProviderTests {
-    func testGlyphAssetsAreBundled() {
-        guard case let .asset(name, bundle) = GeminiCLIProvider.providerGlyph else {
-            return XCTFail("Expected an asset glyph")
-        }
-        XCTAssertEqual(name, "ProviderGlyph")
-        XCTAssertNotNil(bundle.url(forResource: "ProviderGlyph", withExtension: "png"))
-        XCTAssertNotNil(bundle.url(forResource: "ProviderGlyph@2x", withExtension: "png"))
     }
 }

@@ -349,6 +349,93 @@
       },
       "extractionState": "manual"
     },
+    "Gemini CLI returned data Filbert could not read. Update Filbert and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI returned data Filbert could not read. Update Filbert and try again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI hat Daten zurückgegeben, die Filbert nicht lesen konnte. Aktualisieren Sie Filbert und versuchen Sie es erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI usage request timed out. Try again later.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI usage request timed out. Try again later."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Gemini-CLI-Nutzungsanfrage ist abgelaufen. Versuchen Sie es später erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI usage service returned an unexpected error. Try again later.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI usage service returned an unexpected error. Try again later."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Gemini-CLI-Nutzungsdienst hat einen unerwarteten Fehler zurückgegeben. Versuchen Sie es später erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
     "Input tokens": {
       "localizations": {
         "en": {
@@ -407,6 +494,35 @@
       },
       "extractionState": "manual"
     },
+    "Internal error: unexpected auth shape.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Internal error: unexpected auth shape."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interner Fehler: Unerwartete Authentifizierungsform."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error interno: forma de autenticación inesperada."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
     "No usage limits reported": {
       "localizations": {
         "en": {
@@ -431,6 +547,64 @@
           "stringUnit": {
             "state": "translated",
             "value": "No se informaron límites de uso"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Monitor Gemini CLI model quotas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitor Gemini CLI model quotas"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini-CLI-Modellkontingente überwachen"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supervisar las cuotas de modelos de Gemini CLI"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supervisar las cuotas de modelos de Gemini CLI"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Could not reach Gemini CLI usage service. Check your connection and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not reach Gemini CLI usage service. Check your connection and try again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Gemini-CLI-Nutzungsdienst ist nicht erreichbar. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
           }
         }
       },

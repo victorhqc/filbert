@@ -29,6 +29,10 @@ private let glyphs = [
         source: "scripts/provider-glyphs/opencode.svg",
         outputDirectory: "Sources/Providers/OpenCodeGo/Resources"
     ),
+    Glyph(
+        source: "scripts/provider-glyphs/gemini.svg",
+        outputDirectory: "Sources/Providers/GeminiCLI/Resources"
+    ),
 ]
 
 private let fileManager = FileManager.default

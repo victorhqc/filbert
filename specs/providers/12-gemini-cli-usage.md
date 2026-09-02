@@ -12,11 +12,14 @@ Add a `GeminiCLIProvider` that reports the signed-in user's Gemini CLI model quo
 - `README.md` — lists Gemini CLI as supported and documents installation, Google sign-in, Keychain access, tracked data, and the private API limitation.
 - The provider uses `.apiKeyFree` because Gemini CLI owns the Google login session; Filbert does not ask for a Gemini API key (core 03).
 - Gemini CLI stores current Google-login credentials in the macOS Keychain under service `gemini-cli-oauth`, account `main-account`. The legacy `~/.gemini/oauth_creds.json` file and Gemini API-key authentication are out of scope.
+- The credential envelope and token field names follow Gemini CLI's public `OAuthCredentials` and `OAuthToken` types. `expiresAt` is a Unix timestamp in milliseconds, and the Keychain value is JSON-serialized by Gemini CLI's keychain storage.
 - Gemini CLI's open-source implementation is the reference contract:
   - `OAuthCredentialStorage` defines the Keychain service, account, and token payload.
   - `setupUser` calls `POST https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist` to resolve the user's managed or configured Code Assist project.
   - `CodeAssistServer.retrieveUserQuota` calls `POST https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota` with that project.
   - Each response bucket may contain `modelId`, `tokenType`, `remainingFraction`, `remainingAmount`, and `resetTime`. Only `modelId` and `remainingFraction` are needed to display usage.
+- Public implementations also show `loadCodeAssist` project references as either a string or an object with `id`/`projectId`, and some already-onboarded accounts return `currentCloudaicompanionProject`; the provider accepts those additive response shapes without onboarding or mutation.
+- The public contract evidence is [`OAuthCredentialStorage`](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/code_assist/oauth-credential-storage.ts), [`OAuthToken`](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/mcp/token-storage/types.ts), [`Code Assist types`](https://github.com/google-gemini/gemini-cli/blob/main/packages/core/src/code_assist/types.ts), and the response-shape regression documented in [ZeroClaw PR #7560](https://github.com/zeroclaw-labs/zeroclaw/pull/7560). These sources are public contract evidence, not live credentials or a live API capture.
 - `remainingFraction` is a value from `0` through `1`, where `1` means unused quota. Filbert converts it to used percentage with `(1 - remainingFraction) × 100`.
 - These are Gemini CLI / Code Assist quotas. They are not Gemini API, AI Studio, Vertex AI, Google Cloud billing, or token-spend history.
 
@@ -53,8 +56,9 @@ Add a `GeminiCLIProvider` that reports the signed-in user's Gemini CLI model quo
 
 - **Given** a valid Google access token
 - **When** the provider prepares the quota request
-- **Then** it sends an authenticated `POST` to `https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist` using the minimal Gemini CLI metadata required by the upstream contract
-- **And** it uses `cloudaicompanionProject` from the response as the project for `retrieveUserQuota`
+- **Then** it sends an authenticated `POST` to `https://cloudcode-pa.googleapis.com/v1internal:loadCodeAssist` using only the minimal Gemini CLI metadata required by the upstream contract
+- **And** it does not read `GOOGLE_CLOUD_PROJECT` or `GOOGLE_CLOUD_PROJECT_ID`, or send a locally configured project seed
+- **And** it uses the first non-empty project reference from `cloudaicompanionProject` and then `currentCloudaicompanionProject`, accepting either a string or an object containing `id` or `projectId`, as the project for `retrieveUserQuota`
 - **And** it does not onboard accounts, accept terms, perform account validation, or call any other Code Assist method
 - **And** a response requiring onboarding, validation, or an explicit Google Cloud project becomes a typed setup error directing the user to complete setup in Gemini CLI
 
@@ -75,7 +79,8 @@ Add a `GeminiCLIProvider` that reports the signed-in user's Gemini CLI model quo
 - **And** the line's `percentage` is the used percentage `(1 - remainingFraction) × 100`, its `resetDate` comes from `resetTime`, and its label identifies the model plus a localized known `tokenType`
 - **And** unknown or absent `tokenType` remains displayable through a generic localized quota label
 - **And** `remainingAmount` may be shown as server-supplied detail but is never used to infer a total, window duration, cost, or token spend
-- **And** unknown JSON fields are ignored, while malformed buckets are omitted and an all-malformed response fails as payload drift rather than showing fake zero usage
+- **And** an absent, `null`, or empty `buckets` collection is a valid no-limits result with no usage lines and the localized `"No usage limits reported"` headline
+- **And** unknown JSON fields are ignored, while malformed buckets in a non-empty collection are omitted and an all-malformed response fails as payload drift rather than showing fake zero usage
 
 ### AC7: Derive the headline from the most constrained reported bucket
 
@@ -101,6 +106,8 @@ Add a `GeminiCLIProvider` that reports the signed-in user's Gemini CLI model quo
 - **Then** the provider throws a typed, localized error and returns no placeholder quota
 - **And** `401` maps to signed out, `403` to account or project setup required, and `429` to rate limited
 - **And** retryable `429` and `5xx` responses use bounded exponential backoff, honor a valid `Retry-After`, and make no more than three attempts
+- **And** network failures, timeouts, decoding failures, and generic HTTP failures have distinct user-facing recovery messages
+- **And** the complete credential, project-resolution, and quota workflow has a bounded deadline so retries cannot block a refresh indefinitely
 - **And** Core can continue showing the previous stale snapshot and refreshing other providers (core 01 AC4)
 - **And** logs contain status and failure category only, never response bodies, tokens, project IDs, or account identifiers
 
@@ -111,14 +118,15 @@ Add a `GeminiCLIProvider` that reports the signed-in user's Gemini CLI model quo
 - **Then** `GeminiCLIProvider` depends only on `Core` and Apple system frameworks
 - **And** no existing provider changes and App/Core contain no behavior branch keyed on `"gemini-cli"`
 - **And** all user-facing labels, setup guidance, and errors resolve through the provider's String Catalog in `en`, `de-DE`, `es-ES`, and `es-MX`
-- **And** sanitized fixtures and injected Keychain/network doubles cover valid buckets, fraction-only buckets, multiple token types, malformed data, token refresh, setup states, host rejection, retries, redaction, deterministic ordering, and concurrent fetch coalescing
-- **And** the repository validation gate passes without warnings
+- **And** sanitized Keychain and `loadCodeAssist` contract fixtures, plus injected Keychain/network/logging doubles, cover valid credential envelopes, valid buckets, fraction-only buckets, multiple token types, malformed data, empty limits, token refresh, setup states, project-shape fallback, host rejection, retries, distinct failures, redaction, deterministic ordering, and concurrent fetch coalescing
+- **And** the repository validation gate passes without new warnings in changed files
 
 ### AC11: Ship a license-safe Gemini provider glyph
 
 - **Given** the `GeminiCLIProvider` target is built
 - **When** the app renders Gemini CLI in Settings or the quota popover
-- **Then** `Sources/Providers/GeminiCLI/Resources/ProviderGlyph.png` and `ProviderGlyph@2x.png` are bundled as monochrome 1× and 2× assets
+- **Then** `scripts/provider-glyphs/gemini.svg` is the committed source for the generated monochrome assets
+- **And** `Sources/Providers/GeminiCLI/Resources/ProviderGlyph.png` and `ProviderGlyph@2x.png` are bundled as monochrome 1× and 2× assets
 - **And** the glyph is an original, license-safe rendering of the recognizable Gemini sparkle silhouette rather than a copied Google raster
 - **And** `providerGlyph` returns `ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)` so the generic provider UI renders it without an App-layer provider-ID branch (ui 14 AC1)
 - **And** an asset test verifies both files can be loaded from the provider bundle
@@ -143,7 +151,7 @@ Add a `GeminiCLIProvider` that reports the signed-in user's Gemini CLI model quo
 5. [x] Map valid buckets into deterministically ordered `UsageLine` and activity metrics. Keep all model and token-type interpretation inside the provider.
 6. [x] Add localized resources, a license-safe monochrome provider glyph, setup guidance, and redacted typed errors.
 7. [x] Update the README provider table, local-session guidance, Keychain explanation, and setup documentation for Gemini CLI.
-8. [x] Add unit tests around credential access, network requests, response mapping, failures, retries, coalescing, assets, and sensitive-data redaction; then run the full validation gate.
+8. [x] Close review follow-ups with public-contract fixtures, project-shape fallback, empty-limit handling, complete localization, distinct failure handling, bounded workflow cancellation, logging redaction, glyph-source registration, README status text, and focused regression tests; then rerun the full validation gate.
 
 No production code is written until this spec is reviewed.
 

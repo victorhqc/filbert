@@ -185,8 +185,8 @@ Install Gemini CLI by following the
 [official installation instructions](https://github.com/google-gemini/gemini-cli#installation),
 then run it and choose **Login with Google**. Use the Google account associated
 with the Gemini or Code Assist subscription you want to track. If Google asks
-for a project, follow the CLI's setup instructions or set
-`GOOGLE_CLOUD_PROJECT` before launching Filbert.
+for a project, follow Gemini CLI's setup instructions before enabling the
+provider in Filbert.
 
 Filbert reads the credential Gemini CLI stores in the macOS Keychain. It does
 not ask you to enter a Gemini API key, copy the credential into Filbert's
@@ -325,9 +325,9 @@ scripts/build-dmg.sh --version 0.1.0 --no-sign
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
-Claude, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers are in
-place. The app builds and runs as a menu-bar item. More providers and widgets
-come next.
+Claude, Gemini CLI, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers
+are in place. The app builds and runs as a menu-bar item. More providers and
+widgets come next.
 
 See [`specs/`](specs/) for the spec files that drive the work.
 

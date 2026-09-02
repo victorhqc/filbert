@@ -1,0 +1,11 @@
+{
+  "serverName": "main-account",
+  "token": {
+    "accessToken": "fixture-access-token",
+    "refreshToken": "fixture-refresh-token",
+    "tokenType": "Bearer",
+    "scope": "https://www.googleapis.com/auth/cloud-platform",
+    "expiresAt": 1735689600000
+  },
+  "updatedAt": 1735686000000
+}

@@ -1,9 +1,28 @@
 import Foundation
+import OSLog
 import Security
 
-enum GeminiCLILog {
-    static func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(Data("[GeminiCLIProvider] \(message())\n".utf8))
+protocol GeminiLogSink: Sendable {
+    func requestCompleted(statusCode: Int, latencyMilliseconds: Int)
+    func requestFailed(latencyMilliseconds: Int)
+}
+
+struct GeminiOSLogSink: GeminiLogSink {
+    private let logger: Logger
+
+    init() {
+        logger = Logger(
+            subsystem: Bundle.main.bundleIdentifier ?? "com.victorhqc.filbert",
+            category: "GeminiCLIProvider"
+        )
+    }
+
+    func requestCompleted(statusCode: Int, latencyMilliseconds: Int) {
+        logger.debug("Gemini request completed status=\(statusCode) latencyMs=\(latencyMilliseconds)")
+    }
+
+    func requestFailed(latencyMilliseconds: Int) {
+        logger.debug("Gemini request failed latencyMs=\(latencyMilliseconds)")
     }
 }
 
@@ -17,6 +36,17 @@ struct GeminiCredentials: Equatable, Sendable {
     let accessToken: String?
     let refreshToken: String?
     let expiresAt: Date?
+}
+
+extension GeminiCredentials: CustomStringConvertible {
+    var description: String {
+        let accessTokenDescription = accessToken == nil ? "nil" : "<redacted>"
+        let refreshTokenDescription = refreshToken == nil ? "nil" : "<redacted>"
+        return """
+        GeminiCredentials(accessToken: \(accessTokenDescription), refreshToken: \
+        \(refreshTokenDescription), expiresAt: \(String(describing: expiresAt)))
+        """
+    }
 }
 
 protocol GeminiCredentialStore: Sendable {
@@ -47,6 +77,10 @@ struct GeminiKeychainStore: GeminiCredentialStore {
             throw GeminiCredentialError.invalidPayload
         }
 
+        return try Self.decodeCredentials(from: data)
+    }
+
+    static func decodeCredentials(from data: Data) throws -> GeminiCredentials {
         do {
             let stored = try JSONDecoder().decode(
                 GeminiStoredCredentialEnvelope.self,
@@ -80,126 +114,6 @@ private struct GeminiStoredToken: Decodable {
     let accessToken: String?
     let refreshToken: String?
     let expiresAt: Int64?
-}
-
-enum GeminiHTTPError: Error, Equatable, Sendable {
-    case network
-    case http(Int)
-}
-
-struct GeminiHTTPResponse: Sendable {
-    let data: Data
-    let statusCode: Int
-    let retryAfter: TimeInterval?
-}
-
-protocol GeminiHTTPTransport: Sendable {
-    func send(_ request: URLRequest) async throws -> GeminiHTTPResponse
-}
-
-final class GeminiRedirectDelegate: NSObject, URLSessionTaskDelegate, @unchecked Sendable {
-    func urlSession(
-        _: URLSession,
-        task _: URLSessionTask,
-        willPerformHTTPRedirection _: HTTPURLResponse,
-        newRequest _: URLRequest,
-        completionHandler: @escaping (URLRequest?) -> Void
-    ) {
-        completionHandler(nil)
-    }
-}
-
-struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
-    private static let allowedHosts = [
-        "cloudcode-pa.googleapis.com",
-        "oauth2.googleapis.com",
-    ]
-
-    let session: URLSession
-
-    func send(_ request: URLRequest) async throws -> GeminiHTTPResponse {
-        let started = Date()
-        do {
-            let (data, response) = try await session.data(for: request)
-            guard let httpResponse = response as? HTTPURLResponse else {
-                throw GeminiHTTPError.network
-            }
-            guard let requestURL = request.url,
-                  let responseURL = httpResponse.url,
-                  requestURL.scheme == "https",
-                  Self.allowedHosts.contains(requestURL.host ?? ""),
-                  responseURL.scheme == "https",
-                  responseURL.host == requestURL.host
-            else {
-                throw GeminiHTTPError.network
-            }
-            GeminiCLILog.log(
-                "status=\(httpResponse.statusCode) latencyMs=\(elapsedMilliseconds(since: started))"
-            )
-            let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After")
-                .flatMap(TimeInterval.init)
-                .flatMap { $0 >= 0 ? min($0, 30) : nil }
-            return GeminiHTTPResponse(
-                data: data,
-                statusCode: httpResponse.statusCode,
-                retryAfter: retryAfter
-            )
-        } catch let error as GeminiHTTPError {
-            GeminiCLILog.log(
-                "network failure latencyMs=\(elapsedMilliseconds(since: started))"
-            )
-            throw error
-        } catch {
-            GeminiCLILog.log(
-                "network failure latencyMs=\(elapsedMilliseconds(since: started))"
-            )
-            throw GeminiHTTPError.network
-        }
-    }
-
-    private func elapsedMilliseconds(since start: Date) -> Int {
-        Int(Date().timeIntervalSince(start) * 1000)
-    }
-}
-
-struct GeminiHTTPClient: Sendable {
-    private let transport: any GeminiHTTPTransport
-    private let sleep: @Sendable (TimeInterval) async throws -> Void
-
-    init(
-        transport: any GeminiHTTPTransport,
-        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil
-    ) {
-        self.transport = transport
-        self.sleep = sleep ?? { delay in
-            try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
-        }
-    }
-
-    func send(_ request: URLRequest) async throws -> Data {
-        for attempt in 0 ..< 3 {
-            do {
-                let response = try await transport.send(request)
-                if response.statusCode == 429 || (500 ... 599).contains(response.statusCode) {
-                    guard attempt < 2 else {
-                        throw GeminiHTTPError.http(response.statusCode)
-                    }
-                    let delay = min(response.retryAfter ?? pow(2, Double(attempt)) * 0.5, 30)
-                    try await sleep(delay)
-                    continue
-                }
-                guard response.statusCode == 200 else {
-                    throw GeminiHTTPError.http(response.statusCode)
-                }
-                return response.data
-            } catch let error as GeminiHTTPError {
-                throw error
-            } catch {
-                throw GeminiHTTPError.network
-            }
-        }
-        throw GeminiHTTPError.network
-    }
 }
 
 struct GeminiOAuthClient: Sendable {
@@ -245,6 +159,8 @@ struct GeminiOAuthClient: Sendable {
             case let .http(status):
                 throw GeminiCLIError.http(status)
             }
+        } catch is CancellationError {
+            throw CancellationError()
         } catch {
             throw GeminiCLIError.decoding
         }
@@ -269,15 +185,9 @@ private struct GeminiOAuthTokenResponse: Decodable {
 
 struct GeminiCodeAssistClient: Sendable {
     private let http: GeminiHTTPClient
-    private let configuredProject: String?
 
-    init(
-        http: GeminiHTTPClient,
-        environment: [String: String] = ProcessInfo.processInfo.environment
-    ) {
+    init(http: GeminiHTTPClient) {
         self.http = http
-        configuredProject = environment["GOOGLE_CLOUD_PROJECT"]
-            ?? environment["GOOGLE_CLOUD_PROJECT_ID"]
     }
 
     func resolveProject(accessToken: String) async throws -> String {
@@ -285,10 +195,10 @@ struct GeminiCodeAssistClient: Sendable {
             ideType: "IDE_UNSPECIFIED",
             platform: "PLATFORM_UNSPECIFIED",
             pluginType: "GEMINI",
-            duetProject: configuredProject
+            duetProject: nil
         )
         let requestBody = GeminiLoadCodeAssistRequest(
-            cloudaicompanionProject: configuredProject,
+            cloudaicompanionProject: nil,
             metadata: metadata
         )
         let data = try await post(
@@ -305,11 +215,8 @@ struct GeminiCodeAssistClient: Sendable {
         } catch {
             throw GeminiCLIError.decoding
         }
-        if let project = response.cloudaicompanionProject, !project.isEmpty {
+        if let project = response.projectIdentifier {
             return project
-        }
-        if let configuredProject, !configuredProject.isEmpty {
-            return configuredProject
         }
         throw GeminiCLIError.projectSetupRequired
     }
@@ -358,6 +265,8 @@ struct GeminiCodeAssistClient: Sendable {
             case let .http(status):
                 throw GeminiCLIError.http(status)
             }
+        } catch is CancellationError {
+            throw CancellationError()
         } catch {
             throw GeminiCLIError.network
         }

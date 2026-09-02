@@ -27,6 +27,7 @@ public enum GeminiCLIError: Error, Equatable, Sendable {
     case rateLimited
     case http(Int)
     case network
+    case timeout
     case decoding
     case payloadDrift
 }
@@ -52,7 +53,15 @@ extension GeminiCLIError: LocalizedError {
             String(localized: "Gemini CLI authentication failed. Sign in again.")
         case let .http(status) where status == 403:
             String(localized: "Gemini CLI account or project setup is required.")
-        case .http, .network, .decoding, .payloadDrift:
+        case .http:
+            String(localized: "Gemini CLI usage service returned an unexpected error. Try again later.")
+        case .network:
+            String(localized: "Could not reach Gemini CLI usage service. Check your connection and try again.")
+        case .timeout:
+            String(localized: "Gemini CLI usage request timed out. Try again later.")
+        case .decoding:
+            String(localized: "Gemini CLI returned data Filbert could not read. Update Filbert and try again.")
+        case .payloadDrift:
             String(localized: "Gemini CLI returned an unexpected usage response.")
         }
     }
@@ -106,12 +115,13 @@ public struct GeminiCLIProvider: AIProvider {
         credentialStore: any GeminiCredentialStore,
         oauth: GeminiOAuthClient,
         codeAssist: GeminiCodeAssistClient,
-        now: (@Sendable () -> Date)? = nil
+        now: (@Sendable () -> Date)? = nil,
+        workflowTimeout: TimeInterval = 90
     ) {
         self.credentialStore = credentialStore
         self.oauth = oauth
         self.codeAssist = codeAssist
-        coordinator = GeminiFetchCoordinator()
+        coordinator = GeminiFetchCoordinator(timeout: workflowTimeout)
         self.now = now ?? { Date() }
     }
 
@@ -156,7 +166,17 @@ public struct GeminiCLIProvider: AIProvider {
     }
 
     func map(_ response: GeminiQuotaResponse) throws -> ProviderQuota {
-        let mapped = response.buckets?.compactMap { bucket -> GeminiMappedBucket? in
+        guard let responseBuckets = response.buckets, !responseBuckets.isEmpty else {
+            return ProviderQuota(
+                providerId: Self.providerId,
+                providerName: Self.providerName,
+                headline: String(localized: "No usage limits reported"),
+                lines: [],
+                lastUpdated: Date(),
+                activityObservation: ProviderActivityObservation(metrics: [])
+            )
+        }
+        let mapped = responseBuckets.compactMap { bucket -> GeminiMappedBucket? in
             guard let modelId = bucket.modelId, !modelId.isEmpty,
                   let remaining = bucket.remainingFraction,
                   remaining.isFinite, (0 ... 1).contains(remaining)
@@ -174,16 +194,19 @@ public struct GeminiCLIProvider: AIProvider {
                 resetDate: resetDate,
                 remainingAmount: bucket.remainingAmount
             )
-        } ?? []
+        }
         guard !mapped.isEmpty else {
             throw GeminiCLIError.payloadDrift
         }
         let buckets = mapped.sorted(by: GeminiMappedBucket.order)
+        guard let headlineBucket = mapped.min(by: GeminiMappedBucket.constrainedOrder) else {
+            throw GeminiCLIError.internalInconsistency
+        }
         let lines = buckets.map(usageLine)
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: headline(for: buckets),
+            headline: headline(for: headlineBucket),
             lines: lines,
             lastUpdated: Date(),
             activityObservation: ProviderActivityObservation(
@@ -248,15 +271,7 @@ public struct GeminiCLIProvider: AIProvider {
         )
     }
 
-    private func headline(for buckets: [GeminiMappedBucket]) -> String {
-        guard let bucket = buckets.min(by: {
-            if $0.remainingFraction != $1.remainingFraction {
-                return $0.remainingFraction < $1.remainingFraction
-            }
-            return GeminiMappedBucket.order($0, $1)
-        }) else {
-            return String(localized: "No usage limits reported")
-        }
+    private func headline(for bucket: GeminiMappedBucket) -> String {
         let percentage = String(format: "%.0f%%", (1 - bucket.remainingFraction) * 100)
         guard let resetDate = bucket.resetDate else {
             return String.localizedStringWithFormat(
@@ -326,10 +341,22 @@ private struct GeminiMappedBucket: Sendable {
         }
         return (lhs.tokenType ?? "").lowercased() < (rhs.tokenType ?? "").lowercased()
     }
+
+    static func constrainedOrder(_ lhs: GeminiMappedBucket, _ rhs: GeminiMappedBucket) -> Bool {
+        if lhs.remainingFraction != rhs.remainingFraction {
+            return lhs.remainingFraction < rhs.remainingFraction
+        }
+        return order(lhs, rhs)
+    }
 }
 
 private actor GeminiFetchCoordinator {
     private var inFlight: Task<ProviderQuota, Error>?
+    private let timeout: TimeInterval
+
+    init(timeout: TimeInterval) {
+        self.timeout = timeout
+    }
 
     func fetch(
         _ operation: @escaping @Sendable () async throws -> ProviderQuota
@@ -337,9 +364,32 @@ private actor GeminiFetchCoordinator {
         if let inFlight {
             return try await inFlight.value
         }
-        let task = Task { try await operation() }
+        let timeoutInterval = timeout
+        let task = Task {
+            try await withThrowingTaskGroup(of: ProviderQuota.self) { group in
+                group.addTask {
+                    try await operation()
+                }
+                group.addTask {
+                    try await Task.sleep(
+                        nanoseconds: UInt64(timeoutInterval * 1_000_000_000)
+                    )
+                    throw GeminiCLIError.timeout
+                }
+                defer { group.cancelAll() }
+                guard let result = try await group.next() else {
+                    throw GeminiCLIError.internalInconsistency
+                }
+                return result
+            }
+        }
         inFlight = task
         defer { inFlight = nil }
-        return try await task.value
+        do {
+            return try await task.value
+        } catch {
+            task.cancel()
+            throw error
+        }
     }
 }
