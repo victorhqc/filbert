@@ -396,6 +396,7 @@ sign_adhoc() {
 # Fresh keychain for the signing certificate. Cleaned up on exit.
 SIGN_KEYCHAIN_DIR=""
 SIGN_KEYCHAIN=""
+SIGN_ORIGINAL_KEYCHAINS=""
 SIGN_IDENTITY=""
 NOTARY_WORK_DIR=""
 # Held while the release DMG is mounted for verification; the exit trap
@@ -429,10 +430,13 @@ import_signing_certificate() {
     security set-key-partition-list -S apple-tool:,apple: \
         -k "$keychain_password" "$SIGN_KEYCHAIN" >/dev/null
 
-    # Make the temporary keychain visible to the security toolchain. The
-    # unquoted expansion is deliberate: it word-splits the previous search
-    # list back into one argument per keychain.
-    security list-keychains -d user -s "$SIGN_KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+    # codesign resolves identities by name against the whole keychain search
+    # list. The same identity name also lives in the maintainer's login
+    # keychain (installed during certificate setup), which makes the lookup
+    # ambiguous on a local signed run. Scope the search list to this
+    # keychain alone; cleanup() restores the previous list on exit.
+    SIGN_ORIGINAL_KEYCHAINS="$(security list-keychains -d user | tr -d '"')"
+    security list-keychains -d user -s "$SIGN_KEYCHAIN"
 
     resolve_signing_identity
 }
@@ -738,6 +742,10 @@ EOF
 }
 
 cleanup() {
+    if [[ -n "${SIGN_ORIGINAL_KEYCHAINS:-}" ]]; then
+        # Unquoted: one argument per keychain, as captured before scoping.
+        security list-keychains -d user -s $SIGN_ORIGINAL_KEYCHAINS >/dev/null 2>&1 || true
+    fi
     if [[ -n "${SIGN_KEYCHAIN:-}" && -f "$SIGN_KEYCHAIN" ]]; then
         security delete-keychain "$SIGN_KEYCHAIN" 2>/dev/null || true
     fi
