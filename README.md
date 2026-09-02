@@ -47,22 +47,26 @@ Filbert is a native macOS app built to stay out of your way:
 |--------------|-----------|------------------------------------------------------------|
 | z.ai         | ✅ Done   | GLM Coding Plan quota — token or credits plans, peak hours |
 | Claude       | ✅ Done¹  | Claude Code plan usage via the `claude` CLI                |
+| Gemini CLI   | ✅ Done²  | Model quotas and reset times via local Google login        |
 | DeepSeek     | ✅ Done   | Prepaid balance — total, granted, topped-up                |
-| OpenAI Codex | ✅ Done²  | Subscription usage via the local `codex` CLI               |
-| Cursor       | ✅ Done³  | Subscription + on-demand spend via local token             |
-| OpenCode Go  | ✅ Done⁴  | Go subscription windows — rolling, weekly, monthly         |
+| OpenAI Codex | ✅ Done³  | Subscription usage via the local `codex` CLI               |
+| Cursor       | ✅ Done⁴  | Subscription + on-demand spend via local token             |
+| OpenCode Go  | ✅ Done⁵  | Go subscription windows — rolling, weekly, monthly         |
 | Moonshot     | Planned   | API usage, token consumption                               |
 
 > ¹ Claude reads usage from the **Claude Code CLI**. See
 > [Claude Code setup](#claude-code-setup) below.
 >
-> ² OpenAI Codex reads usage from the local **Codex CLI**. See
+> ² Gemini CLI reads model quotas from the local **Gemini CLI** Google login. See
+> [Gemini CLI setup](#gemini-cli-setup) below.
+>
+> ³ OpenAI Codex reads usage from the local **Codex CLI**. See
 > [OpenAI Codex setup](#openai-codex-setup) below.
 >
-> ³ Cursor reads usage from your local Cursor session token. See
+> ⁴ Cursor reads usage from your local Cursor session token. See
 > [Cursor setup](#cursor-setup) below.
 >
-> ⁴ OpenCode Go needs an OpenCode API key tied to a Go subscription. The API
+> ⁵ OpenCode Go needs an OpenCode API key tied to a Go subscription. The API
 > reports usage percentages and reset times only — no dollar amounts — and
 > Filbert does not estimate spend.
 
@@ -74,7 +78,7 @@ your setup.
 - **Apple Silicon** (M1 or newer). The released DMG is arm64-only.
 - macOS **26 (Tahoe)** or newer. The app is built against the macOS 26 SDK.
   Older systems render an outdated popover and are no longer supported.
-- API keys for the providers you want to track.
+- API keys or signed-in local CLI sessions for the providers you want to track.
 
 ## Install
 
@@ -111,7 +115,7 @@ Click the Filbert menu-bar icon and open **Settings** to add a provider. Enter
 its API key. The key goes straight into the Keychain. Filbert then refreshes
 usage every five minutes by default.
 
-Three providers read from a local session instead of an API key. Set those up
+Four providers read from a local session instead of an API key. Set those up
 below.
 
 ## Security
@@ -145,9 +149,9 @@ a safe's lock:
 
 You may see this prompt once per session after the app launches, when it loads
 saved keys. You may see it again when you save a new key in Settings. Cursor
-users see another prompt on first import because Filbert reads tokens that
-Cursor's own apps stored in the Keychain. macOS is granting permission, not
-asking for another set of credentials.
+and Gemini CLI users see another prompt on first import because Filbert reads
+tokens that their own apps stored in the Keychain. macOS is granting
+permission, not asking for another set of credentials.
 
 **In short:** macOS shows this prompt to protect your credentials. Filbert does
 not receive your password or Touch ID.
@@ -168,6 +172,32 @@ Run `codex` from a project directory. On first launch, choose **Sign in with
 ChatGPT**. Filbert does not read, store, or manage your Codex credentials.
 For other install methods and troubleshooting, see the
 [official Codex CLI docs](https://developers.openai.com/codex/cli/).
+
+### Gemini CLI setup
+
+*Only if you track Gemini CLI usage.*
+
+The Gemini provider reads model quota and reset times from the Google login used
+by the local **Gemini CLI**. It does not track Gemini API, AI Studio, Vertex AI,
+or Google Cloud billing usage, and it never sends a model prompt.
+
+Install Gemini CLI by following the
+[official installation instructions](https://github.com/google-gemini/gemini-cli#installation),
+then run it and choose **Login with Google**. Use the Google account associated
+with the Gemini or Code Assist subscription you want to track. If Google asks
+for a project, follow Gemini CLI's setup instructions before enabling the
+provider in Filbert.
+
+Filbert reads the credential Gemini CLI stores in the macOS Keychain. It does
+not ask you to enter a Gemini API key, copy the credential into Filbert's
+Keychain, or read the legacy `~/.gemini/oauth_creds.json` file. macOS may show
+an access prompt the first time Filbert reads the Gemini CLI item.
+
+The quota request uses Google's private `v1internal` Code Assist interface.
+Google may change that interface or the credential format; if that happens,
+Filbert may need an update before Gemini usage appears again. See the
+[Gemini CLI authentication documentation](https://google-gemini.github.io/gemini-cli/docs/get-started/authentication.html)
+for setup and troubleshooting.
 
 ### Cursor setup
 
@@ -295,9 +325,9 @@ scripts/build-dmg.sh --version 0.1.0 --no-sign
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
-Claude, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers are in
-place. The app builds and runs as a menu-bar item. More providers and widgets
-come next.
+Claude, Gemini CLI, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers
+are in place. The app builds and runs as a menu-bar item. More providers and
+widgets come next.
 
 See [`specs/`](specs/) for the spec files that drive the work.
 

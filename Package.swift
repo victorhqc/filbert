@@ -66,6 +66,13 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: strictSourceSettings
         ),
+        .target(
+            name: "GeminiCLIProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/GeminiCLI",
+            resources: [.process("Resources")],
+            swiftSettings: strictSourceSettings
+        ),
         .executableTarget(
             name: "App",
             dependencies: [
@@ -76,6 +83,7 @@ let package = Package(
                 "OpenAICodexProvider",
                 "OpenCodeGoProvider",
                 "CursorProvider",
+                "GeminiCLIProvider",
             ],
             resources: [.process("Resources")],
             swiftSettings: strictSourceSettings
@@ -115,6 +123,12 @@ let package = Package(
             name: "CursorProviderTests",
             dependencies: ["CursorProvider"],
             path: "Tests/CursorProviderTests"
+        ),
+        .testTarget(
+            name: "GeminiCLIProviderTests",
+            dependencies: ["GeminiCLIProvider"],
+            path: "Tests/GeminiCLIProviderTests",
+            resources: [.process("Fixtures")]
         ),
         .testTarget(
             name: "AppTests",

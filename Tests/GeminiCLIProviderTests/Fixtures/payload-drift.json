@@ -1,0 +1,13 @@
+{
+  "buckets": [
+    {
+      "modelId": "gemini-2.5-flash",
+      "tokenType": "REQUESTS",
+      "remainingFraction": 1.5
+    },
+    {
+      "tokenType": "INPUT_TOKENS",
+      "remainingFraction": 0.5
+    }
+  ]
+}

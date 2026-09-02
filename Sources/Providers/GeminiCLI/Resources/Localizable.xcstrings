@@ -1,0 +1,847 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "%@ · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "%@ used": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ used"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ verwendet"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ usado"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ usado"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "%@ used · %@": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ used · %@"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ verwendet · %@"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ usado · %@"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ usado · %@"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Allow Filbert to read the Gemini CLI Keychain item": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Allow Filbert to read the Gemini CLI Keychain item"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert erlauben, das Schlüsselbundobjekt von Gemini CLI zu lesen"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permitir que Filbert lea el elemento del llavero de Gemini CLI"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permitir que Filbert lea el elemento del llavero de Gemini CLI"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Complete Gemini CLI setup or configure a Google Cloud project, then try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Complete Gemini CLI setup or configure a Google Cloud project, then try again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Richten Sie Gemini CLI ein oder konfigurieren Sie ein Google-Cloud-Projekt und versuchen Sie es erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completa la configuración de Gemini CLI o configura un proyecto de Google Cloud y vuelve a intentarlo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Completa la configuración de Gemini CLI o configura un proyecto de Google Cloud y vuelve a intentarlo."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Filbert could not read the Gemini CLI Keychain item. Allow access and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert could not read the Gemini CLI Keychain item. Allow access and try again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert konnte das Schlüsselbundobjekt von Gemini CLI nicht lesen. Erlauben Sie den Zugriff und versuchen Sie es erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert no pudo leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert no pudo leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI account or project setup is required.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI account or project setup is required."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Einrichtung des Gemini-CLI-Kontos oder -Projekts ist erforderlich."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se requiere configurar la cuenta o el proyecto de Gemini CLI."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Se requiere configurar la cuenta o el proyecto de Gemini CLI."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI authentication failed. Sign in again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI authentication failed. Sign in again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Gemini-CLI-Authentifizierung ist fehlgeschlagen. Melden Sie sich erneut an."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La autenticación de Gemini CLI falló. Vuelve a iniciar sesión."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La autenticación de Gemini CLI falló. Vuelve a iniciar sesión."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI credentials are unsupported. Update Gemini CLI and sign in again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI credentials are unsupported. Update Gemini CLI and sign in again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Gemini-CLI-Anmeldedaten werden nicht unterstützt. Aktualisieren Sie Gemini CLI und melden Sie sich erneut an."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las credenciales de Gemini CLI no son compatibles. Actualiza Gemini CLI e inicia sesión de nuevo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las credenciales de Gemini CLI no son compatibles. Actualiza Gemini CLI e inicia sesión de nuevo."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI is rate limited. Try again later.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI is rate limited. Try again later."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI ist rate-limitiert. Versuchen Sie es später erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI is signed out. Open Gemini CLI and sign in with Google.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI is signed out. Open Gemini CLI and sign in with Google."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI ist abgemeldet. Öffnen Sie Gemini CLI und melden Sie sich mit Google an."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI está desconectado. Abre Gemini CLI e inicia sesión con Google."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI está desconectado. Abre Gemini CLI e inicia sesión con Google."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI returned an unexpected usage response.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI returned an unexpected usage response."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI hat eine unerwartete Nutzungsantwort zurückgegeben."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI devolvió una respuesta de uso inesperada."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI devolvió una respuesta de uso inesperada."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI returned data Filbert could not read. Update Filbert and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI returned data Filbert could not read. Update Filbert and try again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI hat Daten zurückgegeben, die Filbert nicht lesen konnte. Aktualisieren Sie Filbert und versuchen Sie es erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI usage request timed out. Try again later.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI usage request timed out. Try again later."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Die Gemini-CLI-Nutzungsanfrage ist abgelaufen. Versuchen Sie es später erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Gemini CLI usage service returned an unexpected error. Try again later.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI usage service returned an unexpected error. Try again later."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Gemini-CLI-Nutzungsdienst hat einen unerwarteten Fehler zurückgegeben. Versuchen Sie es später erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Input tokens": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Input tokens"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Eingabetoken"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de entrada"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de entrada"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Install Gemini CLI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Install Gemini CLI"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI installieren"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar Gemini CLI"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar Gemini CLI"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Internal error: unexpected auth shape.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Internal error: unexpected auth shape."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Interner Fehler: Unerwartete Authentifizierungsform."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Error interno: forma de autenticación inesperada."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "No usage limits reported": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No usage limits reported"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Keine Nutzungsgrenzen gemeldet"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se informaron límites de uso"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se informaron límites de uso"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Monitor Gemini CLI model quotas": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitor Gemini CLI model quotas"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini-CLI-Modellkontingente überwachen"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supervisar las cuotas de modelos de Gemini CLI"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Supervisar las cuotas de modelos de Gemini CLI"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Could not reach Gemini CLI usage service. Check your connection and try again.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Could not reach Gemini CLI usage service. Check your connection and try again."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Der Gemini-CLI-Nutzungsdienst ist nicht erreichbar. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Output tokens": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Output tokens"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ausgabetoken"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de salida"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de salida"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Quota": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quota"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kontingent"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuota"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cuota"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Remaining": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Remaining"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Verbleibend"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restante"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restante"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Requests": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Requests"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Anfragen"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solicitudes"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solicitudes"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Sign in to Gemini CLI": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to Gemini CLI"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bei Gemini CLI anmelden"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión en Gemini CLI"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión en Gemini CLI"
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Sign in to Gemini CLI before refreshing usage.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Sign in to Gemini CLI before refreshing usage."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melden Sie sich bei Gemini CLI an, bevor Sie die Nutzung aktualisieren."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión en Gemini CLI antes de actualizar el uso."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicia sesión en Gemini CLI antes de actualizar el uso."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "This provider uses Google's private Code Assist interface and may need an update if Google changes it.": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "This provider uses Google's private Code Assist interface and may need an update if Google changes it."
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Dieser Anbieter verwendet die private Code-Assist-Schnittstelle von Google und benötigt möglicherweise ein Update, wenn Google sie ändert."
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este proveedor usa la interfaz privada de Code Assist de Google y puede necesitar una actualización si Google la cambia."
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este proveedor usa la interfaz privada de Code Assist de Google y puede necesitar una actualización si Google la cambia."
+          }
+        }
+      },
+      "extractionState": "manual"
+    },
+    "Update Gemini CLI and sign in again": {
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Update Gemini CLI and sign in again"
+          }
+        },
+        "de-DE": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI aktualisieren und erneut anmelden"
+          }
+        },
+        "es-ES": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiza Gemini CLI e inicia sesión de nuevo"
+          }
+        },
+        "es-MX": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Actualiza Gemini CLI e inicia sesión de nuevo"
+          }
+        }
+      },
+      "extractionState": "manual"
+    }
+  },
+  "version": "1.0"
+}
