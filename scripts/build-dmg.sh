@@ -394,14 +394,20 @@ sign_adhoc() {
 }
 
 # Fresh keychain for the signing certificate. Cleaned up on exit.
+SIGN_KEYCHAIN_DIR=""
 SIGN_KEYCHAIN=""
+SIGN_ORIGINAL_KEYCHAINS=""
 SIGN_IDENTITY=""
 NOTARY_WORK_DIR=""
+# Held while the release DMG is mounted for verification; the exit trap
+# detaches it if the script dies mid-verification.
+VERIFY_MOUNT_POINT=""
 
 import_signing_certificate() {
     # All six secrets are present (detect_lane already verified). Import the
     # p12 into a temporary keychain that is deleted on script exit.
-    SIGN_KEYCHAIN="$(mktemp -d)/signing.keychain-db"
+    SIGN_KEYCHAIN_DIR="$(mktemp -d)"
+    SIGN_KEYCHAIN="$SIGN_KEYCHAIN_DIR/signing.keychain-db"
     local keychain_password
     keychain_password="$(uuidgen)"
 
@@ -409,7 +415,7 @@ import_signing_certificate() {
     security set-keychain-settings -lut 21600 "$SIGN_KEYCHAIN"
     security unlock-keychain -p "$keychain_password" "$SIGN_KEYCHAIN"
 
-    local p12_path="$SIGN_KEYCHAIN/cert.p12"
+    local p12_path="$SIGN_KEYCHAIN_DIR/cert.p12"
     printf '%s' "$APPLE_DEVELOPER_ID_P12" | base64 --decode > "$p12_path"
     # -A lets codesign use the key without prompting. The keychain is
     # short-lived and local to this script run.
@@ -424,8 +430,13 @@ import_signing_certificate() {
     security set-key-partition-list -S apple-tool:,apple: \
         -k "$keychain_password" "$SIGN_KEYCHAIN" >/dev/null
 
-    # Make the temporary keychain visible to the security toolchain.
-    security list-keychains -d user -s "$SIGN_KEYCHAIN" "$(security list-keychains -d user | tr -d '"')"
+    # codesign resolves identities by name against the whole keychain search
+    # list. The same identity name also lives in the maintainer's login
+    # keychain (installed during certificate setup), which makes the lookup
+    # ambiguous on a local signed run. Scope the search list to this
+    # keychain alone; cleanup() restores the previous list on exit.
+    SIGN_ORIGINAL_KEYCHAINS="$(security list-keychains -d user | tr -d '"')"
+    security list-keychains -d user -s "$SIGN_KEYCHAIN"
 
     resolve_signing_identity
 }
@@ -547,9 +558,12 @@ notarize() {
     local target="$1"
     info "Notarizing $(basename "$target")…"
 
+    # Only stdout is captured — it carries the JSON verdict parsed below.
+    # notarytool's diagnostics go to stderr and flow straight to the log, so
+    # they can never corrupt the JSON status parse.
     local output submission_id status
     if ! output=$(xcrun notarytool submit "$target" "${NOTARY_ARGS[@]}" \
-        --wait --no-progress --output-format json 2>&1); then
+        --wait --no-progress --output-format json); then
         printf '%s\n' "$output" >&2
         submission_id=$(notary_submission_id "$output")
         if [[ -n "$submission_id" ]]; then
@@ -642,12 +656,14 @@ verify_release() {
 
     local mount_point
     mount_point="$(mktemp -d)"
+    VERIFY_MOUNT_POINT="$mount_point"
     hdiutil attach -readonly -nobrowse -mountpoint "$mount_point" "$dmg_path" >/dev/null
 
     local verify_app="/tmp/filbert-verify-$$"
     rm -rf "$verify_app"
     cp -R "$mount_point/$APP_NAME.app" "$verify_app"
     hdiutil detach "$mount_point" >/dev/null
+    VERIFY_MOUNT_POINT=""
     rmdir "$mount_point" 2>/dev/null || true
 
     codesign --verify --deep --strict --verbose=4 "$verify_app"
@@ -726,12 +742,18 @@ EOF
 }
 
 cleanup() {
-    if [[ -n "$SIGN_KEYCHAIN" && -f "$SIGN_KEYCHAIN" ]]; then
-        security delete-keychain "$SIGN_KEYCHAIN" 2>/dev/null || true
-        rm -rf "$(dirname "$SIGN_KEYCHAIN")"
+    if [[ -n "${SIGN_ORIGINAL_KEYCHAINS:-}" ]]; then
+        # Unquoted: one argument per keychain, as captured before scoping.
+        security list-keychains -d user -s $SIGN_ORIGINAL_KEYCHAINS >/dev/null 2>&1 || true
     fi
-    if [[ -n "${NOTARY_WORK_DIR:-}" ]]; then
-        rm -rf "$NOTARY_WORK_DIR"
+    if [[ -n "${SIGN_KEYCHAIN:-}" && -f "$SIGN_KEYCHAIN" ]]; then
+        security delete-keychain "$SIGN_KEYCHAIN" 2>/dev/null || true
+    fi
+    [[ -z "${SIGN_KEYCHAIN_DIR:-}" ]] || rm -rf "$SIGN_KEYCHAIN_DIR"
+    [[ -z "${NOTARY_WORK_DIR:-}" ]] || rm -rf "$NOTARY_WORK_DIR"
+    if [[ -n "${VERIFY_MOUNT_POINT:-}" ]]; then
+        hdiutil detach "$VERIFY_MOUNT_POINT" >/dev/null 2>&1 || true
+        rmdir "$VERIFY_MOUNT_POINT" 2>/dev/null || true
     fi
 }
 trap cleanup EXIT
