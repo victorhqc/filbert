@@ -67,8 +67,11 @@ the Mac you keep the signing key on.
 2. Menu bar: **Keychain Access → Certificate Assistant → Request a
    Certificate from a Certificate Authority…**
 3. In the dialog:
-   - **User Email Address**: your Apple Account email (`you@example.com`).
-     This is informational — it does not have to match anything.
+   - **User Email Address**: any email address you control. Using the primary
+     Apple Account address (`you@example.com`) is simplest, but this field is
+     informational and does not have to match the address used by
+     `notarytool`. It is not the public identity shown by Gatekeeper or
+     `codesign`.
    - **Common Name**: something you will recognize later, e.g.
      `Filbert Release`.
    - **CA Email Address**: leave it **empty**.
