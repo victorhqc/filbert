@@ -13,7 +13,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 
 ## Acceptance Criteria
 
-### AC1: Public releases require signing
+### AC1 [x]: Public releases require signing
 
 - **Given** a GitHub Release on a `v*` tag is published
 - **When** the release workflow starts
@@ -22,7 +22,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 - **And** the public release workflow cannot silently select the ad-hoc signing lane
 - **And** local maintainers can still request an ad-hoc build explicitly for development without gaining access to release credentials
 
-### AC2: The app has a valid Developer ID signature
+### AC2 [x]: The app has a valid Developer ID signature
 
 - **Given** the release workflow has imported the password-protected PKCS#12 certificate into a temporary keychain
 - **When** it signs `Filbert.app`
@@ -31,7 +31,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 - **And** strict deep signature verification passes before notarization
 - **And** the resolved certificate identity and Team ID are checked so a different valid identity cannot be selected accidentally
 
-### AC3: The app and DMG are notarized and stapled
+### AC3 [x]: The app and DMG are notarized and stapled
 
 - **Given** `Filbert.app` has passed Developer ID signature verification
 - **When** the release pipeline submits it to Apple's notary service
@@ -41,7 +41,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 - **And** a rejected, invalid, or interrupted submission prints the corresponding notary log when an ID is available and fails the job
 - **And** no unnotarized DMG is uploaded to GitHub
 
-### AC4: The published artifact passes Gatekeeper checks
+### AC4 [x]: The published artifact passes Gatekeeper checks
 
 - **Given** the signed and notarized DMG has been created
 - **When** the workflow verifies the exact artifact that it will upload
@@ -50,7 +50,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 - **And** the app and DMG stapled tickets pass `stapler validate`
 - **And** the DMG, its SHA-256 checksum, and signed-release notes are uploaded only after all checks pass
 
-### AC5: CI credentials are scoped and cleaned up
+### AC5 [x]: CI credentials are scoped and cleaned up
 
 - **Given** the maintainer has configured the `release-signing` GitHub Environment
 - **When** the release job runs in that environment
@@ -59,7 +59,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 - **And** temporary certificate files, archives, and the keychain are removed on success or failure
 - **And** the `.p12`, its password, the app-specific password, and decoded private-key material are never committed or uploaded as build artifacts
 
-### AC6: User-facing installation text assumes a notarized release
+### AC6 [x]: User-facing installation text assumes a notarized release
 
 - **Given** a user reads `README.md` or the generated notes on a GitHub Release
 - **When** they follow the installation instructions
@@ -68,7 +68,7 @@ Publish every Filbert GitHub Release as a Developer ID-signed and Apple-notarize
 - **And** the text does not promise that macOS shows no dialog, because the normal downloaded-app confirmation may still appear
 - **And** local ad-hoc builds remain clearly distinguished from official GitHub Release artifacts
 
-### AC7: A beginner can configure Apple and GitHub from the maintainer guide
+### AC7 [x]: A beginner can configure Apple and GitHub from the maintainer guide
 
 - **Given** the maintainer has an active Apple Developer Program membership but no signing experience
 - **When** they follow `docs/signing-and-notarization.md` from the beginning

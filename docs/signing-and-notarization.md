@@ -85,12 +85,13 @@ references stays in your login keychain.
    two-factor prompt.
 2. Open **Certificates, Identifiers & Profiles** (under "Program Resources").
 3. Select **Certificates** in the sidebar, then click the **+** button.
-4. Under "Software", choose **Developer ID Application** → **Continue**.
-   (If the option is greyed out, you are not signed in with the Account
-   Holder role, or the membership is inactive.)
-5. When asked to upload a certificate signing request, upload the
+4. Under "Software", choose **Developer ID** → **Continue**.
+5. Choose **Developer ID Application**, not Developer ID Installer, then click
+   **Continue**. (If the option is greyed out, you are not signed in with the
+   Account Holder role, or the membership is inactive.)
+6. When asked to upload a certificate signing request, upload the
    `.certSigningRequest` file from step 1.1 → **Continue**.
-6. Click **Download** and save `developerIDapplication.cer`.
+7. Click **Download** and save `developerIDapplication.cer`.
 
 ### 1.3 Install the certificate with its private key
 
@@ -114,12 +115,14 @@ security find-identity -v -p codesigning
 You should see one line like:
 
 ```
-  1) ABCD123456 "Developer ID Application: Victor Quiroz Castro (ABCD123456)"
+  1) 0123456789ABCDEF0123456789ABCDEF01234567 "Developer ID Application: Victor Quiroz Castro (ABCD123456)"
      1 valid identities found
 ```
 
-- The **10-character code before the quote** is your Team ID → GitHub secret
-  `APPLE_DEVELOPER_ID_TEAM_ID`.
+- The value before the quote is the certificate's SHA-1 fingerprint; it is not
+  the Team ID.
+- The **10-character code inside the identity's parentheses** is your Team ID →
+  GitHub secret `APPLE_DEVELOPER_ID_TEAM_ID`.
 - The **entire quoted string** is the identity name → GitHub secret
   `APPLE_DEVELOPER_ID_NAME`. Copy it exactly, including the
   `Developer ID Application:` prefix and the parenthesized Team ID.
@@ -150,10 +153,10 @@ Notarization submits builds to Apple under your Apple Account. Apple requires
 two-factor authentication on that account and, instead of your real password,
 you give `notarytool` a dedicated **app-specific password**.
 
-1. Enable 2FA if it is off: <https://appleid.apple.com> → sign in →
+1. Enable 2FA if it is off: <https://account.apple.com> → sign in →
    **Sign-In and Security → Two-Factor Authentication** → turn it on and
    follow the prompts.
-2. Back on <https://appleid.apple.com> → **Sign-In and Security →
+2. Back on <https://account.apple.com> → **Sign-In and Security →
    App-Specific Passwords** → click **+** (or "Generate an app-specific
    password").
 3. Give it a label you will recognize when auditing later, e.g.
@@ -174,21 +177,22 @@ Two things Apple does that will bite you later if unnoticed:
 
 The release workflow's `release` job declares
 `environment: release-signing`. GitHub only injects an environment's secrets
-into jobs that run in that environment, which keeps the signing credentials
-scoped to the Release workflow alone. The environment must exist with the
-exact name below, or every release build fails before doing anything.
+into jobs that run in that environment. The environment must exist with the
+exact name below and contain the secrets, or the release build fails closed.
 
 1. Open the repository on GitHub → **Settings** → left sidebar **Environments**
    → **New environment**.
 2. Name: `release-signing` → **Configure environment**.
-3. (Recommended) Under "Deployment protection rules", either require a
-   reviewer or restrict deployment branches/tags so only `v*` tags can use
-   the credentials.
-4. Under **Environment secrets** → **Add secret**, create all six:
+3. (Recommended) Under "Deployment protection rules", require a reviewer if
+   another trusted maintainer can approve releases.
+4. Under "Deployment branches and tags", choose **Selected branches and tags**,
+   add a tag rule for `v*`, and save it. This prevents other refs from using
+   the environment.
+5. Under **Environment secrets** → **Add secret**, create all six:
 
 | Secret name | Value |
 |-------------|-------|
-| `APPLE_DEVELOPER_ID_P12` | Base64 of your `.p12` — run `base64 -i DeveloperIDApplication.p12 \| pbcopy` on your Mac and paste the clipboard contents. Use the exact file, not a re-typed path, and avoid trailing newlines. |
+| `APPLE_DEVELOPER_ID_P12` | Base64 of your `.p12` — run `base64 -i DeveloperIDApplication.p12 \| pbcopy` on your Mac and paste the complete clipboard contents. Use the exact file, not a re-typed value. |
 | `APPLE_DEVELOPER_ID_P12_PASSWORD` | The `.p12` export password from Part 1.5 |
 | `APPLE_DEVELOPER_ID_TEAM_ID` | Your 10-character Team ID from Part 1.4 |
 | `APPLE_DEVELOPER_ID_NAME` | The full identity string from Part 1.4, e.g. `Developer ID Application: Victor Quiroz Castro (ABCD123456)` |
@@ -199,9 +203,10 @@ Keep the six names byte-for-byte identical — the workflow maps them to
 environment variables of the same name, and `scripts/build-dmg.sh
 --require-signing` fails closed listing anything missing or empty.
 
-Limit who can administer the environment ("Environment permissions" on the
-same page). Anyone who can edit the environment's secrets can extract the
-private key.
+Repository administrators can change environment protection rules and anyone
+who can edit the environment's secrets can extract the private key. Limit
+repository administration access and review workflow changes that reference
+`release-signing`.
 
 ### What the runner does with the secrets
 
@@ -218,11 +223,10 @@ echoed, and the workflow never uploads anything except the DMG, its
 Run these on your Mac; nothing secret is printed.
 
 ```sh
-# The .p12 decodes and matches its password (replace the file path):
-base64 --decode filbert-cert.b64 > /tmp/check.p12
-openssl pkcs12 -info -in /tmp/check.p12 -noout -passin env:P12_PASSWORD
-# (export P12_PASSWORD='…' first; the env var keeps it out of shell history)
-rm /tmp/check.p12
+# The .p12 opens and matches its password. OpenSSL prompts without echoing it:
+openssl pkcs12 -info \
+  -in "$HOME/path/to/DeveloperIDApplication.p12" \
+  -noout
 ```
 
 And a dry check that the build script's fail-closed mode works as designed:
@@ -287,9 +291,10 @@ succeeds.
 - Keep the `.p12` **and its password** in a password manager, plus one
   offline copy (encrypted disk image) in case the manager is unavailable.
 - The private key cannot be re-downloaded from Apple. If you lose every copy
-  of the `.p12`, the certificate is unusable and must be revoked and replaced
-  with a new CSR/cert (Part 1) — no data is lost, but every future release
-  must use the new identity.
+  of the `.p12`, the certificate cannot be used for CI. Create a new CSR and
+  certificate (Part 1), then update CI to use the new identity. Do not request
+  revocation merely because the private-key backup was lost; request it if the
+  key may have been exposed.
 - Back up the six secret *names* (this page is the record) but never write
   their values into the repo.
 
@@ -303,8 +308,9 @@ succeeds.
   certificate → export a fresh `.p12`). The identity string keeps the same
   Team ID, so `APPLE_DEVELOPER_ID_NAME` and `APPLE_DEVELOPER_ID_TEAM_ID`
   usually stay unchanged; update `APPLE_DEVELOPER_ID_P12` and
-  `APPLE_DEVELOPER_ID_P12_PASSWORD`. Revoke the old certificate on the
-  portal once nothing uses it.
+  `APPLE_DEVELOPER_ID_P12_PASSWORD`. Leave the old certificate in place while
+  previously published releases may still need to be installed. Do not revoke
+  an uncompromised certificate as routine cleanup.
 - **Rotate the app-specific password** any time you are uneasy: generate a
   new one (Part 2), update `APP_NOTARY_APP_SPECIFIC_PASSWORD`, revoke the old
   one. Cost: none.
@@ -316,10 +322,11 @@ succeeds.
 Treat the key as compromised the moment it left your control (leaked CI log,
 lost laptop with an unlocked keychain, shared `.p12` in a chat).
 
-1. **Revoke the certificate immediately**:
-   developer.apple.com → Account → Certificates → select the certificate →
-   **Revoke**. New notarizations and signatures under it stop working at
-   once; already-notarized, stapled releases keep launching for users.
+1. **Contact Apple Product Security to request certificate revocation**:
+   <product-security@apple.com>. Developer ID certificates cannot normally be
+   revoked from the developer portal. Revocation prevents users from installing
+   apps signed with that certificate, including previously published releases,
+   so include the affected certificate and release details in the request.
 2. Rotate the app-specific password (Part 2) — cheap insurance.
 3. Review who can administer the `release-signing` environment and the
    repository (Settings → Environments / Collaborators) and remove anyone
@@ -342,7 +349,9 @@ Steps above that Apple or GitHub may renumber are documented at:
 - Apple — two-factor authentication for your Apple Account:
   <https://support.apple.com/en-us/HT204397>
 - Apple — app-specific passwords:
-  <https://support.apple.com/en-us/HT204398>
+  <https://support.apple.com/en-us/102654>
+- Apple — revoking Developer ID certificates:
+  <https://developer.apple.com/help/account/reference/revoking-privileges>
 - GitHub — using environments for deployment:
   <https://docs.github.com/en/actions/reference/environments>
 - GitHub — using secrets in GitHub Actions:
