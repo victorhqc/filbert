@@ -2,24 +2,25 @@
 # scripts/build-dmg.sh
 #
 # Builds Filbert.app and packages it into an arm64 DMG.
-# Single entry point for local and CI builds (ci 02 AC8).
+# Single entry point for local and CI builds.
 #
 # Requires: create-dmg (brew install create-dmg) for DMG packaging.
 #
 # Usage:
 #   scripts/build-dmg.sh --version <semver> [--output <dir>] [--no-sign]
+#                         [--require-signing]
 #
-# Signing lane is auto-detected from the environment (ci 02 Plan §3):
-# all six secrets present  → Developer ID sign + notarize + staple (AC2/AC3)
-# any secret missing       → ad-hoc sign, skip notarization (AC0)
-# --no-sign                → forces the unsigned lane regardless of secrets
+# Lane selection:
+#   --require-signing    signed lane is mandatory — any missing secret is a
+#                        hard error before anything is built
+#   six secrets present  Developer ID sign + notarize + staple
+#   any secret missing   ad-hoc sign, skip notarization
+#   --no-sign            forces the unsigned lane regardless of secrets
 #
 # Never echo secret values. Credentials are read from the environment at the
-# point of use and never logged (ci 02 AC6).
+# point of use and never logged.
 
 set -euo pipefail
-
-# ─── Configuration ──────────────────────────────────────────────────────────
 
 APP_NAME="Filbert"
 APP_BUNDLE_ID="com.victorhqc.filbert"
@@ -39,7 +40,7 @@ INFO_PLIST_TEMPLATE="$REPO_ROOT/packaging/Info.plist"
 # assert_build_sdk fails the build loudly rather than shipping the old look.
 MIN_SDK_MAJOR=26
 
-# Secrets that flip the script into the signed lane (ci 02 Plan §8).
+# Secrets required for the signed lane.
 SIGN_SECRET_NAMES=(
     APPLE_DEVELOPER_ID_P12
     APPLE_DEVELOPER_ID_P12_PASSWORD
@@ -49,35 +50,34 @@ SIGN_SECRET_NAMES=(
     APP_NOTARY_APP_SPECIFIC_PASSWORD
 )
 
-# ─── Defaults ───────────────────────────────────────────────────────────────
-
 VERSION=""
 OUTPUT_DIR="$REPO_ROOT/dist"
 FORCE_NO_SIGN=false
-
-# ─── Logging ────────────────────────────────────────────────────────────────
+REQUIRE_SIGNING=false
 
 info()  { printf '\033[1;34m▸\033[0m %s\n' "$*" >&2; }
 ok()    { printf '\033[1;32m✓\033[0m %s\n' "$*" >&2; }
 warn()  { printf '\033[1;33m!\033[0m %s\n' "$*" >&2; }
 fatal() { printf '\033[1;31m✗\033[0m %s\n' "$*" >&2; exit 1; }
 
-# ─── Argument parsing ───────────────────────────────────────────────────────
-
 usage() {
     cat <<EOF
-Usage: $0 --version <semver> [--output <dir>] [--no-sign]
+Usage: $0 --version <semver> [--output <dir>] [--no-sign] [--require-signing]
 
 Options:
   --version <semver>   Version string baked into Info.plist and DMG name.
   --output <dir>       Destination directory for the DMG (default: ./dist).
-  --no-sign            Force the unsigned lane (ci 02 AC0) even when all
+  --no-sign            Force the unsigned lane even when all
                        signing secrets are present. Useful for local test
                        builds.
+  --require-signing    Fail unless all six signing secrets are present; the
+                       release workflow uses this so a public release can
+                       never fall back to ad-hoc signing. Mutually
+                       exclusive with --no-sign.
   -h, --help           Show this help.
 
 Signing secrets (all six required for the signed lane):
-  $(printf '  %s\n' "${SIGN_SECRET_NAMES[@]}")
+$(printf '  %s\n' "${SIGN_SECRET_NAMES[@]}")
 EOF
 }
 
@@ -92,6 +92,8 @@ parse_args() {
                 OUTPUT_DIR="$2"; shift 2 ;;
             --no-sign)
                 FORCE_NO_SIGN=true; shift ;;
+            --require-signing)
+                REQUIRE_SIGNING=true; shift ;;
             -h|--help)
                 usage; exit 0 ;;
             *)
@@ -99,15 +101,16 @@ parse_args() {
         esac
     done
 
+    [[ "$FORCE_NO_SIGN" != "true" || "$REQUIRE_SIGNING" != "true" ]] \
+        || fatal "--no-sign and --require-signing are mutually exclusive"
     [[ -n "$VERSION" ]] || fatal "--version is required (e.g. 0.1.0)"
     [[ -f "$INFO_PLIST_TEMPLATE" ]] || fatal "Missing Info.plist template: $INFO_PLIST_TEMPLATE"
     [[ -f "$ENTITLEMENTS" ]] || fatal "Missing entitlements: $ENTITLEMENTS"
 }
 
-# ─── Lane detection (ci 02 Plan §3) ─────────────────────────────────────────
-
-# Echoes "signed" or "unsigned". The probe is a single check, not duplicated
-# per step (ci 02 Plan §3).
+# The probe is a single check, not duplicated per step. With
+# --require-signing, a missing secret is fatal so the public release workflow
+# cannot drift into the ad-hoc lane.
 detect_lane() {
     if [[ "$FORCE_NO_SIGN" == "true" ]]; then
         echo "unsigned"
@@ -120,14 +123,14 @@ detect_lane() {
     done
     if [[ ${#missing[@]} -eq 0 ]]; then
         echo "signed"
+    elif [[ "$REQUIRE_SIGNING" == "true" ]]; then
+        fatal "Release signing is required but ${#missing[@]} secret(s) are missing or empty: ${missing[*]}. Configure the release-signing GitHub Environment — see docs/signing-and-notarization.md."
     else
         warn "Signing lane disabled — missing: ${missing[*]}"
-        warn "Falling through to the unsigned lane (ci 02 AC0)."
+        warn "Falling through to the unsigned lane."
         echo "unsigned"
     fi
 }
-
-# ─── Build ──────────────────────────────────────────────────────────────────
 
 build_release() {
     info "Building $APP_NAME release ($ARCH)…"
@@ -142,8 +145,7 @@ build_release() {
     # Bundle.main.bundleURL (the .app top level). assemble_bundle places
     # the bundles at Contents/Resources/ instead, because that is the
     # only layout macOS code sealing accepts. Patch the accessor and
-    # relink so Bundle.module resolves against Contents/Resources/ at
-    # runtime (ci 03).
+    # relink so Bundle.module resolves against Contents/Resources/ at runtime.
     patch_resource_bundle_accessors
 
     # Fail loudly if the build linked against too old an SDK (e.g. a stale
@@ -173,8 +175,6 @@ Xcode 26 runner."
     ok "Built against macOS SDK $sdk"
 }
 
-# ─── Resource accessor patch (ci 03) ─────────────────────────────────────────
-
 # Rewrites SPM's generated resource_bundle_accessor.swift so Bundle.module
 # resolves resource bundles from the host .app's Contents/Resources/, where
 # assemble_bundle places them and macOS code sealing allows them to live.
@@ -201,10 +201,10 @@ Xcode 26 runner."
 # entirely. Those commands read the patched accessor and never regenerate
 # it, so the patch lands in the linked executable deterministically.
 #
-# AC1: every accessor under .build/<arch>-apple-macosx/release/ is patched,
-# the executable is relinked against the patched accessors, and no
-# original-form line survives. If a future Swift changes the template, the
-# post-relink assertion fails loudly rather than shipping a broken app.
+# Every accessor under .build/<arch>-apple-macosx/release/ is patched, the
+# executable is relinked against the patched accessors, and no original-form
+# line survives. If a future Swift changes the template, the post-relink
+# assertion fails loudly rather than shipping a broken app.
 patch_resource_bundle_accessors() {
     local release_tree="$REPO_ROOT/.build/$ARCH-apple-macosx/release"
     local manifest="$REPO_ROOT/.build/release.yaml"
@@ -250,7 +250,7 @@ patch_resource_bundle_accessors() {
     # Assert the patch is in the on-disk accessors (they are not regenerated
     # by the replay, so the patched form must survive). If a future SPM
     # template no longer matches the sed anchor, the original form persists
-    # and we fail loudly per ci 03 AC1 / Risks.
+    # and we fail loudly rather than shipping a broken app.
     local unpatched=()
     for accessor in "${accessors[@]}"; do
         grep -q "$original" "$accessor" && unpatched+=("$accessor")
@@ -330,10 +330,8 @@ run("link App", link)
 PY
 }
 
-# ─── Bundle assembly (ci 02 AC1, Plan §1B) ──────────────────────────────────
-
 # Assembles Filbert.app into the passed staging dir and echoes its path.
-# Layout (ci 02 AC1, ci 03 AC2):
+# Layout:
 #   Filbert.app/
 #     Contents/
 #       Info.plist                            (generated from template)
@@ -361,8 +359,8 @@ assemble_bundle() {
     # natively resolve against Contents/Resources/ — SPM's generated
     # accessor looks at Bundle.main.bundleURL (the .app top level).
     # patch_resource_bundle_accessors (called from build_release) rewrites
-    # the accessor to look here via Bundle.main.resourceURL (ci 03 AC2).
-    # If either piece is missing, statusline_helper.swift (providers 02 §5)
+    # the accessor to look here via Bundle.main.resourceURL.
+    # If either piece is missing, statusline_helper.swift
     # and AppIcon/Localizable lookups fail at runtime.
     local bundle_count=0
     while IFS= read -r bundle; do
@@ -383,23 +381,22 @@ assemble_bundle() {
     echo "$app_dir"
 }
 
-# ─── Signing ────────────────────────────────────────────────────────────────
-
 sign_adhoc() {
-    # ci 02 AC0: ad-hoc sign so the bundle runs on the maintainer's machine
-    # without re-signing. --options runtime is harmless here and keeps the
-    # command symmetric with the Developer ID lane.
+    # Ad-hoc signing lets the bundle run on the maintainer's machine without
+    # re-signing. --options runtime keeps this command symmetric with the
+    # Developer ID lane.
     local app_dir="$1"
-    info "Ad-hoc signing (ci 02 AC0)…"
+    info "Ad-hoc signing…"
     codesign -s - --force --deep --options runtime \
         --entitlements "$ENTITLEMENTS" \
         "$app_dir"
     ok "Ad-hoc signed"
 }
 
-# Fresh keychain for the signing cert (ci 02 AC6). Cleaned up on exit.
+# Fresh keychain for the signing certificate. Cleaned up on exit.
 SIGN_KEYCHAIN=""
 SIGN_IDENTITY=""
+NOTARY_WORK_DIR=""
 
 import_signing_certificate() {
     # All six secrets are present (detect_lane already verified). Import the
@@ -418,82 +415,195 @@ import_signing_certificate() {
     # short-lived and local to this script run.
     security import "$p12_path" \
         -P "$APPLE_DEVELOPER_ID_P12_PASSWORD" \
-        -A -t cert -f pkcs12 -k "$SIGN_KEYCHAIN" >/dev/null
+        -A -f pkcs12 -k "$SIGN_KEYCHAIN" >/dev/null \
+        || fatal "Could not import APPLE_DEVELOPER_ID_P12. Check that the secret holds a valid base64 .p12 and that APPLE_DEVELOPER_ID_P12_PASSWORD matches its export password. See docs/signing-and-notarization.md."
     rm -f "$p12_path"
+
+    # Without a partition list trusting Apple's signing tools, codesign
+    # cannot use the imported private key non-interactively on CI runners.
+    security set-key-partition-list -S apple-tool:,apple: \
+        -k "$keychain_password" "$SIGN_KEYCHAIN" >/dev/null
 
     # Make the temporary keychain visible to the security toolchain.
     security list-keychains -d user -s "$SIGN_KEYCHAIN" "$(security list-keychains -d user | tr -d '"')"
 
-    # Resolve the imported identity. Prefer the explicit name from secrets;
-    # fall back to whatever Developer ID Application cert was imported.
-    if security find-identity -v -p codesigning "$SIGN_KEYCHAIN" | grep -q "$APPLE_DEVELOPER_ID_NAME"; then
-        SIGN_IDENTITY="$APPLE_DEVELOPER_ID_NAME"
-    else
-        SIGN_IDENTITY=$(security find-identity -v -p codesigning "$SIGN_KEYCHAIN" \
-            | grep "Developer ID Application" \
-            | head -1 \
-            | sed 's/.*"\(.*\)".*/\1/')
+    resolve_signing_identity
+}
+
+# Reject a valid certificate from a different developer team rather than
+# accidentally signing a release with it.
+resolve_signing_identity() {
+    command -v openssl >/dev/null \
+        || fatal "openssl is required to verify the imported certificate's team"
+
+    local identities
+    identities=$(security find-identity -v -p codesigning "$SIGN_KEYCHAIN")
+
+    SIGN_IDENTITY=$(printf '%s\n' "$identities" \
+        | sed -n 's/.*"\(.*\)".*/\1/p' \
+        | grep -Fx "$APPLE_DEVELOPER_ID_NAME" || true)
+    if [[ -z "$SIGN_IDENTITY" ]]; then
+        # List what the p12 actually contains; the configured secret value
+        # itself is never echoed (identity names are printed from the
+        # keychain only, and only on this failure path).
+        printf '%s' 'Identities found in the temporary keychain:' >&2
+        printf '%s\n' "$identities" | sed -n 's/.*"\(.*\)".*/  \1/p' >&2
+        fatal "APPLE_DEVELOPER_ID_NAME does not match any imported identity. Fix the secret or re-export the .p12 — see docs/signing-and-notarization.md."
     fi
-    [[ -n "$SIGN_IDENTITY" ]] || fatal "Could not resolve Developer ID Application identity"
-    ok "Imported signing identity"
+
+    # The Team ID is the certificate's Organizational Unit (OU).
+    local cert_team
+    cert_team=$(security find-certificate -c "$SIGN_IDENTITY" -p "$SIGN_KEYCHAIN" \
+        | openssl x509 -noout -subject | tr -d ' ' \
+        | grep -oE 'OU=[A-Z0-9]+' | head -1 || true)
+    cert_team="${cert_team#OU=}"
+    [[ -n "$cert_team" ]] \
+        || fatal "Could not read the Team ID (OU) from the imported certificate."
+    if [[ "$cert_team" != "$APPLE_DEVELOPER_ID_TEAM_ID" ]]; then
+        fatal "The imported certificate belongs to team $cert_team, which does not match APPLE_DEVELOPER_ID_TEAM_ID. One of the two secrets is wrong."
+    fi
+
+    ok "Imported signing identity for team $cert_team"
 }
 
 sign_devid() {
-    # ci 02 AC2: sign with Developer ID Application. --timestamp embeds a
-    # trusted time stamp so the signature stays valid after cert expiry.
+    # --timestamp embeds a trusted timestamp so the signature remains valid
+    # after certificate expiry.
     local app_dir="$1"
-    info "Developer ID signing (ci 02 AC2)…"
+    info "Developer ID signing…"
     codesign --deep --options runtime \
         --entitlements "$ENTITLEMENTS" \
         --timestamp \
         -s "$SIGN_IDENTITY" \
         "$app_dir"
-    codesign --verify --verbose=4 "$app_dir"
+    verify_devid_signature "$app_dir"
     ok "Developer ID signed and verified"
 }
 
-# ─── Notarization ───────────────────────────────────────────────────────────
-
-# Notarizes any target (.app or .dmg). On rejection, pulls the notary log
-# and fails — no silent success (ci 02 AC3).
-notarize_and_staple() {
+# Verify the signature and team on the exact app that will be notarized.
+verify_devid_signature() {
     local target="$1"
-    info "Notarizing $(basename "$target") (ci 02 AC3)…"
+    codesign --verify --deep --strict --verbose=4 "$target"
 
-    local submission_id submission_state
-    submission_id=$(xcrun notarytool submit "$target" \
-        --apple-id  "$APP_NOTARY_APPLE_ID" \
-        --team-id   "$APPLE_DEVELOPER_ID_TEAM_ID" \
-        --password  "$APP_NOTARY_APP_SPECIFIC_PASSWORD" \
-        --wait \
-        2>&1 | tee /dev/stderr | grep -E '^\s*id:' | head -1 | awk '{print $2}')
-
-    if ! xcrun stapler staple "$target"; then
-        warn "Staple failed — pulling notary log for diagnosis."
-        [[ -n "$submission_id" ]] \
-            && xcrun notarytool log "$submission_id" \
-                --apple-id  "$APP_NOTARY_APPLE_ID" \
-                --team-id   "$APPLE_DEVELOPER_ID_TEAM_ID" \
-                --password  "$APP_NOTARY_APP_SPECIFIC_PASSWORD" \
-            || warn "No submission id captured; cannot fetch log."
-        fatal "Notarization or stapling failed for $target"
-    fi
-    xcrun stapler validate "$target"
-    ok "Notarized and stapled: $(basename "$target")"
+    local signed_team
+    signed_team=$(codesign -dvv "$target" 2>&1 | sed -n 's/^TeamIdentifier=//p')
+    [[ "$signed_team" == "$APPLE_DEVELOPER_ID_TEAM_ID" ]] \
+        || fatal "Signature carries TeamIdentifier=${signed_team:-<none>}, expected the team named by APPLE_DEVELOPER_ID_TEAM_ID."
 }
 
-# ─── DMG packaging (ci 02 AC4) ──────────────────────────────────────────────
-#
+# One authentication path for every notarytool call, built once after lane
+# detection. Never logged.
+NOTARY_ARGS=()
+init_notary_args() {
+    NOTARY_ARGS=(
+        --apple-id  "$APP_NOTARY_APPLE_ID"
+        --team-id   "$APPLE_DEVELOPER_ID_TEAM_ID"
+        --password  "$APP_NOTARY_APP_SPECIFIC_PASSWORD"
+    )
+}
+
+# The JSON response avoids parsing progress output, whose format is intended for
+# people and can include status spinners.
+notary_json_field() {
+    local field="$1"
+    /usr/bin/python3 -c '
+import json
+import sys
+
+try:
+    value = json.load(sys.stdin).get(sys.argv[1])
+except (json.JSONDecodeError, AttributeError, IndexError):
+    raise SystemExit(1)
+
+if value is not None:
+    print(value)
+' "$field"
+}
+
+notary_submission_id() {
+    local output="$1"
+    local submission_id
+
+    submission_id=$(printf '%s\n' "$output" | notary_json_field id || true)
+    if [[ -z "$submission_id" ]]; then
+        submission_id=$(printf '%s\n' "$output" | /usr/bin/python3 -c '
+import re
+import sys
+
+match = re.search(
+    r"[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-"
+    r"[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}",
+    sys.stdin.read(),
+)
+if match:
+    print(match.group(0))
+' || true)
+    fi
+    printf '%s' "$submission_id"
+}
+
+# Submit a supported container and require an accepted verdict.
+notarize() {
+    local target="$1"
+    info "Notarizing $(basename "$target")…"
+
+    local output submission_id status
+    if ! output=$(xcrun notarytool submit "$target" "${NOTARY_ARGS[@]}" \
+        --wait --no-progress --output-format json 2>&1); then
+        printf '%s\n' "$output" >&2
+        submission_id=$(notary_submission_id "$output")
+        if [[ -n "$submission_id" ]]; then
+            xcrun notarytool log "$submission_id" "${NOTARY_ARGS[@]}" >&2 || true
+        fi
+        fatal "notarytool could not submit $(basename "$target"). For Apple ID or app-specific-password errors, see docs/signing-and-notarization.md §Troubleshooting."
+    fi
+
+    submission_id=$(notary_submission_id "$output")
+    status=$(printf '%s\n' "$output" | notary_json_field status || true)
+
+    if [[ "$status" != "Accepted" ]]; then
+        warn "Notarization status for $(basename "$target"): ${status:-unknown}"
+        if [[ -n "$submission_id" ]]; then
+            xcrun notarytool log "$submission_id" "${NOTARY_ARGS[@]}" >&2 || true
+        else
+            warn "No submission ID captured; cannot fetch the notary log."
+        fi
+        fatal "Notarization did not reach Accepted for $(basename "$target")."
+    fi
+    ok "Notary service accepted $(basename "$target") (submission ${submission_id:-unknown})"
+}
+
+staple_and_validate() {
+    local target="$1"
+    xcrun stapler staple "$target" \
+        || fatal "stapler could not staple $(basename "$target") — the notary ticket is missing or does not match this exact artifact."
+    xcrun stapler validate "$target" \
+        || fatal "stapler validation failed for $(basename "$target")."
+    ok "Stapled and validated: $(basename "$target")"
+}
+
+# The notary service does not accept a bare .app — it accepts a zip that
+# preserves the bundle wrapper. ditto --keepParent keeps Filbert.app/ as the
+# zip's root directory; the zip is temporary and never shipped.
+notarize_app() {
+    local app_dir="$1"
+    NOTARY_WORK_DIR="$(mktemp -d)"
+    local zip_path="$NOTARY_WORK_DIR/$APP_NAME-notarization.zip"
+    ditto -c -k --sequesterRsrc --keepParent "$app_dir" "$zip_path"
+    notarize "$zip_path"
+    staple_and_validate "$app_dir"
+}
+
 # create-dmg (https://github.com/create-dmg/create-dmg) is a hard dependency.
-# It produces the conventional drag-to-/Applications presentation that AC4
-# calls for: fixed window size, icon positioning, and the Applications
+# It produces the conventional drag-to-/Applications presentation: fixed
+# window size, icon positioning, and the Applications
 # drop-link. Rolling this by hand would mean reimplementing its AppleScript
 # and .DS_Store logic for no gain — create-dmg is the community standard.
 #
 # We do NOT use create-dmg's --codesign/--notarize flags: those use
 # notarytool's --keychain-profile flow, which diverges from the spec's
-# --apple-id/--team-id/--password env-secret flow (ci 02 Plan §8). Keeping
-# one auth path for both the .app and the DMG is simpler and matches AC6.
+# --apple-id/--team-id/--password environment-secret flow. Keeping
+# one auth path for both the .app and the DMG is simpler.
 create_dmg() {
     local stage_dir="$1"
     local dmg_path="$2"
@@ -518,11 +628,17 @@ create_dmg() {
         "$stage_dir"
 }
 
-# ─── Verification (ci 02 AC5) ───────────────────────────────────────────────
-
+# Verifies the exact DMG that will be uploaded: the DMG's own staple, then a
+# copy of the app taken from a mounted read-only image — codesign deep+strict,
+# spctl Gatekeeper assessment, and the app's stapled ticket.
 verify_release() {
     local dmg_path="$1"
-    info "Verifying DMG (ci 02 AC5)…"
+    info "Verifying the release artifact…"
+
+    if [[ "${LANE:-}" == "signed" ]]; then
+        xcrun stapler validate "$dmg_path" \
+            || fatal "stapler validation failed for the DMG."
+    fi
 
     local mount_point
     mount_point="$(mktemp -d)"
@@ -534,20 +650,23 @@ verify_release() {
     hdiutil detach "$mount_point" >/dev/null
     rmdir "$mount_point" 2>/dev/null || true
 
-    codesign --verify --verbose=4 "$verify_app"
-    # spctl only meaningfully assesses Developer-ID-signed binaries; for ad-hoc
-    # it returns an error, which we tolerate on the unsigned lane.
+    codesign --verify --deep --strict --verbose=4 "$verify_app"
     if [[ "${LANE:-}" == "signed" ]]; then
-        spctl --assess --type execute -vv "$verify_app"
+        spctl --assess --type execute -vv "$verify_app" \
+            || fatal "spctl rejected the signed app — Gatekeeper assessment failed."
+        xcrun stapler validate "$verify_app" \
+            || fatal "stapler validation failed for the app copied out of the DMG."
+        codesign -dvv "$verify_app" 2>&1 | grep -E '^(Authority|TeamIdentifier)=' >&2 || true
     else
-        spctl --assess --type execute -vv "$verify_app" || warn "spctl rejected ad-hoc signed app (expected on unsigned lane)."
+        # spctl only meaningfully assesses Developer-ID-signed binaries; for
+        # ad-hoc it returns an error, which we tolerate on the unsigned lane.
+        spctl --assess --type execute -vv "$verify_app" \
+            || warn "spctl rejected ad-hoc signed app (expected on unsigned lane)."
     fi
 
     rm -rf "$verify_app"
-    ok "DMG verified"
+    ok "Release artifact verified"
 }
-
-# ─── Release body (ci 02 Plan §7, AC10) ─────────────────────────────────────
 
 # Writes the release notes for this lane to <dmg>.release-notes.md so the
 # workflow can attach them to the GitHub Release. The note text is static
@@ -562,19 +681,27 @@ write_release_notes() {
         cat > "$notes_path" <<EOF
 ## Filbert $VERSION
 
-Signed and notarized macOS build (Apple Silicon).
+Developer ID-signed and Apple-notarized macOS build (Apple Silicon).
 
 - **DMG:** $(basename "$dmg_path")
 - **SHA-256:** \`$checksum\`
 
-Drag **Filbert** to **/Applications**. The app is signed and notarized, so
-it launches with no Gatekeeper warning.
+## Install
+
+1. Mount the DMG and drag **Filbert** to **/Applications**.
+2. Launch **Filbert** normally.
+
+No Gatekeeper bypass is needed. macOS may still show its standard
+first-open confirmation for apps downloaded from the internet — confirm
+and open.
 EOF
     else
         cat > "$notes_path" <<EOF
-## Filbert $VERSION
+## Filbert $VERSION — local build
 
 Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
+This is a local development artifact, not an official GitHub Release;
+official releases are Developer ID-signed and notarized.
 
 - **DMG:** $(basename "$dmg_path")
 - **SHA-256:** \`$checksum\`
@@ -583,7 +710,7 @@ Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
 
 1. Mount the DMG and drag **Filbert** to **/Applications**.
 2. On first launch, macOS Gatekeeper will block the app because it is
-   unsigned. Do one of:
+   only ad-hoc signed. Do one of:
    - **Right-click** Filbert in /Applications → **Open** → confirm the
      prompt. Only needed once.
    - Or run this in Terminal:
@@ -591,12 +718,6 @@ Unsigned macOS build (Apple Silicon). Direct distribution, ad-hoc signed.
      \`\`\`sh
      xattr -cr '/Applications/Filbert.app'
      \`\`\`
-
-## Why unsigned?
-
-This is a transitional state. The moment an Apple Developer Program
-membership is configured, releases automatically become signed and
-notarized with no action on your part.
 EOF
     fi
 
@@ -604,17 +725,16 @@ EOF
     ok "Wrote release notes: $notes_path"
 }
 
-# ─── Cleanup ────────────────────────────────────────────────────────────────
-
 cleanup() {
     if [[ -n "$SIGN_KEYCHAIN" && -f "$SIGN_KEYCHAIN" ]]; then
         security delete-keychain "$SIGN_KEYCHAIN" 2>/dev/null || true
         rm -rf "$(dirname "$SIGN_KEYCHAIN")"
     fi
+    if [[ -n "${NOTARY_WORK_DIR:-}" ]]; then
+        rm -rf "$NOTARY_WORK_DIR"
+    fi
 }
 trap cleanup EXIT
-
-# ─── Main ───────────────────────────────────────────────────────────────────
 
 main() {
     parse_args "$@"
@@ -631,8 +751,9 @@ main() {
     case "$LANE" in
         signed)
             import_signing_certificate
+            init_notary_args
             sign_devid "$app_dir"
-            notarize_and_staple "$app_dir"
+            notarize_app "$app_dir"
             ;;
         unsigned)
             sign_adhoc "$app_dir"
@@ -649,7 +770,8 @@ main() {
     case "$LANE" in
         signed)
             # Notarize the DMG itself so Gatekeeper passes before mount.
-            notarize_and_staple "$dmg_path"
+            notarize "$dmg_path"
+            staple_and_validate "$dmg_path"
             ;;
     esac
 

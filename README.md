@@ -90,24 +90,10 @@ Download the `Filbert-<version>-arm64.dmg`, then:
    the DMG window.
 3. **Launch it.** The app lives in the menu bar. There is no Dock icon.
 
-### First launch on an unsigned build
-
-Current releases are **unsigned** (ad-hoc signed), so macOS Gatekeeper blocks
-them on first launch. Once an Apple Developer Program membership is in place,
-releases will be signed and notarized. You will not need to take these steps.
-
-To open an unsigned build, do **one** of these:
-
-- **Right-click** Filbert in /Applications → **Open** → confirm the prompt. You
-  only do this once. Later launches work with a double-click.
-- Or clear the quarantine flag from the terminal:
-
-  ```sh
-  xattr -cr '/Applications/Filbert.app'
-  ```
-
-Signed and notarized builds, when available, launch with no warning and need
-none of this.
+Releases are **Developer ID-signed and Apple-notarized**, so Filbert opens
+normally — no Gatekeeper bypass, no `xattr` commands. Like any app downloaded
+from the internet, macOS may still show the standard first-open confirmation;
+confirm and open.
 
 ## Use it
 
@@ -321,6 +307,12 @@ brew install create-dmg
 scripts/build-dmg.sh --version 0.1.0 --no-sign
 # → dist/Filbert-0.1.0-arm64.dmg
 ```
+
+Local builds are **ad-hoc signed for development only** — macOS will ask you
+to confirm the first launch, and they are not the same artifact as the
+signed, notarized official releases. Maintainers who need to produce or
+verify a signed release locally can read
+[`docs/signing-and-notarization.md`](docs/signing-and-notarization.md).
 
 ## Status
 
