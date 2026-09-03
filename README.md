@@ -28,6 +28,15 @@ you do not need to open several browser tabs to see what remains.
   </tr>
 </table>
 
+## Install
+
+Filbert requires Apple Silicon and macOS 26 (Tahoe) or newer.
+
+1. Open the [latest Filbert release](https://github.com/victorhqc/filbert/releases/latest).
+2. Under **Assets**, download `Filbert-<version>-arm64.dmg`.
+3. Double-click the DMG, then drag Filbert to the `/Applications` shortcut.
+4. Launch Filbert from Applications. It appears in the menu bar, not the Dock.
+
 ## What you get
 
 - **Menu bar** — glance at your most-used provider's remaining quota.
@@ -79,21 +88,6 @@ your setup.
 - macOS **26 (Tahoe)** or newer. The app is built against the macOS 26 SDK.
   Older systems render an outdated popover and are no longer supported.
 - API keys or signed-in local CLI sessions for the providers you want to track.
-
-## Install
-
-Prebuilt releases are available on the [GitHub Releases page](https://github.com/victorhqc/filbert/releases).
-Download the `Filbert-<version>-arm64.dmg`, then:
-
-1. **Mount the DMG** by double-clicking it.
-2. **Drag Filbert to /Applications** — use the `/Applications` shortcut inside
-   the DMG window.
-3. **Launch it.** The app lives in the menu bar. There is no Dock icon.
-
-Releases are **Developer ID-signed and Apple-notarized**, so Filbert opens
-normally — no Gatekeeper bypass, no `xattr` commands. Like any app downloaded
-from the internet, macOS may still show the standard first-open confirmation;
-confirm and open.
 
 ## Use it
 
