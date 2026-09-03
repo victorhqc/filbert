@@ -697,8 +697,6 @@ write_release_notes() {
         cat > "$notes_path" <<EOF
 ## Filbert $VERSION
 
-Developer ID-signed and Apple-notarized macOS build (Apple Silicon).
-
 - **DMG:** $(basename "$dmg_path")
 - **SHA-256:** \`$checksum\`
 
@@ -706,10 +704,6 @@ Developer ID-signed and Apple-notarized macOS build (Apple Silicon).
 
 1. Mount the DMG and drag **Filbert** to **/Applications**.
 2. Launch **Filbert** normally.
-
-No Gatekeeper bypass is needed. macOS may still show its standard
-first-open confirmation for apps downloaded from the internet — confirm
-and open.
 EOF
     else
         cat > "$notes_path" <<EOF
