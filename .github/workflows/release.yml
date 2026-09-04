@@ -60,17 +60,16 @@ jobs:
           metadata = json.loads(Path(sys.argv[1]).read_text())
           tag = sys.argv[2]
           version = tag.removeprefix("v")
-          semver = re.compile(
-              r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
-              r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
-              r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
-          )
+          stable_version = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
           if metadata["tagName"] != tag:
               raise SystemExit("GitHub returned a different release tag")
           if metadata["isDraft"] or metadata["isPrerelease"]:
               raise SystemExit("Only published stable releases may update the appcast")
-          if version == "0.0.0" or not semver.fullmatch(version):
-              raise SystemExit(f"Release tag is not a valid version: {tag}")
+          if version == "0.0.0" or not stable_version.fullmatch(version):
+              raise SystemExit(
+                  f"Stable release tags must be plain vX.Y.Z with "
+                  f"no prerelease or build suffix: {tag}"
+              )
           PY
 
       - name: Build signed and notarized DMG
@@ -150,14 +149,18 @@ jobs:
         run: |
           set -euo pipefail
           curl -fsSL \
-            "https://github.com/sparkle-project/Sparkle/releases/download/2.9.1/Sparkle-for-Swift-Package-Manager.zip" \
+            "https://github.com/sparkle-project/Sparkle/releases/download/2.9.6/Sparkle-for-Swift-Package-Manager.zip" \
             -o "$RUNNER_TEMP/sparkle.zip"
+          echo "8d5fb41d960b43f4a68aa14126bf62b098544ec8d191cdcc73eb14e63a8e7606  $RUNNER_TEMP/sparkle.zip" \
+            | shasum -a 256 --check --status \
+            || { echo "Sparkle publishing tools checksum mismatch"; exit 1; }
           mkdir -p "$RUNNER_TEMP/sparkle"
           unzip -q "$RUNNER_TEMP/sparkle.zip" -d "$RUNNER_TEMP/sparkle"
 
       - name: Generate and validate stable appcast
         env:
           SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
           VERSION: ${{ steps.version.outputs.version }}
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: |
@@ -186,7 +189,9 @@ jobs:
           python3 scripts/validate-appcast.py \
             --appcast "$site/appcast.xml" \
             --version "$VERSION" \
-            --download-url "$download_url"
+            --download-url "$download_url" \
+            --public-key "$SPARKLE_PUBLIC_ED_KEY" \
+            --dmg "$dmg"
           unset SPARKLE_PRIVATE_KEY
 
       - name: Upload stable appcast artifact

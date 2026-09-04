@@ -18,7 +18,7 @@ enum AboutAcknowledgements {
         RuntimeLibrary(
             name: "Sparkle",
             url: URL(string: "https://sparkle-project.org")!,
-            licenseURL: URL(string: "https://github.com/sparkle-project/Sparkle/blob/2.9.1/LICENSE")!
+            licenseURL: URL(string: "https://github.com/sparkle-project/Sparkle/blob/2.9.6/LICENSE")!
         ),
     ]
     static let assetCredits = [

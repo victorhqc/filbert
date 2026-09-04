@@ -21,7 +21,7 @@ does not receive Apple or Sparkle signing credentials.
 
 ### Create and protect the Sparkle key
 
-Download the Sparkle package that matches the pinned `2.9.1` dependency. Its
+Download the Sparkle package that matches the pinned `2.9.6` dependency. Its
 `bin` directory contains `generate_keys`, `sign_update`, and
 `generate_appcast`.
 
@@ -49,6 +49,12 @@ gh variable set SPARKLE_PUBLIC_ED_KEY --env release-signing --body "$PUBLIC_KEY"
 gh secret set SPARKLE_PRIVATE_KEY --env release-signing < "$PRIVATE_KEY"
 ```
 
+Generate both values from a single `generate_keys` run. They are a matched
+pair: the workflow verifies the generated enclosure and feed signatures
+against `SPARKLE_PUBLIC_ED_KEY` — the same key embedded in shipped apps — so a
+private key from a different generation fails the release instead of
+publishing a feed no installed client trusts.
+
 Do not commit either value. The public key is embedded in the release
 `Info.plist`; the private key is read through standard input by
 `generate_appcast`, is never written by the workflow, and is never included in
@@ -61,8 +67,8 @@ edit this environment and require an approval for its deployments.
 
 ## How a release is published
 
-Only a published, non-draft, non-prerelease release with a valid `v<semver>`
-tag can publish the stable appcast.
+Only a published, non-draft, non-prerelease release with a plain `vX.Y.Z`
+tag (no prerelease or build suffix) can publish the stable appcast.
 
 1. Create a draft release with a `v<version>` tag.
 2. Before the first updater-capable release, set
@@ -85,7 +91,8 @@ tag can publish the stable appcast.
    URL.
 7. The appcast validator checks the installed version, release version, asset
    URL, byte length, MIME type, publication date, release notes, and EdDSA
-   signature.
+   signature — including verifying the enclosure and feed signatures against
+   the public key embedded in shipped apps.
 8. A dependent job uploads only the static appcast directory to GitHub Pages.
 
 After the first updater-capable release has been manually installed and
@@ -94,6 +101,11 @@ pre-Sparkle binary can update itself: it has no updater code or trusted feed
 configuration. Every later Sparkle-capable release can skip intermediate
 versions because Sparkle compares the advertised version with the installed
 version.
+
+The feed advertises only the newest stable release. Older releases stay
+attached to their exact GitHub Release tags, so a client that cannot run the
+newest release (for example, after a minimum-macOS increase) keeps its current
+version and can always install any older build manually.
 
 ## User behavior
 

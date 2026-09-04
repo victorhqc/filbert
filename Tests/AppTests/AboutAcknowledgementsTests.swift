@@ -8,7 +8,7 @@ final class AboutAcknowledgementsTests: XCTestCase {
                 $0.name == "Sparkle"
                     && $0.url.absoluteString == "https://sparkle-project.org"
                     && $0.licenseURL.absoluteString
-                    == "https://github.com/sparkle-project/Sparkle/blob/2.9.1/LICENSE"
+                    == "https://github.com/sparkle-project/Sparkle/blob/2.9.6/LICENSE"
             }
         )
     }
