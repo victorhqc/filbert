@@ -5,6 +5,7 @@ import SwiftUI
 @MainActor
 struct SettingsView: View {
     let viewModel: QuotaViewModel
+    let updateCoordinator: UpdateCoordinator
 
     var body: some View {
         TabView {
@@ -23,7 +24,7 @@ struct SettingsView: View {
                     Label(String(localized: "Refresh Settings"), systemImage: "arrow.clockwise")
                 }
 
-            AboutSettingsView()
+            AboutSettingsView(updateCoordinator: updateCoordinator)
                 .tabItem {
                     Label(String(localized: "About"), systemImage: "info.circle")
                 }

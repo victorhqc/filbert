@@ -13,6 +13,7 @@ struct AppMain: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     @State private var viewModel: QuotaViewModel
+    private let updateCoordinator: UpdateCoordinator
 
     init() {
         let registry = ProviderRegistry()
@@ -24,6 +25,7 @@ struct AppMain: App {
         registry.register(CursorProvider())
         registry.register(GeminiCLIProvider())
         _viewModel = State(initialValue: QuotaViewModel(registry: registry))
+        updateCoordinator = UpdateCoordinator()
     }
 
     var body: some Scene {
@@ -36,7 +38,7 @@ struct AppMain: App {
         .menuBarExtraStyle(.window)
 
         Settings {
-            SettingsView(viewModel: viewModel)
+            SettingsView(viewModel: viewModel, updateCoordinator: updateCoordinator)
         }
         .defaultSize(width: 620, height: 520)
         .windowResizability(.contentMinSize)

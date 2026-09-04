@@ -67,3 +67,6 @@ jobs:
 
       - name: Test
         run: swift test
+
+      - name: Workflow tests
+        run: python3 scripts/test-automatic-updates.py

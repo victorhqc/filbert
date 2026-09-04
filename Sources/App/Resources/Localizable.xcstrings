@@ -1644,15 +1644,6 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } }
       }
     },
-    "Filbert has no third-party runtime library dependencies and is built with Apple system frameworks." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert hat keine Runtime-Abhängigkeiten von Drittanbieterbibliotheken und wird mit Apple-Systemframeworks erstellt." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert has no third-party runtime library dependencies and is built with Apple system frameworks." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no tiene dependencias de bibliotecas de ejecución de terceros y se crea con frameworks del sistema de Apple." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no tiene dependencias de bibliotecas de ejecución de terceros y se compila con frameworks del sistema de Apple." } }
-      }
-    },
     "Filbert is a native macOS AI usage tracker." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2215,6 +2206,69 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%lld minutes" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%lld minutos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%lld minutos" } }
+      }
+    },
+    "Automatic updates are available only in installed releases." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Updates sind nur in installierten Versionen verfügbar." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic updates are available only in installed releases." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las actualizaciones automáticas solo están disponibles en versiones instaladas." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las actualizaciones automáticas solo están disponibles en versiones instaladas." } }
+      }
+    },
+    "Check for a newer Filbert release" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach einer neueren Filbert-Version suchen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for a newer Filbert release" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar una versión más reciente de Filbert" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar una versión más reciente de Filbert" } }
+      }
+    },
+    "Check for Updates…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach Updates suchen …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for Updates…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones…" } }
+      }
+    },
+    "Check for updates automatically" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch nach Updates suchen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for updates automatically" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones automáticamente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones automáticamente" } }
+      }
+    },
+    "Download updates automatically" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Updates automatisch laden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Download updates automatically" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Descargar actualizaciones automáticamente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Descargar actualizaciones automáticamente" } }
+      }
+    },
+    "MIT License" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "MIT-Lizenz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "MIT License" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Licencia MIT" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Licencia MIT" } }
+      }
+    },
+    "Updates" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Updates" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Updates" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones" } }
       }
     }
   },

@@ -18,6 +18,12 @@ let package = Package(
     name: "filbert",
     defaultLocalization: "en",
     platforms: [.macOS(.v14)],
+    dependencies: [
+        .package(
+            url: "https://github.com/sparkle-project/Sparkle",
+            exact: "2.9.6"
+        ),
+    ],
     targets: [
         .target(
             name: "Core",
@@ -77,6 +83,7 @@ let package = Package(
             name: "App",
             dependencies: [
                 "Core",
+                .product(name: "Sparkle", package: "Sparkle"),
                 "ZAIProvider",
                 "ClaudeCodeProvider",
                 "DeepSeekProvider",
