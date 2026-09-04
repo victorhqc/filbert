@@ -18,15 +18,16 @@ concurrency:
 jobs:
   release:
     name: Build and publish DMG
-    if: startsWith(github.event.release.tag_name, 'v')
+    if: ${{ startsWith(github.event.release.tag_name, 'v') && !github.event.release.prerelease && !github.event.release.draft }}
     # macOS 26 image → Xcode 26 / macOS 26 SDK. Building against an older SDK
     # (the macos-14 image ships SDK 14.x) makes SwiftUI/AppKit serve their
     # pre-Tahoe codepath at runtime: wrong popover material and a
     # MenuBarExtra(.window) that won't resize. build-dmg.sh asserts the SDK.
     runs-on: macos-26
-    # Holds the six Apple signing/notarization secrets (ci 05). The build
-    # step maps them into the DMG build only; --require-signing makes the
-    # job fail closed if any is missing. Setup:
+    # Holds the release-signing environment. The build step maps Apple
+    # credentials and the public update key into the DMG build only;
+    # --require-signing makes the job fail closed if any Apple secret is
+    # missing. The private Sparkle key is mapped only to its signing step.
     # docs/signing-and-notarization.md
     environment: release-signing
     steps:
@@ -43,15 +44,46 @@ jobs:
         run: |
           echo "version=${TAG_NAME#v}" >> "$GITHUB_OUTPUT"
 
+      - name: Validate stable release metadata
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          gh release view "$TAG_NAME" --json isDraft,isPrerelease,tagName > "$RUNNER_TEMP/release.json"
+          python3 - "$RUNNER_TEMP/release.json" "$TAG_NAME" <<'PY'
+          import json
+          import re
+          import sys
+          from pathlib import Path
+
+          metadata = json.loads(Path(sys.argv[1]).read_text())
+          tag = sys.argv[2]
+          version = tag.removeprefix("v")
+          semver = re.compile(
+              r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)"
+              r"(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?"
+              r"(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$"
+          )
+          if metadata["tagName"] != tag:
+              raise SystemExit("GitHub returned a different release tag")
+          if metadata["isDraft"] or metadata["isPrerelease"]:
+              raise SystemExit("Only published stable releases may update the appcast")
+          if version == "0.0.0" or not semver.fullmatch(version):
+              raise SystemExit(f"Release tag is not a valid version: {tag}")
+          PY
+
       - name: Build signed and notarized DMG
         env:
           VERSION: ${{ steps.version.outputs.version }}
+          SPARKLE_PUBLIC_ED_KEY: ${{ vars.SPARKLE_PUBLIC_ED_KEY }}
           APPLE_DEVELOPER_ID_P12: ${{ secrets.APPLE_DEVELOPER_ID_P12 }}
           APPLE_DEVELOPER_ID_P12_PASSWORD: ${{ secrets.APPLE_DEVELOPER_ID_P12_PASSWORD }}
           APPLE_DEVELOPER_ID_TEAM_ID: ${{ secrets.APPLE_DEVELOPER_ID_TEAM_ID }}
           APPLE_DEVELOPER_ID_NAME: ${{ secrets.APPLE_DEVELOPER_ID_NAME }}
           APP_NOTARY_APPLE_ID: ${{ secrets.APP_NOTARY_APPLE_ID }}
           APP_NOTARY_APP_SPECIFIC_PASSWORD: ${{ secrets.APP_NOTARY_APP_SPECIFIC_PASSWORD }}
+          BOOTSTRAP_UPDATE_RELEASE: ${{ vars.BOOTSTRAP_UPDATE_RELEASE || 'false' }}
         run: scripts/build-dmg.sh --version "$VERSION" --require-signing
 
       - name: Upload DMG and checksum
@@ -113,3 +145,80 @@ jobs:
           PY
 
           gh release edit "$TAG_NAME" --notes-file "$COMPOSED_BODY"
+
+      - name: Download Sparkle publishing tools
+        run: |
+          set -euo pipefail
+          curl -fsSL \
+            "https://github.com/sparkle-project/Sparkle/releases/download/2.9.1/Sparkle-for-Swift-Package-Manager.zip" \
+            -o "$RUNNER_TEMP/sparkle.zip"
+          mkdir -p "$RUNNER_TEMP/sparkle"
+          unzip -q "$RUNNER_TEMP/sparkle.zip" -d "$RUNNER_TEMP/sparkle"
+
+      - name: Generate and validate stable appcast
+        env:
+          SPARKLE_PRIVATE_KEY: ${{ secrets.SPARKLE_PRIVATE_KEY }}
+          VERSION: ${{ steps.version.outputs.version }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          [[ -n "$SPARKLE_PRIVATE_KEY" ]] \
+            || { echo "SPARKLE_PRIVATE_KEY is missing from release-signing"; exit 1; }
+
+          dmg="dist/Filbert-${VERSION}-arm64.dmg"
+          notes="dist/Filbert-${VERSION}-arm64.release-notes.md"
+          input="$RUNNER_TEMP/appcast-input"
+          site="$RUNNER_TEMP/appcast-site"
+          mkdir -p "$input" "$site"
+          cp "$dmg" "$input/"
+          cp "$notes" "$input/Filbert-${VERSION}-arm64.md"
+          download_url="https://github.com/victorhqc/filbert/releases/download/${TAG_NAME}/$(basename "$dmg")"
+
+          printf '%s' "$SPARKLE_PRIVATE_KEY" \
+            | "$RUNNER_TEMP/sparkle/bin/generate_appcast" \
+                --ed-key-file - \
+                --download-url-prefix "https://github.com/victorhqc/filbert/releases/download/${TAG_NAME}/" \
+                --link "https://github.com/victorhqc/filbert" \
+                --embed-release-notes \
+                --disable-signing-warning \
+                -o "$site/appcast.xml" \
+                "$input"
+          python3 scripts/validate-appcast.py \
+            --appcast "$site/appcast.xml" \
+            --version "$VERSION" \
+            --download-url "$download_url"
+          unset SPARKLE_PRIVATE_KEY
+
+      - name: Upload stable appcast artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: stable-appcast
+          path: ${{ runner.temp }}/appcast-site
+          if-no-files-found: error
+
+  publish-pages:
+    name: Publish stable appcast to GitHub Pages
+    needs: release
+    if: ${{ needs.release.result == 'success' }}
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Download stable appcast
+        uses: actions/download-artifact@v4
+        with:
+          name: stable-appcast
+          path: site
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+      - name: Deploy Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4

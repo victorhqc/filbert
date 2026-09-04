@@ -13,7 +13,7 @@ enum AppVersion {
 
     static func presentation(shortVersion: String?) -> String {
         guard let shortVersion,
-              let version = normalizedVersion(from: shortVersion)
+              let version = normalizedReleaseVersion(shortVersion)
         else {
             return String(localized: "filbert development")
         }
@@ -21,7 +21,7 @@ enum AppVersion {
         return String.localizedStringWithFormat(String(localized: "filbert v%@"), version)
     }
 
-    private static func normalizedVersion(from rawVersion: String) -> String? {
+    static func normalizedReleaseVersion(_ rawVersion: String) -> String? {
         let trimmedVersion = rawVersion.trimmingCharacters(in: .whitespacesAndNewlines)
         let version = trimmedVersion.first?.lowercased() == "v"
             ? String(trimmedVersion.dropFirst())

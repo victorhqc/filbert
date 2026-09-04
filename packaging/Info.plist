@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<!--
-  Template for Filbert.app's Contents/Info.plist.
-  scripts/build-dmg.sh substitutes @VERSION@ with the release version.
-  Keys required by (ci 02 AC1): LSUIElement, CFBundleIdentifier,
-  LSMinimumSystemVersion.
--->
+    <!--
+      Template for Filbert.app's Contents/Info.plist.
+      scripts/build-dmg.sh substitutes @VERSION@ and @SPARKLE_PUBLIC_ED_KEY@
+      with release values.
+    -->
 <plist version="1.0">
 <dict>
     <key>CFBundleDevelopmentRegion</key>
@@ -36,5 +35,21 @@
     <true/>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
+    <key>SUAutomaticallyUpdate</key>
+    <true/>
+    <key>SUAllowsAutomaticUpdates</key>
+    <true/>
+    <key>SUEnableAutomaticChecks</key>
+    <true/>
+    <key>SURequireSignedFeed</key>
+    <true/>
+    <key>SUVerifyUpdateBeforeExtraction</key>
+    <true/>
+    <key>SUPublicEDKey</key>
+    <string>@SPARKLE_PUBLIC_ED_KEY@</string>
+    <key>SUScheduledCheckInterval</key>
+    <real>14400</real>
+    <key>SUFeedURL</key>
+    <string>https://victorhqc.github.io/filbert/appcast.xml</string>
 </dict>
 </plist>

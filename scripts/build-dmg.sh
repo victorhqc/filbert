@@ -13,8 +13,8 @@
 # Lane selection:
 #   --require-signing    signed lane is mandatory — any missing secret is a
 #                        hard error before anything is built
-#   six secrets present  Developer ID sign + notarize + staple
-#   any secret missing   ad-hoc sign, skip notarization
+#   six Apple secrets present  Developer ID sign + notarize + staple
+#   any Apple secret missing   ad-hoc sign, skip notarization
 #   --no-sign            forces the unsigned lane regardless of secrets
 #
 # Never echo secret values. Credentials are read from the environment at the
@@ -25,6 +25,7 @@ set -euo pipefail
 APP_NAME="Filbert"
 APP_BUNDLE_ID="com.victorhqc.filbert"
 ARCH="arm64"
+SPARKLE_PUBLIC_KEY_PLACEHOLDER="@SPARKLE_PUBLIC_ED_KEY@"
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -70,7 +71,7 @@ Options:
   --no-sign            Force the unsigned lane even when all
                        signing secrets are present. Useful for local test
                        builds.
-  --require-signing    Fail unless all six signing secrets are present; the
+  --require-signing    Fail unless all six Apple signing secrets are present; the
                        release workflow uses this so a public release can
                        never fall back to ad-hoc signing. Mutually
                        exclusive with --no-sign.
@@ -151,7 +152,25 @@ build_release() {
     # Fail loudly if the build linked against too old an SDK (e.g. a stale
     # CI runner image). Runs after the relink so it checks the exact binary
     # that ships.
+    configure_sparkle_linkage "$BUILD_DIR/App"
     assert_build_sdk "$BUILD_DIR/App"
+}
+
+configure_sparkle_linkage() {
+    local executable="$1"
+    local runtime_path="@executable_path/../Frameworks"
+
+    otool -L "$executable" | grep -Fq "/Sparkle.framework/" \
+        || fatal "The App executable is not linked to Sparkle.framework"
+    if otool -L "$executable" | grep -Eq '^[[:space:]]+(@|/)[^[:space:]]*(\.build|Sparkle\.xcframework)'; then
+        fatal "The App executable contains a build-machine Sparkle path"
+    fi
+    if ! otool -l "$executable" | grep -Fq "$runtime_path"; then
+        install_name_tool -add_rpath "$runtime_path" "$executable"
+    fi
+    otool -l "$executable" | grep -Fq "$runtime_path" \
+        || fatal "The App executable has no portable Sparkle runtime search path"
+    ok "Configured Sparkle runtime linkage"
 }
 
 # Reads the SDK version stamped into the executable's LC_BUILD_VERSION and
@@ -348,7 +367,9 @@ assemble_bundle() {
     local stage_dir="$1"
     local app_dir="$stage_dir/$APP_NAME.app"
 
-    mkdir -p "$app_dir/Contents/MacOS" "$app_dir/Contents/Resources"
+    mkdir -p "$app_dir/Contents/Frameworks" \
+        "$app_dir/Contents/MacOS" \
+        "$app_dir/Contents/Resources"
 
     # Rename the executable to the display name. CFBundleExecutable matches.
     cp "$BUILD_DIR/App" "$app_dir/Contents/MacOS/$APP_NAME"
@@ -370,24 +391,77 @@ assemble_bundle() {
     [[ $bundle_count -gt 0 ]] || fatal "No SPM resource bundles found in $BUILD_DIR"
     ok "Copied $bundle_count resource bundle(s)"
 
+    copy_sparkle_framework "$app_dir"
+
     # App icon at the bundle top level so Finder/Dock show it before launch.
     # The app also sets it at runtime via Bundle.module (AppMain.swift).
     cp "$REPO_ROOT/Sources/App/Resources/AppIcon.icns" "$app_dir/Contents/Resources/"
 
-    # Info.plist from template. @VERSION@ is the only substitution.
-    sed "s/@VERSION@/$VERSION/g" "$INFO_PLIST_TEMPLATE" > "$app_dir/Contents/Info.plist"
+    local public_key="${SPARKLE_PUBLIC_ED_KEY:-$SPARKLE_PUBLIC_KEY_PLACEHOLDER}"
+    sed \
+        -e "s|@VERSION@|$VERSION|g" \
+        -e "s|$SPARKLE_PUBLIC_KEY_PLACEHOLDER|$public_key|g" \
+        "$INFO_PLIST_TEMPLATE" > "$app_dir/Contents/Info.plist"
 
     ok "Bundle assembled at $app_dir"
     echo "$app_dir"
 }
 
+copy_sparkle_framework() {
+    local app_dir="$1"
+    local source
+    source=$(find "$REPO_ROOT/.build" \
+        -path '*/Sparkle.framework' \
+        -type d \
+        -print -quit)
+    [[ -n "$source" ]] \
+        || fatal "No Sparkle.framework found in the SwiftPM build products"
+
+    ditto "$source" "$app_dir/Contents/Frameworks/Sparkle.framework"
+    [[ -L "$app_dir/Contents/Frameworks/Sparkle.framework/Sparkle" ]] \
+        || fatal "Sparkle.framework's binary symlink was not preserved"
+    [[ -L "$app_dir/Contents/Frameworks/Sparkle.framework/Versions/Current" ]] \
+        || fatal "Sparkle.framework's version symlink was not preserved"
+    ok "Copied Sparkle.framework with its symlinks intact"
+}
+
+require_sparkle_public_key() {
+    local key="${SPARKLE_PUBLIC_ED_KEY:-}"
+    [[ "$key" =~ ^[A-Za-z0-9+/]{43}=$ ]] \
+        || fatal "SPARKLE_PUBLIC_ED_KEY must be a 32-byte base64 EdDSA public key"
+    printf '%s' "$key" | base64 --decode >/dev/null 2>&1 \
+        || fatal "SPARKLE_PUBLIC_ED_KEY is not valid base64"
+}
+
+sign_sparkle_nested_code() {
+    local app_dir="$1"
+    local identity="$2"
+    local framework="$app_dir/Contents/Frameworks/Sparkle.framework/Versions/B"
+    local nested_path
+
+    for nested_path in \
+        "$framework/XPCServices/Installer.xpc" \
+        "$framework/XPCServices/Downloader.xpc" \
+        "$framework/Autoupdate" \
+        "$framework/Updater.app"; do
+        [[ -e "$nested_path" ]] || continue
+        if [[ "$nested_path" == */Downloader.xpc ]]; then
+            codesign --force --options runtime \
+                --preserve-metadata=entitlements \
+                -s "$identity" "$nested_path"
+        else
+            codesign --force --options runtime -s "$identity" "$nested_path"
+        fi
+    done
+    codesign --force --options runtime -s "$identity" \
+        "$app_dir/Contents/Frameworks/Sparkle.framework"
+}
+
 sign_adhoc() {
-    # Ad-hoc signing lets the bundle run on the maintainer's machine without
-    # re-signing. --options runtime keeps this command symmetric with the
-    # Developer ID lane.
     local app_dir="$1"
     info "Ad-hoc signing…"
-    codesign -s - --force --deep --options runtime \
+    sign_sparkle_nested_code "$app_dir" -
+    codesign -s - --force --options runtime \
         --entitlements "$ENTITLEMENTS" \
         "$app_dir"
     ok "Ad-hoc signed"
@@ -478,11 +552,10 @@ resolve_signing_identity() {
 }
 
 sign_devid() {
-    # --timestamp embeds a trusted timestamp so the signature remains valid
-    # after certificate expiry.
     local app_dir="$1"
     info "Developer ID signing…"
-    codesign --deep --options runtime \
+    sign_sparkle_nested_code "$app_dir" "$SIGN_IDENTITY"
+    codesign --options runtime \
         --entitlements "$ENTITLEMENTS" \
         --timestamp \
         -s "$SIGN_IDENTITY" \
@@ -667,6 +740,13 @@ verify_release() {
     rmdir "$mount_point" 2>/dev/null || true
 
     codesign --verify --deep --strict --verbose=4 "$verify_app"
+    verify_sparkle_bundle "$verify_app"
+    otool -L "$verify_app/Contents/MacOS/$APP_NAME" \
+        | grep -Fq "@rpath/Sparkle.framework/" \
+        || fatal "The packaged app has no portable Sparkle framework linkage"
+    if otool -L "$verify_app/Contents/MacOS/$APP_NAME" | grep -Eq '^[[:space:]]+(@|/)[^[:space:]]*(\.build|Sparkle\.xcframework)'; then
+        fatal "The packaged app contains a build-machine framework path"
+    fi
     if [[ "${LANE:-}" == "signed" ]]; then
         spctl --assess --type execute -vv "$verify_app" \
             || fatal "spctl rejected the signed app — Gatekeeper assessment failed."
@@ -680,8 +760,54 @@ verify_release() {
             || warn "spctl rejected ad-hoc signed app (expected on unsigned lane)."
     fi
 
+    launch_smoke_test "$verify_app"
     rm -rf "$verify_app"
     ok "Release artifact verified"
+}
+
+verify_sparkle_bundle() {
+    local app_dir="$1"
+    local framework="$app_dir/Contents/Frameworks/Sparkle.framework"
+    local nested_path
+
+    [[ -d "$framework" ]] || fatal "The packaged app is missing Sparkle.framework"
+    [[ -L "$framework/Sparkle" ]] \
+        || fatal "The packaged Sparkle framework lost its binary symlink"
+    [[ -L "$framework/Versions/Current" ]] \
+        || fatal "The packaged Sparkle framework lost its version symlink"
+
+    for nested_path in \
+        "$framework/Versions/B/XPCServices/Installer.xpc" \
+        "$framework/Versions/B/XPCServices/Downloader.xpc" \
+        "$framework/Versions/B/Autoupdate" \
+        "$framework/Versions/B/Updater.app" \
+        "$framework"; do
+        [[ -e "$nested_path" ]] || continue
+        codesign --verify --strict "$nested_path" \
+            || fatal "Nested Sparkle code failed signature verification: $nested_path"
+    done
+}
+
+launch_smoke_test() {
+    local app_dir="$1"
+    local executable="$app_dir/Contents/MacOS/$APP_NAME"
+    local process_ids=""
+    local launch_pid
+
+    "$executable" >/dev/null 2>&1 &
+    launch_pid=$!
+    for _ in {1..10}; do
+        process_ids=$(pgrep -f "$executable" || true)
+        [[ -n "$process_ids" ]] && break
+        sleep 1
+    done
+    [[ -n "$process_ids" ]] \
+        || fatal "The app did not start during the mounted-DMG launch smoke test"
+    for process_id in $process_ids; do
+        kill "$process_id" 2>/dev/null || true
+    done
+    wait "$launch_pid" 2>/dev/null || true
+    ok "Mounted-DMG launch smoke test passed"
 }
 
 # Writes the release notes for this lane to <dmg>.release-notes.md so the
@@ -691,7 +817,11 @@ write_release_notes() {
     local dmg_path="$1"
     local notes_path="${dmg_path%.dmg}.release-notes.md"
     local checksum
+    local bootstrap_note=""
     checksum=$(shasum -a 256 "$dmg_path" | awk '{print $1}')
+    if [[ "${BOOTSTRAP_UPDATE_RELEASE:-false}" == "true" ]]; then
+        bootstrap_note="This release introduces automatic updates. Existing Filbert installations must install this release manually from GitHub; automatic updates begin after this version is running."
+    fi
 
     if [[ "$LANE" == "signed" ]]; then
         cat > "$notes_path" <<EOF
@@ -699,6 +829,8 @@ write_release_notes() {
 
 - **DMG:** $(basename "$dmg_path")
 - **SHA-256:** \`$checksum\`
+
+$bootstrap_note
 
 ## Install
 
@@ -757,6 +889,9 @@ main() {
 
     LANE=$(detect_lane)
     info "Release lane: $LANE"
+    if [[ "$LANE" == "signed" ]]; then
+        require_sparkle_public_key
+    fi
 
     build_release
 
