@@ -131,13 +131,13 @@ class AutomaticUpdatesTests(unittest.TestCase):
                 <item>
                   <description><![CDATA[Release notes]]></description>
                   <pubDate>Tue, 01 Jan 2030 00:00:00 GMT</pubDate>
+                  <sparkle:version>1.2.3</sparkle:version>
+                  <sparkle:shortVersionString>1.2.3</sparkle:shortVersionString>
                   <enclosure
                     url="https://github.com/victorhqc/filbert/releases/download/v1.2.3/Filbert-1.2.3-arm64.dmg"
                     length="12"
                     type="application/octet-stream"
                     sparkle:edSignature="signature"
-                    sparkle:version="1.2.3"
-                    sparkle:shortVersionString="1.2.3"
                   />
                 </item>
               </channel>

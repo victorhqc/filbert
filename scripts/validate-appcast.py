@@ -174,6 +174,16 @@ def verify_enclosure_signature(dmg_bytes, ed_signature, public_key, dmg_length):
         fail("Enclosure EdDSA signature does not verify against the public key")
 
 
+def sparkle_version_value(item, enclosure, sparkle, name):
+    qualified_name = f"{sparkle}{name}"
+    item_value = item.findtext(qualified_name)
+    item_value = item_value.strip() if item_value else None
+    enclosure_value = enclosure.get(qualified_name)
+    if item_value and enclosure_value and item_value != enclosure_value:
+        fail(f"Appcast has conflicting sparkle:{name} values")
+    return item_value or enclosure_value
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--appcast", required=True)
@@ -205,9 +215,16 @@ def main():
     if enclosure is None:
         fail("Appcast item is missing its enclosure")
     release_notes = item.findtext(f"{sparkle}releaseNotesLink")
+    version = sparkle_version_value(item, enclosure, sparkle, "version")
+    short_version = sparkle_version_value(
+        item,
+        enclosure,
+        sparkle,
+        "shortVersionString",
+    )
     required = {
-        "sparkle:version": enclosure.get(f"{sparkle}version"),
-        "sparkle:shortVersionString": enclosure.get(f"{sparkle}shortVersionString"),
+        "sparkle:version": version,
+        "sparkle:shortVersionString": short_version,
         "sparkle:edSignature": enclosure.get(f"{sparkle}edSignature"),
         "pubDate": item.findtext("pubDate"),
         "release notes": item.findtext("description") or release_notes,
@@ -216,9 +233,9 @@ def main():
     if missing:
         fail(f"Appcast is missing required fields: {', '.join(missing)}")
 
-    if enclosure.get(f"{sparkle}version") != args.version:
+    if version != args.version:
         fail("Appcast sparkle:version does not match the release version")
-    if enclosure.get(f"{sparkle}shortVersionString") != args.version:
+    if short_version != args.version:
         fail("Appcast sparkle:shortVersionString does not match the release version")
     if enclosure.get("url") != args.download_url:
         fail("Appcast enclosure URL is not the exact release asset URL")

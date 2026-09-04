@@ -25,29 +25,38 @@ Download the Sparkle package that matches the pinned `2.9.6` dependency. Its
 `bin` directory contains `generate_keys`, `sign_update`, and
 `generate_appcast`.
 
-On a trusted Mac, generate one key for Filbert and keep the private export
-outside the repository:
+On a trusted Mac, generate one key for Filbert and store the matched values in
+the `release-signing` environment. Run the commands in a subshell so failures
+cannot exit the interactive terminal and cleanup cannot affect later commands:
 
 ```sh
-umask 077
-SPARKLE_BIN=/path/to/Sparkle/bin
-PRIVATE_KEY="$(mktemp)"
-trap 'rm -f "$PRIVATE_KEY"' EXIT
+(
+  set -euo pipefail
+  umask 077
 
-"$SPARKLE_BIN/generate_keys" --account filbert
-"$SPARKLE_BIN/generate_keys" --account filbert -p
-"$SPARKLE_BIN/generate_keys" --account filbert -x "$PRIVATE_KEY"
+  SPARKLE_BIN=/path/to/Sparkle/bin
+  KEY_DIRECTORY="$(mktemp -d -t filbert-sparkle-key)"
+  PRIVATE_KEY="$KEY_DIRECTORY/private-key"
+  trap 'rm -rf "$KEY_DIRECTORY"' EXIT
+
+  "$SPARKLE_BIN/generate_keys" --account filbert
+  PUBLIC_KEY="$("$SPARKLE_BIN/generate_keys" --account filbert -p)"
+  "$SPARKLE_BIN/generate_keys" --account filbert -x "$PRIVATE_KEY"
+  test -s "$PRIVATE_KEY"
+
+  gh variable set SPARKLE_PUBLIC_ED_KEY \
+    --env release-signing \
+    --body "$PUBLIC_KEY"
+  gh secret set SPARKLE_PRIVATE_KEY \
+    --env release-signing \
+    < "$PRIVATE_KEY"
+)
 ```
 
 Save the public value printed by `-p` as the `SPARKLE_PUBLIC_ED_KEY` **Actions
 environment variable** in `release-signing`. Store the exported private value
 as the `SPARKLE_PRIVATE_KEY` **environment secret** in the same environment.
-For example, with GitHub CLI:
-
-```sh
-gh variable set SPARKLE_PUBLIC_ED_KEY --env release-signing --body "$PUBLIC_KEY"
-gh secret set SPARKLE_PRIVATE_KEY --env release-signing < "$PRIVATE_KEY"
-```
+The export path must not already exist; `generate_keys -x` creates the file.
 
 Generate both values from a single `generate_keys` run. They are a matched
 pair: the workflow verifies the generated enclosure and feed signatures
