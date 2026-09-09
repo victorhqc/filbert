@@ -28,6 +28,30 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(locator.resolve(), expectedPath)
     }
 
+    func testLocator_findsMiseShimWhenNotOnPATH() {
+        let expectedPath = "/test/.local/share/mise/shims/codex"
+        let locator = CodexLocator(
+            environment: ["PATH": "/usr/bin:/bin", "HOME": "/test"],
+            isExecutable: { $0 == expectedPath }
+        )
+
+        XCTAssertEqual(locator.resolve(), expectedPath)
+    }
+
+    func testLocator_honorsMiseDataDirOverride() {
+        let expectedPath = "/opt/mise-data/shims/codex"
+        let locator = CodexLocator(
+            environment: [
+                "PATH": "/usr/bin:/bin",
+                "HOME": "/test",
+                "MISE_DATA_DIR": "/opt/mise-data",
+            ],
+            isExecutable: { $0 == expectedPath }
+        )
+
+        XCTAssertEqual(locator.resolve(), expectedPath)
+    }
+
     func testLocator_returnsNilWhenNoExecutableExists() {
         let locator = CodexLocator(
             environment: ["PATH": "/custom/bin", "HOME": "/test"],
