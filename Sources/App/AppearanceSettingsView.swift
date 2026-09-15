@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 @MainActor
 struct AppearanceTab: View {
     let viewModel: QuotaViewModel
+    let sleepPrevention: SleepPreventionController
     @State private var draggedProviderId: String?
 
     var body: some View {
@@ -41,6 +42,22 @@ struct AppearanceTab: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(String(localized: "Vintage Mac"))
                         Text(vintageMacSubtitle)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+
+            SettingsCard(heading: String(localized: "Panel")) {
+                Toggle(
+                    isOn: Binding(
+                        get: { sleepPrevention.isFeatureVisible },
+                        set: { sleepPrevention.setFeatureVisible($0) }
+                    )
+                ) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(String(localized: "Show sleep prevention"))
+                        Text(String(localized: "Show a keep-awake timer in Filbert's panel"))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }

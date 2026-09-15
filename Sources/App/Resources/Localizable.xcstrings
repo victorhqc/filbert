@@ -2,7 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%1$@. %2$@" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
@@ -293,7 +293,7 @@
       }
     },
     "%@" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1250,7 +1250,7 @@
       }
     },
     "%1$@ %2$@" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1773,7 +1773,7 @@
       }
     },
     "%1$lld–%2$lld" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2269,6 +2269,177 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Updates" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones" } }
+      }
+    },
+    "1 hour" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "1 Stunde" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "1 hour" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } }
+      }
+    },
+    "2 hours" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "2 Stunden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "2 hours" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } }
+      }
+    },
+    "5 minutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "5 Minuten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "5 minutes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } }
+      }
+    },
+    "10 minutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "10 Minuten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "10 minutes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } }
+      }
+    },
+    "20 minutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "20 Minuten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "20 minutes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } }
+      }
+    },
+    "30 minutes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "30 Minuten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "30 minutes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } }
+      }
+    },
+    "Choose how long Filbert keeps your Mac awake" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, wie lange Filbert deinen Mac wach hält" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose how long Filbert keeps your Mac awake" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene despierto tu Mac" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene despierto tu Mac" } }
+      }
+    },
+    "Inactive" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Inaktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Inactive" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inactivo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inactivo" } }
+      }
+    },
+    "Mac sleep prevention active" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac-Ruhezustand wird verhindert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac sleep prevention active" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Prevención de reposo del Mac activa" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Prevención de reposo del Mac activa" } }
+      }
+    },
+    "Mac won't sleep for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac bleibt noch %@ wach" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo durante %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo durante %@" } }
+      }
+    },
+    "Mac won't sleep until turned off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac bleibt wach, bis du es ausschaltest" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep until turned off" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } }
+      }
+    },
+    "Panel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Bereich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } }
+      }
+    },
+    "Prevent Mac from sleeping for…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac nicht in den Ruhezustand versetzen für…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Prevent Mac from sleeping for…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo durante…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo durante…" } }
+      }
+    },
+    "Show a keep-awake timer in Filbert's panel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeige einen Wachhalte-Timer im Filbert-Bereich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show a keep-awake timer in Filbert's panel" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } }
+      }
+    },
+    "Show sleep prevention" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ruhezustand verhindern anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show sleep prevention" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar prevención de reposo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar prevención de reposo" } }
+      }
+    },
+    "Sleep prevention couldn't start. Try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ruhezustand konnte nicht verhindert werden. Versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sleep prevention couldn't start. Try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar la prevención de reposo. Inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar la prevención de reposo. Inténtalo de nuevo." } }
+      }
+    },
+    "Sleep prevention duration" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer der Ruhezustandsverhinderung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sleep prevention duration" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de la prevención de reposo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de la prevención de reposo" } }
+      }
+    },
+    "Turn Off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ausschalten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn Off" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Desactivar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Desactivar" } }
+      }
+    },
+    "Until turned off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Bis zum Ausschalten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Until turned off" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Hasta que se desactive" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Hasta que se desactive" } }
       }
     }
   },

@@ -87,6 +87,23 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         XCTAssertFalse(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast refresh active"))
     }
 
+    func testActiveSleepPreventionAppendsItsAccessibilityStatus() throws {
+        let resolved = try XCTUnwrap(
+            MenuBarProviderPresentation.resolve(
+                providerInfo: providerInfo(id: "selected", glyph: .sfSymbol("sparkles")),
+                providerState: loadedState(for: "selected", isBalance: false),
+                isFastRefreshActive: false
+            )
+        )
+
+        XCTAssertTrue(
+            MenuBarProviderPresentation.accessibilityLabel(
+                for: resolved,
+                isSleepPreventionActive: true
+            ).contains("Mac sleep prevention active")
+        )
+    }
+
     func testMissingAssetUsesNeutralGlyphFallback() {
         XCTAssertEqual(
             MenuBarProviderGlyphResolver.fallbackSymbolName(

@@ -2,7 +2,7 @@
   "sourceLanguage" : "en",
   "strings" : {
     "%@ / %@" : {
-      "extractionState" : "manual",
+      "extractionState" : "stale",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {

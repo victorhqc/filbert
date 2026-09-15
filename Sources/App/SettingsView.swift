@@ -6,6 +6,7 @@ import SwiftUI
 struct SettingsView: View {
     let viewModel: QuotaViewModel
     let updateCoordinator: UpdateCoordinator
+    let sleepPrevention: SleepPreventionController
 
     var body: some View {
         TabView {
@@ -14,7 +15,7 @@ struct SettingsView: View {
                     Label(String(localized: "Providers"), systemImage: "key.fill")
                 }
 
-            AppearanceTab(viewModel: viewModel)
+            AppearanceTab(viewModel: viewModel, sleepPrevention: sleepPrevention)
                 .tabItem {
                     Label(String(localized: "Appearance"), systemImage: "list.bullet.indent")
                 }

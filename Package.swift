@@ -41,7 +41,11 @@ let package = Package(
             name: "ClaudeCodeProvider",
             dependencies: ["Core"],
             path: "Sources/Providers/ClaudeCode",
-            resources: [.process("Resources")],
+            resources: [
+                .copy("Resources/ProviderGlyph.png"),
+                .copy("Resources/ProviderGlyph@2x.png"),
+                .copy("Resources/statusline_helper.swift"),
+            ],
             swiftSettings: strictSourceSettings
         ),
         .target(

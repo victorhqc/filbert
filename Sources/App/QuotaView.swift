@@ -7,6 +7,7 @@ import SwiftUI
 @MainActor
 struct QuotaView: View {
     let viewModel: QuotaViewModel
+    let sleepPrevention: SleepPreventionController
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -21,6 +22,12 @@ struct QuotaView: View {
                         providerSection(providerId: providerId, state: state)
                     }
                 }
+            }
+
+            if sleepPrevention.isFeatureVisible {
+                Divider()
+
+                SleepPreventionRow(controller: sleepPrevention)
             }
 
             Divider()

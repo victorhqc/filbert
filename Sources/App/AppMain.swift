@@ -13,6 +13,7 @@ struct AppMain: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     @State private var viewModel: QuotaViewModel
+    @State private var sleepPrevention = SleepPreventionController()
     private let updateCoordinator: UpdateCoordinator
 
     init() {
@@ -30,15 +31,19 @@ struct AppMain: App {
 
     var body: some Scene {
         MenuBarExtra {
-            QuotaView(viewModel: viewModel)
+            QuotaView(viewModel: viewModel, sleepPrevention: sleepPrevention)
                 .frame(width: 280)
         } label: {
-            MenuBarStatusIcon(viewModel: viewModel)
+            MenuBarStatusIcon(viewModel: viewModel, sleepPrevention: sleepPrevention)
         }
         .menuBarExtraStyle(.window)
 
         Settings {
-            SettingsView(viewModel: viewModel, updateCoordinator: updateCoordinator)
+            SettingsView(
+                viewModel: viewModel,
+                updateCoordinator: updateCoordinator,
+                sleepPrevention: sleepPrevention
+            )
         }
         .defaultSize(width: 620, height: 520)
         .windowResizability(.contentMinSize)

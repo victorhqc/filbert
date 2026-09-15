@@ -31,7 +31,10 @@ enum MenuBarProviderPresentation {
         )
     }
 
-    static func accessibilityLabel(for resolved: Resolved) -> String {
+    static func accessibilityLabel(
+        for resolved: Resolved,
+        isSleepPreventionActive: Bool = false
+    ) -> String {
         let status: String
         switch resolved.status {
         case let .window(percentage):
@@ -47,8 +50,14 @@ enum MenuBarProviderPresentation {
             return String(localized: "Filbert")
         }
 
-        guard resolved.isFastRefreshActive else { return status }
-        return [status, String(localized: "Fast refresh active")].joined(separator: ", ")
+        var values = [status]
+        if resolved.isFastRefreshActive {
+            values.append(String(localized: "Fast refresh active"))
+        }
+        if isSleepPreventionActive {
+            values.append(String(localized: "Mac sleep prevention active"))
+        }
+        return values.joined(separator: ", ")
     }
 }
 
