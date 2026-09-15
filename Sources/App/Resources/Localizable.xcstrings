@@ -2334,6 +2334,24 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene despierto tu Mac" } }
       }
     },
+    "for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "für %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "durante %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "durante %@" } }
+      }
+    },
+    "for…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "für…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "for…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "durante…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "durante…" } }
+      }
+    },
     "Inactive" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2379,13 +2397,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } }
       }
     },
-    "Prevent Mac from sleeping for…" : {
+    "Prevent Mac from sleeping" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac nicht in den Ruhezustand versetzen für…" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Prevent Mac from sleeping for…" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo durante…" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo durante…" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac nicht in den Ruhezustand versetzen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Prevent Mac from sleeping" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo" } }
       }
     },
     "Show a keep-awake timer in Filbert's panel" : {

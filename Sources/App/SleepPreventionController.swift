@@ -179,15 +179,15 @@ final class SleepPreventionController {
         isFeatureVisible && isActive
     }
 
-    var rowTitle: String {
+    var durationMenuTitle: String {
         switch session {
         case .none:
-            String(localized: "Prevent Mac from sleeping for…")
+            String(localized: "for…")
         case .some(.untilTurnedOff):
-            String(localized: "Mac won't sleep until turned off")
+            String(localized: "Until turned off")
         case .some(.timed):
             String.localizedStringWithFormat(
-                String(localized: "Mac won't sleep for %@"),
+                String(localized: "for %@"),
                 Self.remainingTimeText(for: remainingSeconds)
             )
         }

@@ -6,34 +6,42 @@ struct SleepPreventionRow: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Menu {
-                ForEach(SleepPreventionDuration.allCases) { duration in
-                    Button(duration.title) {
-                        controller.start(duration)
-                    }
-                }
+            HStack(spacing: 6) {
+                Text(String(localized: "Prevent Mac from sleeping"))
+                    .font(.callout)
+                    .lineLimit(1)
 
-                if controller.isActive {
-                    Divider()
+                Spacer(minLength: 0)
 
-                    Button(String(localized: "Turn Off")) {
-                        controller.stop()
+                Menu {
+                    ForEach(SleepPreventionDuration.allCases) { duration in
+                        Button(duration.title) {
+                            controller.start(duration)
+                        }
                     }
+
+                    if controller.isActive {
+                        Divider()
+
+                        Button(String(localized: "Turn Off")) {
+                            controller.stop()
+                        }
+                    }
+                } label: {
+                    HStack(spacing: 4) {
+                        Text(controller.durationMenuTitle)
+                            .monospacedDigit()
+                        Image(systemName: "chevron.up.chevron.down")
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                    }
+                    .contentShape(Rectangle())
                 }
-            } label: {
-                HStack(spacing: 6) {
-                    Text(controller.rowTitle)
-                        .monospacedDigit()
-                    Spacer()
-                    Image(systemName: "chevron.up.chevron.down")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                }
-                .contentShape(Rectangle())
+                .accessibilityLabel(String(localized: "Sleep prevention duration"))
+                .accessibilityValue(controller.accessibilityValue)
+                .accessibilityHint(String(localized: "Choose how long Filbert keeps your Mac awake"))
+                .fixedSize(horizontal: true, vertical: false)
             }
-            .accessibilityLabel(String(localized: "Sleep prevention duration"))
-            .accessibilityValue(controller.accessibilityValue)
-            .accessibilityHint(String(localized: "Choose how long Filbert keeps your Mac awake"))
 
             if controller.didFailToActivate {
                 Text(String(localized: "Sleep prevention couldn't start. Try again."))

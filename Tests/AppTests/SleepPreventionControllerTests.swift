@@ -211,6 +211,24 @@ final class SleepPreventionControllerTests: XCTestCase {
         XCTAssertEqual(SleepPreventionController.remainingTimeText(for: 3600), "1:00:00")
         XCTAssertEqual(SleepPreventionController.remainingTimeText(for: 7205), "2:00:05")
     }
+
+    func testDurationMenuTitleKeepsTheTimerInsideTheMenu() {
+        let controller = SleepPreventionController(
+            powerManager: FakePowerManager(),
+            scheduler: FakeScheduler(),
+            now: Date.init
+        )
+
+        XCTAssertEqual(controller.durationMenuTitle, "for…")
+
+        controller.start(.fiveMinutes)
+
+        XCTAssertEqual(controller.durationMenuTitle, "for 5:00")
+
+        controller.start(.untilTurnedOff)
+
+        XCTAssertEqual(controller.durationMenuTitle, "Until turned off")
+    }
 }
 
 private final class FakePowerManager: SleepPreventionPowerManaging {

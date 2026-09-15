@@ -18,7 +18,7 @@ Let users keep the Mac awake for a chosen duration from Filbert's panel while ma
 ### AC1: The panel shows a keep-awake selector by default
 - **Given** the user has not disabled the feature
 - **When** the Filbert panel opens
-- **Then** a full-width row labeled "Prevent Mac from sleeping for…" appears after the provider or empty-state content and before the Settings/version/Quit footer
+- **Then** a full-width row with the static label "Prevent Mac from sleeping" and an adjacent dropdown initially labeled "for…" appears after the provider or empty-state content and before the Settings/version/Quit footer
 - **And** a divider separates the row from the content above and another divider separates it from the footer below
 - **And** the row remains available when no provider is configured
 
@@ -31,7 +31,7 @@ Let users keep the Mac awake for a chosen duration from Filbert's panel while ma
 ### AC3: An active timed session shows a live countdown
 - **Given** the user chose a finite duration
 - **When** sleep prevention is active
-- **Then** the row reads "Mac won't sleep for <remaining time>" using a localized, monospaced countdown
+- **Then** the static row label remains "Prevent Mac from sleeping" and its dropdown reads "for <remaining time>" using a localized, monospaced countdown
 - **And** durations below one hour use `m:ss`, while durations of one hour or more use `h:mm:ss`
 - **And** the displayed value never becomes negative
 - **And** the selector remains usable so the user can replace the current duration or choose "Turn Off"
@@ -39,7 +39,7 @@ Let users keep the Mac awake for a chosen duration from Filbert's panel while ma
 ### AC4: An indefinite session remains active until stopped
 - **Given** the user chose "Until turned off"
 - **When** sleep prevention is active
-- **Then** the row reads "Mac won't sleep until turned off"
+- **Then** the static row label remains "Prevent Mac from sleeping" and its dropdown reads "Until turned off"
 - **And** the selector offers "Turn Off"
 - **And** choosing "Turn Off" immediately releases sleep prevention and restores the inactive row label
 
@@ -85,7 +85,7 @@ Let users keep the Mac awake for a chosen duration from Filbert's panel while ma
 ### AC10: Users can remove the feature from the panel
 - **Given** the Settings window is open on the Appearance tab
 - **When** it renders
-- **Then** a "Show sleep prevention" toggle appears in a "Panel" card with a localized subtitle explaining that it shows a keep-awake timer in Filbert's panel
+- **Then** a "Show sleep prevention" toggle appears in a "Prevent Mac from sleeping" card with a localized subtitle explaining that it shows a keep-awake timer in Filbert's panel
 - **And** the toggle defaults to on for new and existing users and persists through UserDefaults
 - **And** turning it off removes the panel row immediately, suppresses the menu-bar awake mark, and stops any active session so Filbert never holds a hidden assertion
 - **And** turning it back on restores the inactive selector without restoring the prior session
@@ -112,6 +112,7 @@ Let users keep the Mac awake for a chosen duration from Filbert's panel while ma
 6. [x] Extend the bitmap composition in `MenuBarStatusIcon` with a small awake-mark renderer. Overlay it on a normal ring when one exists, append it to fallback/identity imagery otherwise, and bypass it when Vintage Mac mode is active.
 7. [x] Add the default-on "Show sleep prevention" UserDefaults preference and its Appearance-tab toggle. The controller handles disabling as a single operation that persists the preference, stops the timer, releases the assertion, and clears session state.
 8. [x] Add focused App tests for the controller, formatting, preference, IOKit-client contract through a fake, and menu-bar visual selection. Validate manually on macOS by starting a five-minute session and checking the assertion with `pmset -g assertions`.
+9. [x] Keep the "Prevent Mac from sleeping" label outside the duration dropdown, so only the `for…`, `for <remaining time>`, or `Until turned off` value opens the duration menu.
 
 The user approved this spec before production implementation began.
 

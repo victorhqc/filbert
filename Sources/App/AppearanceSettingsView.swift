@@ -48,7 +48,7 @@ struct AppearanceTab: View {
                 }
             }
 
-            SettingsCard(heading: String(localized: "Panel")) {
+            SettingsCard(heading: String(localized: "Prevent Mac from sleeping")) {
                 Toggle(
                     isOn: Binding(
                         get: { sleepPrevention.isFeatureVisible },
