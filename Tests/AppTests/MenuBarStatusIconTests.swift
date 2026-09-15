@@ -306,6 +306,28 @@ final class MenuBarStatusCompositeTests: XCTestCase {
         )
     }
 
+    func testCompositeSizeAddsAnAwakeMarkWhenNoStatusVisualIsAvailable() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.compositeSize(
+                statusImage: nil,
+                isFastRefreshActive: false,
+                isSleepPreventionActive: true
+            ),
+            CGSize(width: 22, height: 14)
+        )
+    }
+
+    func testCompositeSizeKeepsTheRingSizeWhenTheAwakeMarkIsOverlaid() {
+        XCTAssertEqual(
+            MenuBarStatusVisual.compositeSize(
+                statusImage: .ring(bucket: 0.8),
+                isFastRefreshActive: false,
+                isSleepPreventionActive: true
+            ),
+            CGSize(width: 30, height: 14)
+        )
+    }
+
     func testCompositeImageIsAColoredBitmapAtTheCompositeSize() {
         let image = MenuBarStatusVisual.compositeImage(
             statusImage: .ring(bucket: 0.8),

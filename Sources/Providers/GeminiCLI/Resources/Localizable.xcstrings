@@ -28,7 +28,7 @@
           }
         }
       },
-      "extractionState": "manual"
+      "extractionState": "stale"
     },
     "%@ used": {
       "localizations": {
