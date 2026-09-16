@@ -50,13 +50,34 @@ enum UpdateEligibility {
     }
 }
 
+enum UpdateCheckResult: Equatable {
+    case updateAvailable(version: String)
+    case noUpdate
+    case failed
+}
+
+struct PopoverUpdate: Equatable {
+    let availableVersion: String
+    let canStartUpdate: Bool
+
+    init?(availableVersion: String?, canStartUpdate: Bool) {
+        guard let availableVersion else {
+            return nil
+        }
+
+        self.availableVersion = availableVersion
+        self.canStartUpdate = canStartUpdate
+    }
+}
+
 @MainActor
 @Observable
-final class UpdateCoordinator {
+final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
     private(set) var canCheckForUpdates = false
     private(set) var automaticallyChecksForUpdates = false
     private(set) var automaticallyDownloadsUpdates = false
     private(set) var allowsAutomaticUpdates = false
+    private(set) var availableUpdateVersion: String?
     let isAvailable: Bool
 
     @ObservationIgnored
@@ -68,18 +89,27 @@ final class UpdateCoordinator {
     init(bundle: Bundle = .main) {
         guard bundle === Bundle.main, UpdateEligibility.isEligible(bundle: bundle) else {
             isAvailable = false
+            super.init()
             return
         }
 
         isAvailable = true
+        super.init()
         let controller = SPUStandardUpdaterController(
             startingUpdater: true,
-            updaterDelegate: nil,
+            updaterDelegate: self,
             userDriverDelegate: nil
         )
         updaterController = controller
         observeUpdaterState(controller.updater)
         refreshState(from: controller.updater)
+    }
+
+    var popoverUpdate: PopoverUpdate? {
+        PopoverUpdate(
+            availableVersion: availableUpdateVersion,
+            canStartUpdate: canCheckForUpdates
+        )
     }
 
     func checkForUpdates() {
@@ -100,6 +130,29 @@ final class UpdateCoordinator {
         }
         updater.automaticallyDownloadsUpdates = enabled
         refreshState(from: updater)
+    }
+
+    func updater(_: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
+        recordUpdateCheckResult(.updateAvailable(version: item.displayVersionString))
+    }
+
+    func updaterDidNotFindUpdate(_: SPUUpdater, error _: any Error) {
+        recordUpdateCheckResult(.noUpdate)
+    }
+
+    func updater(_: SPUUpdater, didAbortWithError _: any Error) {
+        recordUpdateCheckResult(.failed)
+    }
+
+    func recordUpdateCheckResult(_ result: UpdateCheckResult) {
+        switch result {
+        case let .updateAvailable(version):
+            availableUpdateVersion = version
+        case .noUpdate:
+            availableUpdateVersion = nil
+        case .failed:
+            break
+        }
     }
 
     private func observeUpdaterState(_ updater: SPUUpdater) {

@@ -1,8 +1,8 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "%1$@. %2$@" : {
-      "extractionState" : "stale",
+    "Accessibility sentence format" : {
+      "extractionState" : "manual",
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
@@ -288,35 +288,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Beenden"
-          }
-        }
-      }
-    },
-    "%@" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@"
           }
         }
       }
@@ -1249,8 +1220,8 @@
         }
       }
     },
-    "%1$@ %2$@" : {
-      "extractionState" : "stale",
+    "Peak hours day and time format" : {
+      "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -1768,35 +1739,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "unter %lld"
-          }
-        }
-      }
-    },
-    "%1$lld–%2$lld" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld–%2$lld"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld–%2$lld"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld–%2$lld"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$lld–%2$lld"
           }
         }
       }
@@ -2458,6 +2400,33 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Until turned off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Hasta que se desactive" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Hasta que se desactive" } }
+      }
+    },
+    "Filbert %@ is available" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ ist verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ is available" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está disponible" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está disponible" } }
+      }
+    },
+    "Update" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Update" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar" } }
+      }
+    },
+    "Update Filbert to version %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert auf Version %@ aktualisieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Update Filbert to version %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } }
       }
     }
   },

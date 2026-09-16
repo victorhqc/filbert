@@ -155,16 +155,20 @@ private struct PacedUsageLineRow: View {
             String(localized: "Over current allowance")
         }
         let value = String.localizedStringWithFormat(
-            String(localized: "%1$@. %2$@"),
+            String(localized: "Accessibility sentence format"),
             usedPercentageText(pace.usedPercentage),
             remainingTimeText(pace.remainingTime)
         )
         let allowance = String.localizedStringWithFormat(
-            String(localized: "%1$@. %2$@"),
+            String(localized: "Accessibility sentence format"),
             paceStatus,
             remainingAllowanceText(pace.allowance)
         )
-        return String.localizedStringWithFormat(String(localized: "%1$@. %2$@"), value, allowance)
+        return String.localizedStringWithFormat(
+            String(localized: "Accessibility sentence format"),
+            value,
+            allowance
+        )
     }
 }
 

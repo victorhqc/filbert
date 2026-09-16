@@ -8,6 +8,7 @@ import SwiftUI
 struct QuotaView: View {
     let viewModel: QuotaViewModel
     let sleepPrevention: SleepPreventionController
+    let updateCoordinator: UpdateCoordinator
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -32,28 +33,7 @@ struct QuotaView: View {
 
             Divider()
 
-            ZStack {
-                HStack {
-                    Text(String(localized: "Settings…"))
-                        .font(.caption)
-                        .layoutPriority(1)
-                        .openAndRaiseSettings()
-
-                    Spacer()
-
-                    Button(String(localized: "Quit")) {
-                        NSApplication.shared.terminate(nil)
-                    }
-                    .font(.caption)
-                    .keyboardShortcut("q")
-                    .layoutPriority(1)
-                }
-
-                Text(AppVersion.currentPresentation)
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .allowsHitTesting(false)
-            }
+            footer
         }
         .padding()
         .frame(width: 280)
@@ -192,7 +172,7 @@ struct QuotaView: View {
     private func headerAccessibilityLabel(_ headerLabel: String, fastRefreshStatus: String?) -> String {
         guard let fastRefreshStatus else { return headerLabel }
         return String.localizedStringWithFormat(
-            String(localized: "%1$@. %2$@"),
+            String(localized: "Accessibility sentence format"),
             headerLabel,
             fastRefreshStatus
         )
