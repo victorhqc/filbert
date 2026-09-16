@@ -51,6 +51,51 @@ final class UpdateCoordinatorTests: XCTestCase {
         XCTAssertFalse(coordinator.automaticallyDownloadsUpdates)
     }
 
+    func testAvailableUpdateAppearsInPopover() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+
+        XCTAssertEqual(
+            coordinator.popoverUpdate,
+            PopoverUpdate(availableVersion: "0.14.0", canStartUpdate: false)
+        )
+    }
+
+    func testPopoverUpdateEnablesActionWhenUpdaterCanCheck() {
+        guard let update = PopoverUpdate(availableVersion: "0.14.0", canStartUpdate: true) else {
+            return XCTFail("Expected an available update")
+        }
+
+        XCTAssertEqual(update.availableVersion, "0.14.0")
+        XCTAssertTrue(update.canStartUpdate)
+    }
+
+    func testPopoverUpdateIsAbsentWithoutAvailableVersion() {
+        XCTAssertNil(PopoverUpdate(availableVersion: nil, canStartUpdate: true))
+    }
+
+    func testNoUpdateClearsPopoverAvailability() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+
+        coordinator.recordUpdateCheckResult(.noUpdate)
+
+        XCTAssertNil(coordinator.popoverUpdate)
+    }
+
+    func testFailedCheckRetainsKnownUpdate() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+
+        coordinator.recordUpdateCheckResult(.failed)
+
+        XCTAssertEqual(
+            coordinator.popoverUpdate,
+            PopoverUpdate(availableVersion: "0.14.0", canStartUpdate: false)
+        )
+    }
+
     func testConfigurationUsesCanonicalFeedAndFourHourInterval() {
         XCTAssertEqual(
             UpdateConfiguration.feedURL,

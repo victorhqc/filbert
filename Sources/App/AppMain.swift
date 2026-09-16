@@ -31,8 +31,12 @@ struct AppMain: App {
 
     var body: some Scene {
         MenuBarExtra {
-            QuotaView(viewModel: viewModel, sleepPrevention: sleepPrevention)
-                .frame(width: 280)
+            QuotaView(
+                viewModel: viewModel,
+                sleepPrevention: sleepPrevention,
+                updateCoordinator: updateCoordinator
+            )
+            .frame(width: 280)
         } label: {
             MenuBarStatusIcon(viewModel: viewModel, sleepPrevention: sleepPrevention)
         }

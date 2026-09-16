@@ -87,7 +87,11 @@ struct PeakHoursBlock: View {
             guard let days = window.weekdays.flatMap(PeakHoursPresentation.weekdayRangeText) else {
                 return times
             }
-            return String.localizedStringWithFormat(String(localized: "%1$@ %2$@"), days, times)
+            return String.localizedStringWithFormat(
+                String(localized: "Peak hours day and time format"),
+                days,
+                times
+            )
         }
         let localizedWindows = ListFormatter.localizedString(byJoining: windows)
         return String.localizedStringWithFormat(
