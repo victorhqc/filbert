@@ -27,7 +27,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         let keychain = Keychain(storage: storage, service: "view-model")
         let registry = ProviderRegistry(keychain: keychain)
         registry.register(APIKeySpyProvider())
-        let viewModel = QuotaViewModel(keychain: keychain, registry: registry)
+        let viewModel = QuotaViewModel(keychain: keychain, registry: registry, errorLog: AppTestErrorLog.make())
 
         XCTAssertFalse(viewModel.isEnabled(APIKeySpyProvider.providerId))
 
@@ -44,7 +44,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         let keychain = Keychain(storage: storage, service: "view-model")
         let registry = ProviderRegistry(keychain: keychain)
         registry.register(APIKeySpyProvider())
-        let viewModel = QuotaViewModel(keychain: keychain, registry: registry)
+        let viewModel = QuotaViewModel(keychain: keychain, registry: registry, errorLog: AppTestErrorLog.make())
 
         XCTAssertThrowsError(
             try viewModel.saveKey("saved-key", for: APIKeySpyProvider.providerId)
@@ -58,7 +58,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         let keychain = Keychain(storage: storage, service: "view-model")
         let registry = ProviderRegistry(keychain: keychain)
         registry.register(APIKeySpyProvider())
-        let viewModel = QuotaViewModel(keychain: keychain, registry: registry)
+        let viewModel = QuotaViewModel(keychain: keychain, registry: registry, errorLog: AppTestErrorLog.make())
         try viewModel.saveKey("saved-key", for: APIKeySpyProvider.providerId)
 
         try viewModel.deleteKey(for: APIKeySpyProvider.providerId)
@@ -76,7 +76,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         ProviderEnablement.setEnabled(true, for: APIKeySpyProvider.providerId)
         let registry = ProviderRegistry(keychain: keychain)
         registry.register(APIKeySpyProvider())
-        let viewModel = QuotaViewModel(keychain: keychain, registry: registry)
+        let viewModel = QuotaViewModel(keychain: keychain, registry: registry, errorLog: AppTestErrorLog.make())
 
         XCTAssertTrue(viewModel.configuredProviderIds.contains(APIKeySpyProvider.providerId))
 
@@ -96,7 +96,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         let provider = APIKeyFreeSpyProvider()
         let registry = ProviderRegistry()
         registry.register(provider)
-        let viewModel = QuotaViewModel(registry: registry)
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make())
 
         _ = viewModel.registeredProvidersOrdered
         _ = viewModel.canInstallHelper(for: APIKeyFreeSpyProvider.providerId)
@@ -118,7 +118,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         let provider = DelayedAPIKeyProvider()
         let registry = ProviderRegistry(keychain: keychain)
         registry.register(provider)
-        let viewModel = QuotaViewModel(keychain: keychain, registry: registry)
+        let viewModel = QuotaViewModel(keychain: keychain, registry: registry, errorLog: AppTestErrorLog.make())
 
         for _ in 0 ..< 100 where provider.fetchCallCount == 0 {
             await Task.yield()
@@ -148,7 +148,7 @@ final class ProviderEnablementViewModelTests: XCTestCase {
         let registry = ProviderRegistry(keychain: keychain)
         registry.register(APIKeySpyProvider())
         registry.register(SecondaryAPIKeySpyProvider())
-        let viewModel = QuotaViewModel(keychain: keychain, registry: registry)
+        let viewModel = QuotaViewModel(keychain: keychain, registry: registry, errorLog: AppTestErrorLog.make())
 
         viewModel.setProviderEnabled(false, for: APIKeySpyProvider.providerId)
 

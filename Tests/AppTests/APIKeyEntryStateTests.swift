@@ -1,4 +1,6 @@
 @testable import App
+import Core
+import Security
 import XCTest
 
 final class APIKeyEntryStateTests: XCTestCase {
@@ -45,6 +47,24 @@ final class APIKeyEntryStateTests: XCTestCase {
         }
 
         XCTAssertNotNil(state.errorMessage)
+    }
+
+    func testCancelledKeychainSaveRetainsInputWithoutAnError() {
+        var state = APIKeyEntryState()
+        state.updateInput("example-key")
+
+        state.save { _ in throw KeychainError.saveFailed(errSecUserCanceled) }
+
+        XCTAssertEqual(state.input, "example-key")
+        XCTAssertNil(state.errorMessage)
+    }
+
+    func testCancelledKeychainClearDoesNotShowAnError() {
+        var state = APIKeyEntryState()
+
+        state.clear { throw KeychainError.deleteFailed(errSecUserCanceled) }
+
+        XCTAssertNil(state.errorMessage)
     }
 }
 
