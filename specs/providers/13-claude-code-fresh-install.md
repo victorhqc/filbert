@@ -2,8 +2,8 @@
 Verify and repair the complete Claude Code setup and data flow from a fresh Filbert installation.
 
 ## Context
-- `Sources/Providers/ClaudeCode/StatuslineHelperInstaller.swift` compiles the helper at installation time and modifies Claude Code settings.
-- `Sources/Providers/ClaudeCode/Resources/statusline_helper.swift` receives status-line input and writes the usage cache.
+- `Sources/Providers/ClaudeCode/StatuslineHelperInstaller.swift` installs the prebuilt helper and modifies Claude Code settings.
+- `Sources/ClaudeCodeStatuslineHelper/main.swift` receives status-line input and writes the usage cache.
 - `Sources/Providers/ClaudeCode/StatuslineCacheStore.swift` reads the usage cache.
 - `Sources/Providers/ClaudeCode/ClaudeCodeProvider.swift` detects setup and maps the cache to Filbert results.
 - `Sources/Providers/ClaudeCode/ClaudeCodeRefresher.swift` runs Claude Code for a proactive refresh.
@@ -20,8 +20,8 @@ Verify and repair the complete Claude Code setup and data flow from a fresh Filb
 - The baseline command `swift test --filter ClaudeCodeProviderTests` passed all 78 tests on macOS with Swift 6.4.
 - The helper source passed `swiftc -typecheck`.
 - A Bash syntax check failed for the generated chained command. Its unquoted `#` markers start a shell comment.
-- The helper currently converts invalid input to an empty payload and writes that payload over the previous cache.
-- Existing tests do not execute the generated wrapper or the actual helper from a packaged app.
+- The original helper converted invalid input to an empty payload and replaced the previous cache.
+- Baseline tests did not execute the generated wrapper or the actual helper from a packaged app.
 
 ## Acceptance Criteria
 
@@ -91,6 +91,9 @@ Verify and repair the complete Claude Code setup and data flow from a fresh Filb
 - Tests cover binary discovery, working-directory selection, subprocess failure, timeout, cancellation, parsing, and cache writes.
 - Failed refreshes retain previous results and their timestamp.
 - Cache reads must not hide proactive refresh failures (core 10 AC5).
+- A successful debounce reuses data only while a usable cache exists.
+- Removal or an empty cache must not make the next refresh report success without data.
+- The failure cooldown and concurrent request coalescing remain unchanged.
 - Automatic refresh continues to obey the existing opt-in behavior (core 08).
 
 ### AC8: Removal and reinstall
@@ -111,17 +114,68 @@ Verify and repair the complete Claude Code setup and data flow from a fresh Filb
 - The developer restores the user's original files after the live test unless the user requests the new installation.
 
 ## Plan
-1. Run existing Claude Code tests to establish a baseline.
-2. Trace binary discovery, helper installation, status-line invocation, cache creation, and the app's result state.
-3. Exercise a clean temporary installation with the actual helper and representative input.
-4. Record failures before changes. Add regression tests for each reproduced defect.
-5. Build the helper with the app instead of compiling the helper on the user's Mac.
-6. Verify installation state from the executable and effective settings.
-7. Run packaged validation without access to development resources or a runtime compiler.
-8. Obtain confirmation for the live reset. Back up the shared files and stop conflicting writers.
-9. Remove Filbert's integration, install through the development app, and start a fresh Claude Code session.
-10. Verify displayed results, manual refresh, failure presentation, removal, and reinstall.
-11. Restore the original files and record the results.
+- [x] Establish the baseline with the existing Claude Code tests.
+- [x] Trace binary discovery, installation, status-line input, cache creation, and the app state.
+- [x] Exercise a temporary installation with the actual helper.
+- [x] Record reproduced failures and add regression tests.
+- [x] Build and package the helper with the app.
+- [x] Verify the executable and effective settings.
+- [x] Run isolated checks on the helper from the completed DMG.
+- [x] Obtain live-reset permission, make a private backup, and stop installed Filbert.
+- [x] Exercise fresh installation and refresh through the real development app state model and installed Claude CLI.
+- [x] Verify cache-error recovery and removal/reinstall in the same app session.
+- [x] Restore the original current files and attempt to restart installed Filbert.
+- [x] Resolve the installed local build's Sparkle loader failure and restart it.
+- [ ] Verify actual menu-bar actions and a normal interactive Claude Code session.
+- [ ] Verify installation on a clean Mac without Command Line Tools.
+
+## Verification
+
+### Live environment and results
+- Environment: macOS 27, Swift 6.4, Apple Silicon, Claude Code 2.1.280.
+- The user authorized removal of current and legacy Filbert Claude Code artifacts.
+- A private backup retained the original files before removal.
+- The test used the real installer and `QuotaViewModel`, with an isolated preference suite that enabled only Claude Code.
+- Fresh installation reached the configured state without an old usage cache.
+- The exact proactive command returned real usage. The app state contained 2 usage windows with a current cache timestamp.
+- A deliberately malformed cache produced a safe error record.
+- The app retained the previous usage and timestamp. A successful read cleared the visible error.
+- An immediate removal/reinstall exposed a successful debounce without a cache.
+- The repaired debounce repeated the real refresh after removal. The same-session reinstall then passed.
+- The configured status-line command passed a replay with rate-limit values from the real CLI refresh.
+- The replay did not establish that an interactive Claude Code session invoked the helper.
+- The replay restored the real cache bytes afterward, without a fabricated update timestamp.
+- Error files had mode `0600`. The log directory had mode `0700`.
+- Error records excluded the malformed input marker. Successful operations did not add routine records.
+- Original current settings, helper, and cache bytes and permissions were restored and verified.
+- Legacy `ai-usage` artifacts and old per-invocation helper logs remained removed.
+- Restart of installed Filbert failed before app startup. The loader rejected the Sparkle framework signature.
+- The installed local build reported version `0.0.0`, with ad-hoc signing and Hardened Runtime.
+- Both app and framework signatures passed on-disk verification. Runtime library acceptance remained a failure.
+- A subsequent private-copy experiment confirmed that a host-only library-validation exception permits local startup.
+- The installed app was backed up and re-signed with that local exception. It restarted successfully.
+- The permanent packaging repair is tracked separately (ci 06).
+- Authentication and project data were not removed.
+
+### Packaged verification
+- The ad-hoc-signed DMG passed nested signature and resource checks.
+- The helper from the completed DMG created a first cache.
+- Invalid helper input retained the good cache and produced a private error record.
+- Normal Finder decoration failed because the generated image remained busy.
+- Verification succeeded with a temporary `create-dmg --skip-jenkins` wrapper.
+- The wrapper changed only the validation environment. Production packaging code remained unchanged.
+- App launch remained disabled during packaged checks.
+- Developer ID signing, notarization, clean-Mac installation, and GUI interaction remain separate verification gates.
+- Signature verification alone did not establish that the ad-hoc build could launch with its Sparkle framework.
+
+### Live regression
+- `ClaudeCodeRefresher` retained a successful debounce after helper removal deleted the cache.
+- The next immediate refresh returned success without a new request or cache.
+- Successful debounce now requires a populated window, consistent with quota mapping.
+- Missing, empty, malformed, or unreadable cache data triggers a repair attempt.
+- Cache read failures retain their safe diagnostic records.
+- Eight isolated tests cover repair, ordinary debounce, failure cooldown, and concurrent callers.
+- Final validation passed SwiftFormat, SwiftLint, debug and release builds, and all 560 tests.
 
 ## Risks
 - A live reset affects the installed app because development and installed builds share the same paths.

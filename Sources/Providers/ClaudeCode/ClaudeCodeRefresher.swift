@@ -151,7 +151,10 @@ public actor ClaudeCodeRefresher {
                 if let lastFailure {
                     throw lastFailure
                 }
-                return
+                let cache = cacheStore.read()
+                if cache?.rateLimits?.fiveHour?.populated != nil || cache?.rateLimits?.sevenDay?.populated != nil {
+                    return
+                }
             }
         }
 
