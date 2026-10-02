@@ -5,7 +5,7 @@ import XCTest
 @MainActor
 final class LaunchAtLoginControllerTests: XCTestCase {
     func testInitialStatusDoesNotChangeRegistration() {
-        for status in [LaunchAtLoginStatus.notRegistered, .enabled, .requiresApproval, .unavailable] {
+        for status in [LaunchAtLoginStatus.notRegistered, .enabled, .requiresApproval, .notFound, .unavailable] {
             let client = FakeLaunchAtLoginClient(status: status)
             let controller = LaunchAtLoginController(client: client)
 
@@ -19,16 +19,18 @@ final class LaunchAtLoginControllerTests: XCTestCase {
     }
 
     func testEnablingRegistersOnceAndReadsStatus() {
-        let client = FakeLaunchAtLoginClient(status: .notRegistered)
-        let controller = LaunchAtLoginController(client: client)
+        for status in [LaunchAtLoginStatus.notRegistered, .notFound] {
+            let client = FakeLaunchAtLoginClient(status: status)
+            let controller = LaunchAtLoginController(client: client)
 
-        controller.setRegistered(true)
-        controller.setRegistered(true)
+            controller.setRegistered(true)
+            controller.setRegistered(true)
 
-        XCTAssertEqual(client.registerCount, 1)
-        XCTAssertEqual(controller.status, .enabled)
-        XCTAssertTrue(controller.isRegistered)
-        XCTAssertNil(controller.errorMessage)
+            XCTAssertEqual(client.registerCount, 1)
+            XCTAssertEqual(controller.status, .enabled)
+            XCTAssertTrue(controller.isRegistered)
+            XCTAssertNil(controller.errorMessage)
+        }
     }
 
     func testDisablingRemovesEnabledAndPendingRegistrations() {
@@ -47,29 +49,50 @@ final class LaunchAtLoginControllerTests: XCTestCase {
     }
 
     func testApprovalRequiredDoesNotCauseRepeatedRegistration() {
-        let client = FakeLaunchAtLoginClient(status: .notRegistered)
-        client.registrationStatus = .requiresApproval
-        let controller = LaunchAtLoginController(client: client)
+        for status in [LaunchAtLoginStatus.notRegistered, .notFound] {
+            let client = FakeLaunchAtLoginClient(status: status)
+            client.registrationStatus = .requiresApproval
+            let controller = LaunchAtLoginController(client: client)
 
-        controller.setRegistered(true)
-        controller.setRegistered(true)
-        controller.refreshStatus()
+            controller.setRegistered(true)
+            controller.setRegistered(true)
+            controller.refreshStatus()
 
-        XCTAssertEqual(client.registerCount, 1)
-        XCTAssertEqual(controller.status, .requiresApproval)
-        XCTAssertTrue(controller.isRegistered)
+            XCTAssertEqual(client.registerCount, 1)
+            XCTAssertEqual(controller.status, .requiresApproval)
+            XCTAssertTrue(controller.isRegistered)
+        }
     }
 
     func testSuccessfulOperationDoesNotAssumeRequestedState() {
-        let client = FakeLaunchAtLoginClient(status: .notRegistered)
-        client.registrationStatus = .notRegistered
+        for status in [LaunchAtLoginStatus.notRegistered, .notFound] {
+            let client = FakeLaunchAtLoginClient(status: status)
+            client.registrationStatus = status
+            let controller = LaunchAtLoginController(client: client)
+
+            controller.setRegistered(true)
+            controller.refreshStatus()
+            NotificationCenter.default.post(name: NSApplication.didBecomeActiveNotification, object: nil)
+
+            XCTAssertEqual(client.registerCount, 1)
+            XCTAssertEqual(controller.status, status)
+            XCTAssertFalse(controller.isRegistered)
+            XCTAssertTrue(controller.isAvailable)
+        }
+    }
+
+    func testMissingNativeServiceRemainsAvailableWithoutAutomaticRegistration() {
+        let client = FakeLaunchAtLoginClient(status: LaunchAtLoginStatus(nativeStatus: .notFound))
         let controller = LaunchAtLoginController(client: client)
 
-        controller.setRegistered(true)
+        controller.refreshStatus()
+        NotificationCenter.default.post(name: NSApplication.didBecomeActiveNotification, object: nil)
 
-        XCTAssertEqual(client.registerCount, 1)
-        XCTAssertEqual(controller.status, .notRegistered)
+        XCTAssertEqual(controller.status, .notFound)
+        XCTAssertTrue(controller.isAvailable)
         XCTAssertFalse(controller.isRegistered)
+        XCTAssertEqual(client.registerCount, 0)
+        XCTAssertEqual(client.unregisterCount, 0)
     }
 
     func testEnablingAnExistingRegistrationDoesNothing() {
@@ -85,13 +108,15 @@ final class LaunchAtLoginControllerTests: XCTestCase {
     }
 
     func testDisablingAnUnregisteredServiceDoesNothing() {
-        let client = FakeLaunchAtLoginClient(status: .notRegistered)
-        let controller = LaunchAtLoginController(client: client)
+        for status in [LaunchAtLoginStatus.notRegistered, .notFound] {
+            let client = FakeLaunchAtLoginClient(status: status)
+            let controller = LaunchAtLoginController(client: client)
 
-        controller.setRegistered(false)
+            controller.setRegistered(false)
 
-        XCTAssertEqual(client.registerCount, 0)
-        XCTAssertEqual(client.unregisterCount, 0)
+            XCTAssertEqual(client.registerCount, 0)
+            XCTAssertEqual(client.unregisterCount, 0)
+        }
     }
 
     func testUnavailableServiceCannotRegisterOrUnregister() {
@@ -110,7 +135,7 @@ final class LaunchAtLoginControllerTests: XCTestCase {
         let client = FakeLaunchAtLoginClient(status: .enabled)
         let controller = LaunchAtLoginController(client: client)
 
-        for status in [LaunchAtLoginStatus.requiresApproval, .notRegistered, .enabled, .unavailable] {
+        for status in [LaunchAtLoginStatus.requiresApproval, .notRegistered, .enabled, .notFound, .unavailable] {
             client.status = status
             controller.refreshStatus()
 
@@ -143,23 +168,26 @@ final class LaunchAtLoginControllerTests: XCTestCase {
     }
 
     func testRegistrationFailureCanBeRetried() {
-        let client = FakeLaunchAtLoginClient(status: .notRegistered)
-        client.registrationError = .failed
-        client.registrationStatus = .notRegistered
-        let controller = LaunchAtLoginController(client: client)
+        for status in [LaunchAtLoginStatus.notRegistered, .notFound] {
+            let client = FakeLaunchAtLoginClient(status: status)
+            client.registrationError = .failed
+            client.registrationStatus = status
+            let controller = LaunchAtLoginController(client: client)
 
-        controller.setRegistered(true)
+            controller.setRegistered(true)
 
-        XCTAssertEqual(controller.status, .notRegistered)
-        XCTAssertNotNil(controller.errorMessage)
-        client.registrationError = nil
-        client.registrationStatus = .enabled
+            XCTAssertEqual(controller.status, status)
+            XCTAssertTrue(controller.isAvailable)
+            XCTAssertNotNil(controller.errorMessage)
+            client.registrationError = nil
+            client.registrationStatus = .enabled
 
-        controller.setRegistered(true)
+            controller.setRegistered(true)
 
-        XCTAssertEqual(client.registerCount, 2)
-        XCTAssertEqual(controller.status, .enabled)
-        XCTAssertNil(controller.errorMessage)
+            XCTAssertEqual(client.registerCount, 2)
+            XCTAssertEqual(controller.status, .enabled)
+            XCTAssertNil(controller.errorMessage)
+        }
     }
 
     func testRemovalFailureCanBeRetried() {

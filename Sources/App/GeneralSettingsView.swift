@@ -60,6 +60,11 @@ struct GeneralSettingsView: View {
                 localized: "Filbert is registered, but macOS approval is required before it can start at login.",
                 bundle: .module
             )
+        case .notFound:
+            String(
+                localized: "macOS could not find Filbert's login item. Enable Launch at login to register it.",
+                bundle: .module
+            )
         case .unavailable:
             String(localized: "Launch at login requires an installed Filbert app.", bundle: .module)
         }

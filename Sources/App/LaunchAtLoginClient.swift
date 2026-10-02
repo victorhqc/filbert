@@ -5,7 +5,23 @@ enum LaunchAtLoginStatus: Equatable {
     case notRegistered
     case enabled
     case requiresApproval
+    case notFound
     case unavailable
+
+    init(nativeStatus: SMAppService.Status) {
+        switch nativeStatus {
+        case .notRegistered:
+            self = .notRegistered
+        case .enabled:
+            self = .enabled
+        case .requiresApproval:
+            self = .requiresApproval
+        case .notFound:
+            self = .notFound
+        @unknown default:
+            self = .unavailable
+        }
+    }
 }
 
 @MainActor
@@ -33,18 +49,7 @@ struct SystemLaunchAtLoginClient: LaunchAtLoginManaging {
     var status: LaunchAtLoginStatus {
         guard let service else { return .unavailable }
 
-        switch service.status {
-        case .notRegistered:
-            return .notRegistered
-        case .enabled:
-            return .enabled
-        case .requiresApproval:
-            return .requiresApproval
-        case .notFound:
-            return .unavailable
-        @unknown default:
-            return .unavailable
-        }
+        return LaunchAtLoginStatus(nativeStatus: service.status)
     }
 
     func register() throws {

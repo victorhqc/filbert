@@ -64,6 +64,15 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert está registrado, pero requiere aprobación en macOS para abrirse al iniciar sesión." } }
       }
     },
+    "macOS could not find Filbert's login item. Enable Launch at login to register it." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "macOS konnte Filberts Anmeldeobjekt nicht finden. Aktiviere „Bei der Anmeldung starten“, um es zu registrieren." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "macOS could not find Filbert's login item. Enable Launch at login to register it." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el ítem de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el elemento de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } }
+      }
+    },
     "Launch at login requires an installed Filbert app." : {
       "extractionState" : "manual",
       "localizations" : {
