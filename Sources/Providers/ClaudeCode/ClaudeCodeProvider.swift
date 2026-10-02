@@ -1,16 +1,6 @@
 import Core
 import Foundation
 
-// MARK: - Diagnostic logging
-
-enum ClaudeCodeLog {
-    static func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(
-            Data("[ClaudeCodeProvider] \(message())\n".utf8)
-        )
-    }
-}
-
 // MARK: - Error
 
 public enum ClaudeCodeError: Error, Equatable, Sendable {
@@ -33,6 +23,15 @@ extension ClaudeCodeError: LocalizedError {
             String(localized: "Claude Code not found.")
         case .internalInconsistency:
             String(localized: "Internal error: unexpected auth shape.")
+        }
+    }
+}
+
+extension ClaudeCodeError: DiagnosticError {
+    public var diagnosticCode: String {
+        switch self {
+        case .binaryNotFound: "binary-not-found"
+        case .internalInconsistency: "invalid-auth-shape"
         }
     }
 }
@@ -69,17 +68,20 @@ public struct ClaudeCodeProvider: AIProvider {
     private let cacheStore: StatuslineCacheStore
     private let installer: StatuslineHelperInstaller
     private let refresher: ClaudeCodeRefresher
+    private let errorLog: ErrorLog
 
     public init(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(),
         cacheStore: StatuslineCacheStore = StatuslineCacheStore(),
         installer: StatuslineHelperInstaller = StatuslineHelperInstaller(),
-        refresher: ClaudeCodeRefresher = ClaudeCodeRefresher()
+        refresher: ClaudeCodeRefresher = ClaudeCodeRefresher(),
+        errorLog: ErrorLog = .shared
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
         self.installer = installer
         self.refresher = refresher
+        self.errorLog = errorLog
     }
 
     // MARK: - Configuration
@@ -87,8 +89,6 @@ public struct ClaudeCodeProvider: AIProvider {
     public func isConfigured() -> Bool {
         let binaryPath = locator.resolve()
         let helperInstalled = installer.isHelperInstalled()
-            || installer.hasLegacyHelperInstallation()
-        ClaudeCodeLog.log("isConfigured: binary=\(binaryPath ?? "nil") helperInstalled=\(helperInstalled)")
         return binaryPath != nil && helperInstalled
     }
 
@@ -97,20 +97,25 @@ public struct ClaudeCodeProvider: AIProvider {
             return .setup(String(localized: "Claude Code not found"))
         }
         if !installer.isHelperInstalled() {
-            guard let sourceURL = helperSourceURL else {
-                return .setup(String(localized: "Helper source file not found in app bundle."))
+            guard let executableURL = StatuslineHelperResource.resolve() else {
+                errorLog.record(
+                    component: "claude-code-provider", operation: "resolve-helper",
+                    code: "helper-executable-missing", providerID: Self.providerId
+                )
+                return .error(InstallerError.helperExecutableNotFound.localizedDescription)
             }
             do {
                 _ = try await Task.detached {
                     try installer.migrateLegacyInstallationIfNeeded(
-                        helperSourceURL: sourceURL
+                        helperExecutableURL: executableURL
                     )
                 }.value
             } catch {
-                ClaudeCodeLog.log(
-                    "legacy helper migration failed: \(error.localizedDescription)"
+                errorLog.record(
+                    component: "claude-code-provider", operation: "migrate-helper",
+                    code: "helper-migration-failed", providerID: Self.providerId, error: error
                 )
-                return .setup(
+                return .error(
                     String(
                         localized: "Automatic helper migration failed. Select Install Helper to retry."
                     )
@@ -129,28 +134,21 @@ public struct ClaudeCodeProvider: AIProvider {
         locator.resolve() != nil && !installer.isHelperInstalled()
     }
 
+    public func canRemoveHelper() -> Bool {
+        installer.canRemoveHelper()
+    }
+
     public func installHelper() async throws {
-        guard let sourceURL = helperSourceURL else {
-            ClaudeCodeLog.log("installHelper: helper source not found in bundle")
-            throw InstallerError.helperSourceNotFound
+        guard let executableURL = StatuslineHelperResource.resolve() else {
+            throw InstallerError.helperExecutableNotFound
         }
-        let binaryPath = locator.resolve()
-        ClaudeCodeLog.log("installHelper: binary=\(binaryPath ?? "nil") source=\(sourceURL.path)")
         try await Task.detached {
-            try installer.install(helperSourceURL: sourceURL)
+            try installer.install(helperExecutableURL: executableURL)
         }.value
-        ClaudeCodeLog.log("installHelper: install ok, helperInstalled=\(installer.isHelperInstalled())")
     }
 
     public func removeHelper() async throws {
         try installer.uninstall()
-    }
-
-    private var helperSourceURL: URL? {
-        Bundle.module.url(
-            forResource: "statusline_helper",
-            withExtension: "swift"
-        )
     }
 
     // MARK: - Quota fetch
@@ -160,39 +158,33 @@ public struct ClaudeCodeProvider: AIProvider {
         baseURL _: URL
     ) async throws -> ProviderQuota {
         guard case .apiKeyFree = auth else {
-            ClaudeCodeLog.log("fetchQuota: rejected non-apiKeyFree auth")
             throw ClaudeCodeError.internalInconsistency
         }
 
-        ClaudeCodeLog.log("fetchQuota: start configured=\(isConfigured())")
-
-        guard let cache = cacheStore.read() else {
-            ClaudeCodeLog.log("fetchQuota: no cache — returning No data")
+        guard let cache = try cacheStore.readForQuota() else {
             return ProviderQuota(
                 providerId: Self.providerId,
                 providerName: Self.providerName,
                 headline: String(localized: "No data"),
                 lines: [],
-                lastUpdated: Date(),
+                lastUpdated: .distantPast,
                 error: String(
                     localized: "Open Claude Code to populate usage data"
                 )
             )
         }
 
-        let quota = map(cache: cache)
-        ClaudeCodeLog.log(
-            "fetchQuota: mapped headline=\(quota.headline) lines=\(quota.lines.count) isStale=\(quota.isStale)"
-        )
-        return quota
+        return map(cache: cache)
     }
 
     // MARK: - Mapping
 
     private func map(cache: StatuslineCache) -> ProviderQuota {
         var lines: [UsageLine] = []
+        let fiveHour = cache.rateLimits?.fiveHour?.populated
+        let sevenDay = cache.rateLimits?.sevenDay?.populated
 
-        if let fiveHour = cache.rateLimits?.fiveHour {
+        if let fiveHour {
             lines.append(usageLine(
                 label: String(localized: "5-hour window"),
                 window: fiveHour,
@@ -200,7 +192,7 @@ public struct ClaudeCodeProvider: AIProvider {
             ))
         }
 
-        if let sevenDay = cache.rateLimits?.sevenDay {
+        if let sevenDay {
             lines.append(usageLine(
                 label: String(localized: "Weekly"),
                 window: sevenDay,
@@ -209,8 +201,8 @@ public struct ClaudeCodeProvider: AIProvider {
         }
 
         let headline = computeHeadline(
-            fiveHour: cache.rateLimits?.fiveHour,
-            sevenDay: cache.rateLimits?.sevenDay
+            fiveHour: fiveHour,
+            sevenDay: sevenDay
         )
 
         let lastUpdated = Date(timeIntervalSince1970: cache.writtenAt)
@@ -224,6 +216,7 @@ public struct ClaudeCodeProvider: AIProvider {
             headline: headline,
             lines: lines,
             lastUpdated: lastUpdated,
+            error: lines.isEmpty ? String(localized: "Open Claude Code to populate usage data") : nil,
             isStale: isStale,
             activityObservation: activityObservation(from: cache.rateLimits)
         )
@@ -287,7 +280,6 @@ public struct ClaudeCodeProvider: AIProvider {
 
 extension ClaudeCodeProvider: ProactiveRefreshable {
     public func proactiveRefresh() async throws {
-        ClaudeCodeLog.log("proactiveRefresh: delegating to refresher")
         try await refresher.refresh()
     }
 }

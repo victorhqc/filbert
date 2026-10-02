@@ -200,6 +200,18 @@ final class DeepSeekProviderTests: XCTestCase {
         }
     }
 
+    func testFetchQuota_normalizesURLCancellationWithoutTaskCancellation() async throws {
+        MockURLProtocol.responseError = URLError(.cancelled)
+        XCTAssertFalse(Task.isCancelled)
+
+        do {
+            _ = try await fetchWithDefaultBaseURL()
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+    }
+
     func testFetchQuota_throwsDecodingForInvalidJSON() async throws {
         MockURLProtocol.responseData = Data("not json".utf8)
         MockURLProtocol.responseStatusCode = 200

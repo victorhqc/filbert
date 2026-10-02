@@ -122,10 +122,47 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
                 : (500, Data())
         }
 
-        let quota = try await fetchQuota()
+        let errorLog = ZAIProviderTests.makeErrorLog()
+        let quota = try await fetchQuota(errorLog: errorLog)
 
         XCTAssertNil(quota.peakHoursConfig)
         XCTAssertEqual(quota.lines.count, 3)
+        let logURL = try XCTUnwrap(errorLog.availableFileURL)
+        let records = try String(contentsOf: logURL, encoding: .utf8)
+        XCTAssertEqual(records.split(whereSeparator: \.isNewline).count, 1)
+        XCTAssertTrue(records.contains("subscription_fetch_failed"))
+        XCTAssertTrue(records.contains("zai"))
+    }
+
+    func testFetchQuota_subscriptionDecodingFailureRecordsNoBody() async throws {
+        serve(quotaData: Self.fixture("quota-legacy-v2"), subscriptionJSON: Data("subscription-secret".utf8))
+        let errorLog = ZAIProviderTests.makeErrorLog()
+
+        let quota = try await fetchQuota(errorLog: errorLog)
+
+        XCTAssertNil(quota.peakHoursConfig)
+        let logURL = try XCTUnwrap(errorLog.availableFileURL)
+        let records = try String(contentsOf: logURL, encoding: .utf8)
+        XCTAssertEqual(records.split(whereSeparator: \.isNewline).count, 1)
+        XCTAssertTrue(records.contains("subscription_decoding_failed"))
+        XCTAssertFalse(records.contains("subscription-secret"))
+        XCTAssertFalse(records.contains("test-key"))
+    }
+
+    func testFetchQuota_unsupportedSubscriptionDoesNotRecordError() async throws {
+        for status in [404, 405, 501] {
+            MockURLProtocol.handler = { request in
+                request.url?.path.hasSuffix("/quota/limit") == true
+                    ? (200, Self.fixture("quota-legacy-v2"))
+                    : (status, Data())
+            }
+            let errorLog = ZAIProviderTests.makeErrorLog()
+
+            let quota = try await fetchQuota(errorLog: errorLog)
+
+            XCTAssertNil(quota.peakHoursConfig)
+            XCTAssertNil(errorLog.availableFileURL)
+        }
     }
 
     func testFetchQuota_unknownSubscriptionVersion_suppressesPricing() async throws {
@@ -215,10 +252,10 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
 
     // MARK: - Helpers
 
-    private func fetchQuota() async throws -> ProviderQuota {
+    private func fetchQuota(errorLog: ErrorLog = ZAIProviderTests.makeErrorLog()) async throws -> ProviderQuota {
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
-        let provider = ZAIProvider(session: URLSession(configuration: configuration))
+        let provider = ZAIProvider(session: URLSession(configuration: configuration), errorLog: errorLog)
         return try await provider.fetchQuota(
             auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL

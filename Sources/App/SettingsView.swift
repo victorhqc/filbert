@@ -86,6 +86,8 @@ struct SettingsView: View {
             state: state,
             isEnabled: isEnabled,
             overrideURL: viewModel.overrideURL(for: provider.id),
+            errorLog: viewModel.errorLog,
+            refreshError: viewModel.refreshErrors[provider.id],
             onEnabledChange: { enabled in
                 viewModel.setProviderEnabled(enabled, for: provider.id)
             },
@@ -111,9 +113,12 @@ struct SettingsView: View {
             state: state,
             isEnabled: isEnabled,
             canInstall: isEnabled && viewModel.canInstallHelper(for: provider.id),
+            canRemove: isEnabled && viewModel.canRemoveHelper(for: provider.id),
             credentialImportActionTitle: isEnabled
                 ? viewModel.credentialImportActionTitle(for: provider.id)
                 : nil,
+            errorLog: viewModel.errorLog,
+            refreshError: viewModel.refreshErrors[provider.id],
             onEnabledChange: { enabled in
                 viewModel.setProviderEnabled(enabled, for: provider.id)
             },
@@ -147,6 +152,8 @@ private struct ProviderSettingsRow: View {
     let state: ProviderState
     let isEnabled: Bool
     let overrideURL: URL?
+    let errorLog: ErrorLog
+    let refreshError: String?
     let onEnabledChange: @MainActor @Sendable (Bool) -> Void
     let onSaveKey: (String) throws -> Void
     let onClearKey: () throws -> Void
@@ -183,6 +190,12 @@ private struct ProviderSettingsRow: View {
             Label(message, systemImage: "exclamationmark.triangle.fill")
                 .font(.caption)
                 .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+            ErrorLogLink(errorLog: errorLog)
+        } else if let refreshError {
+            Label(refreshError, systemImage: "exclamationmark.triangle.fill")
+                .font(.caption)
+                .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+            ErrorLogLink(errorLog: errorLog)
         } else if case .loading = state {
             HStack(spacing: 6) {
                 ProgressView()
@@ -196,6 +209,12 @@ private struct ProviderSettingsRow: View {
             clearKey()
         }
         .controlSize(.small)
+        if let errorMessage = apiKeyEntryState.errorMessage {
+            Text(errorMessage)
+                .font(.caption)
+                .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+            ErrorLogLink(errorLog: errorLog)
+        }
     }
 
     private var keyEntry: some View {
@@ -214,6 +233,7 @@ private struct ProviderSettingsRow: View {
                 Text(errorMessage)
                     .font(.caption)
                     .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+                ErrorLogLink(errorLog: errorLog)
             }
         }
         .controlSize(.regular)
@@ -286,6 +306,7 @@ private struct ProviderSettingsRow: View {
                 Text(overrideErrorMessage)
                     .font(.caption)
                     .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+                ErrorLogLink(errorLog: errorLog)
             }
         }
         .padding(.top, 2)
@@ -314,6 +335,12 @@ private struct ProviderSettingsRow: View {
         } else if let url = URL(string: trimmed) {
             resolved = url
         } else {
+            errorLog.record(
+                component: "app",
+                operation: "save-override",
+                code: "invalid-url",
+                providerID: provider.id
+            )
             overrideErrorMessage = String(localized: "Only https URLs are allowed.")
             return
         }

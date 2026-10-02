@@ -1,5 +1,6 @@
 @testable import App
 import Core
+import Foundation
 import XCTest
 
 final class PeakHoursPresentationTests: XCTestCase {
@@ -37,9 +38,10 @@ final class PeakHoursPresentationTests: XCTestCase {
     }
 
     func testWeekdayRangeText_disjointDaysAreListed() {
+        let symbols = Calendar(identifier: .gregorian).shortWeekdaySymbols
         XCTAssertEqual(
             PeakHoursPresentation.weekdayRangeText(for: [1, 7]),
-            "Sun and Sat"
+            ListFormatter.localizedString(byJoining: [symbols[0], symbols[6]])
         )
     }
 }

@@ -114,11 +114,14 @@ final class OpenAICodexProviderTests: XCTestCase {
             """
         )
 
-        let result = try await CodexAppServerClient(timeout: 2).readRateLimits(at: executable.path)
+        let errorLog = makeErrorLog()
+        let result = try await CodexAppServerClient(timeout: 2, errorLog: errorLog)
+            .readRateLimits(at: executable.path)
 
         XCTAssertEqual(result.rateLimits?.primary?.usedPercent, 32)
         XCTAssertEqual(result.rateLimits?.primary?.windowDurationMins, 300)
         XCTAssertEqual(result.rateLimits?.credits?.balance, "12.50")
+        XCTAssertNil(errorLog.availableFileURL)
     }
 
     func testClient_mapsUnsupportedAndSignedOutErrorsWithoutPayloads() async throws {
@@ -257,7 +260,7 @@ final class OpenAICodexProviderTests: XCTestCase {
                 environment: environment,
                 isExecutable: { $0 == executablePath }
             ),
-            client: CodexAppServerClient(timeout: 2)
+            client: CodexAppServerClient(timeout: 2, errorLog: makeErrorLog())
         )
     }
 
@@ -267,7 +270,8 @@ final class OpenAICodexProviderTests: XCTestCase {
         timeout: TimeInterval = 2
     ) async {
         do {
-            _ = try await CodexAppServerClient(timeout: timeout).readRateLimits(at: executable.path)
+            _ = try await CodexAppServerClient(timeout: timeout, errorLog: makeErrorLog())
+                .readRateLimits(at: executable.path)
             XCTFail("Expected \(expected)")
         } catch let error as CodexAppServerError {
             XCTAssertEqual(error, expected)
@@ -276,17 +280,11 @@ final class OpenAICodexProviderTests: XCTestCase {
         }
     }
 
-    private func serverBody(response: String) -> String {
-        """
-        read _
-        printf '%s\\n' '{"jsonrpc":"2.0","id":1,"result":{}}'
-        read _
-        read _
-        \(response)
-        """
+    func makeErrorLog() -> ErrorLog {
+        ErrorLog(directoryURL: temporaryDirectory.appendingPathComponent(UUID().uuidString))
     }
 
-    private func writeServer(name: String, body: String) throws -> URL {
+    func writeServer(name: String, body: String) throws -> URL {
         let executable = temporaryDirectory.appendingPathComponent(name)
         try "#!/bin/sh\n\(body)\n".write(to: executable, atomically: true, encoding: .utf8)
         try FileManager.default.setAttributes(

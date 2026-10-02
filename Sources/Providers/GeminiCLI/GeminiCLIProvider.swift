@@ -1,5 +1,6 @@
 import Core
 import Foundation
+import Security
 
 struct GeminiQuotaRequest: Encodable, Sendable {
     let project: String
@@ -87,11 +88,12 @@ public struct GeminiCLIProvider: AIProvider {
         )!
     )
 
-    private let credentialStore: any GeminiCredentialStore
+    let credentialStore: any GeminiCredentialStore
     private let oauth: GeminiOAuthClient
     private let codeAssist: GeminiCodeAssistClient
     private let coordinator: GeminiFetchCoordinator
     private let now: @Sendable () -> Date
+    let errorLog: ErrorLog
 
     public init() {
         let configuration = URLSessionConfiguration.ephemeral
@@ -116,41 +118,15 @@ public struct GeminiCLIProvider: AIProvider {
         oauth: GeminiOAuthClient,
         codeAssist: GeminiCodeAssistClient,
         now: (@Sendable () -> Date)? = nil,
-        workflowTimeout: TimeInterval = 90
+        workflowTimeout: TimeInterval = 90,
+        errorLog: ErrorLog = .shared
     ) {
         self.credentialStore = credentialStore
         self.oauth = oauth
         self.codeAssist = codeAssist
         coordinator = GeminiFetchCoordinator(timeout: workflowTimeout)
         self.now = now ?? { Date() }
-    }
-
-    public func isConfigured() -> Bool {
-        guard let credentials = try? credentialStore.load() else { return false }
-        return credentials.accessToken?.isEmpty == false
-            || credentials.refreshToken?.isEmpty == false
-    }
-
-    public func currentSetupState() async -> ProviderState? {
-        do {
-            guard let credentials = try credentialStore.load(),
-                  credentials.accessToken?.isEmpty == false
-                  || credentials.refreshToken?.isEmpty == false
-            else {
-                return .setup(String(localized: "Sign in to Gemini CLI"))
-            }
-            return nil
-        } catch GeminiCredentialError.invalidPayload {
-            return .setup(
-                String(localized: "Update Gemini CLI and sign in again")
-            )
-        } catch GeminiCredentialError.accessDenied(_) {
-            return .setup(
-                String(localized: "Allow Filbert to read the Gemini CLI Keychain item")
-            )
-        } catch {
-            return .setup(String(localized: "Sign in to Gemini CLI"))
-        }
+        self.errorLog = errorLog
     }
 
     public func fetchQuota(
@@ -219,13 +195,15 @@ public struct GeminiCLIProvider: AIProvider {
         let credentials: GeminiCredentials
         do {
             guard let loaded = try credentialStore.load() else {
-                throw GeminiCLIError.missingCredentials
+                throw ProviderSetupError.missingCredentials
             }
             credentials = loaded
         } catch let error as GeminiCredentialError {
             switch error {
             case .itemNotFound:
-                throw GeminiCLIError.missingCredentials
+                throw ProviderSetupError.missingCredentials
+            case .accessDenied(errSecUserCanceled):
+                throw CancellationError()
             case .accessDenied:
                 throw GeminiCLIError.keychainAccessDenied
             case .invalidPayload:

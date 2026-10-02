@@ -15,6 +15,7 @@ final class QuotaViewModel {
 
     private let keychain: Keychain
     let registry: ProviderRegistry
+    let errorLog: ErrorLog
     let autoRefreshSleeper: @Sendable (TimeInterval) async throws -> Void
 
     // MARK: - State
@@ -73,6 +74,7 @@ final class QuotaViewModel {
     init(
         keychain: Keychain = .shared,
         registry: ProviderRegistry,
+        errorLog: ErrorLog? = nil,
         autoRefreshSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
         },
@@ -83,6 +85,7 @@ final class QuotaViewModel {
     ) {
         self.keychain = keychain
         self.registry = registry
+        self.errorLog = errorLog ?? registry.errorLog
         self.autoRefreshSleeper = autoRefreshSleeper
         activityRuntime = MenuBarProviderActivityRuntime(
             expirationSleeper: activityExpirationSleeper,
@@ -100,8 +103,11 @@ final class QuotaViewModel {
             enabledIds.insert(info.id)
 
             let configured = registry.isConfigured(info.id)
-            log("init: provider=\(info.id) configured=\(configured)")
-            setState(configured ? .loading : .unconfigured, for: info.id)
+            if let message = registry.configurationError(for: info.id) {
+                setState(.error(message), for: info.id)
+            } else {
+                setState(configured ? .loading : .unconfigured, for: info.id)
+            }
         }
         enabledProviderIds = enabledIds
 
@@ -229,14 +235,22 @@ final class QuotaViewModel {
     // MARK: - Key management
 
     func saveKey(_ key: String, for providerId: String) throws {
-        try keychain.save(key, for: providerId)
-        log("saveKey: provider=\(providerId)")
+        do {
+            try keychain.save(key, for: providerId)
+        } catch {
+            recordError(error, operation: "save-key", providerId: providerId)
+            throw error
+        }
         setProviderEnabled(true, for: providerId)
     }
 
     func deleteKey(for providerId: String) throws {
-        try keychain.delete(for: providerId)
-        log("deleteKey: provider=\(providerId)")
+        do {
+            try keychain.delete(for: providerId)
+        } catch {
+            recordError(error, operation: "delete-key", providerId: providerId)
+            throw error
+        }
         invalidateProviderWork(for: providerId)
         setState(.unconfigured, for: providerId)
         refreshDerived()
@@ -250,94 +264,14 @@ final class QuotaViewModel {
 
     func saveOverrideURL(_ url: URL?, for providerId: String) throws {
         guard !registry.isAPIKeyFree(providerId) else { return }
-        try ProviderOverrides.setBaseURL(url, for: providerId)
-        log("saveOverrideURL: provider=\(providerId) url=\(url?.absoluteString ?? "nil")")
+        do {
+            try ProviderOverrides.setBaseURL(url, for: providerId)
+        } catch {
+            recordError(error, operation: "save-override", providerId: providerId)
+            throw error
+        }
         if isEnabled(providerId), registry.isConfigured(providerId) {
             performFetch(for: providerId)
-        }
-    }
-
-    // MARK: - Fetch
-
-    func fetchQuota(for providerId: String) {
-        performFetch(for: providerId, origin: .initial)
-    }
-
-    func manualRefresh(for providerId: String) {
-        performFetch(for: providerId, origin: .manual)
-    }
-
-    func fetchAllQuotas() {
-        for providerId in registeredProvidersOrdered.map(\.id) {
-            fetchQuota(for: providerId)
-        }
-    }
-
-    func performFetch(for providerId: String, origin: RefreshOrigin = .initial) {
-        guard isReadyToFetch(providerId), fetchTasks[providerId] == nil else { return }
-        log("performFetch: provider=\(providerId)")
-        switch providerStates[providerId] {
-        case .loaded, .error:
-            setRefreshing(true, for: providerId)
-        default:
-            setState(.loading, for: providerId)
-            refreshDerived()
-        }
-        let revision = lifecycleRevisions[providerId, default: 0]
-        fetchTasks[providerId] = Task { @MainActor [weak self] in
-            guard let self else { return }
-            let suppressSmartSuccess = await proactiveRefreshIfNeeded(
-                for: providerId,
-                origin: origin,
-                expectedRevision: revision
-            )
-            guard let result = await registry.fetchQuota(for: providerId) else {
-                if lifecycleRevisions[providerId, default: 0] == revision {
-                    fetchTasks[providerId] = nil
-                    if !isReadyToFetch(providerId) {
-                        setRefreshing(false, for: providerId)
-                        setState(.unconfigured, for: providerId)
-                        refreshDerived()
-                    }
-                }
-                return
-            }
-            guard !Task.isCancelled else {
-                return
-            }
-            applyResults(
-                [providerId: result],
-                expectedRevisions: [providerId: revision],
-                suppressSmartSuccessFor: suppressSmartSuccess ? [providerId] : []
-            )
-            if lifecycleRevisions[providerId, default: 0] == revision {
-                fetchTasks[providerId] = nil
-            }
-        }
-    }
-
-    private func proactiveRefreshIfNeeded(
-        for providerId: String,
-        origin: RefreshOrigin,
-        expectedRevision: Int
-    ) async -> Bool {
-        guard origin == .automatic || origin == .manual else { return false }
-
-        do {
-            try await registry.proactiveRefresh(for: providerId)
-            log("proactiveRefresh: provider=\(providerId) ok")
-            return false
-        } catch ProviderSetupError.notSupported {
-            return false
-        } catch {
-            log("proactiveRefresh: provider=\(providerId) failed: \(error.localizedDescription)")
-            guard origin == .automatic,
-                  lifecycleRevisions[providerId, default: 0] == expectedRevision
-            else {
-                return false
-            }
-            recordAutomaticFailure(for: providerId)
-            return true
         }
     }
 }

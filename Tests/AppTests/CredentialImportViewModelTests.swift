@@ -27,7 +27,7 @@ final class CredentialImportViewModelTests: XCTestCase {
         let provider = ImportingTestProvider()
         registry.register(provider)
         ProviderEnablement.setEnabled(true, for: ImportingTestProvider.providerId)
-        let viewModel = QuotaViewModel(registry: registry)
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make())
 
         XCTAssertEqual(
             viewModel.credentialImportActionTitle(for: ImportingTestProvider.providerId),
@@ -42,7 +42,7 @@ final class CredentialImportViewModelTests: XCTestCase {
     func testUnsupportedProviderDoesNotExposeImportAction() {
         let registry = ProviderRegistry()
         registry.register(UnsupportedTestProvider())
-        let viewModel = QuotaViewModel(registry: registry)
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make())
 
         XCTAssertNil(viewModel.credentialImportActionTitle(for: UnsupportedTestProvider.providerId))
     }

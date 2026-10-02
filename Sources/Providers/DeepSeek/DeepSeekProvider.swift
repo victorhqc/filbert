@@ -1,14 +1,6 @@
 import Core
 import Foundation
 
-// MARK: - Diagnostic logging
-
-enum DeepSeekLog {
-    static func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(Data("[DeepSeekProvider] \(message())\n".utf8))
-    }
-}
-
 // MARK: - Error
 
 public enum DeepSeekError: Error, Equatable, Sendable {
@@ -136,18 +128,17 @@ public struct DeepSeekProvider: AIProvider {
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch {
-            DeepSeekLog.log("network error: \(error)")
             throw DeepSeekError.network(error)
         }
 
         guard let httpResponse = response as? HTTPURLResponse else {
-            DeepSeekLog.log("response was not HTTPURLResponse: \(response)")
             throw DeepSeekError.network(URLError(.badServerResponse))
         }
-
-        let bodyPreview = String(data: data, encoding: .utf8) ?? "<non-utf8 \(data.count) bytes>"
-        DeepSeekLog.log("status=\(httpResponse.statusCode) body=\(bodyPreview)")
 
         guard httpResponse.statusCode == 200 else {
             throw DeepSeekError.http(httpResponse.statusCode)
@@ -157,7 +148,6 @@ public struct DeepSeekProvider: AIProvider {
         do {
             balanceResponse = try JSONDecoder().decode(DeepSeekBalanceResponse.self, from: data)
         } catch {
-            DeepSeekLog.log("decoding error: \(error)")
             throw DeepSeekError.decoding(error)
         }
 

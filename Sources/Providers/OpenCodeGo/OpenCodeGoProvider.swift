@@ -1,12 +1,6 @@
 import Core
 import Foundation
 
-enum OpenCodeGoLog {
-    static func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(Data("[OpenCodeGoProvider] \(message())\n".utf8))
-    }
-}
-
 public enum OpenCodeGoError: Error, Equatable, Sendable {
     case missingKey
     case untrustedBaseURL
@@ -261,22 +255,20 @@ public struct OpenCodeGoProvider: AIProvider {
     }
 
     private func response(for request: URLRequest) async throws -> (Data, HTTPURLResponse) {
-        let requestStartedAt = Date()
         let data: Data
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request, delegate: OpenCodeGoRedirectGuard())
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch {
-            OpenCodeGoLog.log("network error after \(Date().timeIntervalSince(requestStartedAt))s: \(error)")
             throw OpenCodeGoError.network(error)
         }
         guard let httpResponse = response as? HTTPURLResponse else {
-            OpenCodeGoLog.log("non-HTTP response after \(Date().timeIntervalSince(requestStartedAt))s")
             throw OpenCodeGoError.network(URLError(.badServerResponse))
         }
-        OpenCodeGoLog.log(
-            "status=\(httpResponse.statusCode) latency=\(Date().timeIntervalSince(requestStartedAt))s"
-        )
         return (data, httpResponse)
     }
 
@@ -303,7 +295,6 @@ public struct OpenCodeGoProvider: AIProvider {
         do {
             return try Self.decoder.decode(OpenCodeGoUsageResponse.self, from: data)
         } catch {
-            OpenCodeGoLog.log("decoding error: \(error)")
             throw OpenCodeGoError.decoding(error)
         }
     }

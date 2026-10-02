@@ -1,4 +1,6 @@
 .build/
+.delta/
+__pycache__/
 DerivedData/
 .DS_Store
 # Release artifacts (scripts/build-dmg.sh output)

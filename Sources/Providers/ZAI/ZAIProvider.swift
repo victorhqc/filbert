@@ -1,14 +1,6 @@
 import Core
 import Foundation
 
-// MARK: - Diagnostic logging
-
-enum ZAILog {
-    static func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(Data("[ZAIProvider] \(message())\n".utf8))
-    }
-}
-
 // MARK: - Error
 
 public enum ZAIError: Error, Equatable, Sendable {
@@ -82,9 +74,15 @@ public struct ZAIProvider: AIProvider {
     public static let baseURL = URL(string: "https://api.z.ai")!
 
     private let session: URLSession
+    private let errorLog: ErrorLog
 
     public init(session: URLSession = .shared) {
+        self.init(session: session, errorLog: .shared)
+    }
+
+    init(session: URLSession, errorLog: ErrorLog) {
         self.session = session
+        self.errorLog = errorLog
     }
 
     public func fetchQuota(auth: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
@@ -117,7 +115,6 @@ public struct ZAIProvider: AIProvider {
         do {
             return try JSONDecoder().decode(ZAIQuotaResponse.self, from: data)
         } catch {
-            ZAILog.log("decoding error: \(error)")
             throw ZAIError.decoding(error)
         }
     }
@@ -132,9 +129,19 @@ public struct ZAIProvider: AIProvider {
             .appendingPathComponent("list")
         let data: Data
         do {
-            data = try await get(endpoint: endpoint, apiKey: apiKey, logsBody: false)
+            data = try await get(endpoint: endpoint, apiKey: apiKey)
+        } catch ZAIError.http(404), ZAIError.http(405), ZAIError.http(501) {
+            return nil
         } catch {
-            ZAILog.log("subscription fetch failed: \(error)")
+            guard !Task.isCancelled,
+                  !(error is CancellationError)
+            else { return nil }
+            errorLog.record(
+                component: "ZAIProvider",
+                operation: "fetchSubscriptionVersion",
+                code: "subscription_fetch_failed",
+                providerID: Self.providerId
+            )
             return nil
         }
 
@@ -142,12 +149,18 @@ public struct ZAIProvider: AIProvider {
             let response = try JSONDecoder().decode(ZAISubscriptionResponse.self, from: data)
             return response.data?.first { $0.status == "VALID" }?.version
         } catch {
-            ZAILog.log("subscription decoding error: \(error)")
+            guard !Task.isCancelled else { return nil }
+            errorLog.record(
+                component: "ZAIProvider",
+                operation: "decodeSubscriptionVersion",
+                code: "subscription_decoding_failed",
+                providerID: Self.providerId
+            )
             return nil
         }
     }
 
-    private func get(endpoint: URL, apiKey: String, logsBody: Bool = true) async throws -> Data {
+    private func get(endpoint: URL, apiKey: String) async throws -> Data {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "GET"
         // z.ai's monitor endpoints expect the raw token, NOT an
@@ -163,21 +176,16 @@ public struct ZAIProvider: AIProvider {
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch {
-            ZAILog.log("network error: \(error)")
             throw ZAIError.network(error)
         }
 
         guard let httpResponse = response as? HTTPURLResponse else {
-            ZAILog.log("response was not HTTPURLResponse: \(response)")
             throw ZAIError.network(URLError(.badServerResponse))
-        }
-
-        if logsBody {
-            let bodyPreview = String(data: data, encoding: .utf8) ?? "<non-utf8 \(data.count) bytes>"
-            ZAILog.log("status=\(httpResponse.statusCode) body=\(bodyPreview)")
-        } else {
-            ZAILog.log("status=\(httpResponse.statusCode) bytes=\(data.count)")
         }
 
         guard httpResponse.statusCode == 200 else {

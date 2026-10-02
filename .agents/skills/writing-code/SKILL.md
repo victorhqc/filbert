@@ -112,8 +112,8 @@ When writing a provider module:
 - Parse the provider's response into the shared `ProviderQuota` model. Map
   provider-specific fields don't leak into the core.
 - Handle auth errors (401), rate limits (429), and network errors distinctly.
-- Log response status and latency for debugging, but **never log API keys or
-  auth headers**.
+- Log only failed operations with safe identifiers and numeric error codes.
+  **Never log API keys, auth headers, or raw response bodies**.
 
 ## 3. The implementation loop
 
@@ -169,6 +169,12 @@ swift build -c release
 
 # 5. Tests — CI step "Test"
 swift test
+
+# 6. Workflow tests — CI step "Workflow tests"
+python3 scripts/test-automatic-updates.py
+
+# 7. Packaging tests — CI step "Local signing and startup tests"
+python3 scripts/test-local-signing.py
 ```
 
 ### What counts as "passing"
@@ -182,6 +188,7 @@ swift test
 - **`swift build`** and **`swift build -c release`** must end with
   `Build complete!`.
 - **`swift test`** must show `0 failures`.
+- **Both Python test scripts** must report `OK` and exit with status `0`.
 
 ### When a tool isn't installed
 

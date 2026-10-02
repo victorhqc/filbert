@@ -25,7 +25,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
     }
 
     func testChangingSelectionModeUpdatesTheViewModelAndPersistedPreference() {
-        let viewModel = QuotaViewModel(registry: ProviderRegistry())
+        let viewModel = QuotaViewModel(registry: ProviderRegistry(), errorLog: AppTestErrorLog.make())
         viewModel.configuredProviderIds = ["first", "newer"]
         viewModel.enabledProviderIds = ["first", "newer"]
         viewModel.providerStates = [
@@ -44,7 +44,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
     }
 
     func testChangingVintageMacSettingUpdatesTheViewModelAndPersistedPreference() {
-        let viewModel = QuotaViewModel(registry: ProviderRegistry())
+        let viewModel = QuotaViewModel(registry: ProviderRegistry(), errorLog: AppTestErrorLog.make())
 
         XCTAssertFalse(viewModel.isVintageMacIconEnabled)
 
@@ -59,6 +59,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
         let sleeper = ActivityExpirationRecorder()
         let viewModel = QuotaViewModel(
             registry: ProviderRegistry(),
+            errorLog: AppTestErrorLog.make(),
             activityExpirationSleeper: { interval in
                 try await sleeper.record(interval)
             },
@@ -98,6 +99,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
         let clock = ActivityTestClock(Date(timeIntervalSinceReferenceDate: 2000))
         let viewModel = QuotaViewModel(
             registry: ProviderRegistry(),
+            errorLog: AppTestErrorLog.make(),
             activityExpirationSleeper: { _ in throw CancellationError() },
             activityNow: { clock.date }
         )
@@ -124,6 +126,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
         let clock = ActivityTestClock(Date(timeIntervalSinceReferenceDate: 3000))
         let viewModel = QuotaViewModel(
             registry: ProviderRegistry(),
+            errorLog: AppTestErrorLog.make(),
             activityExpirationSleeper: { _ in throw CancellationError() },
             activityNow: { clock.date }
         )
@@ -146,6 +149,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
         let clock = ActivityTestClock(Date(timeIntervalSinceReferenceDate: 4000))
         let viewModel = QuotaViewModel(
             registry: ProviderRegistry(),
+            errorLog: AppTestErrorLog.make(),
             activityExpirationSleeper: { _ in throw CancellationError() },
             activityNow: { clock.date }
         )
@@ -167,6 +171,7 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
         let clock = ActivityTestClock(Date(timeIntervalSinceReferenceDate: 5000))
         let viewModel = QuotaViewModel(
             registry: ProviderRegistry(),
+            errorLog: AppTestErrorLog.make(),
             activityExpirationSleeper: { _ in throw CancellationError() },
             activityNow: { clock.date }
         )

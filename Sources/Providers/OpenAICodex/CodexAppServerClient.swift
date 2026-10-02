@@ -1,3 +1,4 @@
+import Core
 import Foundation
 import os
 
@@ -51,9 +52,11 @@ struct CodexCredits: Decodable, Sendable {
 
 struct CodexAppServerClient: Sendable {
     private let timeout: TimeInterval
+    private let errorLog: ErrorLog
 
-    init(timeout: TimeInterval = 10) {
+    init(timeout: TimeInterval = 10, errorLog: ErrorLog = .shared) {
         self.timeout = timeout
+        self.errorLog = errorLog
     }
 
     func readRateLimits(at executablePath: String) async throws -> CodexRateLimitReadResult {
@@ -132,11 +135,9 @@ struct CodexAppServerClient: Sendable {
 
         var didInitialize = false
         for try await line in output.bytes.lines {
-            guard let message = line.data(using: .utf8) else { continue }
-            let envelope: JSONRPCResponse
-            do {
-                envelope = try JSONDecoder().decode(JSONRPCResponse.self, from: message)
-            } catch {
+            guard let message = line.data(using: .utf8),
+                  let envelope = decodeEnvelope(from: message)
+            else {
                 continue
             }
 
@@ -174,6 +175,21 @@ struct CodexAppServerClient: Sendable {
             throw CodexAppServerError.timedOut
         }
         throw CodexAppServerError.childExited
+    }
+
+    private func decodeEnvelope(from data: Data) -> JSONRPCResponse? {
+        do {
+            return try JSONDecoder().decode(JSONRPCResponse.self, from: data)
+        } catch {
+            guard !Task.isCancelled else { return nil }
+            errorLog.record(
+                component: "CodexAppServerClient",
+                operation: "decodeResponseEnvelope",
+                code: "response_decoding_failed",
+                providerID: OpenAICodexProvider.providerId
+            )
+            return nil
+        }
     }
 
     private func write(_ request: some Encodable, to input: FileHandle) throws {

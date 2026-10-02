@@ -3,6 +3,10 @@
 import Foundation
 
 enum CursorTestFixtures {
+    static func makeErrorLog() -> ErrorLog {
+        ErrorLog(directoryURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+    }
+
     // MARK: - JWT builder
 
     static func makeJWT(exp: TimeInterval) -> String {
@@ -100,6 +104,7 @@ enum CursorTestFixtures {
     static func mockSession(
         refreshStatus: Int = 200,
         refreshBody: Data? = nil,
+        refreshError: Error? = nil,
         usageBody: Data = Data(),
         usageStatus: Int = 200,
         usageError: Error? = nil,
@@ -116,7 +121,7 @@ enum CursorTestFixtures {
                 return MockURLProtocol.MockResponse(
                     data: refreshBody ?? refreshResponse(),
                     statusCode: refreshStatus,
-                    error: nil
+                    error: refreshError
                 )
             }
             onUsage?()
@@ -212,7 +217,7 @@ struct CursorCredentialVaultCounts {
 final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendable {
     private let lock = NSLock()
     private var fields: [String: String]?
-    private var shouldFailSave = false
+    private var saveFailure: KeychainError?
     private var loadCount = 0
     private var saveCount = 0
     private var accessTokenUpdateCount = 0
@@ -237,8 +242,8 @@ final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendabl
 
     func save(_ pair: CursorTokenPair) throws {
         try lock.withLock {
-            guard !shouldFailSave else {
-                throw CursorCredentialVaultError.keychain(.saveFailed(-1))
+            if let saveFailure {
+                throw CursorCredentialVaultError.keychain(saveFailure)
             }
             fields = [
                 "accessToken": pair.accessToken,
@@ -262,12 +267,12 @@ final class TestCursorCredentialVault: CursorCredentialVault, @unchecked Sendabl
         }
     }
 
-    func setSaveFailure(_ enabled: Bool) {
-        lock.withLock { shouldFailSave = enabled }
+    func setSaveFailure(_ enabled: Bool, status: Int32 = -1) {
+        lock.withLock { saveFailure = enabled ? .saveFailed(status) : nil }
     }
 
     func clear() throws {
-        try lock.withLock {
+        lock.withLock {
             fields = nil
             clearCount += 1
         }

@@ -3,8 +3,8 @@ import Core
 import XCTest
 
 final class ClaudeCodeProviderTests: XCTestCase {
-    private var cacheURL: URL!
-    private var tmpDir: URL!
+    var cacheURL: URL!
+    var tmpDir: URL!
 
     override func setUp() {
         super.setUp()
@@ -138,7 +138,9 @@ final class ClaudeCodeProviderTests: XCTestCase {
         let provider = makeProvider(locator: locator, installer: installer)
         XCTAssertFalse(provider.canInstallHelper())
     }
+}
 
+extension ClaudeCodeProviderTests {
     // MARK: - internal-consistency assertion
 
     func testFetchQuota_throwsInternalInconsistencyForApiKey() async throws {
@@ -380,71 +382,5 @@ final class ClaudeCodeProviderTests: XCTestCase {
             lastUpdated: Date()
         )
         XCTAssertFalse(quota.isStale)
-    }
-
-    // MARK: - Helpers
-
-    private func makeProvider(
-        locator: ClaudeCodeLocator = ClaudeCodeLocator(
-            injectedPath: "/usr/local/bin/claude"
-        ),
-        installer: StatuslineHelperInstaller? = nil
-    ) -> ClaudeCodeProvider {
-        ClaudeCodeProvider(
-            locator: locator,
-            cacheStore: StatuslineCacheStore(cacheURL: cacheURL),
-            installer: installer ?? makeInstaller(helperInstalled: true)
-        )
-    }
-
-    private func makeInstaller(helperInstalled: Bool) -> StatuslineHelperInstaller {
-        let helperURL: URL = if helperInstalled {
-            // Use a known executable so isHelperInstalled() returns true.
-            URL(fileURLWithPath: "/bin/sh")
-        } else {
-            tmpDir.appendingPathComponent("nonexistent-helper")
-        }
-        return StatuslineHelperInstaller(
-            settingsURL: tmpDir.appendingPathComponent("settings.json"),
-            helperDestURL: helperURL,
-            cacheURL: cacheURL
-        )
-    }
-
-    private func writeCache(
-        fiveHourPct: Double?,
-        fiveHourReset: TimeInterval?,
-        sevenDayPct: Double?,
-        sevenDayReset: TimeInterval?
-    ) throws {
-        let store = StatuslineCacheStore(cacheURL: cacheURL)
-
-        let fiveHour: Window? = if let pct = fiveHourPct, let reset = fiveHourReset {
-            Window(usedPercentage: pct, resetsAt: reset)
-        } else {
-            nil
-        }
-
-        let sevenDay: Window? = if let pct = sevenDayPct, let reset = sevenDayReset {
-            Window(usedPercentage: pct, resetsAt: reset)
-        } else {
-            nil
-        }
-
-        let rateLimits: RateLimits? = if fiveHour != nil || sevenDay != nil {
-            RateLimits(fiveHour: fiveHour, sevenDay: sevenDay)
-        } else {
-            nil
-        }
-
-        let cache = StatuslineCache(
-            writtenAt: Date().timeIntervalSince1970,
-            rateLimits: rateLimits
-        )
-        try store.write(cache)
-    }
-
-    private func futureEpoch() -> TimeInterval {
-        Date().addingTimeInterval(3600).timeIntervalSince1970
     }
 }

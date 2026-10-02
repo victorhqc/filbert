@@ -154,6 +154,18 @@ final class OpenCodeGoProviderTests: XCTestCase {
         }
     }
 
+    func testFetchQuota_normalizesURLCancellationWithoutTaskCancellation() async throws {
+        MockURLProtocol.responseError = URLError(.cancelled)
+        XCTAssertFalse(Task.isCancelled)
+
+        do {
+            _ = try await fetchQuota()
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+    }
+
     func testFetchQuota_throwsInternalInconsistencyForApiKeyFree() async {
         await assertThrowsOpenCodeGoError(.internalInconsistency) {
             _ = try await self.provider.fetchQuota(

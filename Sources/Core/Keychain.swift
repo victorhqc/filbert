@@ -146,4 +146,20 @@ public enum KeychainError: Error, Equatable {
     case saveFailed(OSStatus)
     case loadFailed(OSStatus)
     case deleteFailed(OSStatus)
+
+    public var isMissingCredential: Bool {
+        if case .loadFailed(errSecItemNotFound) = self {
+            return true
+        }
+        return false
+    }
+
+    public var isCancellation: Bool {
+        switch self {
+        case .saveFailed(errSecUserCanceled), .loadFailed(errSecUserCanceled), .deleteFailed(errSecUserCanceled):
+            true
+        default:
+            false
+        }
+    }
 }

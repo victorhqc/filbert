@@ -29,7 +29,7 @@ final class ConfiguredProvidersOrderedTests: XCTestCase {
         registry.register(ConfiguredAPIKeyFreeProvider())
         ProviderEnablement.setEnabled(true, for: ConfiguredAPIKeyFreeProvider.providerId)
 
-        let viewModel = QuotaViewModel(registry: registry)
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make())
 
         let configuredIds = viewModel.configuredProviderIds
         let configuredOrderedIds = viewModel.configuredProvidersOrdered.map(\.id)
@@ -48,7 +48,7 @@ final class ConfiguredProvidersOrderedTests: XCTestCase {
         registry.register(ConfiguredAPIKeyFreeProvider())
         ProviderEnablement.setEnabled(true, for: ConfiguredAPIKeyFreeProvider.providerId)
 
-        let viewModel = QuotaViewModel(registry: registry)
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make())
 
         let registeredIds = viewModel.registeredProvidersOrdered.map(\.id)
         XCTAssertTrue(registeredIds.contains(UnconfiguredAPIKeyProvider.providerId))
@@ -60,7 +60,7 @@ final class ConfiguredProvidersOrderedTests: XCTestCase {
         registry.register(UnconfiguredAPIKeyProvider())
         registry.register(UnconfiguredAPIKeyFreeProvider())
 
-        let viewModel = QuotaViewModel(registry: registry)
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make())
 
         XCTAssertTrue(viewModel.configuredProvidersOrdered.isEmpty)
         XCTAssertFalse(viewModel.hasAnyConfiguredProvider)

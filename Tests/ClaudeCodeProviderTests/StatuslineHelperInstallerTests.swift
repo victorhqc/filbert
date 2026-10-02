@@ -40,12 +40,14 @@ final class StatuslineHelperInstallerTests: XCTestCase {
 
     // MARK: - isHelperInstalled
 
-    func testIsHelperInstalled_trueWhenExecutableExists() {
+    func testIsHelperInstalled_requiresEffectiveSettings() throws {
         try? "#!/bin/sh\necho ok".write(to: helperURL, atomically: true, encoding: .utf8)
         try? FileManager.default.setAttributes(
             [.posixPermissions: 0o755],
             ofItemAtPath: helperURL.path
         )
+        XCTAssertFalse(installer.isHelperInstalled())
+        try installer.installSettingsOnly()
         XCTAssertTrue(installer.isHelperInstalled())
     }
 
@@ -66,7 +68,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
 
         let settings = try readSettingsJSON()
         let statusLine = settings["statusLine"] as? [String: Any]
-        XCTAssertEqual(statusLine?["command"] as? String, helperURL.path)
+        XCTAssertTrue((statusLine?["command"] as? String)?.hasPrefix("'\(helperURL.path)' --cache-path ") == true)
         // Claude Code requires `type: "command"` to invoke the statusLine.
         XCTAssertEqual(statusLine?["type"] as? String, "command")
     }
@@ -79,7 +81,7 @@ final class StatuslineHelperInstallerTests: XCTestCase {
         let settings = try readSettingsJSON()
         XCTAssertEqual(settings["otherKey"] as? String, "value")
         let statusLine = settings["statusLine"] as? [String: Any]
-        XCTAssertEqual(statusLine?["command"] as? String, helperURL.path)
+        XCTAssertTrue((statusLine?["command"] as? String)?.hasPrefix("'\(helperURL.path)' --cache-path ") == true)
         XCTAssertEqual(statusLine?["type"] as? String, "command")
     }
 

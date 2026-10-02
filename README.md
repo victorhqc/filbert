@@ -106,6 +106,18 @@ below.
 - **No telemetry, no analytics, no remote logging.** The only outbound requests
   are the provider API calls that fetch your usage.
 
+## Error logs
+
+Filbert records errors in `~/Library/Logs/Filbert/errors.log`.
+Select **Show Logs** beside an error to reveal the file in Finder.
+If Filbert cannot write the log, the error states that the log is unavailable.
+
+Successful operations and ordinary setup states do not produce log records.
+Records contain timestamps, operation names, and safe error codes.
+Records do not contain credentials, prompts, transcripts, or raw provider responses.
+Filbert retains the current log and one previous log, with a 1 MiB limit for each file.
+Logs remain on your Mac unless you choose to share them.
+
 ## Why macOS asks for your password
 
 <img src="assets/screenshots/password.png" alt="macOS Keychain password prompt" height="250">
@@ -230,6 +242,10 @@ Code already fetched for your account. It never handles your credentials.
 Then open Filbert → Settings → Claude Code and click **Install Helper**. The
 helper hooks into Claude Code's `statusLine` command. It writes a small cache
 file that Filbert reads during refresh.
+
+Filbert includes the compiled helper. Installation does not require Xcode or
+Command Line Tools. If installation fails, select **Show Logs**, correct the
+reported problem, then select **Install Helper** again.
 
 > **You never run anything by hand.** When you click **Refresh**, Filbert runs
 > `claude -p "/usage"` in the background. It reads the figures and updates the

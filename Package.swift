@@ -1,12 +1,7 @@
 // swift-tools-version: 5.9
 import PackageDescription
 
-/// Strict type-checking for every `Sources/` target: warnings are errors and
-/// complete concurrency checking is on (ci 04 AC1, AC2). Test targets are
-/// exempt — a warning in a test must not fail the gate. `.unsafeFlags` is the
-/// only SPM-supported knob for these flags at swift-tools-version 5.9; the
-/// flags are pinned at the build-config level so no contributor can opt out by
-/// accident.
+/// SwiftPM 5.9 exposes complete concurrency checking only through unsafe flags.
 let strictSourceSettings: [SwiftSetting] = [
     .unsafeFlags([
         "-warnings-as-errors",
@@ -44,8 +39,12 @@ let package = Package(
             resources: [
                 .copy("Resources/ProviderGlyph.png"),
                 .copy("Resources/ProviderGlyph@2x.png"),
-                .copy("Resources/statusline_helper.swift"),
             ],
+            swiftSettings: strictSourceSettings
+        ),
+        .executableTarget(
+            name: "ClaudeCodeStatuslineHelper",
+            dependencies: ["Core"],
             swiftSettings: strictSourceSettings
         ),
         .target(
@@ -88,6 +87,7 @@ let package = Package(
             dependencies: [
                 "Core",
                 .product(name: "Sparkle", package: "Sparkle"),
+                "ClaudeCodeStatuslineHelper",
                 "ZAIProvider",
                 "ClaudeCodeProvider",
                 "DeepSeekProvider",
@@ -111,7 +111,7 @@ let package = Package(
         ),
         .testTarget(
             name: "ClaudeCodeProviderTests",
-            dependencies: ["ClaudeCodeProvider"],
+            dependencies: ["ClaudeCodeProvider", "ClaudeCodeStatuslineHelper"],
             path: "Tests/ClaudeCodeProviderTests"
         ),
         .testTarget(

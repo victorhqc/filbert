@@ -1,27 +1,49 @@
 import Core
 import Foundation
 
-// MARK: - Diagnostic logging
+// MARK: - Errors
 
-enum ClaudeCodeRefresherLog {
-    static func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(
-            Data("[ClaudeCodeRefresher] \(message())\n".utf8)
-        )
+public enum ClaudeCodeRefresherError: Error, Equatable, Sendable {
+    case binaryNotFound
+    case workingDirectoryUnavailable
+    case processFailed(Int32)
+    case timedOut
+    case noUsageData
+}
+
+extension ClaudeCodeRefresherError: LocalizedError {
+    public var errorDescription: String? {
+        switch self {
+        case .binaryNotFound:
+            String(localized: "Claude Code not found. Install Claude Code and retry.")
+        case .workingDirectoryUnavailable:
+            String(localized: "Could not prepare Claude Code refresh. Retry the refresh.")
+        case let .processFailed(status):
+            String(localized: "Claude Code refresh failed with exit code \(status). Open Claude Code and retry.")
+        case .timedOut:
+            String(localized: "Claude Code refresh timed out. Retry the refresh.")
+        case .noUsageData:
+            String(localized: "Claude Code returned no usage data. Open Claude Code and retry.")
+        }
     }
 }
 
-// MARK: - Errors
-
-/// All errors are diagnostic-only: the provider swallows them and reads
-/// whatever cache exists, so they never surface to the UI as fetch failures.
-public enum ClaudeCodeRefresherError: Error, Equatable, Sendable {
-    case binaryNotFound
-
-    public static func == (lhs: ClaudeCodeRefresherError, rhs: ClaudeCodeRefresherError) -> Bool {
-        switch (lhs, rhs) {
-        case (.binaryNotFound, .binaryNotFound): true
+extension ClaudeCodeRefresherError: DiagnosticError {
+    public var diagnosticCode: String {
+        switch self {
+        case .binaryNotFound: "binary-not-found"
+        case .workingDirectoryUnavailable: "working-directory-unavailable"
+        case .processFailed: "process-failed"
+        case .timedOut: "refresh-timeout"
+        case .noUsageData: "usage-data-missing"
         }
+    }
+
+    public var diagnosticExitStatus: Int32? {
+        if case let .processFailed(status) = self {
+            return status
+        }
+        return nil
     }
 }
 
@@ -78,6 +100,7 @@ public actor ClaudeCodeRefresher {
     private let workingDirectoryProvider: @Sendable () -> URL?
 
     private var lastSpawnAt: Date?
+    private var lastFailure: (any Error)?
 
     private var inFlightTask: Task<Void, Error>?
 
@@ -118,7 +141,6 @@ public actor ClaudeCodeRefresher {
         // flight, it should await that result — checking debounce first would
         // short-circuit and miss the in-flight result.
         if let inFlightTask {
-            ClaudeCodeRefresherLog.log("refresh: awaiting in-flight spawn")
             try await inFlightTask.value
             return
         }
@@ -126,10 +148,13 @@ public actor ClaudeCodeRefresher {
         if let lastSpawnAt {
             let elapsed = Date().timeIntervalSince(lastSpawnAt)
             if elapsed < spawnDebounce {
-                ClaudeCodeRefresherLog.log(
-                    "refresh: debounced (elapsed=\(Int(elapsed))s)"
-                )
-                return
+                if let lastFailure {
+                    throw lastFailure
+                }
+                let cache = cacheStore.read()
+                if cache?.rateLimits?.fiveHour?.populated != nil || cache?.rateLimits?.sevenDay?.populated != nil {
+                    return
+                }
             }
         }
 
@@ -150,14 +175,21 @@ public actor ClaudeCodeRefresher {
 
         defer { inFlightTask = nil }
 
-        try await task.value
+        do {
+            try await withTaskCancellationHandler {
+                try await task.value
+            } onCancel: {
+                task.cancel()
+            }
+            lastFailure = nil
+        } catch {
+            lastFailure = error is CancellationError ? nil : error
+            throw error
+        }
     }
 
     // MARK: - Spawn lifecycle
 
-    /// When stdout yields no usage figures (spawn failed, logged out, CLI
-    /// drift), the cache is left untouched so a failed refresh never clobbers
-    /// previously good data. Only `binaryNotFound` is surfaced.
     private static func runSpawnOnce(
         locator: ClaudeCodeLocator,
         cacheStore: StatuslineCacheStore,
@@ -165,8 +197,8 @@ public actor ClaudeCodeRefresher {
         terminateGrace: TimeInterval,
         workingDirectoryProvider: @Sendable () -> URL?
     ) async throws {
+        try Task.checkCancellation()
         guard let binaryPath = locator.resolve() else {
-            ClaudeCodeRefresherLog.log("runSpawnOnce: binary not found")
             throw ClaudeCodeRefresherError.binaryNotFound
         }
 
@@ -175,10 +207,7 @@ public actor ClaudeCodeRefresher {
         // directory cannot be created, abort and leave the cache untouched —
         // never fall back to inheriting the parent's CWD.
         guard let workingDirectoryURL = workingDirectoryProvider() else {
-            ClaudeCodeRefresherLog.log(
-                "runSpawnOnce: working directory creation failed — aborting spawn, cache left as-is"
-            )
-            return
+            throw ClaudeCodeRefresherError.workingDirectoryUnavailable
         }
 
         let environment = makeSpawnEnvironment(forBinaryAt: binaryPath)
@@ -194,23 +223,9 @@ public actor ClaudeCodeRefresher {
         process.standardError = FileHandle.nullDevice
         process.environment = environment
 
-        ClaudeCodeRefresherLog.log(
-            "runSpawnOnce: spawning \(binaryPath) argv=\(spawnArguments.joined(separator: " "))"
-        )
-        ClaudeCodeRefresherLog.log(
-            "runSpawnOnce: cwd=\(workingDirectoryURL.path)"
-        )
+        try process.run()
 
-        do {
-            try process.run()
-        } catch {
-            ClaudeCodeRefresherLog.log(
-                "runSpawnOnce: process.run failed: \(error.localizedDescription)"
-            )
-            return
-        }
-
-        await waitForExitOrTerminate(
+        try await waitForExitOrTerminate(
             process,
             spawnTimeout: spawnTimeout,
             terminateGrace: terminateGrace
@@ -222,15 +237,16 @@ public actor ClaudeCodeRefresher {
         // and this returns immediately.
         let output = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
 
+        try Task.checkCancellation()
+        guard process.terminationStatus == 0 else {
+            throw ClaudeCodeRefresherError.processFailed(process.terminationStatus)
+        }
         let windows = parseUsageWindows(fromUsageJSON: output)
         guard !windows.isEmpty else {
-            ClaudeCodeRefresherLog.log(
-                "runSpawnOnce: no usage figures in \(output.count) bytes of stdout — cache left as-is"
-            )
-            return
+            throw ClaudeCodeRefresherError.noUsageData
         }
 
-        mergeAndWriteCache(windows: windows, into: cacheStore)
+        try mergeAndWriteCache(windows: windows, into: cacheStore)
     }
 
     /// Uses `terminationHandler` + a continuation rather than `waitUntilExit`,
@@ -241,19 +257,13 @@ public actor ClaudeCodeRefresher {
         _ process: Process,
         spawnTimeout: TimeInterval,
         terminateGrace: TimeInterval
-    ) async {
-        let timeoutTask = Task {
-            try? await Task.sleep(for: .seconds(spawnTimeout))
-            if Task.isCancelled {
-                return
-            }
-            guard process.isRunning else { return }
-
-            ClaudeCodeRefresherLog.log(
-                "waitForExitOrTerminate: timeout reached, sending SIGTERM"
-            )
-            // `interrupt()` sends SIGTERM on macOS (Process docs).
-            process.interrupt()
+    ) async throws {
+        let timeoutTask = Task<Bool, Never> {
+            do {
+                try await Task.sleep(for: .seconds(spawnTimeout))
+            } catch { return false }
+            guard process.isRunning else { return false }
+            process.terminate()
 
             let graceStart = Date()
             let graceDeadline = graceStart.addingTimeInterval(terminateGrace)
@@ -262,28 +272,27 @@ public actor ClaudeCodeRefresher {
             }
 
             if process.isRunning {
-                ClaudeCodeRefresherLog.log(
-                    "waitForExitOrTerminate: SIGTERM did not take, sending SIGKILL"
-                )
                 kill(process.processIdentifier, SIGKILL)
             }
-            // SIGKILL (or SIGTERM) will fire the terminationHandler, which
-            // resumes the continuation below.
+            return true
         }
 
-        await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
-            // Setting `terminationHandler` after `process.run()` is safe: if
-            // the process has already exited, Foundation invokes the handler
-            // synchronously on assignment.
-            process.terminationHandler = { _ in
-                timeoutTask.cancel()
-                continuation.resume()
+        await withTaskCancellationHandler {
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                process.terminationHandler = { _ in
+                    timeoutTask.cancel()
+                    continuation.resume()
+                }
+            }
+        } onCancel: {
+            if process.isRunning {
+                kill(process.processIdentifier, SIGKILL)
             }
         }
-
-        ClaudeCodeRefresherLog.log(
-            "waitForExitOrTerminate: reaped status=\(process.terminationStatus)"
-        )
+        try Task.checkCancellation()
+        if await timeoutTask.value {
+            throw ClaudeCodeRefresherError.timedOut
+        }
     }
 
     // MARK: - Environment

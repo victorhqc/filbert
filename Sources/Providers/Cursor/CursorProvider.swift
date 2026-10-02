@@ -20,6 +20,7 @@ public struct CursorProvider: AIProvider {
     let tokenStore: CursorTokenStore
     private let session: URLSession
     private let rateLimitBackoff: CursorRateLimitBackoff
+    let errorLog: ErrorLog
 
     public init() {
         self.init(
@@ -34,18 +35,25 @@ public struct CursorProvider: AIProvider {
         locator: CursorLocator,
         tokenStore: CursorTokenStore,
         session: URLSession,
-        rateLimitBackoff: CursorRateLimitBackoff = CursorRateLimitBackoff()
+        rateLimitBackoff: CursorRateLimitBackoff = CursorRateLimitBackoff(),
+        errorLog: ErrorLog = .shared
     ) {
         self.locator = locator
         self.tokenStore = tokenStore
         self.session = session
         self.rateLimitBackoff = rateLimitBackoff
+        self.errorLog = errorLog
     }
 
     // MARK: - Configuration
 
     public func isConfigured() -> Bool {
-        (try? tokenStore.loadOrBootstrap()) != nil
+        do {
+            return try tokenStore.loadOrBootstrap() != nil
+        } catch {
+            recordCredentialFailure(operation: "isConfigured", error: error)
+            return false
+        }
     }
 
     public func currentSetupState() async -> ProviderState? {
@@ -53,10 +61,18 @@ public struct CursorProvider: AIProvider {
             if try tokenStore.loadOrBootstrap() != nil {
                 return nil
             }
+        } catch CursorCredentialVaultError.unavailable {
+            return missingCredentialSetupState()
         } catch {
+            guard !isCredentialCancellation(error) else { return missingCredentialSetupState() }
+            recordCredentialFailure(operation: "currentSetupState", error: error)
             return .error(error.localizedDescription)
         }
 
+        return missingCredentialSetupState()
+    }
+
+    private func missingCredentialSetupState() -> ProviderState {
         if locator.resolve() != nil {
             return .setup(String(localized: "Sign in to Cursor"))
         }
@@ -65,22 +81,17 @@ public struct CursorProvider: AIProvider {
         ))
     }
 
-    public func importCredentials() async throws {
-        try tokenStore.reimport()
-    }
-
     // MARK: - Fetch
 
     public func fetchQuota(auth _: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
         try await rateLimitBackoff.checkRequestAllowed()
-
-        guard let pair = try tokenStore.loadOrBootstrap() else {
-            throw CursorError.missingToken
-        }
+        let pair = try loadCredentialsForRequest()
 
         let accessToken: String
         do {
             accessToken = try await tokenStore.ensureValidAccessToken(pair)
+        } catch where isCredentialCancellation(error) {
+            throw CancellationError()
         } catch let error as CursorError {
             if case .http(429) = error {
                 await rateLimitBackoff.recordRateLimit()
@@ -98,13 +109,7 @@ public struct CursorProvider: AIProvider {
         request.setValue("1", forHTTPHeaderField: "Connect-Protocol-Version")
         request.httpBody = Data("{}".utf8)
 
-        let data: Data
-        let response: URLResponse
-        do {
-            (data, response) = try await session.data(for: request)
-        } catch {
-            throw CursorError.network(error)
-        }
+        let (data, response) = try await response(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw CursorError.network(URLError(.badServerResponse))
@@ -128,6 +133,31 @@ public struct CursorProvider: AIProvider {
         }
 
         return map(usageResponse)
+    }
+
+    private func loadCredentialsForRequest() throws -> CursorTokenPair {
+        do {
+            guard let credentials = try tokenStore.loadOrBootstrap() else {
+                throw ProviderSetupError.missingCredentials
+            }
+            return credentials
+        } catch CursorCredentialVaultError.unavailable {
+            throw ProviderSetupError.missingCredentials
+        } catch where isCredentialCancellation(error) {
+            throw CancellationError()
+        }
+    }
+
+    private func response(for request: URLRequest) async throws -> (Data, URLResponse) {
+        do {
+            return try await session.data(for: request)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
+        } catch {
+            throw CursorError.network(error)
+        }
     }
 
     // MARK: - Mapping

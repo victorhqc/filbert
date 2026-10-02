@@ -34,15 +34,8 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
     ]
 
     let session: URLSession
-    let logger: any GeminiLogSink
-
-    init(session: URLSession, logger: any GeminiLogSink = GeminiOSLogSink()) {
-        self.session = session
-        self.logger = logger
-    }
 
     func send(_ request: URLRequest) async throws -> GeminiHTTPResponse {
-        let started = Date()
         do {
             let (data, response) = try await session.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
@@ -57,10 +50,6 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
             else {
                 throw GeminiHTTPError.network
             }
-            logger.requestCompleted(
-                statusCode: httpResponse.statusCode,
-                latencyMilliseconds: elapsedMilliseconds(since: started)
-            )
             let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After")
                 .flatMap(TimeInterval.init)
                 .flatMap { $0 >= 0 ? min($0, 30) : nil }
@@ -70,18 +59,14 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
                 retryAfter: retryAfter
             )
         } catch let error as GeminiHTTPError {
-            logger.requestFailed(latencyMilliseconds: elapsedMilliseconds(since: started))
             throw error
         } catch is CancellationError {
             throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch {
-            logger.requestFailed(latencyMilliseconds: elapsedMilliseconds(since: started))
             throw GeminiHTTPError.network
         }
-    }
-
-    private func elapsedMilliseconds(since start: Date) -> Int {
-        Int(Date().timeIntervalSince(start) * 1000)
     }
 }
 

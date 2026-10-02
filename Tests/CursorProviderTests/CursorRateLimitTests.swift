@@ -28,7 +28,8 @@ final class CursorRateLimitTests: XCTestCase {
                 isExecutable: { _ in true }
             ),
             tokenStore: tokenStore,
-            session: session
+            session: session,
+            errorLog: CursorTestFixtures.makeErrorLog()
         )
 
         for _ in 0 ..< 2 {
@@ -66,6 +67,36 @@ final class CursorRateLimitTests: XCTestCase {
         await assertThrowsCursorError(.http(429)) {
             _ = try await store.ensureValidAccessToken(pair)
         }
+    }
+
+    func testTokenRefresh_normalizesURLCancellationWithoutTaskCancellation() async throws {
+        let session = CursorTestFixtures.mockSession(refreshError: URLError(.cancelled))
+        let tokenStore = CursorTokenStore(
+            vault: TestCursorCredentialVault(fields: [
+                "accessToken": CursorTestFixtures.makeJWT(exp: 0),
+                "refreshToken": "refresh",
+            ]),
+            session: session,
+            homeDirectory: "/test",
+            externalStorage: ClosureKeychainStorage(),
+            readSQLiteValue: { _, _ in nil }
+        )
+        let errorLog = CursorTestFixtures.makeErrorLog()
+        let provider = CursorProvider(
+            locator: CursorLocator(environment: [:], isExecutable: { _ in false }),
+            tokenStore: tokenStore,
+            session: session,
+            errorLog: errorLog
+        )
+        XCTAssertFalse(Task.isCancelled)
+
+        do {
+            _ = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: CursorProvider.baseURL)
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+        XCTAssertNil(errorLog.availableFileURL)
     }
 
     func testBackoff_doublesDelayAfterConsecutiveResponses() async throws {

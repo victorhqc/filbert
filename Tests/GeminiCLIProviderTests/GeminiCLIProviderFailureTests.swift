@@ -1,22 +1,58 @@
 import Core
 import Foundation
 @testable import GeminiCLIProvider
+import Security
 import XCTest
 
 extension GeminiCLIProviderTests {
     func testMissingCredentialsFailWithoutPlaceholderQuota() async {
-        let provider = makeProvider(credentials: nil)
+        let results: [Result<GeminiCredentials?, GeminiCredentialError>] = [
+            .success(nil), .failure(.itemNotFound),
+        ]
+        for result in results {
+            let errorLog = Self.makeErrorLog()
+            let provider = makeProvider(credentialsResult: result, errorLog: errorLog)
+
+            do {
+                _ = try await provider.fetchQuota(
+                    auth: .apiKeyFree,
+                    baseURL: GeminiCLIProvider.baseURL
+                )
+                XCTFail("Expected missing-credentials setup state")
+            } catch let error as ProviderSetupError {
+                XCTAssertEqual(error, .missingCredentials)
+            } catch {
+                XCTFail("Unexpected error: \(error)")
+            }
+            XCTAssertNil(errorLog.availableFileURL)
+        }
+    }
+
+    func testCancelledKeychainPromptIsCancellationWithoutTaskCancellation() async throws {
+        let errorLog = Self.makeErrorLog()
+        let provider = makeProvider(
+            credentialsResult: .failure(.accessDenied(errSecUserCanceled)),
+            errorLog: errorLog
+        )
+        XCTAssertFalse(Task.isCancelled)
 
         do {
-            _ = try await provider.fetchQuota(
-                auth: .apiKeyFree,
-                baseURL: GeminiCLIProvider.baseURL
-            )
-            XCTFail("Expected missing-credentials error")
+            _ = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: GeminiCLIProvider.baseURL)
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+        XCTAssertNil(errorLog.availableFileURL)
+    }
+
+    func testDeniedKeychainAccessRemainsARealFailure() async throws {
+        let provider = makeProvider(credentialsResult: .failure(.accessDenied(errSecAuthFailed)))
+
+        do {
+            _ = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: GeminiCLIProvider.baseURL)
+            XCTFail("Expected Keychain-access failure")
         } catch let error as GeminiCLIError {
-            XCTAssertEqual(error, .missingCredentials)
-        } catch {
-            XCTFail("Unexpected error: \(error)")
+            XCTAssertEqual(error, .keychainAccessDenied)
         }
     }
 }
@@ -90,8 +126,8 @@ extension GeminiCLIProviderTests {
 }
 
 extension GeminiCLIProviderTests {
-    func testFetchRedactsSecretsFromRecordingLogsAndErrors() async throws {
-        let logger = RecordingLogSink()
+    func testFetchLeavesThrownFailuresToTheAppAndReturnsRedactedErrors() async throws {
+        let errorLog = Self.makeErrorLog()
         let transport = RecordingTransport(
             responses: [
                 GeminiHTTPResponse(
@@ -102,8 +138,7 @@ extension GeminiCLIProviderTests {
                 GeminiHTTPResponse(data: Data(), statusCode: 500, retryAfter: nil),
                 GeminiHTTPResponse(data: Data(), statusCode: 500, retryAfter: nil),
                 GeminiHTTPResponse(data: Data(), statusCode: 500, retryAfter: nil),
-            ],
-            logger: logger
+            ]
         )
         let provider = makeProvider(
             credentials: GeminiCredentials(
@@ -111,7 +146,8 @@ extension GeminiCLIProviderTests {
                 refreshToken: "refresh-secret",
                 expiresAt: Date(timeIntervalSince1970: 10000)
             ),
-            transport: transport
+            transport: transport,
+            errorLog: errorLog
         )
 
         do {
@@ -127,10 +163,7 @@ extension GeminiCLIProviderTests {
             XCTAssertFalse(description.contains("project-secret"))
         }
 
-        let logs = await logger.recordedEntries().joined(separator: "\n")
-        XCTAssertFalse(logs.contains("access-secret"))
-        XCTAssertFalse(logs.contains("refresh-secret"))
-        XCTAssertFalse(logs.contains("project-secret"))
+        XCTAssertNil(errorLog.availableFileURL)
     }
 }
 

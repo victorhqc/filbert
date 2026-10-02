@@ -122,7 +122,7 @@ final class AutoRefreshViewModelTests: XCTestCase {
         let registry = ProviderRegistry()
         registry.register(activeProvider)
         registry.register(inactiveProvider)
-        let viewModel = QuotaViewModel(registry: registry) { _ in
+        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make()) { _ in
             throw CancellationError()
         }
 
@@ -200,7 +200,7 @@ final class AutoRefreshViewModelTests: XCTestCase {
         ProviderEnablement.setEnabled(true, for: RefreshSpyProvider.providerId)
         let registry = ProviderRegistry()
         registry.register(provider)
-        return QuotaViewModel(registry: registry, autoRefreshSleeper: sleeper)
+        return QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make(), autoRefreshSleeper: sleeper)
     }
 
     private func waitForFetches(on provider: RefreshSpyProvider, count: Int) async {

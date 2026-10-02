@@ -10,6 +10,10 @@ struct GeminiHTTPStatusCase {
 }
 
 extension GeminiCLIProviderTests {
+    static func makeErrorLog() -> ErrorLog {
+        ErrorLog(directoryURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+    }
+
     func validCredentials() -> GeminiCredentials {
         GeminiCredentials(
             accessToken: "access-token",
@@ -20,26 +24,29 @@ extension GeminiCLIProviderTests {
 
     func makeProvider(
         credentials: GeminiCredentials?,
-        transport: RecordingTransport = RecordingTransport(responses: []),
+        transport: any GeminiHTTPTransport = RecordingTransport(responses: []),
         now: @escaping @Sendable () -> Date = { Date(timeIntervalSince1970: 0) },
         workflowTimeout: TimeInterval = 90,
-        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil
+        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil,
+        errorLog: ErrorLog = GeminiCLIProviderTests.makeErrorLog()
     ) -> GeminiCLIProvider {
         makeProvider(
             credentialsResult: .success(credentials),
             transport: transport,
             now: now,
             workflowTimeout: workflowTimeout,
-            sleep: sleep
+            sleep: sleep,
+            errorLog: errorLog
         )
     }
 
     func makeProvider(
         credentialsResult: Result<GeminiCredentials?, GeminiCredentialError>,
-        transport: RecordingTransport = RecordingTransport(responses: []),
+        transport: any GeminiHTTPTransport = RecordingTransport(responses: []),
         now: @escaping @Sendable () -> Date = { Date(timeIntervalSince1970: 0) },
         workflowTimeout: TimeInterval = 90,
-        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil
+        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil,
+        errorLog: ErrorLog = GeminiCLIProviderTests.makeErrorLog()
     ) -> GeminiCLIProvider {
         let http = GeminiHTTPClient(transport: transport, sleep: sleep ?? { _ in })
         return GeminiCLIProvider(
@@ -47,7 +54,8 @@ extension GeminiCLIProviderTests {
             oauth: GeminiOAuthClient(http: http),
             codeAssist: GeminiCodeAssistClient(http: http),
             now: now,
-            workflowTimeout: workflowTimeout
+            workflowTimeout: workflowTimeout,
+            errorLog: errorLog
         )
     }
 
@@ -140,19 +148,16 @@ actor RecordingTransport: GeminiHTTPTransport {
     private var requests: [URLRequest] = []
     private let delay: TimeInterval
     private let gate: GeminiRequestGate?
-    private let logger: (any GeminiLogSink)?
     private var requestWaiters: [(Int, CheckedContinuation<Void, Never>)] = []
 
     init(
         responses: [GeminiHTTPResponse],
         delay: TimeInterval = 0,
-        gate: GeminiRequestGate? = nil,
-        logger: (any GeminiLogSink)? = nil
+        gate: GeminiRequestGate? = nil
     ) {
         remainingResponses = responses
         self.delay = delay
         self.gate = gate
-        self.logger = logger
     }
 
     func send(_ request: URLRequest) async throws -> GeminiHTTPResponse {
@@ -169,12 +174,7 @@ actor RecordingTransport: GeminiHTTPTransport {
         guard !remainingResponses.isEmpty else {
             throw GeminiHTTPError.network
         }
-        let response = remainingResponses.removeFirst()
-        logger?.requestCompleted(
-            statusCode: response.statusCode,
-            latencyMilliseconds: 0
-        )
-        return response
+        return remainingResponses.removeFirst()
     }
 
     func waitForRequestCount(_ count: Int) async {
@@ -189,34 +189,12 @@ actor RecordingTransport: GeminiHTTPTransport {
     }
 }
 
-final class RecordingLogSink: GeminiLogSink, @unchecked Sendable {
-    private let lock = NSLock()
-    private var entries: [String] = []
-
-    func requestCompleted(statusCode: Int, latencyMilliseconds: Int) {
-        lock.lock()
-        entries.append("status=\(statusCode) latencyMs=\(latencyMilliseconds)")
-        lock.unlock()
-    }
-
-    func requestFailed(latencyMilliseconds: Int) {
-        lock.lock()
-        entries.append("failure latencyMs=\(latencyMilliseconds)")
-        lock.unlock()
-    }
-
-    func recordedEntries() -> [String] {
-        lock.lock()
-        defer { lock.unlock() }
-        return entries
-    }
-}
-
 class GeminiHostResponseURLProtocol: URLProtocol {
     static var responseURL: URL?
     static var responseData = Data()
     static var responseStatusCode = 200
     static var responseHeaders: [String: String]?
+    static var responseError: (any Error)?
 
     override class func canInit(with _: URLRequest) -> Bool {
         true
@@ -227,6 +205,10 @@ class GeminiHostResponseURLProtocol: URLProtocol {
     }
 
     override func startLoading() {
+        if let error = Self.responseError {
+            client?.urlProtocol(self, didFailWithError: error)
+            return
+        }
         guard let responseURL = Self.responseURL,
               let response = HTTPURLResponse(
                   url: responseURL,
