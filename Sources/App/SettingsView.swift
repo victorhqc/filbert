@@ -7,9 +7,15 @@ struct SettingsView: View {
     let viewModel: QuotaViewModel
     let updateCoordinator: UpdateCoordinator
     let sleepPrevention: SleepPreventionController
+    let launchAtLogin: LaunchAtLoginController
 
     var body: some View {
         TabView {
+            GeneralSettingsView(launchAtLogin: launchAtLogin)
+                .tabItem {
+                    Label(String(localized: "General", bundle: .module), systemImage: "gearshape")
+                }
+
             providersTab
                 .tabItem {
                     Label(String(localized: "Providers"), systemImage: "key.fill")
