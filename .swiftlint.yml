@@ -1,5 +1,6 @@
 excluded:
   - .build
+  - .delta
 
 disabled_rules:
   - trailing_comma

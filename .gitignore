@@ -1,4 +1,5 @@
 .build/
+.delta/
 DerivedData/
 .DS_Store
 # Release artifacts (scripts/build-dmg.sh output)
