@@ -61,7 +61,11 @@ extension QuotaViewModel {
         switch info.authShape {
         case .apiKey:
             guard registry.isConfigured(providerId) else {
-                setState(.unconfigured, for: providerId)
+                if let message = registry.configurationError(for: providerId) {
+                    setState(.error(message), for: providerId)
+                } else {
+                    setState(.unconfigured, for: providerId)
+                }
                 refreshDerived()
                 return
             }
@@ -84,6 +88,7 @@ extension QuotaViewModel {
             return
         }
 
+        setupTasks[providerId] = nil
         if let setupState {
             setState(setupState, for: providerId)
             refreshDerived()
@@ -225,13 +230,7 @@ extension QuotaViewModel {
         _ quota: ProviderQuota,
         for providerId: String
     ) -> SmartRefreshPolicy.Decision {
-        let decision = smartRefreshPolicy.recordSuccess(quota, for: providerId)
-        let reasons = decision.reasons.map(\.rawValue).sorted().joined(separator: ",")
-        log(
-            "smartRefresh: provider=\(providerId) classification=\(decision.classification) "
-                + "cadence=\(decision.cadence) reasons=\(reasons)"
-        )
-        return decision
+        smartRefreshPolicy.recordSuccess(quota, for: providerId)
     }
 
     func syncFastRefreshStatus(for providerId: String) {
@@ -268,11 +267,19 @@ extension QuotaViewModel {
             .map(\.id)
         configuredProviderIds = ids
         hasAnyConfiguredProvider = !ids.isEmpty
-        log("refreshDerived: configuredProviderIds=\(ids) hasAny=\(hasAnyConfiguredProvider)")
         rescheduleActivityExpiration()
     }
 
-    func log(_ message: @autoclosure () -> String) {
-        FileHandle.standardError.write(Data("[QuotaViewModel] \(message())\n".utf8))
+    func recordError(_ error: any Error, operation: String, providerId: String) {
+        guard !isCancellationError(error), !Task.isCancelled else { return }
+        guard error as? ProviderSetupError != .notSupported else { return }
+        guard !isMissingCredentialError(error) else { return }
+        errorLog.record(
+            component: "app",
+            operation: operation,
+            code: "operation-failed",
+            providerID: providerId,
+            error: error
+        )
     }
 }

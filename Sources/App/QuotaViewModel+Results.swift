@@ -1,4 +1,5 @@
 import Core
+import Foundation
 
 extension QuotaViewModel {
     func setRefreshing(_ refreshing: Bool, for providerId: String) {
@@ -20,22 +21,20 @@ extension QuotaViewModel {
     func applyResults(
         _ results: [String: Result<ProviderQuota, Error>],
         expectedRevisions: [String: Int],
-        suppressSmartSuccessFor: Set<String>
+        suppressSmartSuccessFor: Set<String>,
+        proactiveRefreshErrors: [String: String] = [:]
     ) {
-        log("applyResults: got \(results.count) result(s)")
         for (id, result) in results {
             guard expectedRevisions[id, default: 0] == lifecycleRevisions[id, default: 0],
                   isReadyToFetch(id)
             else {
-                log("applyResults: provider=\(id) no longer ready, skipping")
                 continue
             }
             setRefreshing(false, for: id)
 
             switch result {
             case let .success(quota):
-                log("applyResults: provider=\(id) success, headline=\(quota.headline)")
-                setRefreshError(nil, for: id)
+                setRefreshError(proactiveRefreshErrors[id], for: id)
                 setState(.loaded(quota), for: id)
                 recordActivityObservation(
                     for: id,
@@ -43,8 +42,21 @@ extension QuotaViewModel {
                     at: activityRuntime.now()
                 )
             case let .failure(error):
-                log("applyResults: provider=\(id) failed: \(error.localizedDescription)")
-                if error is KeychainError {
+                if isCancellationError(error) {
+                    if case .loading = providerStates[id], let info = providerInfo(for: id) {
+                        setState(.loaded(ProviderQuota(
+                            providerId: id,
+                            providerName: info.displayName,
+                            headline: String(localized: "No data"),
+                            lines: [],
+                            lastUpdated: Date(),
+                            error: String(localized: "Refresh cancelled. Select Refresh to try again.")
+                        )), for: id)
+                    }
+                    continue
+                }
+                recordError(error, operation: "fetch-quota", providerId: id)
+                if isMissingCredentialError(error) {
                     invalidateProviderWork(for: id)
                     setRefreshError(nil, for: id)
                     setState(.unconfigured, for: id)

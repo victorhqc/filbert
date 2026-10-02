@@ -8,7 +8,10 @@ struct APIKeyFreeSettingsRow: View {
     let state: ProviderState
     let isEnabled: Bool
     let canInstall: Bool
+    let canRemove: Bool
     let credentialImportActionTitle: String?
+    let errorLog: ErrorLog
+    let refreshError: String?
     let onEnabledChange: @MainActor @Sendable (Bool) -> Void
     let onInstall: () -> Void
     let onRemove: () -> Void
@@ -48,15 +51,33 @@ struct APIKeyFreeSettingsRow: View {
                         } else {
                             setupReasonView(reason: reason)
                         }
+                        if canRemove {
+                            removeButton
+                        }
                         credentialImportButton
                     }
                 case .loaded:
-                    removeHelperView
+                    if canRemove {
+                        removeHelperView
+                    }
+                    if let refreshError {
+                        Label(refreshError, systemImage: "exclamationmark.triangle.fill")
+                            .font(.caption)
+                            .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+                        ErrorLogLink(errorLog: errorLog)
+                    }
                 case let .error(message):
                     VStack(alignment: .leading, spacing: 8) {
                         Label(message, systemImage: "exclamationmark.triangle.fill")
                             .font(.caption)
                             .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
+                        ErrorLogLink(errorLog: errorLog)
+                        if canInstall {
+                            installButton
+                        }
+                        if canRemove {
+                            removeButton
+                        }
                         credentialImportButton
                     }
                 case .unconfigured:
@@ -79,11 +100,15 @@ struct APIKeyFreeSettingsRow: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            Button(String(localized: "Install Helper")) {
-                onInstall()
-            }
-            .buttonStyle(.borderedProminent)
+            installButton
         }
+    }
+
+    private var installButton: some View {
+        Button(String(localized: "Install Helper")) {
+            onInstall()
+        }
+        .buttonStyle(.borderedProminent)
     }
 
     private func setupReasonView(reason: String) -> some View {
@@ -123,9 +148,13 @@ struct APIKeyFreeSettingsRow: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
 
-            Button(String(localized: "Remove Helper"), role: .destructive) {
-                onRemove()
-            }
+            removeButton
+        }
+    }
+
+    private var removeButton: some View {
+        Button(String(localized: "Remove Helper"), role: .destructive) {
+            onRemove()
         }
     }
 }

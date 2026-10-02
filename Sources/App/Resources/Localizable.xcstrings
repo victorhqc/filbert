@@ -1,6 +1,69 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Unable to read credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anmeldedaten können nicht gelesen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unable to read credentials. Check Keychain access and try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudieron leer las credenciales. Comprueba el acceso al llavero e inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudieron leer las credenciales. Comprueba el acceso al llavero e inténtalo de nuevo." } }
+      }
+    },
+    "Helper executable not found in app bundle. Reinstall Filbert and retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Hilfsprogramm fehlt im App-Bundle. Installiere Filbert erneut und versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Helper executable not found in app bundle. Reinstall Filbert and retry." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se encontró el ejecutable auxiliar en la app. Reinstala Filbert e inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se encontró el ejecutable auxiliar en la app. Reinstala Filbert e inténtalo de nuevo." } }
+      }
+    },
+    "Refresh cancelled. Select Refresh to try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierung abgebrochen. Wähle Aktualisieren, um es erneut zu versuchen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh cancelled. Select Refresh to try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } }
+      }
+    },
+    "No credentials found. Sign in to this provider and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Keine Anmeldedaten gefunden. Melde dich bei diesem Anbieter an und versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No credentials found. Sign in to this provider and try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se encontraron credenciales. Inicia sesión con este proveedor e inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se encontraron credenciales. Inicia sesión con este proveedor e inténtalo de nuevo." } }
+      }
+    },
+    "Show Logs" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Protokolle anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Logs" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registros" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registros" } }
+      }
+    },
+    "Reveal the error log in Finder." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Fehlerprotokoll im Finder anzeigen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Reveal the error log in Finder." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar el registro de errores en Finder." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar el registro de errores en Finder." } }
+      }
+    },
+    "The error log is unavailable." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Fehlerprotokoll ist nicht verfügbar." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The error log is unavailable." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El registro de errores no está disponible." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El registro de errores no está disponible." } }
+      }
+    },
     "Accessibility sentence format" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -202,6 +202,8 @@ public protocol AIProvider: Sendable {
     /// whose binary is missing.
     func canInstallHelper() -> Bool
 
+    func canRemoveHelper() -> Bool
+
     /// Provider-owned external source; only on explicit user action.
     func importCredentials() async throws
 }
@@ -260,6 +262,10 @@ public extension AIProvider {
         false
     }
 
+    func canRemoveHelper() -> Bool {
+        false
+    }
+
     func importCredentials() async throws {
         throw ProviderSetupError.notSupported
     }
@@ -282,6 +288,7 @@ public enum ProviderState: Sendable {
 /// setup mechanism does not involve a local helper).
 public enum ProviderSetupError: Error, Equatable, Sendable {
     case notSupported
+    case missingCredentials
 }
 
 extension ProviderSetupError: LocalizedError {
@@ -289,6 +296,8 @@ extension ProviderSetupError: LocalizedError {
         switch self {
         case .notSupported:
             String(localized: "This provider does not support this action.")
+        case .missingCredentials:
+            String(localized: "No credentials found. Sign in to this provider and try again.")
         }
     }
 }

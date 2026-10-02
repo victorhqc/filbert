@@ -11,17 +11,36 @@ public enum ProviderEnablement {
     public static func isEnabled(
         for providerId: String,
         authShape: ProviderAuth.Shape,
-        keychain: Keychain = .shared
+        keychain: Keychain = .shared,
+        errorLog: ErrorLog = .shared
     ) -> Bool {
         if let enabled = savedEnabled(for: providerId) {
             return enabled
         }
 
-        let initialValue = switch authShape {
+        let initialValue: Bool
+        switch authShape {
         case .apiKey:
-            (try? keychain.load(for: providerId)) != nil
+            do {
+                _ = try keychain.load(for: providerId)
+                initialValue = true
+            } catch {
+                guard isMissingCredentialError(error) else {
+                    if !isCancellationError(error), !Task.isCancelled {
+                        errorLog.record(
+                            component: "core",
+                            operation: "resolve-enablement",
+                            code: "credential-read-failed",
+                            providerID: providerId,
+                            error: error
+                        )
+                    }
+                    return false
+                }
+                initialValue = false
+            }
         case .apiKeyFree:
-            false
+            initialValue = false
         }
         setEnabled(initialValue, for: providerId)
         return initialValue

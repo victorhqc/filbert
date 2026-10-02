@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 struct APIKeyEntryState {
@@ -18,6 +19,10 @@ struct APIKeyEntryState {
             input = ""
             errorMessage = nil
         } catch {
+            guard !isCancellationError(error) else {
+                errorMessage = nil
+                return
+            }
             errorMessage = String(
                 localized: "Unable to save the API key. Check Keychain access and try again."
             )
@@ -29,6 +34,10 @@ struct APIKeyEntryState {
             try action()
             errorMessage = nil
         } catch {
+            guard !isCancellationError(error) else {
+                errorMessage = nil
+                return
+            }
             errorMessage = String(
                 localized: "Unable to clear the API key. Check Keychain access and try again."
             )

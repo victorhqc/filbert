@@ -8,9 +8,12 @@ import Foundation
 public final class ProviderRegistry {
     private var providers: [String: any AIProvider] = [:]
     private let keychain: Keychain
+    public let errorLog: ErrorLog
+    private var configurationErrors: [String: String] = [:]
 
-    public init(keychain: Keychain = .shared) {
+    public init(keychain: Keychain = .shared, errorLog: ErrorLog = .shared) {
         self.keychain = keychain
+        self.errorLog = errorLog
     }
 
     public func register(_ provider: any AIProvider) {
@@ -40,13 +43,17 @@ public final class ProviderRegistry {
         return ProviderEnablement.isEnabled(
             for: providerId,
             authShape: type(of: provider).authShape,
-            keychain: keychain
+            keychain: keychain,
+            errorLog: errorLog
         )
     }
 
     public func setEnabled(_ enabled: Bool, for providerId: String) {
         guard providers[providerId] != nil else { return }
         ProviderEnablement.setEnabled(enabled, for: providerId)
+        if !enabled {
+            configurationErrors[providerId] = nil
+        }
     }
 
     /// For `.apiKey` providers this checks the Keychain; for `.apiKeyFree`
@@ -57,10 +64,36 @@ public final class ProviderRegistry {
         let shape = type(of: provider).authShape
         switch shape {
         case .apiKey:
-            return (try? keychain.load(for: providerId)) != nil
+            do {
+                _ = try keychain.load(for: providerId)
+                configurationErrors[providerId] = nil
+                return true
+            } catch {
+                guard !isMissingCredentialError(error),
+                      !isCancellationError(error), !Task.isCancelled
+                else {
+                    configurationErrors[providerId] = nil
+                    return false
+                }
+                errorLog.record(
+                    component: "core",
+                    operation: "check-configuration",
+                    code: "credential-read-failed",
+                    providerID: providerId,
+                    error: error
+                )
+                configurationErrors[providerId] = String(
+                    localized: "Unable to read credentials. Check Keychain access and try again."
+                )
+                return false
+            }
         case .apiKeyFree:
             return provider.isConfigured()
         }
+    }
+
+    public func configurationError(for providerId: String) -> String? {
+        configurationErrors[providerId]
     }
 
     public func fetchAll() async -> [String: Result<ProviderQuota, Error>] {
@@ -148,6 +181,11 @@ public final class ProviderRegistry {
     public func canInstallHelper(for providerId: String) -> Bool {
         guard isEnabled(providerId), let provider = providers[providerId] else { return false }
         return provider.canInstallHelper()
+    }
+
+    public func canRemoveHelper(for providerId: String) -> Bool {
+        guard isEnabled(providerId), let provider = providers[providerId] else { return false }
+        return provider.canRemoveHelper()
     }
 
     /// Throws when the provider is not registered or does not support helper

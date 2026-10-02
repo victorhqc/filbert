@@ -109,7 +109,13 @@ struct QuotaView: View {
                 staleCacheHint(quota)
             }
 
-            lastUpdatedLabel(quota)
+            if let guidance = quota.error {
+                Text(guidance)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            } else {
+                lastUpdatedLabel(quota)
+            }
         }
         .padding(.bottom, 4)
     }
@@ -182,8 +188,6 @@ struct QuotaView: View {
         UsageLineRow(line: line)
     }
 
-    // MARK: - Error
-
     private func errorContent(_ message: String, providerId: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
@@ -194,14 +198,22 @@ struct QuotaView: View {
                     .foregroundColor(.secondary)
             }
 
-            Button(String(localized: "Retry")) {
-                viewModel.manualRefresh(for: providerId)
+            if viewModel.canInstallHelper(for: providerId) {
+                Button(String(localized: "Install Helper")) {
+                    Task { await viewModel.installHelper(for: providerId) }
+                }
+            } else if viewModel.isReadyToFetch(providerId) {
+                Button(String(localized: "Retry")) {
+                    viewModel.manualRefresh(for: providerId)
+                }
+            } else {
+                Text(String(localized: "Open Settings"))
+                    .openAndRaiseSettings()
             }
+            ErrorLogLink(errorLog: viewModel.errorLog)
         }
         .padding(.vertical, 4)
     }
-
-    // MARK: - Last updated
 
     @ViewBuilder
     private func lastUpdatedLabel(_ quota: ProviderQuota) -> some View {
@@ -266,6 +278,15 @@ private extension QuotaView {
 
                 if !collapsed {
                     providerBody(providerId: providerId, state: state)
+                } else if case let .error(message) = state {
+                    errorContent(message, providerId: providerId)
+                }
+
+                if let message = viewModel.refreshErrors[providerId] {
+                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    ErrorLogLink(errorLog: viewModel.errorLog)
                 }
             }
             .padding(8)
