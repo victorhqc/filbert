@@ -128,7 +128,7 @@ extension ClaudeCodeRefresher {
     static func mergeAndWriteCache(
         windows: [ParsedWindow],
         into cacheStore: StatuslineCacheStore
-    ) {
+    ) throws {
         let existing = cacheStore.read()
         var fiveHour = existing?.rateLimits?.fiveHour
         var sevenDay = existing?.rateLimits?.sevenDay
@@ -145,15 +145,6 @@ extension ClaudeCodeRefresher {
             rateLimits: RateLimits(fiveHour: fiveHour, sevenDay: sevenDay)
         )
 
-        do {
-            try cacheStore.write(cache)
-            ClaudeCodeRefresherLog.log(
-                "mergeAndWriteCache: wrote cache fiveHour=\(fiveHour != nil) sevenDay=\(sevenDay != nil)"
-            )
-        } catch {
-            ClaudeCodeRefresherLog.log(
-                "mergeAndWriteCache: write failed: \(error.localizedDescription)"
-            )
-        }
+        try cacheStore.write(cache)
     }
 }

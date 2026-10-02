@@ -19,9 +19,6 @@ extension ClaudeCodeRefresher {
                 withIntermediateDirectories: true
             )
         } catch {
-            ClaudeCodeRefresherLog.log(
-                "makeDefaultWorkingDirectory: failed to create \(url.path): \(error.localizedDescription)"
-            )
             return nil
         }
         return url

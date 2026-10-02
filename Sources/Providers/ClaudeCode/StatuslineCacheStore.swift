@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 // MARK: - Cache path
@@ -49,57 +50,98 @@ struct Window: Codable {
         self.usedPercentage = usedPercentage
         self.resetsAt = resetsAt
     }
+
+    var populated: Window? {
+        usedPercentage != nil || resetsAt != nil ? self : nil
+    }
 }
 
 // MARK: - Cache store
 
+enum StatuslineCacheError: Error, LocalizedError, Equatable, DiagnosticError {
+    case readFailed
+    case decodeFailed
+
+    var diagnosticCode: String {
+        switch self {
+        case .readFailed: "cache-read-failed"
+        case .decodeFailed: "cache-decode-failed"
+        }
+    }
+
+    var errorDescription: String? {
+        switch self {
+        case .readFailed:
+            String(localized: "Could not read Claude Code usage data. Refresh to retry.")
+        case .decodeFailed:
+            String(localized: "Could not decode Claude Code usage data. Refresh to retry.")
+        }
+    }
+}
+
 public struct StatuslineCacheStore: Sendable {
     private let cacheURL: URL
     private let fallbackCacheURL: URL?
+    private let errorLog: ErrorLog
 
     public init() {
         cacheURL = claudeCodeCacheFileURL
         fallbackCacheURL = LegacyClaudeBrandConfiguration.production.cacheURL
+        errorLog = .shared
     }
 
-    public init(cacheURL: URL) {
+    public init(cacheURL: URL, errorLog: ErrorLog = .shared) {
         self.cacheURL = cacheURL
         fallbackCacheURL = nil
+        self.errorLog = errorLog
     }
 
-    init(cacheURL: URL, fallbackCacheURL: URL?) {
+    init(cacheURL: URL, fallbackCacheURL: URL?, errorLog: ErrorLog = .shared) {
         self.cacheURL = cacheURL
         self.fallbackCacheURL = fallbackCacheURL
+        self.errorLog = errorLog
     }
 
-    /// A missing or unparseable cache is a data state, not an error.
     func read() -> StatuslineCache? {
-        if let cache = read(at: cacheURL) {
+        do {
+            return try readForQuota()
+        } catch {
+            errorLog.record(
+                component: "claude-code-cache", operation: "read-cache",
+                code: (error as? StatuslineCacheError) == .decodeFailed ? "cache-decode-failed" : "cache-read-failed",
+                providerID: "claude-code", error: error
+            )
+            return nil
+        }
+    }
+
+    func readForQuota() throws -> StatuslineCache? {
+        if let cache = try read(at: cacheURL) {
             return cache
         }
         guard let fallbackCacheURL else {
             return nil
         }
-        return read(at: fallbackCacheURL)
+        return try read(at: fallbackCacheURL)
     }
 
-    private func read(at url: URL) -> StatuslineCache? {
-        let path = url.path
-        guard FileManager.default.fileExists(atPath: path) else {
-            ClaudeCodeLog.log("read: cache file missing at \(path)")
-            return nil
+    private func read(at url: URL) throws -> StatuslineCache? {
+        let data: Data
+        do {
+            data = try Data(contentsOf: url)
+        } catch {
+            let error = error as NSError
+            let isMissing = error.domain == NSCocoaErrorDomain && error.code == NSFileReadNoSuchFileError
+            if isMissing {
+                return nil
+            }
+            throw StatuslineCacheError.readFailed
         }
-        guard let data = try? Data(contentsOf: url) else {
-            ClaudeCodeLog.log("read: failed to read \(path)")
-            return nil
+        do {
+            return try JSONDecoder().decode(StatuslineCache.self, from: data)
+        } catch {
+            throw StatuslineCacheError.decodeFailed
         }
-        guard let cache = try? JSONDecoder().decode(StatuslineCache.self, from: data) else {
-            let preview = String(data: data.prefix(200), encoding: .utf8) ?? "<binary>"
-            ClaudeCodeLog.log("read: failed to decode \(path) bytes=\(data.count) preview=\(preview)")
-            return nil
-        }
-        ClaudeCodeLog.log("read: ok path=\(path) writtenAt=\(cache.writtenAt) hasRateLimits=\(cache.rateLimits != nil)")
-        return cache
     }
 
     func write(_ cache: StatuslineCache) throws {
@@ -113,14 +155,6 @@ public struct StatuslineCacheStore: Sendable {
         encoder.outputFormatting = [.sortedKeys]
         let data = try encoder.encode(cache)
 
-        let tempURL = dir.appendingPathComponent(
-            ".claude-code.tmp.\(UUID().uuidString)"
-        )
-        try data.write(to: tempURL, options: .atomic)
-        _ = try FileManager.default.replaceItemAt(
-            cacheURL,
-            withItemAt: tempURL,
-            backupItemName: nil
-        )
+        try data.write(to: cacheURL, options: .atomic)
     }
 }
