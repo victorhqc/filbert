@@ -9,7 +9,6 @@ final class LegacyBrandMigrationTests: XCTestCase {
     private var legacyHelperURL: URL!
     private var legacyCacheURL: URL!
     private var sourceURL: URL!
-    private var compilerURL: URL!
 
     override func setUpWithError() throws {
         try super.setUpWithError()
@@ -24,31 +23,20 @@ final class LegacyBrandMigrationTests: XCTestCase {
         cacheURL = temporaryDirectory.appendingPathComponent("filbert-cache.json")
         legacyHelperURL = temporaryDirectory.appendingPathComponent("ai-usage-statusline")
         legacyCacheURL = temporaryDirectory.appendingPathComponent("ai-usage-cache.json")
-        sourceURL = temporaryDirectory.appendingPathComponent("statusline_helper.swift")
-        compilerURL = temporaryDirectory.appendingPathComponent("swiftc")
+        sourceURL = temporaryDirectory.appendingPathComponent("prebuilt-helper")
 
         try "#!/bin/sh\nexit 0\n".write(
             to: sourceURL,
             atomically: true,
             encoding: .utf8
         )
-        try """
-        #!/bin/sh
-        cp "$4" "$3"
-        chmod +x "$3"
-        """.write(
-            to: compilerURL,
-            atomically: true,
-            encoding: .utf8
-        )
-        try makeExecutable(compilerURL)
+        try makeExecutable(sourceURL)
     }
 
     override func tearDown() {
         if let temporaryDirectory {
             try? FileManager.default.removeItem(at: temporaryDirectory)
         }
-        compilerURL = nil
         sourceURL = nil
         legacyCacheURL = nil
         legacyHelperURL = nil
@@ -70,7 +58,7 @@ final class LegacyBrandMigrationTests: XCTestCase {
 
         XCTAssertTrue(
             try installer.migrateLegacyInstallationIfNeeded(
-                helperSourceURL: sourceURL
+                helperExecutableURL: sourceURL
             )
         )
 
@@ -92,15 +80,15 @@ final class LegacyBrandMigrationTests: XCTestCase {
 
         XCTAssertTrue(
             try installer.migrateLegacyInstallationIfNeeded(
-                helperSourceURL: sourceURL
+                helperExecutableURL: sourceURL
             )
         )
         XCTAssertFalse(
             try installer.migrateLegacyInstallationIfNeeded(
-                helperSourceURL: sourceURL
+                helperExecutableURL: sourceURL
             )
         )
-        XCTAssertEqual(try readCommand(), helperURL.path)
+        XCTAssertTrue(try readCommand().hasPrefix("'\(helperURL.path)' --cache-path "))
     }
 
     func testCacheOnlyMigrationDoesNotInstallHelperOrChangeSettings() throws {
@@ -110,7 +98,7 @@ final class LegacyBrandMigrationTests: XCTestCase {
 
         XCTAssertFalse(
             try installer.migrateLegacyInstallationIfNeeded(
-                helperSourceURL: sourceURL
+                helperExecutableURL: sourceURL
             )
         )
 
@@ -120,16 +108,16 @@ final class LegacyBrandMigrationTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: legacyCacheURL.path))
     }
 
-    func testCompilerFailureLeavesLegacyArtifactsAndSettingsIntact() throws {
+    func testUnavailableExecutableLeavesLegacyArtifactsAndSettingsIntact() throws {
         try createLegacyHelper()
         let legacyCommand = legacyHelperURL.path
         try writeSettings(command: legacyCommand)
         try writeCache(to: legacyCacheURL)
-        let installer = makeInstaller(swiftCompilerPath: "/usr/bin/false")
+        let installer = makeInstaller()
 
         XCTAssertThrowsError(
             try installer.migrateLegacyInstallationIfNeeded(
-                helperSourceURL: sourceURL
+                helperExecutableURL: temporaryDirectory.appendingPathComponent("missing-helper")
             )
         )
 
@@ -149,9 +137,7 @@ final class LegacyBrandMigrationTests: XCTestCase {
         XCTAssertEqual(store.read()?.writtenAt, 1_713_000_000)
     }
 
-    private func makeInstaller(
-        swiftCompilerPath: String? = nil
-    ) -> StatuslineHelperInstaller {
+    private func makeInstaller() -> StatuslineHelperInstaller {
         StatuslineHelperInstaller(
             settingsURL: settingsURL,
             helperDestURL: helperURL,
@@ -161,8 +147,7 @@ final class LegacyBrandMigrationTests: XCTestCase {
                 cacheURL: legacyCacheURL,
                 chainStart: "###AI-USAGE-CHAIN-START###",
                 chainSeparator: "###AI-USAGE-CHAIN-SEPARATOR###"
-            ),
-            swiftCompilerPath: swiftCompilerPath ?? compilerURL.path
+            )
         )
     }
 

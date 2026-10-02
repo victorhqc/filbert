@@ -1,9 +1,11 @@
 @testable import ClaudeCodeProvider
+import Core
 import XCTest
 
 final class StatuslineCacheStoreTests: XCTestCase {
     private var cacheURL: URL!
     private var store: StatuslineCacheStore!
+    private var log: ErrorLog!
 
     override func setUp() {
         super.setUp()
@@ -14,7 +16,8 @@ final class StatuslineCacheStoreTests: XCTestCase {
             withIntermediateDirectories: true
         )
         cacheURL = tmpDir.appendingPathComponent("claude-code.json")
-        store = StatuslineCacheStore(cacheURL: cacheURL)
+        log = ErrorLog(directoryURL: tmpDir.appendingPathComponent("logs"))
+        store = StatuslineCacheStore(cacheURL: cacheURL, errorLog: log)
     }
 
     override func tearDown() {
@@ -91,6 +94,31 @@ final class StatuslineCacheStoreTests: XCTestCase {
 
     func testRead_returnsNilWhenFileAbsent() {
         XCTAssertNil(store.read())
+        XCTAssertFalse(FileManager.default.fileExists(atPath: log.fileURL.path))
+    }
+
+    func testMalformedCacheThrowsForQuotaAndLogsOnlyWhenSuppressed() throws {
+        try Data("SENTINEL_PRIVATE not-json".utf8).write(to: cacheURL)
+        XCTAssertThrowsError(try store.readForQuota()) { error in
+            XCTAssertEqual(error as? StatuslineCacheError, .decodeFailed)
+        }
+        XCTAssertFalse(FileManager.default.fileExists(atPath: log.fileURL.path))
+        XCTAssertNil(store.read())
+        let records = try String(contentsOf: log.fileURL, encoding: .utf8)
+        XCTAssertEqual(records.split(separator: "\n").count, 1)
+        XCTAssertTrue(records.contains("cache-decode-failed"))
+        XCTAssertFalse(records.contains("SENTINEL_PRIVATE"))
+    }
+
+    func testUnreadableExistingCacheIsNotMissingData() throws {
+        try FileManager.default.createDirectory(at: cacheURL, withIntermediateDirectories: true)
+        XCTAssertThrowsError(try store.readForQuota()) { error in
+            XCTAssertEqual(error as? StatuslineCacheError, .readFailed)
+        }
+        XCTAssertNil(store.read())
+        let records = try String(contentsOf: log.fileURL, encoding: .utf8)
+        XCTAssertTrue(records.contains("cache-read-failed"))
+        XCTAssertEqual(records.split(separator: "\n").count, 1)
     }
 
     // MARK: - Round-trip

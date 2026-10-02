@@ -57,7 +57,12 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
             workingDirectoryProvider: { injectedCWD }
         )
 
-        try await refresher.refresh()
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected missing usage failure")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .noUsageData)
+        }
 
         let recordedPWD = try String(contentsOf: pwdLogURL, encoding: .utf8)
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -109,7 +114,12 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
             workingDirectoryProvider: { nil }
         )
 
-        try await refresher.refresh()
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected working directory failure")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .workingDirectoryUnavailable)
+        }
 
         let count = readInvocationCount(at: invocationCountURL)
         XCTAssertEqual(count, 0, "no child should start when the working directory cannot be created")

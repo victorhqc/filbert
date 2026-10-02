@@ -55,8 +55,14 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
             refresher: refresher
         )
 
-        try await provider.proactiveRefresh()
-        try await provider.proactiveRefresh()
+        for _ in 0 ..< 2 {
+            do {
+                try await provider.proactiveRefresh()
+                XCTFail("Expected missing usage failure")
+            } catch let error as ClaudeCodeRefresherError {
+                XCTAssertEqual(error, .noUsageData)
+            }
+        }
 
         let spawnCount = readSpawnCount(at: spawnLogURL)
         XCTAssertEqual(spawnCount, 1, "Second call must be debounced by the refresher")

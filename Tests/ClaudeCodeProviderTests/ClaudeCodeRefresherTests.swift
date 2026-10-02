@@ -60,7 +60,12 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
         let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
-        try await refresher.refresh()
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected missing usage failure")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .noUsageData)
+        }
 
         let logged = try String(contentsOf: invocationLogURL, encoding: .utf8)
             .trimmingCharacters(in: .whitespacesAndNewlines)
@@ -146,7 +151,12 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
         let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
-        try await refresher.refresh()
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected process failure")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .processFailed(1))
+        }
 
         let cache = try XCTUnwrap(StatuslineCacheStore(cacheURL: cacheURL).read())
         XCTAssertEqual(cache.writtenAt, 1000, "cache must be left exactly as it was")
@@ -160,7 +170,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             name: "fake-claude-hang",
             body: """
             #!/bin/bash
-            sleep 60
+            exec sleep 60
             """
         )
 
@@ -175,7 +185,12 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
 
         let start = Date()
-        try await refresher.refresh()
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected timeout")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .timedOut)
+        }
         let elapsed = Date().timeIntervalSince(start)
 
         // Timeout + grace + a little slack for the 100ms polling.
@@ -193,8 +208,8 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         let fakeBinary = try writeCountingBinary()
         let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
-        try await refresher.refresh()
-        try await refresher.refresh()
+        _ = try? await refresher.refresh()
+        _ = try? await refresher.refresh()
 
         let count = try readInvocationCount()
         XCTAssertEqual(count, 1, "Second call within debounce window should be skipped")
@@ -238,7 +253,12 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         // in-flight task and only one `claude` process should run.
         async let first: Void = refresher.refresh()
         async let second: Void = refresher.refresh()
-        _ = try await (first, second)
+        do {
+            _ = try await (first, second)
+            XCTFail("Expected missing usage failure")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .noUsageData)
+        }
 
         let count = try readInvocationCount()
         XCTAssertEqual(count, 1, "Concurrent callers must coalesce onto one spawn")
@@ -263,7 +283,61 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         let refresher = makeRefresher(binaryPath: nil)
 
         _ = try? await refresher.refresh()
-        try await refresher.refresh()
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected debounced failure to remain visible")
+        } catch let error as ClaudeCodeRefresherError {
+            XCTAssertEqual(error, .binaryNotFound)
+        }
+    }
+}
+
+extension ClaudeCodeRefresherTests {
+    func testRefreshCancellationStopsChildAndRetainsCache() async throws {
+        let store = StatuslineCacheStore(cacheURL: cacheURL)
+        try store.write(StatuslineCache(writtenAt: 1234, rateLimits: nil))
+        let marker = tmpDir.appendingPathComponent("started")
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-cancel",
+            body: "#!/bin/sh\nprintf started > '\(marker.path)'\nexec sleep 60\n"
+        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+        let task = Task { try await refresher.refresh() }
+        for _ in 0 ..< 100 {
+            if FileManager.default.fileExists(atPath: marker.path) {
+                break
+            }
+            try await Task.sleep(for: .milliseconds(10))
+        }
+        XCTAssertTrue(FileManager.default.fileExists(atPath: marker.path))
+        let start = Date()
+        task.cancel()
+        do {
+            try await task.value
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {}
+        XCTAssertLessThan(Date().timeIntervalSince(start), 2)
+        XCTAssertEqual(store.read()?.writtenAt, 1234)
+    }
+
+    func testRefreshCacheWriteFailureIsThrown() async throws {
+        let log = ErrorLog(directoryURL: tmpDir.appendingPathComponent("logs"))
+        let store = StatuslineCacheStore(cacheURL: cacheURL, errorLog: log)
+        try FileManager.default.createDirectory(at: cacheURL, withIntermediateDirectories: true)
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-write-failure",
+            body: usageFakeBinaryBody(session: 12, week: 34)
+        )
+        let refresher = ClaudeCodeRefresher(
+            locator: ClaudeCodeLocator(injectedPath: fakeBinary.path),
+            cacheStore: store
+        )
+        do {
+            try await refresher.refresh()
+            XCTFail("Expected cache write failure")
+        } catch {
+            XCTAssertEqual((error as NSError).domain, NSCocoaErrorDomain)
+        }
     }
 
     /// Shell body for a fake `claude` that echoes a `/usage --output-format
