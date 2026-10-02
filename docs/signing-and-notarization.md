@@ -21,6 +21,30 @@ What the pipeline does, in order (implemented in `scripts/build-dmg.sh`):
 Only after every check passes does the release workflow upload the DMG, its
 SHA-256 checksum, and the release notes to the GitHub Release.
 
+## Local ad-hoc builds
+
+`--no-sign` selects the local ad-hoc lane. These artifacts are development builds, not official releases.
+
+Local builds retain Hardened Runtime. Only the host app receives
+`com.apple.security.cs.disable-library-validation = true`.
+Ad-hoc signatures have no Team ID, so normal library validation can reject bundled Sparkle.
+The local exception permits that framework to load.
+It also permits other libraries, so the exception must remain local-only.
+
+The script derives temporary local entitlements from `packaging/Filbert.entitlements`.
+The shared baseline remains unchanged.
+Developer ID releases use that baseline without the local exception.
+Identity checks, trusted timestamps, notarization, and Gatekeeper verification remain active for releases.
+
+The launch check monitors the actual child process through a bounded startup interval.
+Provider and updater overrides prevent background requests during the check.
+These overrides do not change persistent user preferences.
+On-disk signature verification alone does not prove that an app can start.
+
+[Sparkle's setup guide](https://sparkle-project.org/documentation/) describes the ad-hoc library-loading constraint.
+[Apple's entitlement reference](https://developer.apple.com/documentation/bundleresources/entitlements/com.apple.security.cs.disable-library-validation)
+describes the library-validation exception.
+
 ## The credentials, at a glance
 
 | # | Artifact | What it is | Example / format | Where it should live |

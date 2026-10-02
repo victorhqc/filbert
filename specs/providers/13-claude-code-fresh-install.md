@@ -167,6 +167,8 @@ Verify and repair the complete Claude Code setup and data flow from a fresh Filb
 - App launch remained disabled during packaged checks.
 - Developer ID signing, notarization, clean-Mac installation, and GUI interaction remain separate verification gates.
 - Signature verification alone did not establish that the ad-hoc build could launch with its Sparkle framework.
+- After the local signing repair, a newly built DMG passed the actual launch check with a `.app` verification copy (ci 06).
+- Persistent provider, refresh, and updater preferences remained unchanged during that launch.
 
 ### Live regression
 - `ClaudeCodeRefresher` retained a successful debounce after helper removal deleted the cache.

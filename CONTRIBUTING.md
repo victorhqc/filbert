@@ -45,7 +45,7 @@ When you write a provider module:
 - Map the response into the shared `ProviderQuota` model. Provider-specific
   fields stay out of the core.
 - Handle auth errors (401), rate limits (429), and network errors on their own.
-- Log status and latency for debugging. **Never log API keys or auth headers.**
+- Record errors only. **Never log credentials, headers, or raw response bodies.**
 
 ## Network rules
 
@@ -142,6 +142,12 @@ swift build -c release
 
 # 5. Tests
 swift test
+
+# 6. Workflow tests
+python3 scripts/test-automatic-updates.py
+
+# 7. Local signing and startup tests
+python3 scripts/test-local-signing.py
 ```
 
 ## Commits

@@ -444,6 +444,7 @@ require_sparkle_public_key() {
 sign_sparkle_nested_code() {
     local app_dir="$1"
     local identity="$2"
+    local sign_command="${3:-codesign}"
     local framework="$app_dir/Contents/Frameworks/Sparkle.framework/Versions/B"
     local nested_path
 
@@ -454,26 +455,85 @@ sign_sparkle_nested_code() {
         "$framework/Updater.app"; do
         [[ -e "$nested_path" ]] || continue
         if [[ "$nested_path" == */Downloader.xpc ]]; then
-            codesign --force --options runtime \
+            "$sign_command" --force --options runtime \
                 --preserve-metadata=entitlements \
                 -s "$identity" "$nested_path"
         else
-            codesign --force --options runtime -s "$identity" "$nested_path"
+            "$sign_command" --force --options runtime -s "$identity" "$nested_path"
         fi
     done
-    codesign --force --options runtime -s "$identity" \
+    "$sign_command" --force --options runtime -s "$identity" \
         "$app_dir/Contents/Frameworks/Sparkle.framework"
+}
+
+sign_local_code() {
+    python3 - "$@" <<'PY' &
+import signal
+import subprocess
+import sys
+import time
+
+interrupted_signal = None
+
+def interrupted(signum, frame):
+    global interrupted_signal
+    interrupted_signal = signum
+
+for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+    signal.signal(signum, interrupted)
+
+child = None
+try:
+    child = subprocess.Popen(["codesign", *sys.argv[1:]])
+    while child.poll() is None:
+        if interrupted_signal is not None:
+            sys.exit(f"Local signing interrupted by signal {interrupted_signal}")
+        time.sleep(0.05)
+    sys.exit(child.returncode)
+finally:
+    for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+        signal.signal(signum, signal.SIG_IGN)
+    if child is not None and child.poll() is None:
+        child.terminate()
+        try:
+            child.wait(timeout=2)
+        except subprocess.TimeoutExpired:
+            child.kill()
+            child.wait(timeout=2)
+PY
+    LOCAL_SIGN_PID=$!
+    local sign_status=0
+    wait "$LOCAL_SIGN_PID" || sign_status=$?
+    LOCAL_SIGN_PID=""
+    return "$sign_status"
 }
 
 sign_adhoc() {
     local app_dir="$1"
+    LOCAL_ENTITLEMENTS="$(mktemp "${TMPDIR:-/tmp}/filbert-local-entitlements.XXXXXX")"
+
+    python3 - "$ENTITLEMENTS" "$LOCAL_ENTITLEMENTS" <<'PY'
+import plistlib
+import sys
+
+with open(sys.argv[1], "rb") as baseline:
+    entitlements = plistlib.load(baseline)
+if not isinstance(entitlements, dict):
+    sys.exit("The shared entitlements must be a plist dictionary")
+entitlements["com.apple.security.cs.disable-library-validation"] = True
+with open(sys.argv[2], "wb") as local:
+    plistlib.dump(entitlements, local)
+PY
+
     info "Ad-hoc signing…"
-    sign_sparkle_nested_code "$app_dir" -
-    codesign -s - --force --options runtime \
+    sign_sparkle_nested_code "$app_dir" - sign_local_code
+    sign_local_code -s - --force --options runtime \
         "$app_dir/Contents/Resources/ClaudeCodeStatuslineHelper"
-    codesign -s - --force --options runtime \
-        --entitlements "$ENTITLEMENTS" \
+    sign_local_code -s - --force --options runtime \
+        --entitlements "$LOCAL_ENTITLEMENTS" \
         "$app_dir"
+    rm -f "$LOCAL_ENTITLEMENTS"
+    LOCAL_ENTITLEMENTS=""
     ok "Ad-hoc signed"
 }
 
@@ -486,6 +546,9 @@ NOTARY_WORK_DIR=""
 # Held while the release DMG is mounted for verification; the exit trap
 # detaches it if the script dies mid-verification.
 VERIFY_MOUNT_POINT=""
+LAUNCH_SUPERVISOR_PID=""
+LOCAL_SIGN_PID=""
+LOCAL_ENTITLEMENTS=""
 
 import_signing_certificate() {
     # All six secrets are present (detect_lane already verified). Import the
@@ -744,7 +807,7 @@ verify_release() {
     VERIFY_MOUNT_POINT="$mount_point"
     hdiutil attach -readonly -nobrowse -mountpoint "$mount_point" "$dmg_path" >/dev/null
 
-    local verify_app="/tmp/filbert-verify-$$"
+    local verify_app="/tmp/filbert-verify-$$.app"
     rm -rf "$verify_app"
     cp -R "$mount_point/$APP_NAME.app" "$verify_app"
     hdiutil detach "$mount_point" >/dev/null
@@ -837,22 +900,290 @@ verify_sparkle_bundle() {
 launch_smoke_test() {
     local app_dir="$1"
     local executable="$app_dir/Contents/MacOS/$APP_NAME"
-    local process_ids=""
-    local launch_pid
 
-    "$executable" >/dev/null 2>&1 &
-    launch_pid=$!
-    for _ in {1..10}; do
-        process_ids=$(pgrep -f "$executable" || true)
-        [[ -n "$process_ids" ]] && break
-        sleep 1
-    done
-    [[ -n "$process_ids" ]] \
-        || fatal "The app did not start during the mounted-DMG launch smoke test"
-    for process_id in $process_ids; do
-        kill "$process_id" 2>/dev/null || true
-    done
-    wait "$launch_pid" 2>/dev/null || true
+    python3 - "$executable" "$REPO_ROOT/Sources/Providers" <<'PY' &
+import plistlib
+import re
+import signal
+import subprocess
+import sys
+import time
+from pathlib import Path
+
+STARTUP_SECONDS = 5
+TERMINATION_SECONDS = 2
+
+def comment_end(source, start):
+    if source.startswith("//", start):
+        end = source.find("\n", start + 2)
+        return len(source) if end < 0 else end
+    if not source.startswith("/*", start):
+        return None
+    depth = 1
+    index = start + 2
+    while index < len(source):
+        if source.startswith("/*", index):
+            depth += 1
+            index += 2
+        elif source.startswith("*/", index):
+            depth -= 1
+            index += 2
+            if depth == 0:
+                return index
+        else:
+            index += 1
+    raise ValueError("unterminated Swift comment")
+
+def string_end(source, start):
+    opening = re.match(r'(#+)?("""|")', source[start:])
+    if opening is None:
+        return None
+    hashes = opening[1] or ""
+    closing = opening[2] + hashes
+    escape = "\\" + hashes
+    index = start + len(opening[0])
+    while index < len(source):
+        if source.startswith(closing, index):
+            return index + len(closing)
+        if source.startswith(escape, index):
+            index += len(escape)
+            if source.startswith("(", index):
+                index = interpolation_end(source, index)
+            else:
+                index += 1
+        else:
+            index += 1
+    raise ValueError("unterminated Swift string")
+
+def interpolation_end(source, start):
+    depth = 1
+    index = start + 1
+    while index < len(source):
+        end = comment_end(source, index)
+        if end is None:
+            end = string_end(source, index)
+        if end is not None:
+            index = end
+            continue
+        if source[index] == "(":
+            depth += 1
+        elif source[index] == ")":
+            depth -= 1
+            if depth == 0:
+                return index + 1
+        index += 1
+    raise ValueError("unterminated Swift interpolation")
+
+def swift_tokens(source):
+    tokens = []
+    index = 0
+    while index < len(source):
+        end = comment_end(source, index)
+        if end is not None:
+            if "\n" in source[index:end]:
+                tokens.append("\n")
+            index = end
+            continue
+        end = string_end(source, index)
+        if end is not None:
+            tokens.append(source[index:end])
+            index = end
+            continue
+        if source[index] == "`":
+            end = source.find("`", index + 1)
+            if end < 0 or not re.fullmatch(r"[A-Za-z_]\w*", source[index + 1:end]):
+                raise ValueError("unsupported escaped Swift identifier")
+            tokens.append(source[index + 1:end])
+            index = end + 1
+            continue
+        identifier = re.match(r"[A-Za-z_]\w*", source[index:])
+        if identifier is not None:
+            tokens.append(identifier[0])
+            index += len(identifier[0])
+            continue
+        if source[index] == "/" and (
+            index == 0 or not source[index - 1].isspace()
+            or index + 1 == len(source) or not source[index + 1].isspace()
+        ):
+            raise ValueError("unsupported Swift slash operator or regex literal")
+        if source[index] == "\n" or not source[index].isspace():
+            tokens.append(source[index])
+        index += 1
+    return tokens
+
+def direct_members(body):
+    members = []
+    member = []
+    depth = 0
+    for token in body:
+        if token == "{":
+            if depth == 0:
+                member.append("<body>")
+            depth += 1
+        elif token == "}":
+            depth -= 1
+        elif depth == 0:
+            if token in ("\n", ";"):
+                if member:
+                    members.append(member)
+                    member = []
+            else:
+                member.append(token)
+    if member:
+        members.append(member)
+    return members
+
+def type_provider_id(body):
+    members = direct_members(body)
+    ids = []
+    modifiers = {"public", "internal", "private", "fileprivate", "package", "nonisolated"}
+    member_starts = modifiers | {
+        "static", "let", "var", "func", "init", "deinit", "subscript",
+        "typealias", "struct", "class", "actor", "enum", "@",
+    }
+    for index, member in enumerate(members):
+        bindings = [
+            offset for offset, token in enumerate(member[:-1])
+            if token in ("let", "var") and member[offset + 1] == "providerId"
+        ]
+        if not bindings:
+            continue
+        if len(bindings) != 1:
+            raise ValueError("ambiguous providerId declaration")
+        binding = bindings[0]
+        prefix, declaration = member[:binding], member[binding:]
+        if not prefix or prefix[-1] != "static" or any(
+            token not in modifiers for token in prefix[:-1]
+        ):
+            raise ValueError("providerId must be a static literal")
+        if declaration[2:4] == [":", "String"]:
+            declaration = declaration[:2] + declaration[4:]
+        if len(declaration) != 4 or declaration[:3] != ["let", "providerId", "="]:
+            raise ValueError("providerId must be an immutable literal")
+        literal = re.fullmatch(r'"([A-Za-z0-9][A-Za-z0-9._-]*)"', declaration[3])
+        if literal is None:
+            raise ValueError("unsupported providerId literal")
+        if index + 1 < len(members) and members[index + 1][0] not in member_starts:
+            raise ValueError("ambiguous providerId expression continuation")
+        ids.append(literal[1])
+    if len(ids) != 1:
+        raise ValueError("AIProvider type must declare exactly one providerId")
+    return ids[0]
+
+def source_provider_ids(source):
+    tokens = swift_tokens(source)
+    if "#" in tokens or "typealias" in tokens:
+        raise ValueError("conditional declarations, macros, and type aliases are unsupported")
+    ids = []
+    depth = 0
+    for index, token in enumerate(tokens):
+        if token == "{":
+            depth += 1
+        elif token == "}":
+            depth -= 1
+            if depth < 0:
+                raise ValueError("unbalanced Swift declaration")
+        elif token in ("struct", "class", "actor", "enum", "extension", "protocol"):
+            end = index + 1
+            while end < len(tokens) and tokens[end] not in ("{", "}", ";"):
+                end += 1
+            header = [value for value in tokens[index + 1:end] if value != "\n"]
+            if "AIProvider" not in header:
+                continue
+            if depth != 0 or token not in ("struct", "actor", "enum") or len(header) != 3 \
+                    or header[1:] != [":", "AIProvider"] \
+                    or end == len(tokens) or tokens[end] != "{":
+                raise ValueError("unsupported AIProvider conformance")
+            close = end + 1
+            body_depth = 1
+            while close < len(tokens) and body_depth:
+                if tokens[close] == "{":
+                    body_depth += 1
+                elif tokens[close] == "}":
+                    body_depth -= 1
+                close += 1
+            if body_depth:
+                raise ValueError("unterminated AIProvider type")
+            ids.append(type_provider_id(tokens[end + 1:close - 1]))
+    if depth:
+        raise ValueError("unbalanced Swift declaration")
+    return ids
+
+provider_root = Path(sys.argv[2])
+if not provider_root.is_dir() or any(provider_root.glob("*.swift")):
+    sys.exit("Cannot obtain a safe disabled-provider map: unsupported provider layout")
+provider_ids = set()
+modules = sorted(path for path in provider_root.iterdir() if path.is_dir())
+if not modules:
+    sys.exit("Cannot obtain a safe disabled-provider map: no provider modules")
+for module in modules:
+    try:
+        ids = [
+            provider_id for path in sorted(module.rglob("*.swift"))
+            for provider_id in source_provider_ids(path.read_text())
+        ]
+    except (OSError, UnicodeError, ValueError) as error:
+        sys.exit(f"Cannot obtain a safe disabled-provider map for {module.name}: {error}")
+    if len(ids) != 1 or ids[0] in provider_ids:
+        sys.exit(f"Cannot obtain a safe disabled-provider map for {module.name}")
+    provider_ids.add(ids[0])
+
+# NSArgumentDomain needs XML booleans for Foundation's [String: Bool] cast.
+disabled_providers = plistlib.dumps(
+    dict.fromkeys(sorted(provider_ids), False), fmt=plistlib.FMT_XML
+).decode()
+arguments = [
+    sys.argv[1],
+    "-provider-enablement", disabled_providers,
+    "-automatic-refresh-enabled", "NO",
+    "-SUEnableAutomaticChecks", "NO",
+    "-SUAutomaticallyUpdate", "NO",
+    "-SUHasLaunchedBefore", "YES",  # Avoid Sparkle's persistent first-launch write.
+]
+
+interrupted_signal = None
+
+def interrupted(signum, frame):
+    global interrupted_signal
+    interrupted_signal = signum
+
+for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+    signal.signal(signum, interrupted)
+
+child = None
+try:
+    child = subprocess.Popen(
+        arguments, stdin=subprocess.DEVNULL,
+        stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+    )
+    deadline = time.monotonic() + STARTUP_SECONDS
+    while True:
+        if interrupted_signal is not None:
+            sys.exit(f"Launch check interrupted by signal {interrupted_signal}")
+        status = child.poll()
+        if status is not None:
+            sys.exit(f"The launched app exited during startup (status {status})")
+        remaining = deadline - time.monotonic()
+        if remaining <= 0:
+            break
+        time.sleep(min(0.1, remaining))
+finally:
+    for signum in (signal.SIGINT, signal.SIGTERM, signal.SIGHUP):
+        signal.signal(signum, signal.SIG_IGN)
+    if child is not None and child.poll() is None:
+        child.terminate()
+        try:
+            child.wait(timeout=TERMINATION_SECONDS)
+        except subprocess.TimeoutExpired:
+            child.kill()
+            child.wait(timeout=TERMINATION_SECONDS)
+PY
+    LAUNCH_SUPERVISOR_PID=$!
+    local launch_status=0
+    wait "$LAUNCH_SUPERVISOR_PID" || launch_status=$?
+    LAUNCH_SUPERVISOR_PID=""
+    [[ "$launch_status" -eq 0 ]] \
+        || fatal "The app failed the mounted-DMG launch smoke test"
     ok "Mounted-DMG launch smoke test passed"
 }
 
@@ -914,6 +1245,16 @@ EOF
 }
 
 cleanup() {
+    trap '' INT TERM HUP
+    if [[ -n "${LOCAL_SIGN_PID:-}" ]]; then
+        kill -TERM "$LOCAL_SIGN_PID" 2>/dev/null || true
+        wait "$LOCAL_SIGN_PID" 2>/dev/null || true
+    fi
+    [[ -z "${LOCAL_ENTITLEMENTS:-}" ]] || rm -f "$LOCAL_ENTITLEMENTS"
+    if [[ -n "${LAUNCH_SUPERVISOR_PID:-}" ]]; then
+        kill -TERM "$LAUNCH_SUPERVISOR_PID" 2>/dev/null || true
+        wait "$LAUNCH_SUPERVISOR_PID" 2>/dev/null || true
+    fi
     if [[ -n "${SIGN_ORIGINAL_KEYCHAINS:-}" ]]; then
         # Unquoted: one argument per keychain, as captured before scoping.
         security list-keychains -d user -s $SIGN_ORIGINAL_KEYCHAINS >/dev/null 2>&1 || true
@@ -929,6 +1270,9 @@ cleanup() {
     fi
 }
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 
 main() {
     parse_args "$@"

@@ -57,11 +57,29 @@ Make local ad-hoc Filbert builds load bundled Sparkle without weakening Develope
 - [x] Reproduce the loader failure in a private copy with providers disabled.
 - [x] Verify that the host-only exception permits startup while retaining Hardened Runtime.
 - [x] Back up and repair the installed local app with user permission.
-- [ ] Derive local-only entitlements in the ad-hoc signing path.
-- [ ] Keep the Developer ID path and shared baseline unchanged.
-- [ ] Add signing-policy regression checks.
-- [ ] Strengthen the bounded launch check and isolate provider preferences.
-- [ ] Run the full validation gate and a real packaged local launch.
+- [x] Derive local-only entitlements in the ad-hoc signing path.
+- [x] Keep the Developer ID path and shared baseline unchanged.
+- [x] Add signing-policy regression checks.
+- [x] Strengthen the bounded launch check and isolate provider preferences.
+- [x] Run the full validation gate and a real packaged local launch.
+
+## Verification
+- The full gate passed formatting, lint, debug and release builds, and all 560 Swift tests.
+- All 11 update-workflow tests and 26 signing/startup tests passed.
+- Signing tests execute the actual functions with a stubbed signer.
+- The local host retains Hardened Runtime and receives the exception. Nested components do not receive it.
+- Release-policy tests retain Developer ID identity, timestamps, team checks, and the shared baseline.
+- Parent-only TERM, HUP, and INT tests stop blocked local signers and remove temporary entitlements.
+- Startup tests reject immediate exits and delayed crashes. They preserve unrelated processes with the same executable path.
+- Provider discovery binds literal metadata to the conforming type and rejects ambiguous or unsupported source shapes.
+- A native macOS fixture verifies the XML argument-domain bridge and Sparkle boolean overrides.
+- The native fixture uses conflicting volatile registered defaults, not an existing user preference domain.
+- The completed local DMG passed nested signatures, helper execution, and the actual five-second launch check.
+- The verification copy retains its `.app` suffix.
+- A second real launch from the DMG copy left selected persistent provider, refresh, and updater preferences unchanged.
+- The final DMG completed normal Finder decoration. Developer ID signing and notarization were not performed.
+- CI and developer validation instructions now include the signing/startup regression suite.
+- Static review found no blockers in the final implementation.
 
 ## Risks
 - Disabling library validation permits additional libraries in the local app process.
