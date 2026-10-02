@@ -164,14 +164,17 @@ final class CursorProviderTests: XCTestCase {
 
     // MARK: - typed errors
 
-    func testFetchQuota_throwsMissingTokenWhenNoToken() async {
+    func testFetchQuota_reportsMissingCredentialsWhenNoToken() async throws {
         let provider = makeProvider(token: nil, binaryExists: true)
 
-        await assertThrowsCursorError(.missingToken) {
+        do {
             _ = try await provider.fetchQuota(
                 auth: .apiKeyFree,
                 baseURL: CursorProvider.baseURL
             )
+            XCTFail("Expected missing credentials")
+        } catch let error as ProviderSetupError {
+            XCTAssertEqual(error, .missingCredentials)
         }
     }
 
@@ -242,13 +245,19 @@ final class CursorProviderTests: XCTestCase {
             externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
-        return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
+        return CursorProvider(
+            locator: locator,
+            tokenStore: tokenStore,
+            session: .shared,
+            errorLog: CursorTestFixtures.makeErrorLog()
+        )
     }
 
     private func makeProviderWithMock(
         usageBody: Data,
         usageStatus: Int = 200,
-        usageError: Error? = nil
+        usageError: Error? = nil,
+        errorLog: ErrorLog = CursorTestFixtures.makeErrorLog()
     ) -> CursorProvider {
         let session = CursorTestFixtures.mockSession(
             usageBody: usageBody,
@@ -270,7 +279,12 @@ final class CursorProviderTests: XCTestCase {
             environment: ["PATH": "/bin", "HOME": "/test"],
             isExecutable: { _ in true }
         )
-        return CursorProvider(locator: locator, tokenStore: tokenStore, session: session)
+        return CursorProvider(
+            locator: locator,
+            tokenStore: tokenStore,
+            session: session,
+            errorLog: errorLog
+        )
     }
 
     private func fetchWithMock(_ data: Data) async throws -> ProviderQuota {
@@ -290,5 +304,21 @@ final class CursorProviderTests: XCTestCase {
         } catch {
             XCTFail("Unexpected error: \(error)")
         }
+    }
+}
+
+extension CursorProviderTests {
+    func testFetchQuota_normalizesURLCancellationWithoutTaskCancellation() async throws {
+        let errorLog = CursorTestFixtures.makeErrorLog()
+        let provider = makeProviderWithMock(usageBody: Data(), usageError: URLError(.cancelled), errorLog: errorLog)
+        XCTAssertFalse(Task.isCancelled)
+
+        do {
+            _ = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: CursorProvider.baseURL)
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+        XCTAssertNil(errorLog.availableFileURL)
     }
 }

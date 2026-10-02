@@ -41,6 +41,25 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertEqual(CursorProvider.credentialImportActionTitle, "Re-import Cursor credentials")
     }
 
+    @MainActor
+    func testRegistryExposesCredentialRemovalOnlyWhileConfigured() async throws {
+        let suiteName = UUID().uuidString
+        let defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        ProviderEnablement.setUserDefaults(defaults)
+        defer {
+            ProviderEnablement.setUserDefaults(.standard)
+            defaults.removePersistentDomain(forName: suiteName)
+        }
+        let provider = makeProvider(token: CursorTestFixtures.tokenPair(valid: true), binaryExists: false)
+        let registry = ProviderRegistry()
+        registry.register(provider)
+        ProviderEnablement.setEnabled(true, for: CursorProvider.providerId)
+
+        XCTAssertTrue(registry.canRemoveHelper(for: CursorProvider.providerId))
+        try await registry.removeHelper(for: CursorProvider.providerId)
+        XCTAssertFalse(registry.canRemoveHelper(for: CursorProvider.providerId))
+    }
+
     // MARK: - setup state
 
     func testSetupState_missingBinaryAndToken_showsInstallMessage() async {
@@ -96,7 +115,8 @@ final class CursorProviderMetadataTests: XCTestCase {
                 externalStorage: ClosureKeychainStorage(),
                 readSQLiteValue: { _, _ in nil }
             ),
-            session: .shared
+            session: .shared,
+            errorLog: CursorTestFixtures.makeErrorLog()
         )
 
         XCTAssertTrue(provider.isConfigured())
@@ -123,7 +143,8 @@ final class CursorProviderMetadataTests: XCTestCase {
                 externalStorage: ClosureKeychainStorage(),
                 readSQLiteValue: { _, _ in nil }
             ),
-            session: .shared
+            session: .shared,
+            errorLog: CursorTestFixtures.makeErrorLog()
         )
 
         XCTAssertFalse(provider.isConfigured())
@@ -135,7 +156,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         XCTAssertFalse(provider.isConfigured())
     }
 
-    func testSetupState_failedSharedVaultSaveSurfacesKeychainError() async {
+    func testSetupState_failedSharedVaultSaveSurfacesKeychainError() async throws {
         let vault = TestCursorCredentialVault()
         vault.setSaveFailure(true)
         let tokenStore = CursorTokenStore(
@@ -146,13 +167,15 @@ final class CursorProviderMetadataTests: XCTestCase {
             }),
             readSQLiteValue: { _, _ in nil }
         )
+        let errorLog = CursorTestFixtures.makeErrorLog()
         let provider = CursorProvider(
             locator: CursorLocator(
                 environment: ["PATH": "/bin", "HOME": "/test"],
                 isExecutable: { _ in true }
             ),
             tokenStore: tokenStore,
-            session: .shared
+            session: .shared,
+            errorLog: errorLog
         )
 
         XCTAssertFalse(provider.isConfigured())
@@ -160,6 +183,12 @@ final class CursorProviderMetadataTests: XCTestCase {
             return XCTFail("Expected Keychain error state")
         }
         XCTAssertEqual(message, "Unable to access saved Cursor credentials. Check Keychain access and try again.")
+        let logURL = try XCTUnwrap(errorLog.availableFileURL)
+        let records = try String(contentsOf: logURL, encoding: .utf8)
+        XCTAssertEqual(records.split(whereSeparator: \.isNewline).count, 2)
+        XCTAssertTrue(records.contains("isConfigured"))
+        XCTAssertTrue(records.contains("currentSetupState"))
+        XCTAssertTrue(records.contains("credential_read_failed"))
     }
 
     private func makeProvider(token: CursorTokenPair?, binaryExists: Bool) -> CursorProvider {
@@ -176,6 +205,11 @@ final class CursorProviderMetadataTests: XCTestCase {
             externalStorage: ClosureKeychainStorage(),
             readSQLiteValue: { _, _ in nil }
         )
-        return CursorProvider(locator: locator, tokenStore: tokenStore, session: .shared)
+        return CursorProvider(
+            locator: locator,
+            tokenStore: tokenStore,
+            session: .shared,
+            errorLog: CursorTestFixtures.makeErrorLog()
+        )
     }
 }
