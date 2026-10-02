@@ -1,7 +1,6 @@
 import Foundation
 
 public enum CursorError: Error, Equatable, Sendable {
-    case missingToken
     /// The session is no longer valid — the refresh returned `shouldLogout`
     /// or an empty access token.
     case sessionExpired
@@ -13,7 +12,6 @@ public enum CursorError: Error, Equatable, Sendable {
 
     public static func == (lhs: CursorError, rhs: CursorError) -> Bool {
         switch (lhs, rhs) {
-        case (.missingToken, .missingToken): true
         case (.sessionExpired, .sessionExpired): true
         case (.clientIdRejected, .clientIdRejected): true
         case let (.http(lhsVal), .http(rhsVal)): lhsVal == rhsVal
@@ -29,10 +27,6 @@ public enum CursorError: Error, Equatable, Sendable {
 extension CursorError: LocalizedError {
     public var errorDescription: String? {
         switch self {
-        case .missingToken:
-            String(
-                localized: "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
-            )
         case .sessionExpired:
             String(localized: "Session expired")
         case .clientIdRejected:

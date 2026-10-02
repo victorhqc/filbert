@@ -30,7 +30,8 @@ struct CursorTokenStore: Sendable {
     init(
         session: URLSession = .shared,
         homeDirectory: String = NSHomeDirectory(),
-        refreshSkew: TimeInterval = 60
+        refreshSkew: TimeInterval = 60,
+        errorLog: ErrorLog = .shared
     ) {
         self.init(
             vault: KeychainCursorCredentialVault(),
@@ -39,7 +40,9 @@ struct CursorTokenStore: Sendable {
             refreshSkew: refreshSkew,
             externalStorage: SecurityKeychainStorage(),
             externalContext: .shared,
-            readSQLiteValue: { CursorTokenStore.defaultReadSQLiteValue(dbPath: $0, key: $1) }
+            readSQLiteValue: {
+                CursorTokenStore.defaultReadSQLiteValue(dbPath: $0, key: $1, errorLog: errorLog)
+            }
         )
     }
 
@@ -102,8 +105,11 @@ struct CursorTokenStore: Sendable {
             }
         }
 
+        guard let accessToken = readSQLiteValue(sqlitePath, CursorAuth.sqliteAccessKey),
+              !accessToken.isEmpty
+        else { return nil }
         return completeExternalPair(
-            accessToken: readSQLiteValue(sqlitePath, CursorAuth.sqliteAccessKey),
+            accessToken: accessToken,
             refreshToken: readSQLiteValue(sqlitePath, CursorAuth.sqliteRefreshKey)
         )
     }
@@ -176,6 +182,10 @@ struct CursorTokenStore: Sendable {
         let response: URLResponse
         do {
             (data, response) = try await session.data(for: request)
+        } catch is CancellationError {
+            throw CancellationError()
+        } catch let error as URLError where error.code == .cancelled {
+            throw CancellationError()
         } catch {
             throw CursorError.network(error)
         }
@@ -241,7 +251,17 @@ struct CursorTokenStore: Sendable {
 
     // MARK: - Production external stores
 
-    private static func defaultReadSQLiteValue(dbPath: String, key: String) -> String? {
+    static func defaultReadSQLiteValue(dbPath: String, key: String, errorLog: ErrorLog) -> String? {
+        do {
+            _ = try FileManager.default.attributesOfItem(atPath: dbPath)
+        } catch {
+            let cocoaError = error as? CocoaError
+            guard cocoaError?.code != .fileReadNoSuchFile,
+                  cocoaError?.code != .fileNoSuchFile
+            else { return nil }
+            recordSQLiteFailure(code: "sqlite_metadata_failed", errorLog: errorLog)
+            return nil
+        }
         var database: OpaquePointer?
         guard sqlite3_open_v2(
             dbPath,
@@ -250,6 +270,7 @@ struct CursorTokenStore: Sendable {
             nil
         ) == SQLITE_OK else {
             sqlite3_close(database)
+            recordSQLiteFailure(code: "sqlite_open_failed", errorLog: errorLog)
             return nil
         }
         defer { sqlite3_close(database) }
@@ -258,18 +279,33 @@ struct CursorTokenStore: Sendable {
         let sql = "SELECT value FROM ItemTable WHERE key = ? LIMIT 1"
         guard sqlite3_prepare_v2(database, sql, -1, &statement, nil) == SQLITE_OK else {
             sqlite3_finalize(statement)
+            recordSQLiteFailure(code: "sqlite_prepare_failed", errorLog: errorLog)
             return nil
         }
         defer { sqlite3_finalize(statement) }
 
-        sqlite3_bind_text(statement, 1, key, -1, sqliteTransient)
-
-        guard sqlite3_step(statement) == SQLITE_ROW,
-              let cString = sqlite3_column_text(statement, 0)
-        else {
+        guard sqlite3_bind_text(statement, 1, key, -1, sqliteTransient) == SQLITE_OK else {
+            recordSQLiteFailure(code: "sqlite_bind_failed", errorLog: errorLog)
             return nil
         }
+
+        let result = sqlite3_step(statement)
+        guard result != SQLITE_DONE else { return nil }
+        guard result == SQLITE_ROW else {
+            recordSQLiteFailure(code: "sqlite_read_failed", errorLog: errorLog)
+            return nil
+        }
+        guard let cString = sqlite3_column_text(statement, 0) else { return nil }
         return String(cString: cString)
+    }
+
+    private static func recordSQLiteFailure(code: String, errorLog: ErrorLog) {
+        errorLog.record(
+            component: "CursorTokenStore",
+            operation: "readSQLiteValue",
+            code: code,
+            providerID: CursorProvider.providerId
+        )
     }
 }
 
