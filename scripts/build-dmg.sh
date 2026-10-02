@@ -55,6 +55,7 @@ VERSION=""
 OUTPUT_DIR="$REPO_ROOT/dist"
 FORCE_NO_SIGN=false
 REQUIRE_SIGNING=false
+SKIP_LAUNCH_CHECK=false
 
 info()  { printf '\033[1;34m▸\033[0m %s\n' "$*" >&2; }
 ok()    { printf '\033[1;32m✓\033[0m %s\n' "$*" >&2; }
@@ -63,7 +64,7 @@ fatal() { printf '\033[1;31m✗\033[0m %s\n' "$*" >&2; exit 1; }
 
 usage() {
     cat <<EOF
-Usage: $0 --version <semver> [--output <dir>] [--no-sign] [--require-signing]
+Usage: $0 --version <semver> [--output <dir>] [--no-sign] [--require-signing] [--skip-launch-check]
 
 Options:
   --version <semver>   Version string baked into Info.plist and DMG name.
@@ -75,6 +76,8 @@ Options:
                        release workflow uses this so a public release can
                        never fall back to ad-hoc signing. Mutually
                        exclusive with --no-sign.
+  --skip-launch-check  Do not launch the app. Keep resource, helper, and
+                       signature validation for isolated offline builds.
   -h, --help           Show this help.
 
 Signing secrets (all six required for the signed lane):
@@ -95,6 +98,8 @@ parse_args() {
                 FORCE_NO_SIGN=true; shift ;;
             --require-signing)
                 REQUIRE_SIGNING=true; shift ;;
+            --skip-launch-check)
+                SKIP_LAUNCH_CHECK=true; shift ;;
             -h|--help)
                 usage; exit 0 ;;
             *)
@@ -137,9 +142,11 @@ build_release() {
     info "Building $APP_NAME release ($ARCH)…"
     (
         cd "$REPO_ROOT"
-        swift build -c release --arch arm64
+        swift build --build-system native -c release --arch arm64
     )
     [[ -x "$BUILD_DIR/App" ]] || fatal "Build produced no executable at $BUILD_DIR/App"
+    [[ -x "$BUILD_DIR/ClaudeCodeStatuslineHelper" ]] \
+        || fatal "Build produced no Claude Code helper executable"
     ok "Release build complete"
 
     # SPM's generated Bundle.module accessor looks up resources at
@@ -374,6 +381,8 @@ assemble_bundle() {
     # Rename the executable to the display name. CFBundleExecutable matches.
     cp "$BUILD_DIR/App" "$app_dir/Contents/MacOS/$APP_NAME"
     chmod +x "$app_dir/Contents/MacOS/$APP_NAME"
+    cp "$BUILD_DIR/ClaudeCodeStatuslineHelper" "$app_dir/Contents/Resources/"
+    chmod +x "$app_dir/Contents/Resources/ClaudeCodeStatuslineHelper"
 
     # SPM resource bundles live at Contents/Resources/ because that is the
     # only layout macOS code sealing accepts. Bundle.module does NOT
@@ -381,8 +390,7 @@ assemble_bundle() {
     # accessor looks at Bundle.main.bundleURL (the .app top level).
     # patch_resource_bundle_accessors (called from build_release) rewrites
     # the accessor to look here via Bundle.main.resourceURL.
-    # If either piece is missing, statusline_helper.swift
-    # and AppIcon/Localizable lookups fail at runtime.
+    # AppIcon/Localizable lookups need the patched accessor.
     local bundle_count=0
     while IFS= read -r bundle; do
         cp -R "$bundle" "$app_dir/Contents/Resources/"
@@ -461,6 +469,8 @@ sign_adhoc() {
     local app_dir="$1"
     info "Ad-hoc signing…"
     sign_sparkle_nested_code "$app_dir" -
+    codesign -s - --force --options runtime \
+        "$app_dir/Contents/Resources/ClaudeCodeStatuslineHelper"
     codesign -s - --force --options runtime \
         --entitlements "$ENTITLEMENTS" \
         "$app_dir"
@@ -555,6 +565,8 @@ sign_devid() {
     local app_dir="$1"
     info "Developer ID signing…"
     sign_sparkle_nested_code "$app_dir" "$SIGN_IDENTITY"
+    codesign --force --options runtime --timestamp -s "$SIGN_IDENTITY" \
+        "$app_dir/Contents/Resources/ClaudeCodeStatuslineHelper"
     codesign --options runtime \
         --entitlements "$ENTITLEMENTS" \
         --timestamp \
@@ -741,6 +753,7 @@ verify_release() {
 
     codesign --verify --deep --strict --verbose=4 "$verify_app"
     verify_sparkle_bundle "$verify_app"
+    verify_claude_helper "$verify_app"
     otool -L "$verify_app/Contents/MacOS/$APP_NAME" \
         | grep -Fq "@rpath/Sparkle.framework/" \
         || fatal "The packaged app has no portable Sparkle framework linkage"
@@ -760,9 +773,42 @@ verify_release() {
             || warn "spctl rejected ad-hoc signed app (expected on unsigned lane)."
     fi
 
-    launch_smoke_test "$verify_app"
+    if [[ "$SKIP_LAUNCH_CHECK" == "true" ]]; then
+        info "App launch check skipped; no app settings or credentials accessed"
+    else
+        launch_smoke_test "$verify_app"
+    fi
     rm -rf "$verify_app"
     ok "Release artifact verified"
+}
+
+verify_claude_helper() {
+    local app_dir="$1"
+    local helper="$app_dir/Contents/Resources/ClaudeCodeStatuslineHelper"
+    [[ -x "$helper" ]] || fatal "The packaged Claude Code helper is missing or not executable"
+    codesign --verify --strict "$helper" \
+        || fatal "The packaged Claude Code helper failed signature verification"
+
+    local test_dir cache_path
+    test_dir="$(mktemp -d)"
+    cache_path="$test_dir/cache.json"
+    printf '%s' '{"rate_limits":{"five_hour":{"used_percentage":42,"resets_at":1900000000}}}' \
+        | "$helper" --cache-path "$cache_path" --log-directory "$test_dir/logs"
+    [[ "$(/usr/bin/plutil -extract rate_limits.five_hour.used_percentage raw -o - "$cache_path")" == "42" ]] \
+        || fatal "The packaged Claude Code helper did not create its first cache"
+    [[ ! -e "$test_dir/logs/errors.log" ]] || fatal "Successful helper invocation wrote an error log"
+    cp "$cache_path" "$test_dir/saved-cache.json"
+    printf '%s' 'invalid PRIVATE_HELPER_SENTINEL' \
+        | "$helper" --cache-path "$cache_path" --log-directory "$test_dir/logs"
+    cmp -s "$cache_path" "$test_dir/saved-cache.json" \
+        || fatal "Malformed helper input replaced the good cache"
+    grep -Fq '"code":"invalid-input"' "$test_dir/logs/errors.log" \
+        || fatal "Malformed helper input did not produce an error record"
+    if grep -Fq 'PRIVATE_HELPER_SENTINEL' "$test_dir/logs/errors.log"; then
+        fatal "The helper error record contains private input"
+    fi
+    rm -rf "$test_dir"
+    ok "Packaged Claude Code helper passed isolated execution checks"
 }
 
 verify_sparkle_bundle() {
