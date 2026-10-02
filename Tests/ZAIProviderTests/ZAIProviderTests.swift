@@ -11,7 +11,7 @@ final class ZAIProviderTests: XCTestCase {
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         session = URLSession(configuration: config)
-        provider = ZAIProvider(session: session)
+        provider = ZAIProvider(session: session, errorLog: Self.makeErrorLog())
     }
 
     override func tearDown() {
@@ -195,6 +195,21 @@ final class ZAIProviderTests: XCTestCase {
         }
     }
 
+    func testFetchQuota_normalizesURLCancellationWithoutTaskCancellation() async throws {
+        let errorLog = Self.makeErrorLog()
+        let provider = ZAIProvider(session: session, errorLog: errorLog)
+        MockURLProtocol.responseError = URLError(.cancelled)
+        XCTAssertFalse(Task.isCancelled)
+
+        do {
+            _ = try await provider.fetchQuota(auth: .apiKey("test-key"), baseURL: ZAIProvider.baseURL)
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+        XCTAssertNil(errorLog.availableFileURL)
+    }
+
     func testFetchQuota_throwsDecodingForInvalidJSON() async throws {
         MockURLProtocol.responseData = Data("not json".utf8)
         MockURLProtocol.responseStatusCode = 200
@@ -238,6 +253,10 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     // MARK: - Helpers
+
+    static func makeErrorLog() -> ErrorLog {
+        ErrorLog(directoryURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
+    }
 
     private static func validResponseJSON() -> Data {
         Data("""
