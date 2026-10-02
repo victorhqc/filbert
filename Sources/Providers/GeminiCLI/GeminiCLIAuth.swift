@@ -1,30 +1,5 @@
 import Foundation
-import OSLog
 import Security
-
-protocol GeminiLogSink: Sendable {
-    func requestCompleted(statusCode: Int, latencyMilliseconds: Int)
-    func requestFailed(latencyMilliseconds: Int)
-}
-
-struct GeminiOSLogSink: GeminiLogSink {
-    private let logger: Logger
-
-    init() {
-        logger = Logger(
-            subsystem: Bundle.main.bundleIdentifier ?? "com.victorhqc.filbert",
-            category: "GeminiCLIProvider"
-        )
-    }
-
-    func requestCompleted(statusCode: Int, latencyMilliseconds: Int) {
-        logger.debug("Gemini request completed status=\(statusCode) latencyMs=\(latencyMilliseconds)")
-    }
-
-    func requestFailed(latencyMilliseconds: Int) {
-        logger.debug("Gemini request failed latencyMs=\(latencyMilliseconds)")
-    }
-}
 
 enum GeminiCredentialError: Error, Equatable, Sendable {
     case itemNotFound

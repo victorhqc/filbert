@@ -30,7 +30,7 @@ extension GeminiCLIProviderTests {
         }
     }
 
-    func testURLSessionTransportLogsOnlyStatusAndLatency() async throws {
+    func testURLSessionTransportReturnsResponseData() async throws {
         let responseURL = try XCTUnwrap(
             URL(string: "https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota")
         )
@@ -47,19 +47,14 @@ extension GeminiCLIProviderTests {
 
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [GeminiHostResponseURLProtocol.self]
-        let logger = RecordingLogSink()
         let transport = URLSessionGeminiHTTPTransport(
-            session: URLSession(configuration: configuration),
-            logger: logger
+            session: URLSession(configuration: configuration)
         )
 
-        _ = try await transport.send(URLRequest(url: responseURL))
+        let response = try await transport.send(URLRequest(url: responseURL))
 
-        let entries = logger.recordedEntries()
-        XCTAssertEqual(entries.count, 1)
-        XCTAssertTrue(entries[0].contains("status=200"))
-        XCTAssertFalse(entries.joined().contains("project-secret"))
-        XCTAssertFalse(entries.joined().contains("access-secret"))
+        XCTAssertEqual(response.statusCode, 200)
+        XCTAssertEqual(response.data, GeminiHostResponseURLProtocol.responseData)
     }
 
     func testURLSessionTransportParsesRetryAfterHeader() async throws {
@@ -86,6 +81,25 @@ extension GeminiCLIProviderTests {
 
         XCTAssertEqual(response.statusCode, 429)
         XCTAssertEqual(response.retryAfter, 2)
+    }
+
+    func testProviderNormalizesURLCancellationWithoutTaskCancellation() async throws {
+        GeminiHostResponseURLProtocol.responseError = URLError(.cancelled)
+        defer { GeminiHostResponseURLProtocol.responseError = nil }
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [GeminiHostResponseURLProtocol.self]
+        let transport = URLSessionGeminiHTTPTransport(session: URLSession(configuration: configuration))
+        let errorLog = Self.makeErrorLog()
+        let provider = makeProvider(credentials: validCredentials(), transport: transport, errorLog: errorLog)
+        XCTAssertFalse(Task.isCancelled)
+
+        do {
+            _ = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: GeminiCLIProvider.baseURL)
+            XCTFail("Expected cancellation")
+        } catch is CancellationError {
+            XCTAssertFalse(Task.isCancelled)
+        }
+        XCTAssertNil(errorLog.availableFileURL)
     }
 
     func testRedirectDelegateRejectsRedirects() throws {

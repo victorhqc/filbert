@@ -27,20 +27,48 @@ final class GeminiCLIProviderTests: XCTestCase {
 }
 
 extension GeminiCLIProviderTests {
+    func testCredentialFailuresAreRecordedAtTheSetupBoundary() async throws {
+        let errorLog = Self.makeErrorLog()
+        let provider = makeProvider(credentialsResult: .failure(.invalidPayload), errorLog: errorLog)
+
+        _ = await provider.currentSetupState()
+
+        let logURL = try XCTUnwrap(errorLog.availableFileURL)
+        let records = try String(contentsOf: logURL, encoding: .utf8)
+        XCTAssertEqual(records.split(whereSeparator: \.isNewline).count, 1)
+        XCTAssertTrue(records.contains("currentSetupState"))
+        XCTAssertTrue(records.contains("credential_read_failed"))
+        XCTAssertTrue(records.contains("gemini-cli"))
+    }
+
+    func testAbsentCredentialsAndCancelledKeychainAccessDoNotRecordErrors() async {
+        for error: GeminiCredentialError in [.itemNotFound, .accessDenied(-128)] {
+            let errorLog = Self.makeErrorLog()
+            let provider = makeProvider(credentialsResult: .failure(error), errorLog: errorLog)
+
+            XCTAssertFalse(provider.isConfigured())
+            guard case .setup = await provider.currentSetupState() else {
+                return XCTFail("Expected an ordinary setup state")
+            }
+
+            XCTAssertNil(errorLog.availableFileURL)
+        }
+    }
+
     func testProviderReportsInvalidAndDeniedKeychainStates() async {
         let invalid = makeProvider(
             credentialsResult: .failure(.invalidPayload)
         )
-        guard case let .setup(invalidMessage) = await invalid.currentSetupState() else {
-            return XCTFail("Expected invalid-payload setup state")
+        guard case let .error(invalidMessage) = await invalid.currentSetupState() else {
+            return XCTFail("Expected invalid-payload error state")
         }
         XCTAssertEqual(invalidMessage, "Update Gemini CLI and sign in again")
 
         let denied = makeProvider(
             credentialsResult: .failure(.accessDenied(-25293))
         )
-        guard case let .setup(deniedMessage) = await denied.currentSetupState() else {
-            return XCTFail("Expected access-denied setup state")
+        guard case let .error(deniedMessage) = await denied.currentSetupState() else {
+            return XCTFail("Expected access-denied error state")
         }
         XCTAssertEqual(deniedMessage, "Allow Filbert to read the Gemini CLI Keychain item")
     }
