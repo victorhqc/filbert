@@ -786,6 +786,48 @@ class LaunchCheckTests(ScriptTests):
     def test_verification_copy_retains_app_bundle_suffix(self):
         self.assertIn('local verify_app="/tmp/filbert-verify-$$.app"', SCRIPT_FUNCTIONS)
 
+    @unittest.skipUnless(sys.platform == "darwin", "Requires Apple's string catalog compiler")
+    def test_string_catalogs_compile_inside_module_resource_bundle(self):
+        resources = self.app / "Contents/Resources/filbert_App.bundle"
+        resources.mkdir()
+        catalog = resources / "Localizable.xcstrings"
+        source = ROOT / "Sources/App/Resources/Localizable.xcstrings"
+        catalog.write_bytes(source.read_bytes())
+
+        result = self.run_function('compile_string_catalogs "$FIXTURE_APP/Contents/Resources"')
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertFalse(catalog.exists())
+        entries = json.loads(source.read_text())["strings"]
+        for locale in ("en", "de-DE", "es-ES", "es-MX"):
+            table = resources / f"{locale}.lproj/Localizable.strings"
+            converted = subprocess.run(
+                ["plutil", "-convert", "json", "-o", "-", str(table)],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
+            translations = json.loads(converted.stdout)
+            for key in ("General", "Launch at login", "Could not enable launch at login. Try again."):
+                self.assertEqual(
+                    translations[key],
+                    entries[key]["localizations"][locale]["stringUnit"]["value"],
+                )
+        self.assertIn('compile_string_catalogs "$app_dir/Contents/Resources"', SCRIPT_FUNCTIONS)
+
+    @unittest.skipUnless(sys.platform == "darwin", "Requires Apple's string catalog compiler")
+    def test_invalid_string_catalog_stops_packaging(self):
+        resources = self.app / "Contents/Resources/filbert_App.bundle"
+        resources.mkdir()
+        catalog = resources / "Localizable.xcstrings"
+        catalog.write_text("invalid catalog")
+
+        result = self.run_function('compile_string_catalogs "$FIXTURE_APP/Contents/Resources"')
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Could not compile string catalog", result.stderr)
+        self.assertTrue(catalog.exists())
+
 
 if __name__ == "__main__":
     unittest.main()

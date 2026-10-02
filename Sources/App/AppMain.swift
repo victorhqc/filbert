@@ -14,6 +14,7 @@ struct AppMain: App {
 
     @State private var viewModel: QuotaViewModel
     @State private var sleepPrevention = SleepPreventionController()
+    @State private var launchAtLogin = LaunchAtLoginController()
     private let updateCoordinator: UpdateCoordinator
 
     init() {
@@ -46,7 +47,8 @@ struct AppMain: App {
             SettingsView(
                 viewModel: viewModel,
                 updateCoordinator: updateCoordinator,
-                sleepPrevention: sleepPrevention
+                sleepPrevention: sleepPrevention,
+                launchAtLogin: launchAtLogin
             )
         }
         .defaultSize(width: 620, height: 520)

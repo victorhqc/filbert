@@ -1,6 +1,105 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "General" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Allgemein" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "General" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "General" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "General" } }
+      }
+    },
+    "Startup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Start" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Startup" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inicio" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inicio" } }
+      }
+    },
+    "Launch at login" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Bei der Anmeldung starten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at login" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir al iniciar sesión" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir al iniciar sesión" } }
+      }
+    },
+    "Start Filbert in the menu bar after you sign in to your Mac." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert nach der Anmeldung am Mac in der Menüleiste starten." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Start Filbert in the menu bar after you sign in to your Mac." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en la barra de menús después de iniciar sesión en tu Mac." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en la barra de menús después de iniciar sesión en tu Mac." } }
+      }
+    },
+    "Filbert will not start at login." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert startet nicht bei der Anmeldung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert will not start at login." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no se abrirá al iniciar sesión." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no se abrirá al iniciar sesión." } }
+      }
+    },
+    "Filbert will start at login." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert startet bei der Anmeldung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert will start at login." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert se abrirá al iniciar sesión." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert se abrirá al iniciar sesión." } }
+      }
+    },
+    "Filbert is registered, but macOS approval is required before it can start at login." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert ist registriert, benötigt aber die Zustimmung in macOS, um bei der Anmeldung zu starten." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert is registered, but macOS approval is required before it can start at login." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert está registrado, pero requiere aprobación en macOS para abrirse al iniciar sesión." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert está registrado, pero requiere aprobación en macOS para abrirse al iniciar sesión." } }
+      }
+    },
+    "Launch at login requires an installed Filbert app." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Der Start bei der Anmeldung erfordert eine installierte Filbert-App." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at login requires an installed Filbert app." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir Filbert al iniciar sesión, la app debe estar instalada." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir Filbert al iniciar sesión, la app debe estar instalada." } }
+      }
+    },
+    "Open Login Items Settings" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einstellungen für Anmeldeobjekte öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Login Items Settings" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ajustes de ítems de inicio" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir configuración de elementos de inicio" } }
+      }
+    },
+    "Could not enable launch at login. Try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Der Start bei der Anmeldung konnte nicht aktiviert werden. Versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not enable launch at login. Try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo activar la apertura al iniciar sesión. Inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo activar la apertura al iniciar sesión. Inténtalo de nuevo." } }
+      }
+    },
+    "Could not disable launch at login. Try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Der Start bei der Anmeldung konnte nicht deaktiviert werden. Versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not disable launch at login. Try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } }
+      }
+    },
     "Unable to read credentials. Check Keychain access and try again." : {
       "extractionState" : "manual",
       "localizations" : {

@@ -370,6 +370,16 @@ PY
 #         filbert_ZAIProvider.bundle/
 #         AppIcon.icns                        (for Finder/Dock pre-launch)
 #
+compile_string_catalogs() {
+    local resource_dir="$1"
+    local catalog
+    while IFS= read -r -d '' catalog; do
+        xcrun xcstringstool compile "$catalog" --output-directory "$(dirname "$catalog")" \
+            || fatal "Could not compile string catalog: $catalog"
+        rm "$catalog"
+    done < <(find "$resource_dir" -type f -name '*.xcstrings' -print0)
+}
+
 assemble_bundle() {
     local stage_dir="$1"
     local app_dir="$stage_dir/$APP_NAME.app"
@@ -398,6 +408,7 @@ assemble_bundle() {
     done < <(find "$BUILD_DIR" -maxdepth 1 -name 'filbert_*.bundle' -type d)
     [[ $bundle_count -gt 0 ]] || fatal "No SPM resource bundles found in $BUILD_DIR"
     ok "Copied $bundle_count resource bundle(s)"
+    compile_string_catalogs "$app_dir/Contents/Resources"
 
     copy_sparkle_framework "$app_dir"
 
