@@ -76,7 +76,11 @@ extension QuotaViewModel {
 
     func recordSmartFailure(for providerId: String) {
         guard AutoRefreshPreferences.mode == .smart else { return }
-        _ = smartRefreshPolicy.recordFailure(for: providerId)
+        _ = smartRefreshPolicy.recordFailure(
+            for: providerId,
+            at: smartRefreshElapsed(),
+            quietWindow: AutoRefreshPreferences.quietWindow
+        )
         let slowInterval = AutoRefreshPreferences.slowInterval
         let retryDeadline = providerRefreshCharacteristics(for: providerId).retryDeadline ?? 0
         smartRefreshNotBefore[providerId] = smartRefreshElapsed() + max(slowInterval, retryDeadline)

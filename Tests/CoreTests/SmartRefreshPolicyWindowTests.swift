@@ -150,7 +150,10 @@ final class SmartRefreshPolicyWindowTests: SmartRefreshPolicyTestCase {
         _ = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
         _ = policy.recordSuccess(quota(usage: 20), for: "provider", at: 0, quietWindow: quietWindow)
 
-        XCTAssertEqual(policy.recordFailure(for: "provider"), .slow)
+        XCTAssertEqual(
+            policy.recordFailure(for: "provider", at: 0, quietWindow: quietWindow),
+            .slow
+        )
         XCTAssertEqual(policy.cadence(for: "provider", at: 0, quietWindow: quietWindow), .slow)
 
         let unchanged = policy.recordSuccess(

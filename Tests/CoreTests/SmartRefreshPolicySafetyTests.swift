@@ -53,7 +53,10 @@ final class SmartRefreshPolicySafetyTests: SmartRefreshPolicyTestCase {
         _ = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
         policy.recordExtension(for: "provider", duration: 900, at: 0)
 
-        XCTAssertEqual(policy.recordFailure(for: "provider"), .slow)
+        XCTAssertEqual(
+            policy.recordFailure(for: "provider", at: 0, quietWindow: quietWindow),
+            .slow
+        )
         XCTAssertNil(policy.extensionDeadline(for: "provider"))
         XCTAssertEqual(policy.cadence(for: "provider", at: 10, quietWindow: quietWindow), .slow)
     }
@@ -209,7 +212,7 @@ final class SmartRefreshPolicySafetyTests: SmartRefreshPolicyTestCase {
         )
         policy.advance(for: "provider", at: 600, quietWindow: quietWindow)
 
-        _ = policy.recordFailure(for: "provider")
+        _ = policy.recordFailure(for: "provider", at: 610, quietWindow: quietWindow)
 
         XCTAssertEqual(policy.cadence(for: "provider", at: 700, quietWindow: quietWindow), .slow)
     }

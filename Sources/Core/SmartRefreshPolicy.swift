@@ -96,7 +96,7 @@ public struct SmartRefreshPolicy: Sendable {
             return state.unchanged(at: elapsed, quietWindow: quietWindow)
         }
 
-        state.beginAutomaticFast(at: elapsed, quietWindow: quietWindow)
+        state.beginAutomaticFast(at: elapsed)
         states[providerId] = state
         return Decision(
             classification: .changed,
@@ -115,19 +115,27 @@ public struct SmartRefreshPolicy: Sendable {
         var state = states[providerId] ?? State()
         state.canInvokeInference = canInvokeInference
         state.expirePhases(at: elapsed, quietWindow: quietWindow)
-        state.beginAutomaticFast(at: elapsed, quietWindow: quietWindow)
+        state.beginAutomaticFast(at: elapsed)
         states[providerId] = state
         return state.cadence(at: elapsed, quietWindow: quietWindow)
     }
 
     @discardableResult
-    public mutating func recordFailure(for providerId: String) -> Cadence {
+    public mutating func recordFailure(
+        for providerId: String,
+        at elapsed: TimeInterval,
+        quietWindow: TimeInterval
+    ) -> Cadence {
         var state = states[providerId] ?? State()
+        // Elapsed transitions must resolve before the failure clears the
+        // episode, or a cap crossed since the last advance would never
+        // materialize its lockout.
+        state.expirePhases(at: elapsed, quietWindow: quietWindow)
         state.activityTime = nil
         state.episodeStart = nil
         state.extensionDeadline = nil
         states[providerId] = state
-        return .slow
+        return state.cadence(at: elapsed, quietWindow: quietWindow)
     }
 
     public mutating func recordExtension(
@@ -199,30 +207,52 @@ private extension SmartRefreshPolicy {
             return elapsed < lockoutUntil
         }
 
-        mutating func beginAutomaticFast(at elapsed: TimeInterval, quietWindow: TimeInterval) {
+        mutating func beginAutomaticFast(at elapsed: TimeInterval) {
             guard !isLockedOut(at: elapsed) else { return }
-            let windowAlive = activityTime.map { elapsed < $0 + 2 * quietWindow } ?? false
-            if !windowAlive, canInvokeInference {
+            // The episode starts on entry and never renews while it is
+            // running; a revived window needs a fresh start or the cap could
+            // never fire.
+            if canInvokeInference, episodeStart == nil {
                 episodeStart = elapsed
             }
             activityTime = elapsed
         }
 
         mutating func expirePhases(at elapsed: TimeInterval, quietWindow: TimeInterval) {
-            if let start = episodeStart {
-                if elapsed >= start + SmartRefreshPolicy.inferenceEpisodeCap {
-                    activityTime = nil
-                    episodeStart = nil
-                    lockoutUntil = start + SmartRefreshPolicy.inferenceEpisodeCap + quietWindow
-                } else if let activity = activityTime, elapsed >= activity + 2 * quietWindow {
-                    episodeStart = nil
-                }
-            }
+            resolveInferenceEpisode(at: elapsed, quietWindow: quietWindow)
             if let deadline = extensionDeadline, elapsed >= deadline {
                 extensionDeadline = nil
             }
             if let until = lockoutUntil, elapsed >= until {
                 lockoutUntil = nil
+            }
+        }
+
+        /// Resolves the inference episode in chronological order, so a late
+        /// advance (for example after sleep) cannot invent a lockout.
+        private mutating func resolveInferenceEpisode(at elapsed: TimeInterval, quietWindow: TimeInterval) {
+            guard canInvokeInference else { return }
+
+            if let start = episodeStart {
+                let capTime = start + SmartRefreshPolicy.inferenceEpisodeCap
+                let windowEnd = (activityTime ?? start) + 2 * quietWindow
+                if windowEnd < capTime {
+                    // The window lapses strictly before the cap, so the episode
+                    // ends naturally with no lockout. `activityTime` stays so a
+                    // longer quiet window can re-open it.
+                    if elapsed >= windowEnd {
+                        episodeStart = nil
+                    }
+                } else if elapsed >= capTime {
+                    activityTime = nil
+                    episodeStart = nil
+                    lockoutUntil = capTime + quietWindow
+                }
+            }
+
+            if episodeStart == nil, !isLockedOut(at: elapsed) {
+                guard let activity = activityTime, elapsed < activity + 2 * quietWindow else { return }
+                episodeStart = elapsed
             }
         }
 
@@ -245,14 +275,15 @@ private extension SmartRefreshPolicy {
         }
 
         func nextPhaseBoundary(at elapsed: TimeInterval, quietWindow: TimeInterval) -> TimeInterval? {
-            if let extensionDeadline, elapsed < extensionDeadline {
-                return extensionDeadline
-            }
-            if let lockoutUntil, elapsed < lockoutUntil {
-                return lockoutUntil
-            }
-
+            // An extension overrides cadence but must not hide the underlying
+            // cap or lockout, or a failure could erase a required lockout.
             var boundaries: [TimeInterval] = []
+            if let extensionDeadline {
+                boundaries.append(extensionDeadline)
+            }
+            if let lockoutUntil {
+                boundaries.append(lockoutUntil)
+            }
             if let activityTime {
                 let since = elapsed - activityTime
                 if since < quietWindow {
@@ -294,12 +325,21 @@ private extension SmartRefreshPolicy {
             !metrics.isEmpty || isKnown(availability)
         }
 
-        /// Keeps the previous value for any field the newer observation omits,
-        /// so an empty or availability-only result cannot drop the accepted
-        /// baseline.
+        /// Keeps the previous value for any metric the newer observation omits,
+        /// so a partial result cannot drop the baseline or fake a removal.
         func merged(with newer: Self) -> Self {
-            ActivitySnapshot(
-                metrics: newer.metrics.isEmpty ? metrics : newer.metrics,
+            let mergedMetrics: [ProviderActivityMetric]
+            if newer.metrics.isEmpty {
+                mergedMetrics = metrics
+            } else {
+                var byId = Dictionary(metrics.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+                for metric in newer.metrics {
+                    byId[metric.id] = metric
+                }
+                mergedMetrics = byId.values.sorted { $0.id < $1.id }
+            }
+            return ActivitySnapshot(
+                metrics: mergedMetrics,
                 availability: isKnown(newer.availability) ? newer.availability : availability
             )
         }
