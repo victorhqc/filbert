@@ -91,9 +91,14 @@ public struct GeminiCLIProvider: AIProvider {
     let credentialStore: any GeminiCredentialStore
     private let oauth: GeminiOAuthClient
     private let codeAssist: GeminiCodeAssistClient
+    private let gate: ProviderRetryGate
     private let coordinator: GeminiFetchCoordinator
     private let now: @Sendable () -> Date
     let errorLog: ErrorLog
+
+    public var retryGate: ProviderRetryGate? {
+        gate
+    }
 
     public init() {
         let configuration = URLSessionConfiguration.ephemeral
@@ -105,11 +110,13 @@ public struct GeminiCLIProvider: AIProvider {
             delegateQueue: nil
         )
         let transport = URLSessionGeminiHTTPTransport(session: session)
-        let http = GeminiHTTPClient(transport: transport)
+        let gate = ProviderRetryGate()
+        let http = GeminiHTTPClient(transport: transport, retryGate: gate)
         self.init(
             credentialStore: GeminiKeychainStore(),
             oauth: GeminiOAuthClient(http: http),
-            codeAssist: GeminiCodeAssistClient(http: http)
+            codeAssist: GeminiCodeAssistClient(http: http),
+            retryGate: gate
         )
     }
 
@@ -117,6 +124,7 @@ public struct GeminiCLIProvider: AIProvider {
         credentialStore: any GeminiCredentialStore,
         oauth: GeminiOAuthClient,
         codeAssist: GeminiCodeAssistClient,
+        retryGate: ProviderRetryGate,
         now: (@Sendable () -> Date)? = nil,
         workflowTimeout: TimeInterval = 90,
         errorLog: ErrorLog = .shared
@@ -124,6 +132,7 @@ public struct GeminiCLIProvider: AIProvider {
         self.credentialStore = credentialStore
         self.oauth = oauth
         self.codeAssist = codeAssist
+        gate = retryGate
         coordinator = GeminiFetchCoordinator(timeout: workflowTimeout)
         self.now = now ?? { Date() }
         self.errorLog = errorLog

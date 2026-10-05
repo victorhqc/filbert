@@ -11,18 +11,15 @@ public enum ProviderQuotaCostEvidence: Sendable, Equatable {
 public struct ProviderRefreshCharacteristics: Sendable, Equatable {
     public let costEvidence: ProviderQuotaCostEvidence
     public let minimumInterval: TimeInterval?
-    public let retryDeadline: TimeInterval?
     public let canInvokeInference: Bool
 
     public init(
         costEvidence: ProviderQuotaCostEvidence = .unknown,
         minimumInterval: TimeInterval? = nil,
-        retryDeadline: TimeInterval? = nil,
         canInvokeInference: Bool = false
     ) {
         self.costEvidence = costEvidence
         self.minimumInterval = minimumInterval
-        self.retryDeadline = retryDeadline
         self.canInvokeInference = canInvokeInference
     }
 }

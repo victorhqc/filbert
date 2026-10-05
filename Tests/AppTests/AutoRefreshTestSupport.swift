@@ -59,6 +59,7 @@ final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unchecked Sen
     var fetchCallCount = 0
     var proactiveRefreshCallCount = 0
     var errorToThrow: (any Error)?
+    var retryGate: ProviderRetryGate?
 
     func isConfigured() -> Bool {
         true
@@ -126,7 +127,6 @@ final class ThrottledRefreshSpyProvider: AIProvider, @unchecked Sendable {
     static let authShape: ProviderAuth.Shape = .apiKeyFree
     static let refreshCharacteristics = ProviderRefreshCharacteristics(
         minimumInterval: 120,
-        retryDeadline: 600,
         canInvokeInference: true
     )
 

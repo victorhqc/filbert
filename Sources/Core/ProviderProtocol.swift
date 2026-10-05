@@ -172,6 +172,9 @@ public protocol AIProvider: Sendable {
     static var providerDisclaimer: String? { get }
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? { get }
     static var refreshCharacteristics: ProviderRefreshCharacteristics { get }
+    /// Live server-declared retry state. Static characteristics cannot carry a
+    /// deadline only a response knows, so the registry reads it from here.
+    var retryGate: ProviderRetryGate? { get }
     /// Host root only; path segments stay inside `fetchQuota`.
     static var baseURL: URL { get }
     /// Non-payload discriminator the registry branches on so it never
@@ -252,6 +255,11 @@ public extension AIProvider {
     /// inferential work.
     static var refreshCharacteristics: ProviderRefreshCharacteristics {
         ProviderRefreshCharacteristics()
+    }
+
+    /// Default: no server-declared deadline to share.
+    var retryGate: ProviderRetryGate? {
+        nil
     }
 
     /// Defaults to `true` — only correct for `.apiKey` providers, which the

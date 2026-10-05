@@ -186,7 +186,6 @@ final class ProviderProtocolTests: XCTestCase {
 
         XCTAssertEqual(characteristics.costEvidence, .unknown)
         XCTAssertNil(characteristics.minimumInterval)
-        XCTAssertNil(characteristics.retryDeadline)
         XCTAssertFalse(characteristics.canInvokeInference)
     }
 
@@ -205,6 +204,17 @@ final class ProviderProtocolTests: XCTestCase {
             info.refreshCharacteristics,
             RefreshCharacteristicsProvider.refreshCharacteristics
         )
+    }
+
+    @MainActor
+    func testRegistry_exposesTheProviderRetryGate() {
+        let registry = ProviderRegistry()
+        registry.register(GateProvider())
+        registry.register(GlyphProvider())
+
+        XCTAssertNotNil(registry.retryGate(for: GateProvider.providerId))
+        XCTAssertNil(registry.retryGate(for: GlyphProvider.providerId))
+        XCTAssertNil(registry.retryGate(for: "unregistered"))
     }
 
     // MARK: - ProviderSetupError
@@ -231,6 +241,18 @@ private struct GlyphProvider: AIProvider {
 
     func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
         fatalError("The metadata transport test does not fetch quota data.")
+    }
+}
+
+private struct GateProvider: AIProvider {
+    static let providerId = "gate-test"
+    static let providerName = "Gate Test"
+    static let providerDescription = "Test provider"
+    static let baseURL = URL(string: "https://example.com")!
+    let retryGate: ProviderRetryGate? = ProviderRetryGate()
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        fatalError("The gate transport test does not fetch quota data.")
     }
 }
 
@@ -297,7 +319,6 @@ private struct RefreshCharacteristicsProvider: AIProvider {
     static let refreshCharacteristics = ProviderRefreshCharacteristics(
         costEvidence: .possibleConsumption,
         minimumInterval: 600,
-        retryDeadline: 300,
         canInvokeInference: true
     )
 

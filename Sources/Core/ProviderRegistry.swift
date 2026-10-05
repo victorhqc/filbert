@@ -49,6 +49,10 @@ public final class ProviderRegistry {
         )
     }
 
+    public func retryGate(for providerId: String) -> ProviderRetryGate? {
+        providers[providerId]?.retryGate
+    }
+
     public func setEnabled(_ enabled: Bool, for providerId: String) {
         guard providers[providerId] != nil else { return }
         ProviderEnablement.setEnabled(enabled, for: providerId)

@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 enum GeminiHTTPError: Error, Equatable, Sendable {
@@ -52,7 +53,7 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
             }
             let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After")
                 .flatMap(TimeInterval.init)
-                .flatMap { $0 >= 0 ? min($0, 30) : nil }
+                .flatMap { $0 >= 0 ? $0 : nil }
             return GeminiHTTPResponse(
                 data: data,
                 statusCode: httpResponse.statusCode,
@@ -73,21 +74,30 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
 struct GeminiHTTPClient: Sendable {
     private let transport: any GeminiHTTPTransport
     private let sleep: @Sendable (TimeInterval) async throws -> Void
+    private let retryGate: ProviderRetryGate
 
     init(
         transport: any GeminiHTTPTransport,
-        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil
+        sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil,
+        retryGate: ProviderRetryGate = ProviderRetryGate()
     ) {
         self.transport = transport
         self.sleep = sleep ?? { delay in
             try await Task.sleep(nanoseconds: UInt64(delay * 1_000_000_000))
         }
+        self.retryGate = retryGate
     }
 
     func send(_ request: URLRequest) async throws -> Data {
         for attempt in 0 ..< 3 {
             do {
                 let response = try await transport.send(request)
+                // A positive `Retry-After` is a server deadline the scheduler
+                // must own; retrying here would ignore it.
+                if response.statusCode == 429, let retryAfter = response.retryAfter, retryAfter > 0 {
+                    retryGate.record(retryAfter: retryAfter)
+                    throw GeminiHTTPError.http(429)
+                }
                 if response.statusCode == 429 || (500 ... 599).contains(response.statusCode) {
                     guard attempt < 2 else {
                         throw GeminiHTTPError.http(response.statusCode)

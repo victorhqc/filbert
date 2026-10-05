@@ -18,6 +18,7 @@ extension QuotaViewModel {
         if let notBefore = smartRefreshNotBefore[providerId] {
             interval = max(interval, notBefore - smartRefreshElapsed())
         }
+        interval = max(interval, providerRetryGateRemaining(for: providerId))
         return max(0, interval)
     }
 
@@ -81,9 +82,7 @@ extension QuotaViewModel {
             at: smartRefreshElapsed(),
             quietWindow: AutoRefreshPreferences.quietWindow
         )
-        let slowInterval = AutoRefreshPreferences.slowInterval
-        let retryDeadline = providerRefreshCharacteristics(for: providerId).retryDeadline ?? 0
-        smartRefreshNotBefore[providerId] = smartRefreshElapsed() + max(slowInterval, retryDeadline)
+        smartRefreshNotBefore[providerId] = smartRefreshElapsed() + AutoRefreshPreferences.slowInterval
         smartExtensionRevision += 1
     }
 
@@ -91,7 +90,16 @@ extension QuotaViewModel {
         smartRefreshNotBefore.removeValue(forKey: providerId)
     }
 
+    /// A provider records a server `Retry-After` in its gate; it outranks every
+    /// cadence and hint until it expires.
+    func providerRetryGateRemaining(for providerId: String) -> TimeInterval {
+        registry.retryGate(for: providerId)?.remaining ?? 0
+    }
+
     func isWithinSmartSafetyDeadline(_ providerId: String) -> Bool {
+        if providerRetryGateRemaining(for: providerId) > 0 {
+            return true
+        }
         guard let notBefore = smartRefreshNotBefore[providerId] else { return false }
         return smartRefreshElapsed() < notBefore
     }
