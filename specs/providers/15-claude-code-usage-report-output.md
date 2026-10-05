@@ -51,7 +51,8 @@ Read Claude Code usage from supported JSON output shapes without rejecting norma
 - **And** `kind: "session"` supplies the five-hour window.
 - **And** `kind: "weekly_all"` supplies the weekly window.
 - **And** the numeric `percent` supplies the used percentage, decoded strictly as a number.
-- **And** an ISO 8601 `resets_at` supplies the reset timestamp, decoded with a fractional-seconds form and a non-fractional fallback, each accepting a timezone offset.
+- **And** an ISO 8601 `resets_at` supplies the reset timestamp, accepting optional fractional seconds and a `Z` or `±HH:MM` offset.
+- **And** the whole timestamp string and its calendar components are validated, so trailing text and impossible dates such as `2026-02-30` yield an invalid timestamp rather than a coerced one.
 - **And** an absent or invalid reset timestamp does not discard an otherwise usable percentage.
 - **And** missing or incorrectly typed percentages do not become zero.
 - **And** `is_active: false` does not suppress a weekly window.
@@ -94,7 +95,7 @@ Read Claude Code usage from supported JSON output shapes without rejecting norma
 - **Then** fixtures cover the supplied structured report, the existing prose object, and an object carrying both.
 - **And** a valid inventory larger than 64 KiB does not cause a refresh failure.
 - **And** boundary behavior at the capture limit is verified with an injected capture limit, plus an assertion that the default limit is 20,971,520 bytes.
-- **And** fixtures cover fractional reset times, inactive weekly rows, unknown kinds, malformed rows, and repeated rows.
+- **And** fixtures cover fractional reset times, invalid reset timestamps, inactive weekly rows, unknown kinds, malformed rows, and repeated rows.
 - **And** fixtures cover an `is_error: true` object that also carries usable usage data.
 - **And** sentinel inventory contents never reach the cache, log, or visible error.
 - **And** subprocess tests use fake executables without Claude credentials or network requests.
@@ -107,7 +108,7 @@ Read Claude Code usage from supported JSON output shapes without rejecting norma
 ## Plan
 1. [x] Raise raw stdout retention to 20 MiB (20,971,520 bytes) and give the reader a separate fixed chunk size of at most 64 KiB per stream.
 2. [x] Add a typed envelope decoder for a single object with `result` and/or `usage_report`; add no array support.
-3. [x] Decode `percent` strictly as a `Double` and `resets_at` with a fractional-seconds `ISO8601DateFormatter` plus a non-fractional fallback.
+3. [x] Decode `percent` strictly as a `Double` and `resets_at` against a strict ISO 8601 shape, validating the whole string and round-tripping its calendar components.
 4. [x] Select structured windows per slot with the existing prose parser as a fallback, ranking structured above prose and taking the last valid row per kind.
 5. [x] Preserve explicit error checks (nonzero exit, Boolean `is_error` on the envelope object) before cache writes.
 6. [x] Update the ordered output-failure list in (providers 14 AC1) and the capture limit in (providers 14 AC3) to match this spec.
@@ -115,7 +116,7 @@ Read Claude Code usage from supported JSON output shapes without rejecting norma
 8. [x] Run the complete repository validation gate and review memory bounds and lifecycle behavior.
 
 ## Findings
-- Foundation parses the six-digit fractional `resets_at` only with `.withFractionalSeconds`, so `parseISOTimestamp` tries the fractional form and then the plain form.
+- `ISO8601DateFormatter` accepts trailing text after a valid instant and normalizes impossible dates such as `2026-02-30`, so `parseISOTimestamp` matches the whole ISO 8601 shape and round-trips the calendar components instead of trusting a formatter.
 - `runSpawnOnce` reached six parameters and tripped the SwiftLint parameter-count rule; the spawn inputs are grouped in a `SpawnConfiguration` value instead.
 - The packaging gate step `python3 scripts/test-local-signing.py` fails on `test_native_foundation_argument_bridge_preserves_temporary_persistent_domain` (`Foundation home is not isolated`) in this environment. (providers 14) records the same pre-existing failure.
 

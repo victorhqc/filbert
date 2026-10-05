@@ -115,13 +115,30 @@ final class ClaudeCodeRefresherDiagnosticsTests: XCTestCase {
     }
 
     func testValidateUsageOutput_invalidResetKeepsPercentage() {
-        let data = reportJSON(limits: row(kind: "session", percent: "54", resetsAt: "not a date"))
+        for resetsAt in Self.invalidResets {
+            let data = reportJSON(limits: row(kind: "session", percent: "54", resetsAt: resetsAt))
+
+            let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+            XCTAssertNil(validation.failure, resetsAt)
+            XCTAssertEqual(validation.windows.first?.window.usedPercentage, 54, resetsAt)
+            XCTAssertNil(validation.windows.first?.window.resetsAt, resetsAt)
+        }
+    }
+
+    func testValidateUsageOutput_lastValidRowWinsWithinStructuredReport() {
+        let prose = usageText(session: 5, week: 6)
+        let limits = [
+            row(kind: "session", percent: "54"),
+            row(kind: "session", percent: "60"),
+            row(kind: "session", percent: "\"99\""),
+        ].joined(separator: ",")
+        let data = Data(#"{"result":"\#(prose)","usage_report":\#(usageReportValue(limits: limits))}"#.utf8)
 
         let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
 
-        XCTAssertNil(validation.failure)
-        XCTAssertEqual(validation.windows.first?.window.usedPercentage, 54)
-        XCTAssertNil(validation.windows.first?.window.resetsAt)
+        XCTAssertEqual(validation.windows.first { $0.slot == .fiveHour }?.window.usedPercentage, 60)
+        XCTAssertEqual(validation.windows.first { $0.slot == .sevenDay }?.window.usedPercentage, 6)
     }
 
     func testValidateUsageOutput_errorObjectWithUsableStructuredDataStillFails() {
@@ -142,8 +159,23 @@ final class ClaudeCodeRefresherDiagnosticsTests: XCTestCase {
         XCTAssertEqual(plain, 1_791_208_200, accuracy: 0.5)
         XCTAssertEqual(fractional, plain, accuracy: 1)
         XCTAssertGreaterThan(fractional, plain)
-        XCTAssertNil(ClaudeCodeRefresher.parseISOTimestamp("not a date"))
     }
+
+    func testParseISOTimestamp_rejectsTrailingTextAndImpossibleDates() {
+        for text in Self.invalidResets {
+            XCTAssertNil(ClaudeCodeRefresher.parseISOTimestamp(text), text)
+        }
+    }
+
+    private static let invalidResets = [
+        "not a date",
+        "2026-10-05T13:50:00Zgarbage",
+        "2026-10-05T13:50:00.473061+00:00garbage",
+        "2026-02-30T13:50:00Z",
+        "2026-13-05T13:50:00Z",
+        "2026-10-05T25:50:00Z",
+        "2026-10-05T13:50:00",
+    ]
 
     private static let failureCases: [FailureCase] = [
         FailureCase(

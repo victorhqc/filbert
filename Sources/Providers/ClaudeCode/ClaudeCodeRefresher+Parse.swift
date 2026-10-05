@@ -125,18 +125,51 @@ extension ClaudeCodeRefresher {
         }
     }
 
-    /// `resets_at` carries fractional seconds and an offset. Foundation parses
-    /// the fractional form only with `.withFractionalSeconds` and the plain form
-    /// only without it, so both are tried.
+    /// `resets_at` is a strict ISO 8601 instant with optional fractional seconds
+    /// and a `Z` or `±HH:MM` offset. Foundation's formatters accept trailing text
+    /// and normalize impossible dates, so the whole string is matched and the
+    /// parsed components are round-tripped before the value is trusted.
     static func parseISOTimestamp(_ text: String) -> TimeInterval? {
-        let withFractionalSeconds = ISO8601DateFormatter()
-        withFractionalSeconds.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
-        if let date = withFractionalSeconds.date(from: text) {
-            return date.timeIntervalSince1970
-        }
-        let plain = ISO8601DateFormatter()
-        plain.formatOptions = [.withInternetDateTime]
-        return plain.date(from: text)?.timeIntervalSince1970
+        let pattern = #"\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2})\z"#
+        guard let match = firstMatch(pattern, in: text),
+              let year = integerValue(match[1]),
+              let month = integerValue(match[2]),
+              let day = integerValue(match[3]),
+              let hour = integerValue(match[4]),
+              let minute = integerValue(match[5]),
+              let second = integerValue(match[6]),
+              let timeZone = timeZone(fromOffset: match[8])
+        else { return nil }
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        components.hour = hour
+        components.minute = minute
+        components.second = second
+        guard let date = calendar.date(from: components) else { return nil }
+        let roundTrip = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        guard roundTrip.year == year, roundTrip.month == month, roundTrip.day == day,
+              roundTrip.hour == hour, roundTrip.minute == minute, roundTrip.second == second
+        else { return nil }
+
+        return date.timeIntervalSince1970 + (match[7].flatMap { Double("0" + $0) } ?? 0)
+    }
+
+    private static func integerValue(_ text: String?) -> Int? {
+        text.flatMap { Int($0) }
+    }
+
+    private static func timeZone(fromOffset offset: String?) -> TimeZone? {
+        guard let offset else { return nil }
+        guard offset != "Z" else { return TimeZone(secondsFromGMT: 0) }
+        let parts = offset.dropFirst().split(separator: ":")
+        guard parts.count == 2, let hours = Int(parts[0]), let minutes = Int(parts[1]) else { return nil }
+        let seconds = hours * 3600 + minutes * 60
+        return TimeZone(secondsFromGMT: offset.hasPrefix("-") ? -seconds : seconds)
     }
 
     static func parseUsageWindows(fromText text: String) -> [ParsedWindow] {
