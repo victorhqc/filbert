@@ -152,6 +152,7 @@ extension QuotaViewModel {
         lifecycleRevisions[providerId, default: 0] += 1
         stopAutoRefresh(for: providerId)
         smartRefreshPolicy.reset(for: providerId)
+        clearSmartRetryDeadline(for: providerId)
         activityRuntime.policy.reset(for: providerId)
         syncFastRefreshStatus(for: providerId)
         fetchTasks[providerId]?.cancel()

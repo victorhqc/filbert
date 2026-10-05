@@ -7,6 +7,7 @@ extension QuotaViewModel {
     }
 
     func manualRefresh(for providerId: String) {
+        guard !isWithinSmartSafetyDeadline(providerId) else { return }
         recordManualActivityHint(for: providerId)
         performFetch(for: providerId, origin: .manual)
     }
@@ -21,6 +22,15 @@ extension QuotaViewModel {
         guard isEnabled(providerId), fetchTasks[providerId] == nil else { return }
         guard isReadyToFetch(providerId) else {
             applyConfigurationError(for: providerId)
+            return
+        }
+        // A retry hold or provider backoff blocks every origin. Reschedule the
+        // automatic loop so a hold cannot stall it, and drop a user-driven
+        // request without starting overlapping work.
+        guard !isWithinSmartSafetyDeadline(providerId) else {
+            if isEligibleForAutoRefresh(providerId) {
+                startAutoRefresh(for: providerId)
+            }
             return
         }
         switch providerStates[providerId] {

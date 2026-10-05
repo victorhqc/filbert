@@ -236,6 +236,38 @@ final class AutoRefreshSmartSafetyTests: XCTestCase {
         let intervals = await recorder.intervals()
         XCTAssertEqual(intervals.last, 120)
     }
+
+    func testManualRefreshIsBlockedWhileTheSafetyDeadlineHolds() async {
+        AutoRefreshPreferences.setEnabled(true, for: RefreshSpyProvider.providerId)
+        AutoRefreshPreferences.mode = .smart
+        let clock = TestElapsedClock()
+        let provider = RefreshSpyProvider()
+        let viewModel = makeAutoRefreshViewModel(
+            provider: provider,
+            sleeper: { _ in throw CancellationError() },
+            elapsed: { clock.elapsed() },
+            boundarySleeper: { _ in throw CancellationError() }
+        )
+
+        await waitForFetches(on: provider, count: 1)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+
+        provider.errorToThrow = SmartRefreshTestFailure()
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 2)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await yieldSeveralTimes()
+        XCTAssertEqual(provider.fetchCallCount, 2)
+
+        clock.advance(by: 5 * 60)
+        provider.errorToThrow = nil
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 3)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+    }
 }
 
 @MainActor

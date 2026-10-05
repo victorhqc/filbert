@@ -239,6 +239,8 @@ final class QuotaViewModel {
         guard AutoRefreshPreferences.mode != mode else { return }
         AutoRefreshPreferences.mode = mode
         smartRefreshPolicy.resetAll()
+        smartRefreshNotBefore.removeAll()
+        smartExtensionRevision += 1
         syncFastRefreshStatuses()
         autoRefreshSettingsRevision += 1
 
