@@ -12,6 +12,7 @@ public enum AutoRefreshPreferences {
     public static let slowIntervalOptions: [TimeInterval] = (1 ... 60).map { TimeInterval($0 * 60) }
     public static let fastIntervalOptions: [TimeInterval] = stride(from: 10, through: 60, by: 5).map(TimeInterval.init)
     public static let quietWindowOptions: [TimeInterval] = [2, 5, 10, 15].map { TimeInterval($0 * 60) }
+    public static let smartExtensionOptions: [TimeInterval] = [15, 30, 60].map { TimeInterval($0 * 60) }
 
     private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 

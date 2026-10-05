@@ -58,6 +58,7 @@ final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unchecked Sen
     var presentationRevision = 0
     var fetchCallCount = 0
     var proactiveRefreshCallCount = 0
+    var errorToThrow: (any Error)?
 
     func isConfigured() -> Bool {
         true
@@ -65,6 +66,9 @@ final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unchecked Sen
 
     func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
         fetchCallCount += 1
+        if let errorToThrow {
+            throw errorToThrow
+        }
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
@@ -109,6 +113,40 @@ final class SecondaryRefreshSpyProvider: AIProvider, @unchecked Sendable {
             lastUpdated: Date(),
             activityObservation: ProviderActivityObservation(metrics: [
                 ProviderActivityMetric(id: "usage", kind: .usage, value: .number(10)),
+            ])
+        )
+    }
+}
+
+final class ThrottledRefreshSpyProvider: AIProvider, @unchecked Sendable {
+    static let providerId = "throttled-auto-refresh-spy"
+    static let providerName = "Throttled Auto Refresh Spy"
+    static let providerDescription = "Test fixture"
+    static let baseURL = URL(string: "https://example.com")!
+    static let authShape: ProviderAuth.Shape = .apiKeyFree
+    static let refreshCharacteristics = ProviderRefreshCharacteristics(
+        minimumInterval: 120,
+        retryDeadline: 600,
+        canInvokeInference: true
+    )
+
+    var percentage = 10.0
+    var fetchCallCount = 0
+
+    func isConfigured() -> Bool {
+        true
+    }
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        fetchCallCount += 1
+        return ProviderQuota(
+            providerId: Self.providerId,
+            providerName: Self.providerName,
+            headline: "\(percentage)%",
+            lines: [UsageLine(label: "Usage", percentage: percentage)],
+            lastUpdated: Date(),
+            activityObservation: ProviderActivityObservation(metrics: [
+                ProviderActivityMetric(id: "usage", kind: .usage, value: .number(Decimal(percentage))),
             ])
         )
     }

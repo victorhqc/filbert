@@ -170,22 +170,6 @@ extension QuotaViewModel {
         isReadyToFetch(providerId) && AutoRefreshPreferences.isEnabled(for: providerId)
     }
 
-    func automaticRefreshInterval(for providerId: String) -> TimeInterval {
-        guard AutoRefreshPreferences.mode == .smart else {
-            return AutoRefreshPreferences.slowInterval
-        }
-        let slowInterval = AutoRefreshPreferences.slowInterval
-        let fastInterval = AutoRefreshPreferences.fastInterval
-        switch smartRefreshCadence(for: providerId) {
-        case .slow:
-            return slowInterval
-        case .fast:
-            return fastInterval
-        case .cooldown:
-            return min(slowInterval, max(2 * fastInterval, 60))
-        }
-    }
-
     func performScheduledRefresh(
         for providerId: String,
         expectedSchedulingRevision: Int
@@ -243,10 +227,8 @@ extension QuotaViewModel {
 
     func recordAutomaticFailure(for providerId: String) {
         guard isEligibleForAutoRefresh(providerId) else { return }
-        if AutoRefreshPreferences.mode == .smart {
-            _ = smartRefreshPolicy.recordFailure(for: providerId)
-            syncFastRefreshStatus(for: providerId)
-        }
+        recordSmartFailure(for: providerId)
+        syncFastRefreshStatus(for: providerId)
     }
 
     func updateAutomaticRefreshScheduling(
@@ -263,11 +245,14 @@ extension QuotaViewModel {
         if AutoRefreshPreferences.mode == .smart {
             switch result {
             case let .success(quota):
-                if !suppressSmartSuccess {
+                if suppressSmartSuccess {
+                    recordSmartFailure(for: providerId)
+                } else {
+                    clearSmartRetryDeadline(for: providerId)
                     _ = recordSmartSuccess(quota, for: providerId)
                 }
             case .failure:
-                _ = smartRefreshPolicy.recordFailure(for: providerId)
+                recordSmartFailure(for: providerId)
             }
             syncFastRefreshStatus(for: providerId)
         }
@@ -283,14 +268,21 @@ extension QuotaViewModel {
             quota,
             for: providerId,
             at: smartRefreshElapsed(),
-            quietWindow: AutoRefreshPreferences.quietWindow
+            quietWindow: AutoRefreshPreferences.quietWindow,
+            canInvokeInference: canInvokeInference(for: providerId)
         )
     }
 
     func smartRefreshCadence(for providerId: String) -> SmartRefreshPolicy.Cadence {
-        smartRefreshPolicy.cadence(
+        let now = smartRefreshElapsed()
+        smartRefreshPolicy.advance(
             for: providerId,
-            at: smartRefreshElapsed(),
+            at: now,
+            quietWindow: AutoRefreshPreferences.quietWindow
+        )
+        return smartRefreshPolicy.cadence(
+            for: providerId,
+            at: now,
             quietWindow: AutoRefreshPreferences.quietWindow
         )
     }

@@ -127,7 +127,7 @@ final class SmartRefreshPolicyWindowTests: SmartRefreshPolicyTestCase {
         _ = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
         XCTAssertEqual(policy.cadence(for: "provider", at: 0, quietWindow: quietWindow), .slow)
 
-        XCTAssertEqual(policy.recordActivityHint(for: "provider", at: 100), .fast)
+        XCTAssertEqual(policy.recordActivityHint(for: "provider", at: 100, quietWindow: quietWindow), .fast)
         XCTAssertEqual(policy.cadence(for: "provider", at: 399, quietWindow: quietWindow), .fast)
         XCTAssertEqual(policy.cadence(for: "provider", at: 400, quietWindow: quietWindow), .cooldown)
         XCTAssertEqual(policy.cadence(for: "provider", at: 700, quietWindow: quietWindow), .slow)

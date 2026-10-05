@@ -35,6 +35,10 @@ public struct SmartRefreshPolicy: Sendable {
         }
     }
 
+    /// A refresh that can invoke inference stays in the automatic fast phase no
+    /// longer than this, even while observations keep changing.
+    public static let inferenceEpisodeCap: TimeInterval = 10 * 60
+
     private var states: [String: State] = [:]
 
     public init() {}
@@ -44,9 +48,12 @@ public struct SmartRefreshPolicy: Sendable {
         _ quota: ProviderQuota,
         for providerId: String,
         at elapsed: TimeInterval,
-        quietWindow: TimeInterval
+        quietWindow: TimeInterval,
+        canInvokeInference: Bool = false
     ) -> Decision {
         var state = states[providerId] ?? State()
+        state.canInvokeInference = canInvokeInference
+        state.expirePhases(at: elapsed, quietWindow: quietWindow)
 
         guard let observation = quota.activityObservation,
               observation.freshness != .stale
@@ -75,37 +82,73 @@ public struct SmartRefreshPolicy: Sendable {
         let snapshot = previous.merged(with: incoming)
         let reasons = previous.changeReasons(comparedTo: snapshot)
         state.snapshot = snapshot
-        guard reasons.isEmpty else {
-            state.activityTime = elapsed
+        guard !reasons.isEmpty else {
             states[providerId] = state
-            return Decision(
-                classification: .changed,
-                cadence: .fast,
-                reasons: reasons
-            )
+            return state.unchanged(at: elapsed, quietWindow: quietWindow)
         }
 
+        state.beginAutomaticFast(at: elapsed, quietWindow: quietWindow)
         states[providerId] = state
-        return state.unchanged(at: elapsed, quietWindow: quietWindow)
+        return Decision(
+            classification: .changed,
+            cadence: state.cadence(at: elapsed, quietWindow: quietWindow),
+            reasons: reasons
+        )
     }
 
     @discardableResult
     public mutating func recordActivityHint(
         for providerId: String,
-        at elapsed: TimeInterval
+        at elapsed: TimeInterval,
+        quietWindow: TimeInterval,
+        canInvokeInference: Bool = false
     ) -> Cadence {
         var state = states[providerId] ?? State()
-        state.activityTime = elapsed
+        state.canInvokeInference = canInvokeInference
+        state.expirePhases(at: elapsed, quietWindow: quietWindow)
+        state.beginAutomaticFast(at: elapsed, quietWindow: quietWindow)
         states[providerId] = state
-        return .fast
+        return state.cadence(at: elapsed, quietWindow: quietWindow)
     }
 
     @discardableResult
     public mutating func recordFailure(for providerId: String) -> Cadence {
         var state = states[providerId] ?? State()
         state.activityTime = nil
+        state.episodeStart = nil
+        state.extensionDeadline = nil
         states[providerId] = state
         return .slow
+    }
+
+    public mutating func recordExtension(
+        for providerId: String,
+        duration: TimeInterval,
+        at elapsed: TimeInterval
+    ) {
+        var state = states[providerId] ?? State()
+        state.extensionDeadline = elapsed + duration
+        states[providerId] = state
+    }
+
+    public mutating func stopExtension(for providerId: String) {
+        states[providerId]?.extensionDeadline = nil
+    }
+
+    public func extensionDeadline(for providerId: String) -> TimeInterval? {
+        states[providerId]?.extensionDeadline
+    }
+
+    /// Expires time-driven phases (the inference episode cap, an extension
+    /// deadline, and a finished lockout) without a completed request.
+    public mutating func advance(
+        for providerId: String,
+        at elapsed: TimeInterval,
+        quietWindow: TimeInterval
+    ) {
+        guard var state = states[providerId] else { return }
+        state.expirePhases(at: elapsed, quietWindow: quietWindow)
+        states[providerId] = state
     }
 
     public mutating func reset(for providerId: String) {
@@ -137,8 +180,50 @@ private extension SmartRefreshPolicy {
     struct State: Sendable {
         var snapshot: ActivitySnapshot?
         var activityTime: TimeInterval?
+        var episodeStart: TimeInterval?
+        var lockoutUntil: TimeInterval?
+        var extensionDeadline: TimeInterval?
+        var canInvokeInference = false
+
+        func isLockedOut(at elapsed: TimeInterval) -> Bool {
+            guard let lockoutUntil else { return false }
+            return elapsed < lockoutUntil
+        }
+
+        mutating func beginAutomaticFast(at elapsed: TimeInterval, quietWindow: TimeInterval) {
+            guard !isLockedOut(at: elapsed) else { return }
+            let windowAlive = activityTime.map { elapsed < $0 + 2 * quietWindow } ?? false
+            if !windowAlive, canInvokeInference {
+                episodeStart = elapsed
+            }
+            activityTime = elapsed
+        }
+
+        mutating func expirePhases(at elapsed: TimeInterval, quietWindow: TimeInterval) {
+            if let start = episodeStart {
+                if elapsed >= start + SmartRefreshPolicy.inferenceEpisodeCap {
+                    activityTime = nil
+                    episodeStart = nil
+                    lockoutUntil = start + SmartRefreshPolicy.inferenceEpisodeCap + quietWindow
+                } else if let activity = activityTime, elapsed >= activity + 2 * quietWindow {
+                    episodeStart = nil
+                }
+            }
+            if let deadline = extensionDeadline, elapsed >= deadline {
+                extensionDeadline = nil
+            }
+            if let until = lockoutUntil, elapsed >= until {
+                lockoutUntil = nil
+            }
+        }
 
         func cadence(at elapsed: TimeInterval, quietWindow: TimeInterval) -> Cadence {
+            if let extensionDeadline, elapsed < extensionDeadline {
+                return .fast
+            }
+            if isLockedOut(at: elapsed) {
+                return .slow
+            }
             guard let activityTime else { return .slow }
             let since = elapsed - activityTime
             if since < quietWindow {
@@ -150,20 +235,31 @@ private extension SmartRefreshPolicy {
             return .slow
         }
 
-        func unchanged(at elapsed: TimeInterval, quietWindow: TimeInterval) -> Decision {
-            Decision(classification: .unchanged, cadence: cadence(at: elapsed, quietWindow: quietWindow))
+        func nextPhaseBoundary(at elapsed: TimeInterval, quietWindow: TimeInterval) -> TimeInterval? {
+            if let extensionDeadline, elapsed < extensionDeadline {
+                return extensionDeadline
+            }
+            if let lockoutUntil, elapsed < lockoutUntil {
+                return lockoutUntil
+            }
+
+            var boundaries: [TimeInterval] = []
+            if let activityTime {
+                let since = elapsed - activityTime
+                if since < quietWindow {
+                    boundaries.append(activityTime + quietWindow)
+                } else if since < 2 * quietWindow {
+                    boundaries.append(activityTime + 2 * quietWindow)
+                }
+            }
+            if canInvokeInference, let episodeStart {
+                boundaries.append(episodeStart + SmartRefreshPolicy.inferenceEpisodeCap)
+            }
+            return boundaries.filter { $0 > elapsed }.min()
         }
 
-        func nextPhaseBoundary(at elapsed: TimeInterval, quietWindow: TimeInterval) -> TimeInterval? {
-            guard let activityTime else { return nil }
-            let since = elapsed - activityTime
-            if since < quietWindow {
-                return activityTime + quietWindow
-            }
-            if since < 2 * quietWindow {
-                return activityTime + 2 * quietWindow
-            }
-            return nil
+        func unchanged(at elapsed: TimeInterval, quietWindow: TimeInterval) -> Decision {
+            Decision(classification: .unchanged, cadence: cadence(at: elapsed, quietWindow: quietWindow))
         }
     }
 

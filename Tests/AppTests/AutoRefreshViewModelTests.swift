@@ -85,29 +85,21 @@ final class AutoRefreshViewModelTests: XCTestCase {
         XCTAssertEqual(intervals.last, 30)
     }
 
-    func testPresentationOnlySmartRefreshKeepsSlowSchedule() async {
+    func testAutomaticRefreshWithoutSemanticChangeKeepsSlowSchedule() async {
         AutoRefreshPreferences.setEnabled(true, for: RefreshSpyProvider.providerId)
+        AutoRefreshPreferences.mode = .smart
         let provider = RefreshSpyProvider()
-        let recorder = IntervalRecorder()
+        let sleeper = FirstWakeSleeper()
         let viewModel = makeAutoRefreshViewModel(provider: provider) { interval in
-            await recorder.record(interval)
-            throw CancellationError()
+            try await sleeper.sleep(interval)
         }
 
-        await waitForFetches(on: provider, count: 1)
-        await waitForIntervals(on: recorder, count: 1)
-        viewModel.setAutoRefreshMode(.smart)
-        await waitForIntervals(on: recorder, count: 2)
-        provider.presentationRevision += 1
-
-        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
         await waitForFetches(on: provider, count: 2)
-        await waitForIntervals(on: recorder, count: 3)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
 
+        XCTAssertEqual(provider.proactiveRefreshCallCount, 1)
         XCTAssertEqual(viewModel.smartRefreshCadence(for: RefreshSpyProvider.providerId), .slow)
         XCTAssertFalse(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
-        let intervals = await recorder.intervals()
-        XCTAssertEqual(intervals.last, 5 * 60)
     }
 
     func testFastRefreshStatusIdentifiesOnlyTheActiveProvider() async {

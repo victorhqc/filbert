@@ -71,6 +71,10 @@ final class QuotaViewModel {
 
     var smartRefreshBoundaryRevisions: [String: Int] = [:]
 
+    var smartRefreshNotBefore: [String: TimeInterval] = [:]
+
+    var smartExtensionRevision = 0
+
     var activityRuntime: MenuBarProviderActivityRuntime
 
     var autoRefreshSettingsRevision = 0

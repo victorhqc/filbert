@@ -7,6 +7,7 @@ extension QuotaViewModel {
     }
 
     func manualRefresh(for providerId: String) {
+        recordManualActivityHint(for: providerId)
         performFetch(for: providerId, origin: .manual)
     }
 
