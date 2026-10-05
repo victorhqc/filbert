@@ -37,16 +37,28 @@ public struct ProviderQuota: Sendable {
     }
 }
 
+/// `.stale` is a provider assertion, not a transport fact: a cache read after a
+/// successful proactive refresh may still be `.fresh`, and Core discards
+/// `.stale` as evidence.
+public enum ProviderActivityFreshness: Sendable, Equatable {
+    case fresh
+    case stale
+    case unknown
+}
+
 public struct ProviderActivityObservation: Equatable, Sendable {
     public let metrics: [ProviderActivityMetric]
     public let availability: ProviderAvailability?
+    public let freshness: ProviderActivityFreshness
 
     public init(
         metrics: [ProviderActivityMetric] = [],
-        availability: ProviderAvailability? = nil
+        availability: ProviderAvailability? = nil,
+        freshness: ProviderActivityFreshness = .unknown
     ) {
         self.metrics = metrics
         self.availability = availability
+        self.freshness = freshness
     }
 }
 
@@ -159,6 +171,10 @@ public protocol AIProvider: Sendable {
     static var providerDescription: String { get }
     static var providerDisclaimer: String? { get }
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? { get }
+    static var refreshCharacteristics: ProviderRefreshCharacteristics { get }
+    /// Live server-declared retry state. Static characteristics cannot carry a
+    /// deadline only a response knows, so the registry reads it from here.
+    var retryGate: ProviderRetryGate? { get }
     /// Host root only; path segments stay inside `fetchQuota`.
     static var baseURL: URL { get }
     /// Non-payload discriminator the registry branches on so it never
@@ -232,6 +248,17 @@ public extension AIProvider {
     }
 
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? {
+        nil
+    }
+
+    /// Conservative default: a provider that states nothing never claims free or
+    /// inferential work.
+    static var refreshCharacteristics: ProviderRefreshCharacteristics {
+        ProviderRefreshCharacteristics()
+    }
+
+    /// Default: no server-declared deadline to share.
+    var retryGate: ProviderRetryGate? {
         nil
     }
 

@@ -19,6 +19,12 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - `Tests/ClaudeCodeProviderTests/ClaudeCodeRefresherTests.swift` — verifies Claude Code's proactive refresh can run at the supported fast cadence without parallel child processes.
 - This replaces the unconditional five-minute periodic refresh inherited from (ui 02 AC7) while preserving quiet result presentation from (ui 07).
 
+> **Partly superseded by (core 11).** Core 11 replaces the three-unchanged-check
+> exit with a clock-driven activity window. It supersedes AC5, AC6, AC7, AC10,
+> AC11, AC14, and AC16, and the counter clause in AC4. The opt-in, Regular
+> cadence, provider isolation, disclosure, scheduling, and fast-status
+> requirements (AC1–AC3, AC8, AC9, AC12, AC13, AC15, AC17) remain in effect.
+
 ## Acceptance Criteria
 
 ### AC1: Automatic refresh is a separate per-provider opt-in
@@ -50,6 +56,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 
 ### AC4: Smart mode starts slow and establishes a baseline
 
+> **Partly superseded by (core 11 AC1).** The quiet-window state replaces the
+> no-change counter. Baseline creation and relaunch-to-slow still apply.
+
 - **Given** a configured provider has automatic refresh on and the shared mode is Smart
 - **When** Smart mode has no previous successful usage snapshot for that provider
 - **Then** the first successful result becomes its baseline and the provider remains in slow mode
@@ -58,6 +67,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - **And** Smart mode and its no-change counter are runtime scheduling state and reset to slow on app relaunch.
 
 ### AC5: A usage change enters and sustains fast mode
+
+> **Partly superseded by (core 11 AC1).** A change still enters fast mode, but
+> elapsed time, not a no-change counter, sustains and ends it.
 
 - **Given** an automatically refreshed provider in Smart mode has a previous successful usage snapshot
 - **When** a later successful check contains different meaningful usage data
@@ -68,6 +80,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 
 ### AC6: Three unchanged fast checks return only that provider to slow mode
 
+> **Superseded by (core 11 AC2).** The three-unchanged-check exit was replaced
+> by a time-based quiet window and cooldown.
+
 - **Given** a provider is in Smart fast mode
 - **When** a successful check has the same meaningful usage snapshot as the previous successful check
 - **Then** its consecutive no-change count increments by one
@@ -77,6 +92,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - **And** an unchanged result received while already slow leaves the provider slow.
 
 ### AC7: Snapshot comparison ignores refresh bookkeeping
+
+> **Superseded by (core 09) and (core 11 AC7).** Comparison now uses each
+> provider's activity observation instead of a canonical `UsageLine` snapshot.
 
 - **Given** two successful `ProviderQuota` values for the same provider
 - **When** Smart mode compares them
@@ -107,6 +125,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 
 ### AC10: Failed checks do not masquerade as unchanged usage
 
+> **Partly superseded by (core 11 AC9).** A failure still returns the provider
+> to slow mode, and now also honors the provider's retry deadline.
+
 - **Given** a scheduled proactive refresh or quota fetch fails
 - **When** the Smart policy receives the failure
 - **Then** it does not replace the last successful snapshot or increment the no-change counter
@@ -116,6 +137,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - **And** the next successful result is compared with the last successful snapshot.
 
 ### AC11: Shared settings have bounded, understandable controls
+
+> **Superseded by (core 11 AC10).** The Smart copy now explains the quiet
+> window, cooldown, and effective interval instead of three unchanged checks.
 
 - **Given** the user opens the Refresh Settings tab
 - **When** the shared controls render
@@ -149,6 +173,9 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 
 ### AC14: Manual checks participate only when Smart automatic refresh is active
 
+> **Partly superseded by (core 11 AC4).** A manual refresh records a bounded
+> activity hint; the three-check exit no longer exists.
+
 - **Given** a provider is opted into Smart automatic refresh
 - **When** an initial, manual, or scheduled check returns a successful quota
 - **Then** the result updates that provider's baseline and Smart transition state using AC4–AC7
@@ -167,6 +194,10 @@ Add provider-by-provider opt-in automatic refresh with a shared configurable Sma
 - **And** mode and provider state are never communicated by color alone.
 
 ### AC16: Scheduling and policy are covered without real waits
+
+> **Superseded by (core 11 AC12).** The suite covers the quiet window, cooldown,
+> inference episode cap, lockout, and retry hold instead of an exact
+> unchanged-check count.
 
 - **Given** isolated `UserDefaults`, a controllable test clock/sleeper, and provider spies
 - **When** Core, App, and provider tests run

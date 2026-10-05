@@ -17,6 +17,8 @@ final class QuotaViewModel {
     let registry: ProviderRegistry
     let errorLog: ErrorLog
     let autoRefreshSleeper: @Sendable (TimeInterval) async throws -> Void
+    let smartRefreshElapsed: @Sendable () -> TimeInterval
+    let smartRefreshBoundarySleeper: @Sendable (TimeInterval) async throws -> Void
 
     // MARK: - State
 
@@ -65,6 +67,14 @@ final class QuotaViewModel {
 
     private(set) var fastRefreshingProviderIds: Set<String> = []
 
+    var smartRefreshBoundaryTasks: [String: Task<Void, Never>] = [:]
+
+    var smartRefreshBoundaryRevisions: [String: Int] = [:]
+
+    var smartRefreshNotBefore: [String: TimeInterval] = [:]
+
+    var smartExtensionRevision = 0
+
     var activityRuntime: MenuBarProviderActivityRuntime
 
     var autoRefreshSettingsRevision = 0
@@ -78,6 +88,13 @@ final class QuotaViewModel {
         autoRefreshSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
         },
+        smartRefreshBoundarySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
+            try await Task.sleep(for: .seconds(interval))
+        },
+        smartRefreshElapsed: @escaping @Sendable () -> TimeInterval = {
+            let clock = MonotonicElapsedClock()
+            return { clock.elapsed() }
+        }(),
         activityExpirationSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
         },
@@ -87,6 +104,8 @@ final class QuotaViewModel {
         self.registry = registry
         self.errorLog = errorLog ?? registry.errorLog
         self.autoRefreshSleeper = autoRefreshSleeper
+        self.smartRefreshBoundarySleeper = smartRefreshBoundarySleeper
+        self.smartRefreshElapsed = smartRefreshElapsed
         activityRuntime = MenuBarProviderActivityRuntime(
             expirationSleeper: activityExpirationSleeper,
             now: activityNow
@@ -163,6 +182,19 @@ final class QuotaViewModel {
         return AutoRefreshPreferences.fastInterval
     }
 
+    var autoRefreshQuietWindow: TimeInterval {
+        _ = autoRefreshSettingsRevision
+        return AutoRefreshPreferences.quietWindow
+    }
+
+    var autoRefreshCooldownInterval: TimeInterval {
+        _ = autoRefreshSettingsRevision
+        return SmartRefreshPolicy.cooldownInterval(
+            slowInterval: AutoRefreshPreferences.slowInterval,
+            fastInterval: AutoRefreshPreferences.fastInterval
+        )
+    }
+
     func isAutoRefreshEnabled(for providerId: String) -> Bool {
         _ = autoRefreshSettingsRevision
         return AutoRefreshPreferences.isEnabled(for: providerId)
@@ -207,6 +239,8 @@ final class QuotaViewModel {
         guard AutoRefreshPreferences.mode != mode else { return }
         AutoRefreshPreferences.mode = mode
         smartRefreshPolicy.resetAll()
+        smartRefreshNotBefore.removeAll()
+        smartExtensionRevision += 1
         syncFastRefreshStatuses()
         autoRefreshSettingsRevision += 1
 
@@ -229,6 +263,15 @@ final class QuotaViewModel {
         guard AutoRefreshPreferences.fastInterval != supportedInterval else { return }
         AutoRefreshPreferences.fastInterval = supportedInterval
         autoRefreshSettingsRevision += 1
+        rescheduleAutomaticRefreshes()
+    }
+
+    func setAutoRefreshQuietWindow(_ interval: TimeInterval) {
+        let supportedInterval = AutoRefreshPreferences.supportedQuietWindow(interval)
+        guard AutoRefreshPreferences.quietWindow != supportedInterval else { return }
+        AutoRefreshPreferences.quietWindow = supportedInterval
+        autoRefreshSettingsRevision += 1
+        syncFastRefreshStatuses()
         rescheduleAutomaticRefreshes()
     }
 

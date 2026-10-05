@@ -77,15 +77,34 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(try XCTUnwrap(quota.lines[2].total), 100.00, accuracy: 0.001)
     }
 
-    func testFetchQuota_mapsCreditsAndAvailabilityIntoActivityObservation() async throws {
+    func testFetchQuota_tracksOnlyTotalBalanceAsActivity() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
 
         XCTAssertEqual(quota.activityObservation?.availability, .available)
         XCTAssertEqual(quota.activityObservation?.metrics, [
             ProviderActivityMetric(id: "total-balance-cny", kind: .credits, value: .number(110)),
-            ProviderActivityMetric(id: "granted-balance-cny", kind: .credits, value: .number(10)),
-            ProviderActivityMetric(id: "topped-up-balance-cny", kind: .credits, value: .number(100)),
         ])
+    }
+
+    func testFetchQuota_reallocationKeepsTheSameActivityMetrics() async throws {
+        let original = try await fetchWithMock(validResponseJSON())
+
+        let reallocated = Data("""
+        {
+          "is_available": true,
+          "balance_infos": [
+            {
+              "currency": "CNY",
+              "total_balance": "110.00",
+              "granted_balance": "0.00",
+              "topped_up_balance": "110.00"
+            }
+          ]
+        }
+        """.utf8)
+        let afterReallocation = try await fetchWithMock(reallocated)
+
+        XCTAssertEqual(original.activityObservation?.metrics, afterReallocation.activityObservation?.metrics)
     }
 
     func testFetchQuota_tagsEachLineWithRawCurrencyCode() async throws {

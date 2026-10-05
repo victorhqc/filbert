@@ -75,14 +75,24 @@ public struct ZAIProvider: AIProvider {
 
     private let session: URLSession
     private let errorLog: ErrorLog
+    private let gate: ProviderRetryGate
+
+    public var retryGate: ProviderRetryGate? {
+        gate
+    }
 
     public init(session: URLSession = .shared) {
         self.init(session: session, errorLog: .shared)
     }
 
-    init(session: URLSession, errorLog: ErrorLog) {
+    init(
+        session: URLSession,
+        errorLog: ErrorLog,
+        retryGate: ProviderRetryGate = ProviderRetryGate()
+    ) {
         self.session = session
         self.errorLog = errorLog
+        gate = retryGate
     }
 
     public func fetchQuota(auth: ProviderAuth, baseURL: URL) async throws -> ProviderQuota {
@@ -99,7 +109,7 @@ public struct ZAIProvider: AIProvider {
         }
 
         let quotaResponse = try await fetchQuotaResponse(baseURL: baseURL, apiKey: apiKey)
-        let subscriptionVersion = await fetchSubscriptionVersion(baseURL: baseURL, apiKey: apiKey)
+        let subscriptionVersion = try await fetchSubscriptionVersion(baseURL: baseURL, apiKey: apiKey)
         return map(quotaResponse, subscriptionVersion: subscriptionVersion)
     }
 
@@ -119,9 +129,10 @@ public struct ZAIProvider: AIProvider {
         }
     }
 
-    /// Best-effort: any failure degrades to `nil`, which suppresses pricing
-    /// metadata without failing the refresh.
-    private func fetchSubscriptionVersion(baseURL: URL, apiKey: String) async -> String? {
+    /// Best-effort: any failure except a rate limit degrades to `nil`, which
+    /// suppresses pricing metadata without failing the refresh. A `429` is
+    /// rethrown so the cycle surfaces the backoff the scheduler must honor.
+    private func fetchSubscriptionVersion(baseURL: URL, apiKey: String) async throws -> String? {
         let endpoint = baseURL
             .appendingPathComponent("api")
             .appendingPathComponent("biz")
@@ -132,6 +143,8 @@ public struct ZAIProvider: AIProvider {
             data = try await get(endpoint: endpoint, apiKey: apiKey)
         } catch ZAIError.http(404), ZAIError.http(405), ZAIError.http(501) {
             return nil
+        } catch ZAIError.http(429) {
+            throw ZAIError.http(429)
         } catch {
             guard !Task.isCancelled,
                   !(error is CancellationError)
@@ -189,9 +202,17 @@ public struct ZAIProvider: AIProvider {
         }
 
         guard httpResponse.statusCode == 200 else {
+            recordRetryDeadline(from: httpResponse)
             throw ZAIError.http(httpResponse.statusCode)
         }
         return data
+    }
+
+    private func recordRetryDeadline(from response: HTTPURLResponse) {
+        guard response.statusCode == 429 else { return }
+        let header = response.value(forHTTPHeaderField: "Retry-After")
+        guard let retryAfter = header.flatMap(TimeInterval.init), retryAfter > 0 else { return }
+        gate.record(retryAfter: retryAfter)
     }
 
     // MARK: - Mapping
@@ -252,17 +273,28 @@ public struct ZAIProvider: AIProvider {
     }
 
     private func activityObservation(from limits: [ZAILimit]) -> ProviderActivityObservation {
-        let metrics = limits.compactMap { limit -> ProviderActivityMetric? in
-            guard let id = activityMetricID(for: limit),
-                  let value = limit.currentValue ?? limit.usage ?? limit.percentage
-            else {
-                return nil
+        var metrics: [ProviderActivityMetric] = []
+        for limit in limits {
+            guard let id = activityMetricID(for: limit) else { continue }
+            // The coarse percentage is the base value, so each id keeps one
+            // stable unit. Absolute consumption, when reported, gets a
+            // distinct id so a response that drops it cannot flip the base id
+            // between units and read as activity. `usage` is the allowance and
+            // never counts here.
+            if let percentage = limit.percentage {
+                metrics.append(ProviderActivityMetric(
+                    id: id,
+                    kind: .usage,
+                    value: .number(Decimal(percentage))
+                ))
             }
-            return ProviderActivityMetric(
-                id: id,
-                kind: .usage,
-                value: .number(Decimal(value))
-            )
+            if let currentValue = limit.currentValue {
+                metrics.append(ProviderActivityMetric(
+                    id: "\(id)-absolute",
+                    kind: .usage,
+                    value: .number(Decimal(currentValue))
+                ))
+            }
         }
         return ProviderActivityObservation(metrics: metrics)
     }

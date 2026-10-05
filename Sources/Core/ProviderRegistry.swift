@@ -30,6 +30,7 @@ public final class ProviderRegistry {
                 description: type(of: provider).providerDescription,
                 disclaimer: type(of: provider).providerDisclaimer,
                 automaticRefreshDisclosure: type(of: provider).automaticRefreshDisclosure,
+                refreshCharacteristics: type(of: provider).refreshCharacteristics,
                 defaultBaseURL: type(of: provider).baseURL,
                 authShape: type(of: provider).authShape,
                 setupHelp: type(of: provider).setupHelp,
@@ -46,6 +47,10 @@ public final class ProviderRegistry {
             keychain: keychain,
             errorLog: errorLog
         )
+    }
+
+    public func retryGate(for providerId: String) -> ProviderRetryGate? {
+        providers[providerId]?.retryGate
     }
 
     public func setEnabled(_ enabled: Bool, for providerId: String) {

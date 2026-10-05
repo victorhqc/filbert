@@ -130,18 +130,20 @@ extension ClaudeCodeRefresher {
         into cacheStore: StatuslineCacheStore
     ) throws {
         let existing = cacheStore.read()
-        var fiveHour = existing?.rateLimits?.fiveHour
-        var sevenDay = existing?.rateLimits?.sevenDay
+        let existingWrittenAt = existing?.writtenAt
+        var fiveHour = existing?.rateLimits?.fiveHour?.aged(fromCacheWrittenAt: existingWrittenAt)
+        var sevenDay = existing?.rateLimits?.sevenDay?.aged(fromCacheWrittenAt: existingWrittenAt)
 
+        let now = Date().timeIntervalSince1970
         for parsed in windows {
             switch parsed.slot {
-            case .fiveHour: fiveHour = parsed.window
-            case .sevenDay: sevenDay = parsed.window
+            case .fiveHour: fiveHour = parsed.window.stamped(at: now)
+            case .sevenDay: sevenDay = parsed.window.stamped(at: now)
             }
         }
 
         let cache = StatuslineCache(
-            writtenAt: Date().timeIntervalSince1970,
+            writtenAt: now,
             rateLimits: RateLimits(fiveHour: fiveHour, sevenDay: sevenDay)
         )
 

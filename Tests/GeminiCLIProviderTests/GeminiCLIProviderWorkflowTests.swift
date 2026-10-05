@@ -201,24 +201,49 @@ extension GeminiCLIProviderTests {
 }
 
 extension GeminiCLIProviderTests {
-    func testFetchHonorsRetryAfterAndUsesExponentialBackoffForServerErrors() async throws {
+    func testFetchSurfacesRateLimitAndRecordsTheServerDeadline() async throws {
+        let transport = RecordingTransport(responses: [
+            GeminiHTTPResponse(
+                data: Data(#"{"cloudaicompanionProject":"gemini-project"}"#.utf8),
+                statusCode: 200,
+                retryAfter: nil
+            ),
+            GeminiHTTPResponse(data: Data(), statusCode: 429, retryAfter: 300),
+        ])
+        let sleeps = GeminiSleepRecorder()
+        let provider = makeProvider(
+            credentials: validCredentials(),
+            transport: transport,
+            retryGate: ProviderRetryGate(now: { 0 }),
+            sleep: { delay in
+                await sleeps.record(delay)
+            }
+        )
+
+        do {
+            _ = try await provider.fetchQuota(
+                auth: .apiKeyFree,
+                baseURL: GeminiCLIProvider.baseURL
+            )
+            XCTFail("Expected a rate-limit error")
+        } catch let error as GeminiCLIError {
+            XCTAssertEqual(error, .rateLimited)
+        }
+
+        let recordedSleeps = await sleeps.recordedValues()
+        XCTAssertEqual(recordedSleeps, [])
+        XCTAssertEqual(provider.retryGate?.remaining, 300)
+    }
+
+    func testFetchUsesExponentialBackoffForServerErrors() async throws {
         let sleeps = GeminiSleepRecorder()
         let transport = try RecordingTransport(responses: [
-            GeminiHTTPResponse(
-                data: Data(),
-                statusCode: 429,
-                retryAfter: 2.5
-            ),
             GeminiHTTPResponse(
                 data: fixtureData("load-code-assist-server-project.json"),
                 statusCode: 200,
                 retryAfter: nil
             ),
-            GeminiHTTPResponse(
-                data: Data(),
-                statusCode: 503,
-                retryAfter: nil
-            ),
+            GeminiHTTPResponse(data: Data(), statusCode: 503, retryAfter: nil),
             GeminiHTTPResponse(
                 data: fixtureData("quota-success.json"),
                 statusCode: 200,
@@ -239,7 +264,7 @@ extension GeminiCLIProviderTests {
         )
 
         let recordedSleeps = await sleeps.recordedValues()
-        XCTAssertEqual(recordedSleeps, [2.5, 0.5])
+        XCTAssertEqual(recordedSleeps, [0.5])
     }
 }
 

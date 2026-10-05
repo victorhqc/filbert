@@ -27,6 +27,7 @@ public struct ProviderInfo: Sendable, Identifiable {
     public let description: String
     public let disclaimer: String?
     public let automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure?
+    public let refreshCharacteristics: ProviderRefreshCharacteristics
     public let defaultBaseURL: URL
     /// Payload-free discriminator so the App layer can dispatch row variants
     /// without inspecting a provider ID string.
@@ -41,6 +42,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         description: String,
         disclaimer: String? = nil,
         automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? = nil,
+        refreshCharacteristics: ProviderRefreshCharacteristics = ProviderRefreshCharacteristics(),
         defaultBaseURL: URL,
         authShape: ProviderAuth.Shape,
         setupHelp: ProviderSetupHelp? = nil,
@@ -52,6 +54,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         self.description = description
         self.disclaimer = disclaimer
         self.automaticRefreshDisclosure = automaticRefreshDisclosure
+        self.refreshCharacteristics = refreshCharacteristics
         self.defaultBaseURL = defaultBaseURL
         self.authShape = authShape
         self.setupHelp = setupHelp

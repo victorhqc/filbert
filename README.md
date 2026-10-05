@@ -92,11 +92,32 @@ your setup.
 ## Use it
 
 Click the Filbert menu-bar icon and open **Settings** to add a provider. Enter
-its API key. The key goes straight into the Keychain. Filbert then refreshes
-usage every five minutes by default.
+its API key. The key goes straight into the Keychain. Filbert fetches usage
+once and then leaves further checks to automatic refresh, which you turn on per
+provider.
 
 Four providers read from a local session instead of an API key. Set those up
 below.
+
+### Automatic refresh
+
+Automatic refresh is opt-in for each provider and runs in one of two modes:
+
+- **Regular** refreshes every provider at the shared slow interval (five
+  minutes by default), whether or not usage changed.
+- **Smart** starts a provider slow and moves it to the fast interval while its
+  usage keeps changing. It returns the provider to slow through a time-based
+  quiet window and a short cooldown, not a count of unchanged checks. A
+  **Keep checking** option can hold the fast interval for a chosen, finite
+  period.
+
+Provider limits and server rate limits always win. A provider with a minimum
+interval is never checked more often than it allows, and a `429` or
+`Retry-After` response pauses that provider until the server deadline passes.
+
+This behavior is defined by
+[`specs/core/11-smart-refresh-activity-windows.md`](specs/core/11-smart-refresh-activity-windows.md)
+and supersedes the count-based rule described in `specs/core/08`.
 
 ## Security
 
@@ -328,8 +349,9 @@ verify a signed release locally can read
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
 Claude, Gemini CLI, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers
-are in place. The app builds and runs as a menu-bar item. More providers and
-widgets come next.
+are in place. The app builds and runs as a menu-bar item. Smart automatic
+refresh uses clock-driven activity windows instead of a count of unchanged
+checks. More providers and widgets come next.
 
 See [`specs/`](specs/) for the spec files that drive the work.
 

@@ -59,6 +59,10 @@ public struct ClaudeCodeProvider: AIProvider {
         linkLabel: String(localized: "Install Claude Code"),
         url: URL(string: "https://docs.claude.com/en/docs/claude-code/overview")!
     )
+    public static let refreshCharacteristics = ProviderRefreshCharacteristics(
+        costEvidence: .possibleConsumption,
+        canInvokeInference: true
+    )
 
     static let freshnessThreshold: TimeInterval = 3600
 
@@ -218,20 +222,47 @@ public struct ClaudeCodeProvider: AIProvider {
             lastUpdated: lastUpdated,
             error: lines.isEmpty ? String(localized: "Open Claude Code to populate usage data") : nil,
             isStale: isStale,
-            activityObservation: activityObservation(from: cache.rateLimits)
+            activityObservation: activityObservation(from: cache)
         )
     }
 
-    private func activityObservation(from rateLimits: RateLimits?) -> ProviderActivityObservation {
-        let metrics = [
-            activityMetric(id: "five-hour-usage", window: rateLimits?.fiveHour),
-            activityMetric(id: "weekly-usage", window: rateLimits?.sevenDay),
-        ].compactMap { $0 }
-        return ProviderActivityObservation(metrics: metrics)
+    private func activityObservation(from cache: StatuslineCache) -> ProviderActivityObservation {
+        let now = Date().timeIntervalSince1970
+        let entries = activityMetricEntries(from: cache.rateLimits)
+
+        let freshMetrics = entries.compactMap { entry in
+            isFresh(entry.window, cacheWrittenAt: cache.writtenAt, now: now)
+                ? metric(id: entry.id, window: entry.window)
+                : nil
+        }
+        if !freshMetrics.isEmpty {
+            return ProviderActivityObservation(metrics: freshMetrics, freshness: .fresh)
+        }
+
+        // Every known window is stale: keep the figures for the UI-visible
+        // last-known data while marking the observation stale so Core discards
+        // it as evidence.
+        let allMetrics = entries.compactMap { metric(id: $0.id, window: $0.window) }
+        return ProviderActivityObservation(
+            metrics: allMetrics,
+            freshness: allMetrics.isEmpty ? .unknown : .stale
+        )
     }
 
-    private func activityMetric(id: String, window: Window?) -> ProviderActivityMetric? {
-        guard let percentage = window?.usedPercentage else { return nil }
+    private func activityMetricEntries(from rateLimits: RateLimits?) -> [(id: String, window: Window)] {
+        [
+            ("five-hour-usage", rateLimits?.fiveHour),
+            ("weekly-usage", rateLimits?.sevenDay),
+        ].compactMap { id, window in window.map { (id, $0) } }
+    }
+
+    private func isFresh(_ window: Window, cacheWrittenAt: TimeInterval, now: TimeInterval) -> Bool {
+        let writtenAt = window.writtenAt ?? cacheWrittenAt
+        return now - writtenAt <= Self.freshnessThreshold
+    }
+
+    private func metric(id: String, window: Window) -> ProviderActivityMetric? {
+        guard let percentage = window.usedPercentage else { return nil }
         return ProviderActivityMetric(
             id: id,
             kind: .usage,

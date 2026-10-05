@@ -13,7 +13,12 @@ Make Smart refresh react only to provider-reported usage, credit, or availabilit
 - `Tests/CoreTests/SmartRefreshPolicyTests.swift` — needs a table-driven regression matrix for real activity and presentation-only changes.
 - `Tests/CoreTests/AutoRefreshPreferencesTests.swift` and `Tests/AppTests/AutoRefreshViewModelTests.swift` — need coverage for the denser interval choices, persistence, and rescheduling.
 - Provider suites need focused mapping tests that prove each provider emits the intended activity observation.
-- This refines meaningful-change detection from (core 08 AC5, core 08 AC7) without changing its per-provider cadence, three-unchanged-check exit, or failure behavior.
+- This refines meaningful-change detection from (core 08 AC5, core 08 AC7) without changing its per-provider cadence, three-unchanged-check exit, or failure behavior. The three-unchanged-check exit is superseded by (core 11 AC2).
+
+> **Partly superseded by (core 11).** The activity-observation contract
+> (AC1–AC6, AC8, AC9, AC11) remains in effect. Core 11 replaces the
+> unchanged-check counter and three-check exit in AC3, AC7, and AC10 with
+> clock-driven activity windows.
 
 ## Acceptance Criteria
 
@@ -36,6 +41,9 @@ Make Smart refresh react only to provider-reported usage, credit, or availabilit
 - **And** adding a provider requires no provider-ID branch in Core, App, or another provider.
 
 ### AC3: Only semantic activity changes enter fast mode
+
+> **Partly superseded by (core 11 AC1).** A changed observation still enters
+> fast mode, but no unchanged counter resets.
 
 - **Given** a provider has an established Smart baseline
 - **When** a later successful observation changes a usage metric, changes a credit metric, adds or removes a tracked usage or credit metric, or changes between known availability states
@@ -73,6 +81,9 @@ Make Smart refresh react only to provider-reported usage, credit, or availabilit
 
 ### AC7: Existing cadence and failure rules remain intact
 
+> **Superseded by (core 11 AC2).** The three-unchanged-check exit was replaced
+> by a time-based quiet window and cooldown.
+
 - **Given** activity comparison returns baseline, unchanged, or changed
 - **When** the Smart state machine updates
 - **Then** the first observation establishes a slow baseline, a changed observation enters fast mode, and exactly three consecutive unchanged fast checks return the provider to slow mode as defined by (core 08 AC4, core 08 AC5, core 08 AC6)
@@ -82,11 +93,15 @@ Make Smart refresh react only to provider-reported usage, credit, or availabilit
 
 ### AC8: Current providers map only their semantic signals
 
+> **Amended after (core 11).** DeepSeek reports its total balance only. The
+> granted and topped-up balances are component allocations and never signal
+> activity.
+
 - **Given** each current provider maps a successful response
 - **When** its activity observation is inspected
 - **Then** z.ai and Claude Code expose their current consumption values without reset times or limits
 - **And** OpenAI Codex exposes current window consumption plus credit balance or unlimited-credit state
-- **And** DeepSeek exposes current balance values as credits plus its upstream `is_available` state
+- **And** DeepSeek exposes its total balance as a credit metric plus its upstream `is_available` state
 - **And** Cursor exposes current included usage, on-demand spend, spend-limit usage, and available bonus credits without billing-cycle dates or configured limits
 - **And** each provider owns its stable metric IDs and mapping without knowledge of any other provider.
 
@@ -100,6 +115,9 @@ Make Smart refresh react only to provider-reported usage, credit, or availabilit
 - **And** Core does not contain provider-specific tolerances or rounding rules.
 
 ### AC10: Detection and scheduling are covered end to end
+
+> **Superseded by (core 11 AC12).** The suite asserts the quiet window and
+> cooldown instead of an exact unchanged-check count.
 
 - **Given** table-driven policy fixtures, provider mapping fixtures, an injected sleeper, and provider spies
 - **When** the Core, provider, and App tests run

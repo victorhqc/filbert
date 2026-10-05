@@ -17,6 +17,7 @@ final class ZAIProviderTests: XCTestCase {
     override func tearDown() {
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
+        MockURLProtocol.responseHeaders = nil
         MockURLProtocol.responseError = nil
         MockURLProtocol.lastRequest = nil
         MockURLProtocol.handler = nil
@@ -258,7 +259,7 @@ final class ZAIProviderTests: XCTestCase {
         ErrorLog(directoryURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString))
     }
 
-    private static func validResponseJSON() -> Data {
+    static func validResponseJSON() -> Data {
         Data("""
         {
           "data": {
@@ -298,6 +299,7 @@ final class ZAIProviderTests: XCTestCase {
 final class MockURLProtocol: URLProtocol {
     static var responseData: Data?
     static var responseStatusCode = 200
+    static var responseHeaders: [String: String]?
     static var responseError: Error?
     static var lastRequest: URLRequest?
     static var capturedRequests: [URLRequest] = []
@@ -333,7 +335,7 @@ final class MockURLProtocol: URLProtocol {
             url: request.url!,
             statusCode: statusCode,
             httpVersion: nil,
-            headerFields: nil
+            headerFields: MockURLProtocol.responseHeaders
         )!
 
         client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)

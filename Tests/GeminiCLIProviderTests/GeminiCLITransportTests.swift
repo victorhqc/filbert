@@ -83,6 +83,31 @@ extension GeminiCLIProviderTests {
         XCTAssertEqual(response.retryAfter, 2)
     }
 
+    func testURLSessionTransportPreservesALongRetryAfterHeader() async throws {
+        let responseURL = try XCTUnwrap(
+            URL(string: "https://cloudcode-pa.googleapis.com/v1internal:retrieveUserQuota")
+        )
+        GeminiHostResponseURLProtocol.responseURL = responseURL
+        GeminiHostResponseURLProtocol.responseStatusCode = 429
+        GeminiHostResponseURLProtocol.responseHeaders = ["Retry-After": "300"]
+        defer {
+            GeminiHostResponseURLProtocol.responseURL = nil
+            GeminiHostResponseURLProtocol.responseData = Data()
+            GeminiHostResponseURLProtocol.responseStatusCode = 200
+            GeminiHostResponseURLProtocol.responseHeaders = nil
+        }
+
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [GeminiHostResponseURLProtocol.self]
+        let transport = URLSessionGeminiHTTPTransport(
+            session: URLSession(configuration: configuration)
+        )
+
+        let response = try await transport.send(URLRequest(url: responseURL))
+
+        XCTAssertEqual(response.retryAfter, 300)
+    }
+
     func testProviderNormalizesURLCancellationWithoutTaskCancellation() async throws {
         GeminiHostResponseURLProtocol.responseError = URLError(.cancelled)
         defer { GeminiHostResponseURLProtocol.responseError = nil }

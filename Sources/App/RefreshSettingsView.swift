@@ -41,6 +41,13 @@ struct RefreshSettingsView: View {
                         selectedValue: viewModel.autoRefreshFastInterval,
                         setValue: viewModel.setAutoRefreshFastInterval
                     )
+
+                    intervalControl(
+                        title: String(localized: "Quiet window"),
+                        values: AutoRefreshPreferences.quietWindowOptions,
+                        selectedValue: viewModel.autoRefreshQuietWindow,
+                        setValue: viewModel.setAutoRefreshQuietWindow
+                    )
                 }
             }
 
@@ -51,7 +58,7 @@ struct RefreshSettingsView: View {
                 )
             ) {
                 ForEach(viewModel.registeredProvidersOrdered) { provider in
-                    providerRow(for: provider)
+                    RefreshSettingsProviderRow(viewModel: viewModel, provider: provider)
                     if provider.id != viewModel.registeredProvidersOrdered.last?.id {
                         Divider()
                     }
@@ -73,18 +80,20 @@ struct RefreshSettingsView: View {
         case .regular:
             String.localizedStringWithFormat(
                 String(localized: "Regular refresh checks opted-in providers every %@."),
-                durationText(viewModel.autoRefreshSlowInterval)
+                refreshDurationText(viewModel.autoRefreshSlowInterval)
             )
         case .smart:
             String.localizedStringWithFormat(
                 String(
                     localized: """
-                    Smart refresh starts every %@. Usage changes switch that provider to every %@; \
-                    three unchanged checks return it to slow.
+                    Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ \
+                    for %3$@, then every %4$@ once more before returning to the slow interval.
                     """
                 ),
-                durationText(viewModel.autoRefreshSlowInterval),
-                durationText(viewModel.autoRefreshFastInterval)
+                refreshDurationText(viewModel.autoRefreshSlowInterval),
+                refreshDurationText(viewModel.autoRefreshFastInterval),
+                refreshDurationText(viewModel.autoRefreshQuietWindow),
+                refreshDurationText(viewModel.autoRefreshCooldownInterval)
             )
         }
     }
@@ -100,7 +109,7 @@ struct RefreshSettingsView: View {
             HStack {
                 Text(title)
                 Spacer()
-                Text(durationText(selectedValue))
+                Text(refreshDurationText(selectedValue))
                     .foregroundStyle(.secondary)
                     .monospacedDigit()
             }
@@ -119,112 +128,13 @@ struct RefreshSettingsView: View {
                 step: 1
             )
             .accessibilityLabel(title)
-            .accessibilityValue(durationText(selectedValue))
+            .accessibilityValue(refreshDurationText(selectedValue))
             .help(
                 String.localizedStringWithFormat(
                     String(localized: "Selected interval: %@"),
-                    durationText(selectedValue)
+                    refreshDurationText(selectedValue)
                 )
             )
         }
-    }
-
-    private func providerRow(for provider: ProviderInfo) -> some View {
-        let isEnabled = viewModel.isAutoRefreshEnabled(for: provider.id)
-        let status = providerStatus(for: provider)
-        let disclosureText = automaticRefreshDisclosure(for: provider)
-
-        return VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .center, spacing: 10) {
-                ProviderLogoBadge(glyph: provider.glyph)
-                Text(provider.displayName)
-                    .font(.headline)
-                Spacer()
-                Toggle(
-                    String(localized: "Automatic refresh"),
-                    isOn: Binding(
-                        get: { isEnabled },
-                        set: { viewModel.setAutoRefreshEnabled($0, for: provider.id) }
-                    )
-                )
-                .toggleStyle(.switch)
-                .accessibilityLabel(
-                    String.localizedStringWithFormat(
-                        String(localized: "Automatic refresh for %@"),
-                        provider.displayName
-                    )
-                )
-                .accessibilityValue(
-                    isEnabled ? String(localized: "Enabled") : String(localized: "Disabled")
-                )
-                .accessibilityHint(disclosureText ?? String(localized: "Toggle periodic refresh for this provider."))
-                .help(String(localized: "Toggle periodic refresh for this provider."))
-            }
-
-            if let status {
-                Label(status, systemImage: providerStatusSymbol(for: provider))
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .accessibilityLabel(status)
-            }
-
-            if let disclosureText {
-                Label(disclosureText, systemImage: "exclamationmark.triangle")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .accessibilityLabel(disclosureText)
-            }
-        }
-        .padding(.vertical, 2)
-    }
-
-    private func providerStatus(for provider: ProviderInfo) -> String? {
-        guard viewModel.isEnabled(provider.id) else {
-            return String(localized: "Automatic refresh is paused because this provider is disabled.")
-        }
-        guard QuotaViewModel.isConfiguredState(viewModel.providerStates[provider.id]) else {
-            return String(localized: "Automatic refresh is waiting for setup.")
-        }
-        return nil
-    }
-
-    private func automaticRefreshDisclosure(for provider: ProviderInfo) -> String? {
-        provider.automaticRefreshDisclosure.map {
-            String.localizedStringWithFormat(
-                String(
-                    localized: """
-                    %1$@ runs %2$@ in the background. These checks may use some of your \
-                    %3$@ quota. Shorter Smart intervals can increase the number of checks.
-                    """
-                ),
-                provider.displayName,
-                $0.command,
-                $0.quotaName
-            )
-        }
-    }
-
-    private func providerStatusSymbol(for provider: ProviderInfo) -> String {
-        viewModel.isEnabled(provider.id) ? "clock" : "pause.circle"
-    }
-
-    private func durationText(_ interval: TimeInterval) -> String {
-        let seconds = Int(interval)
-        if seconds < 60 {
-            return String.localizedStringWithFormat(
-                String(localized: "%lld seconds"),
-                seconds
-            )
-        }
-
-        let minutes = seconds / 60
-        if minutes == 1 {
-            return String(localized: "1 minute")
-        }
-        return String.localizedStringWithFormat(
-            String(localized: "%lld minutes"),
-            minutes
-        )
     }
 }

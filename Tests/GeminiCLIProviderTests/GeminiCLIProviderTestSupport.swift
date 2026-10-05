@@ -25,6 +25,7 @@ extension GeminiCLIProviderTests {
     func makeProvider(
         credentials: GeminiCredentials?,
         transport: any GeminiHTTPTransport = RecordingTransport(responses: []),
+        retryGate: ProviderRetryGate? = nil,
         now: @escaping @Sendable () -> Date = { Date(timeIntervalSince1970: 0) },
         workflowTimeout: TimeInterval = 90,
         sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil,
@@ -33,6 +34,7 @@ extension GeminiCLIProviderTests {
         makeProvider(
             credentialsResult: .success(credentials),
             transport: transport,
+            retryGate: retryGate,
             now: now,
             workflowTimeout: workflowTimeout,
             sleep: sleep,
@@ -43,16 +45,19 @@ extension GeminiCLIProviderTests {
     func makeProvider(
         credentialsResult: Result<GeminiCredentials?, GeminiCredentialError>,
         transport: any GeminiHTTPTransport = RecordingTransport(responses: []),
+        retryGate: ProviderRetryGate? = nil,
         now: @escaping @Sendable () -> Date = { Date(timeIntervalSince1970: 0) },
         workflowTimeout: TimeInterval = 90,
         sleep: (@Sendable (TimeInterval) async throws -> Void)? = nil,
         errorLog: ErrorLog = GeminiCLIProviderTests.makeErrorLog()
     ) -> GeminiCLIProvider {
-        let http = GeminiHTTPClient(transport: transport, sleep: sleep ?? { _ in })
+        let gate = retryGate ?? ProviderRetryGate()
+        let http = GeminiHTTPClient(transport: transport, sleep: sleep ?? { _ in }, retryGate: gate)
         return GeminiCLIProvider(
             credentialStore: StubCredentialStore(result: credentialsResult),
             oauth: GeminiOAuthClient(http: http),
             codeAssist: GeminiCodeAssistClient(http: http),
+            retryGate: gate,
             now: now,
             workflowTimeout: workflowTimeout,
             errorLog: errorLog
