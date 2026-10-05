@@ -67,6 +67,15 @@ struct RefreshSettingsProviderRow: View {
                     overrideLabel(override)
                 }
                 fastStatus
+                if fastRefreshMatchesSlowInterval {
+                    caption(
+                        String(
+                            localized: """
+                            Fast and slow checks use the same interval, so fast checks are not more frequent.
+                            """
+                        )
+                    )
+                }
                 extensionMenu
                 caption(keepCheckingExplanation)
             }
@@ -192,6 +201,10 @@ struct RefreshSettingsProviderRow: View {
                 localized: "These checks are documented as not using quota. Frequency limits may still apply."
             )
         }
+    }
+
+    private var fastRefreshMatchesSlowInterval: Bool {
+        viewModel.fastRefreshMatchesSlowInterval(for: provider.id)
     }
 
     private var effectiveIntervalOverrideText: String? {

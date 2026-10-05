@@ -123,4 +123,10 @@ extension QuotaViewModel {
         let minimum = providerRefreshCharacteristics(for: providerId).minimumInterval ?? 0
         return minimum > AutoRefreshPreferences.fastInterval
     }
+
+    /// True when fast and slow cadence ask for the same interval, so an active
+    /// fast phase does not check more often than the slow interval would.
+    func fastRefreshMatchesSlowInterval(for providerId: String) -> Bool {
+        effectiveFastInterval(for: providerId) == AutoRefreshPreferences.slowInterval
+    }
 }

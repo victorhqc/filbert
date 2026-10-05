@@ -2312,6 +2312,15 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas están activas por actividad reciente." } }
       }
     },
+    "Fast and slow checks use the same interval, so fast checks are not more frequent." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelle und langsame Prüfungen verwenden dasselbe Intervall, daher sind schnelle Prüfungen nicht häufiger." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast and slow checks use the same interval, so fast checks are not more frequent." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas y lentas usan el mismo intervalo, así que las consultas rápidas no son más frecuentes." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas y lentas usan el mismo intervalo, así que las consultas rápidas no son más frecuentes." } }
+      }
+    },
     "Keep checking" : {
       "extractionState" : "manual",
       "localizations" : {
