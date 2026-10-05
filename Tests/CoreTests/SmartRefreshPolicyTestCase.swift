@@ -10,6 +10,7 @@ class SmartRefreshPolicyTestCase: XCTestCase {
         availability: ProviderAvailability? = nil,
         metrics: [ProviderActivityMetric]? = nil,
         observation: ProviderActivityObservation? = ProviderActivityObservation(),
+        freshness: ProviderActivityFreshness = .unknown,
         providerName: String = "Provider",
         headline: String = "Headline",
         lines: [UsageLine] = [UsageLine(label: "Usage", percentage: 10)],
@@ -21,7 +22,8 @@ class SmartRefreshPolicyTestCase: XCTestCase {
         let resolvedObservation = observation.map { _ in
             ProviderActivityObservation(
                 metrics: metrics ?? [metric(id: "usage", kind: .usage, value: Decimal(usage))],
-                availability: availability
+                availability: availability,
+                freshness: freshness
             )
         }
         return ProviderQuota(

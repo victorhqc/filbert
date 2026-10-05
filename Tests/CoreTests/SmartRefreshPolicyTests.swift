@@ -109,45 +109,68 @@ final class SmartRefreshPolicyTests: SmartRefreshPolicyTestCase {
         XCTAssertEqual(decision.cadence, .fast)
     }
 
-    func testUnknownAndAbsentObservationsEstablishBaselinesWithoutActivity() {
+    func testAbsentObservationRetainsTheBaselineWithoutManufacturingAChange() {
         var policy = SmartRefreshPolicy()
-        _ = policy.recordSuccess(quota(observation: nil), for: "provider", at: 0, quietWindow: quietWindow)
+        _ = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
 
-        let initialKnown = policy.recordSuccess(
+        let absent = policy.recordSuccess(quota(observation: nil), for: "provider", at: 0, quietWindow: quietWindow)
+        XCTAssertEqual(absent.classification, .unchanged)
+        XCTAssertEqual(absent.cadence, .slow)
+
+        let unchanged = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
+        XCTAssertEqual(unchanged.classification, .unchanged)
+
+        let changed = policy.recordSuccess(quota(usage: 20), for: "provider", at: 0, quietWindow: quietWindow)
+        XCTAssertEqual(changed.classification, .changed)
+        XCTAssertEqual(changed.reasons, [.usage])
+    }
+
+    func testAbsentObservationDoesNotEstablishABaseline() {
+        var policy = SmartRefreshPolicy()
+
+        let absent = policy.recordSuccess(quota(observation: nil), for: "provider", at: 0, quietWindow: quietWindow)
+        XCTAssertEqual(absent.classification, .unchanged)
+        XCTAssertEqual(absent.cadence, .slow)
+
+        let baseline = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
+        XCTAssertEqual(baseline.classification, .baseline)
+    }
+
+    func testUnknownAndAbsentAvailabilityDoNotManufactureChanges() {
+        var policy = SmartRefreshPolicy()
+        _ = policy.recordSuccess(
             quota(usage: 10, availability: .unknown),
             for: "provider",
             at: 0,
             quietWindow: quietWindow
         )
-        let knownAvailability = policy.recordSuccess(
+
+        let known = policy.recordSuccess(
             quota(usage: 10, availability: .available),
             for: "provider",
             at: 0,
             quietWindow: quietWindow
         )
-        let absent = policy.recordSuccess(quota(observation: nil), for: "provider", at: 0, quietWindow: quietWindow)
-        let restored = policy.recordSuccess(
-            quota(usage: 20, availability: .unavailable),
+        let absentAvailability = policy.recordSuccess(
+            quota(usage: 10),
             for: "provider",
             at: 0,
             quietWindow: quietWindow
         )
         let transition = policy.recordSuccess(
-            quota(usage: 20, availability: .available),
+            quota(usage: 10, availability: .unavailable),
             for: "provider",
             at: 0,
             quietWindow: quietWindow
         )
 
-        XCTAssertEqual(initialKnown.classification, .unchanged)
-        XCTAssertEqual(knownAvailability.classification, .unchanged)
-        XCTAssertEqual(absent.classification, .unchanged)
-        XCTAssertEqual(restored.classification, .unchanged)
+        XCTAssertEqual(known.classification, .unchanged)
+        XCTAssertEqual(absentAvailability.classification, .unchanged)
         XCTAssertEqual(transition.classification, .changed)
         XCTAssertEqual(transition.reasons, [.availability])
     }
 
-    func testEmptyObservationsDoNotMasqueradeAsMetricRemovalOrAddition() {
+    func testEmptyMetricsRetainTheBaselineWithoutMasqueradingAsRemovalOrAddition() {
         var policy = SmartRefreshPolicy()
         _ = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
 
@@ -155,8 +178,90 @@ final class SmartRefreshPolicyTests: SmartRefreshPolicyTestCase {
         let restored = policy.recordSuccess(quota(usage: 20), for: "provider", at: 0, quietWindow: quietWindow)
 
         XCTAssertEqual(empty.classification, .unchanged)
+        XCTAssertEqual(restored.classification, .changed)
+        XCTAssertEqual(restored.reasons, [.usage])
+    }
+
+    func testProviderKnownStaleResultDoesNotRenewOrReplaceTheBaseline() {
+        var policy = SmartRefreshPolicy()
+        _ = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
+        _ = policy.recordSuccess(quota(usage: 20), for: "provider", at: 10, quietWindow: quietWindow)
+
+        let stale = policy.recordSuccess(
+            quota(usage: 9, freshness: .stale),
+            for: "provider",
+            at: 700,
+            quietWindow: quietWindow
+        )
+        let restored = policy.recordSuccess(quota(usage: 20), for: "provider", at: 700, quietWindow: quietWindow)
+
+        XCTAssertEqual(stale.classification, .unchanged)
+        XCTAssertEqual(stale.cadence, .slow)
+        XCTAssertEqual(policy.cadence(for: "provider", at: 700, quietWindow: quietWindow), .slow)
         XCTAssertEqual(restored.classification, .unchanged)
-        XCTAssertEqual(restored.cadence, .slow)
+    }
+
+    func testStaleResultDoesNotEstablishABaseline() {
+        var policy = SmartRefreshPolicy()
+
+        let stale = policy.recordSuccess(
+            quota(usage: 10, freshness: .stale),
+            for: "provider",
+            at: 0,
+            quietWindow: quietWindow
+        )
+        let baseline = policy.recordSuccess(quota(usage: 10), for: "provider", at: 0, quietWindow: quietWindow)
+
+        XCTAssertEqual(stale.classification, .unchanged)
+        XCTAssertEqual(baseline.classification, .baseline)
+    }
+
+    func testUnknownAndFreshObservationsPermitSemanticComparison() {
+        var policy = SmartRefreshPolicy()
+        _ = policy.recordSuccess(
+            quota(usage: 10, freshness: .unknown),
+            for: "provider",
+            at: 0,
+            quietWindow: quietWindow
+        )
+
+        let unknownChange = policy.recordSuccess(
+            quota(usage: 20, freshness: .unknown),
+            for: "provider",
+            at: 10,
+            quietWindow: quietWindow
+        )
+        let freshChange = policy.recordSuccess(
+            quota(usage: 30, freshness: .fresh),
+            for: "provider",
+            at: 20,
+            quietWindow: quietWindow
+        )
+
+        XCTAssertEqual(unknownChange.classification, .changed)
+        XCTAssertEqual(unknownChange.cadence, .fast)
+        XCTAssertEqual(freshChange.classification, .changed)
+        XCTAssertEqual(freshChange.cadence, .fast)
+    }
+
+    func testChangedFetchTimestampAloneDoesNotRenewActivity() {
+        var policy = SmartRefreshPolicy()
+        _ = policy.recordSuccess(
+            quota(usage: 10, lastUpdated: Date(timeIntervalSince1970: 1)),
+            for: "provider",
+            at: 0,
+            quietWindow: quietWindow
+        )
+
+        let decision = policy.recordSuccess(
+            quota(usage: 10, lastUpdated: Date(timeIntervalSince1970: 2)),
+            for: "provider",
+            at: 10,
+            quietWindow: quietWindow
+        )
+
+        XCTAssertEqual(decision.classification, .unchanged)
+        XCTAssertEqual(decision.cadence, .slow)
     }
 
     func testProviderStateIsIsolated() {

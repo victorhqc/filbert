@@ -46,11 +46,25 @@ public struct SmartRefreshPolicy: Sendable {
         at elapsed: TimeInterval,
         quietWindow: TimeInterval
     ) -> Decision {
-        let snapshot = ActivitySnapshot(observation: quota.activityObservation)
         var state = states[providerId] ?? State()
 
-        guard let previousSnapshot = state.snapshot else {
-            state.snapshot = snapshot
+        guard let observation = quota.activityObservation,
+              observation.freshness != .stale
+        else {
+            // Absent or provider-known-stale data renews nothing and retains the
+            // last accepted baseline (core 11 AC6).
+            states[providerId] = state
+            return state.unchanged(at: elapsed, quietWindow: quietWindow)
+        }
+
+        let incoming = ActivitySnapshot(observation: observation)
+        guard incoming.hasComparisonData else {
+            states[providerId] = state
+            return state.unchanged(at: elapsed, quietWindow: quietWindow)
+        }
+
+        guard let previous = state.snapshot else {
+            state.snapshot = incoming
             states[providerId] = state
             return Decision(
                 classification: .baseline,
@@ -58,8 +72,9 @@ public struct SmartRefreshPolicy: Sendable {
             )
         }
 
+        let snapshot = previous.merged(with: incoming)
+        let reasons = previous.changeReasons(comparedTo: snapshot)
         state.snapshot = snapshot
-        let reasons = previousSnapshot.changeReasons(comparedTo: snapshot)
         guard reasons.isEmpty else {
             state.activityTime = elapsed
             states[providerId] = state
@@ -71,10 +86,7 @@ public struct SmartRefreshPolicy: Sendable {
         }
 
         states[providerId] = state
-        return Decision(
-            classification: .unchanged,
-            cadence: state.cadence(at: elapsed, quietWindow: quietWindow)
-        )
+        return state.unchanged(at: elapsed, quietWindow: quietWindow)
     }
 
     @discardableResult
@@ -138,6 +150,10 @@ private extension SmartRefreshPolicy {
             return .slow
         }
 
+        func unchanged(at elapsed: TimeInterval, quietWindow: TimeInterval) -> Decision {
+            Decision(classification: .unchanged, cadence: cadence(at: elapsed, quietWindow: quietWindow))
+        }
+
         func nextPhaseBoundary(at elapsed: TimeInterval, quietWindow: TimeInterval) -> TimeInterval? {
             guard let activityTime else { return nil }
             let since = elapsed - activityTime
@@ -155,19 +171,32 @@ private extension SmartRefreshPolicy {
         let metrics: [ProviderActivityMetric]
         let availability: ProviderAvailability?
 
-        init(observation: ProviderActivityObservation?) {
-            guard let observation else {
-                metrics = []
-                availability = nil
-                return
-            }
-
+        init(observation: ProviderActivityObservation) {
             assert(
                 Set(observation.metrics.map(\.id)).count == observation.metrics.count,
                 "Provider activity metric IDs must be unique."
             )
             metrics = observation.metrics.sorted { $0.id < $1.id }
             availability = observation.availability
+        }
+
+        private init(metrics: [ProviderActivityMetric], availability: ProviderAvailability?) {
+            self.metrics = metrics
+            self.availability = availability
+        }
+
+        var hasComparisonData: Bool {
+            !metrics.isEmpty || isKnown(availability)
+        }
+
+        /// Retains the previous value for any field the newer observation omits,
+        /// so an empty or availability-only result never drops the accepted
+        /// baseline (core 11 AC6).
+        func merged(with newer: Self) -> Self {
+            ActivitySnapshot(
+                metrics: newer.metrics.isEmpty ? metrics : newer.metrics,
+                availability: isKnown(newer.availability) ? newer.availability : availability
+            )
         }
 
         func changeReasons(comparedTo current: Self) -> Set<ChangeReason> {

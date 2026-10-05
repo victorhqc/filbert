@@ -37,16 +37,29 @@ public struct ProviderQuota: Sendable {
     }
 }
 
+/// The provider's assertion about where an activity observation came from and
+/// whether it reflects current upstream state. Core treats `.stale` as unusable
+/// evidence; transport alone never decides freshness, so a cache read after a
+/// successful proactive refresh may still be `.fresh` (core 11 AC6).
+public enum ProviderActivityFreshness: Sendable, Equatable {
+    case fresh
+    case stale
+    case unknown
+}
+
 public struct ProviderActivityObservation: Equatable, Sendable {
     public let metrics: [ProviderActivityMetric]
     public let availability: ProviderAvailability?
+    public let freshness: ProviderActivityFreshness
 
     public init(
         metrics: [ProviderActivityMetric] = [],
-        availability: ProviderAvailability? = nil
+        availability: ProviderAvailability? = nil,
+        freshness: ProviderActivityFreshness = .unknown
     ) {
         self.metrics = metrics
         self.availability = availability
+        self.freshness = freshness
     }
 }
 
