@@ -192,7 +192,10 @@ final class ClaudeCodeRefresherDebounceTests: XCTestCase {
             try await refresher.refresh()
             XCTFail("Expected process failure")
         } catch let error as ClaudeCodeRefresherError {
-            XCTAssertEqual(error, .processFailed(7))
+            guard case let .processFailed(diagnostic) = error else {
+                return XCTFail("Expected processFailed, got \(error)")
+            }
+            XCTAssertEqual(diagnostic.exitStatus, 7)
         }
     }
 }

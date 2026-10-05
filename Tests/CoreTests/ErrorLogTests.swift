@@ -236,6 +236,11 @@ extension ErrorLogTests {
         let record = try XCTUnwrap(records(at: log.fileURL).first)
         XCTAssertEqual(record["causeCode"] as? String, "process-exited")
         XCTAssertEqual(record["exitStatus"] as? Int, 17)
+        XCTAssertEqual(record["stdoutBytes"] as? Int, 2048)
+        XCTAssertEqual(record["stderrBytes"] as? Int, 96)
+        XCTAssertEqual(record["stdoutTruncated"] as? Bool, true)
+        XCTAssertEqual(record["cliReportedError"] as? Bool, false)
+        XCTAssertEqual(record["outputFailure"] as? String, "usage-windows-missing")
         XCTAssertFalse(try String(contentsOf: log.fileURL, encoding: .utf8).contains("SECRET"))
     }
 

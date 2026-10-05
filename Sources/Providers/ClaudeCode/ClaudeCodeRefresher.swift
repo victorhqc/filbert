@@ -6,9 +6,10 @@ import Foundation
 public enum ClaudeCodeRefresherError: Error, Equatable, Sendable {
     case binaryNotFound
     case workingDirectoryUnavailable
-    case processFailed(Int32)
+    case processFailed(SubprocessDiagnostic)
     case timedOut
-    case noUsageData
+    case outputCollectionIncomplete
+    case noUsageData(SubprocessDiagnostic)
 }
 
 extension ClaudeCodeRefresherError: LocalizedError {
@@ -18,13 +19,19 @@ extension ClaudeCodeRefresherError: LocalizedError {
             String(localized: "Claude Code not found. Install Claude Code and retry.")
         case .workingDirectoryUnavailable:
             String(localized: "Could not prepare Claude Code refresh. Retry the refresh.")
-        case let .processFailed(status):
-            String(localized: "Claude Code refresh failed with exit code \(status). Open Claude Code and retry.")
+        case let .processFailed(diagnostic):
+            Self.processFailureDescription(exitStatus: diagnostic.exitStatus)
         case .timedOut:
+            String(localized: "Claude Code refresh timed out. Retry the refresh.")
+        case .outputCollectionIncomplete:
             String(localized: "Claude Code refresh timed out. Retry the refresh.")
         case .noUsageData:
             String(localized: "Claude Code returned no usage data. Open Claude Code and retry.")
         }
+    }
+
+    private static func processFailureDescription(exitStatus: Int32) -> String {
+        String(localized: "Claude Code refresh failed with exit code \(exitStatus). Open Claude Code and retry.")
     }
 }
 
@@ -35,15 +42,16 @@ extension ClaudeCodeRefresherError: DiagnosticError {
         case .workingDirectoryUnavailable: "working-directory-unavailable"
         case .processFailed: "process-failed"
         case .timedOut: "refresh-timeout"
+        case .outputCollectionIncomplete: "output-collection-incomplete"
         case .noUsageData: "usage-data-missing"
         }
     }
 
-    public var diagnosticExitStatus: Int32? {
-        if case let .processFailed(status) = self {
-            return status
+    public var diagnosticSubprocess: SubprocessDiagnostic? {
+        switch self {
+        case .binaryNotFound, .workingDirectoryUnavailable, .timedOut, .outputCollectionIncomplete: nil
+        case let .processFailed(diagnostic), let .noUsageData(diagnostic): diagnostic
         }
-        return nil
     }
 }
 
@@ -216,12 +224,17 @@ public actor ClaudeCodeRefresher {
         process.executableURL = URL(fileURLWithPath: binaryPath)
         process.arguments = spawnArguments
         process.currentDirectoryURL = workingDirectoryURL
-        // stderr is discarded: we never surface the child's diagnostics, and
-        // dropping it keeps a GUI menu-bar app quiet.
         let stdoutPipe = Pipe()
+        let stderrPipe = Pipe()
         process.standardOutput = stdoutPipe
-        process.standardError = FileHandle.nullDevice
+        process.standardError = stderrPipe
         process.environment = environment
+
+        let collector = SubprocessOutputCollector(
+            stdoutHandle: stdoutPipe.fileHandleForReading,
+            stderrHandle: stderrPipe.fileHandleForReading
+        )
+        defer { collector.stop() }
 
         try process.run()
 
@@ -231,22 +244,57 @@ public actor ClaudeCodeRefresher {
             terminateGrace: terminateGrace
         )
 
-        // Read after exit: the `/usage` JSON output is a few KB — well under
-        // the OS pipe buffer — so no concurrent drain is needed to avoid a
-        // write-side stall. Once the process is reaped the write end is closed
-        // and this returns immediately.
-        let output = stdoutPipe.fileHandleForReading.readDataToEndOfFile()
-
         try Task.checkCancellation()
-        guard process.terminationStatus == 0 else {
-            throw ClaudeCodeRefresherError.processFailed(process.terminationStatus)
+
+        guard let collected = collector.finish() else {
+            throw ClaudeCodeRefresherError.outputCollectionIncomplete
         }
-        let windows = parseUsageWindows(fromUsageJSON: output)
-        guard !windows.isEmpty else {
-            throw ClaudeCodeRefresherError.noUsageData
+        try applySpawnResult(process: process, collected: collected, cacheStore: cacheStore)
+    }
+
+    private static func applySpawnResult(
+        process: Process,
+        collected: CollectedSubprocessOutput,
+        cacheStore: StatuslineCacheStore
+    ) throws {
+        let validation = validateUsageOutput(
+            collected.stdout,
+            truncated: collected.stdoutTruncated
+        )
+
+        guard process.terminationStatus == 0 else {
+            throw ClaudeCodeRefresherError.processFailed(diagnostic(
+                collected: collected,
+                exitStatus: process.terminationStatus,
+                cliReportedError: validation.cliReportedError
+            ))
+        }
+        if let failure = validation.failure {
+            throw ClaudeCodeRefresherError.noUsageData(diagnostic(
+                collected: collected,
+                exitStatus: process.terminationStatus,
+                cliReportedError: validation.cliReportedError,
+                outputFailure: failure
+            ))
         }
 
-        try mergeAndWriteCache(windows: windows, into: cacheStore)
+        try mergeAndWriteCache(windows: validation.windows, into: cacheStore)
+    }
+
+    private static func diagnostic(
+        collected: CollectedSubprocessOutput,
+        exitStatus: Int32,
+        cliReportedError: Bool?,
+        outputFailure: OutputFailure? = nil
+    ) -> SubprocessDiagnostic {
+        SubprocessDiagnostic(
+            exitStatus: exitStatus,
+            stdoutBytes: collected.stdoutBytes,
+            stderrBytes: collected.stderrBytes,
+            stdoutTruncated: collected.stdoutTruncated,
+            cliReportedError: cliReportedError,
+            outputFailure: outputFailure
+        )
     }
 
     /// Uses `terminationHandler` + a continuation rather than `waitUntilExit`,

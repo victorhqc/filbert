@@ -61,7 +61,9 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
             try await refresher.refresh()
             XCTFail("Expected missing usage failure")
         } catch let error as ClaudeCodeRefresherError {
-            XCTAssertEqual(error, .noUsageData)
+            guard case .noUsageData = error else {
+                return XCTFail("Expected noUsageData, got \(error)")
+            }
         }
 
         let recordedPWD = try String(contentsOf: pwdLogURL, encoding: .utf8)
