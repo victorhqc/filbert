@@ -349,8 +349,9 @@ verify a signed release locally can read
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
 Claude, Gemini CLI, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers
-are in place. The app builds and runs as a menu-bar item. More providers and
-widgets come next.
+are in place. The app builds and runs as a menu-bar item. Smart automatic
+refresh uses clock-driven activity windows instead of a count of unchanged
+checks. More providers and widgets come next.
 
 See [`specs/`](specs/) for the spec files that drive the work.
 
