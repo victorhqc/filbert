@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 // MARK: - Parse & write
@@ -23,17 +24,55 @@ extension ClaudeCodeRefresher {
         "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
     ]
 
-    /// The CLI emits a single object whose `result` field carries the usage text.
-    private struct UsageEnvelope: Decodable {
-        let result: String
+    struct UsageOutputValidation {
+        let windows: [ParsedWindow]
+        let failure: OutputFailure?
+        let cliReportedError: Bool?
     }
 
-    static func parseUsageWindows(fromUsageJSON data: Data) -> [ParsedWindow] {
-        guard let envelope = try? JSONDecoder().decode(UsageEnvelope.self, from: data) else {
-            return []
-        }
-        let text = envelope.result
+    private enum JSONShape {
+        case invalid
+        case nonObject
+        case object
+    }
 
+    static func validateUsageOutput(_ data: Data, truncated: Bool) -> UsageOutputValidation {
+        if truncated {
+            return UsageOutputValidation(windows: [], failure: .outputTooLarge, cliReportedError: nil)
+        }
+        guard !isWhitespaceOnly(data) else {
+            return UsageOutputValidation(windows: [], failure: .emptyOutput, cliReportedError: nil)
+        }
+        guard let envelope = try? JSONDecoder().decode(UsageEnvelope.self, from: data) else {
+            return UsageOutputValidation(
+                windows: [],
+                failure: jsonShape(data) == .invalid ? .invalidJSON : .invalidEnvelope,
+                cliReportedError: nil
+            )
+        }
+        guard envelope.isError != true else {
+            return UsageOutputValidation(windows: [], failure: .cliReportedError, cliReportedError: true)
+        }
+        switch envelope.resultState {
+        case .missing:
+            return UsageOutputValidation(
+                windows: [], failure: .resultMissing, cliReportedError: envelope.isError
+            )
+        case .invalid:
+            return UsageOutputValidation(
+                windows: [], failure: .resultInvalid, cliReportedError: envelope.isError
+            )
+        case let .present(text):
+            let windows = parseUsageWindows(fromText: text)
+            return UsageOutputValidation(
+                windows: windows,
+                failure: windows.isEmpty ? .usageWindowsMissing : nil,
+                cliReportedError: envelope.isError
+            )
+        }
+    }
+
+    static func parseUsageWindows(fromText text: String) -> [ParsedWindow] {
         var parsed: [ParsedWindow] = []
         if let window = parseUsageLine(in: text, prefix: "Current session") {
             parsed.append(ParsedWindow(slot: .fiveHour, window: window))
@@ -42,6 +81,19 @@ extension ClaudeCodeRefresher {
             parsed.append(ParsedWindow(slot: .sevenDay, window: window))
         }
         return parsed
+    }
+
+    private static func isWhitespaceOnly(_ data: Data) -> Bool {
+        data.allSatisfy { byte in
+            byte == 0x20 || byte == 0x09 || byte == 0x0A || byte == 0x0D || byte == 0x0B || byte == 0x0C
+        }
+    }
+
+    private static func jsonShape(_ data: Data) -> JSONShape {
+        guard let root = try? JSONSerialization.jsonObject(with: data, options: [.fragmentsAllowed]) else {
+            return .invalid
+        }
+        return root is NSDictionary ? .object : .nonObject
     }
 
     static func parseUsageLine(in text: String, prefix: String) -> Window? {
@@ -148,5 +200,35 @@ extension ClaudeCodeRefresher {
         )
 
         try cacheStore.write(cache)
+    }
+}
+
+/// The CLI emits a single object whose `result` field carries the usage text
+/// and whose `is_error` Boolean marks a failed run.
+private struct UsageEnvelope: Decodable {
+    enum ResultState {
+        case missing
+        case invalid
+        case present(String)
+    }
+
+    let isError: Bool?
+    let resultState: ResultState
+
+    private enum CodingKeys: String, CodingKey {
+        case isError = "is_error"
+        case result
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        isError = try? container.decodeIfPresent(Bool.self, forKey: .isError)
+        if !container.contains(.result) {
+            resultState = .missing
+        } else if let text = try? container.decode(String.self, forKey: .result) {
+            resultState = .present(text)
+        } else {
+            resultState = .invalid
+        }
     }
 }

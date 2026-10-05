@@ -60,7 +60,9 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
                 try await provider.proactiveRefresh()
                 XCTFail("Expected missing usage failure")
             } catch let error as ClaudeCodeRefresherError {
-                XCTAssertEqual(error, .noUsageData)
+                guard case .noUsageData = error else {
+                    return XCTFail("Expected noUsageData, got \(error)")
+                }
             }
         }
 

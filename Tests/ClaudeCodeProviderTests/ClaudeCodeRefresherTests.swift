@@ -64,7 +64,11 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             try await refresher.refresh()
             XCTFail("Expected missing usage failure")
         } catch let error as ClaudeCodeRefresherError {
-            XCTAssertEqual(error, .noUsageData)
+            guard case let .noUsageData(diagnostic) = error else {
+                return XCTFail("Expected noUsageData, got \(error)")
+            }
+            XCTAssertEqual(diagnostic.exitStatus, 0)
+            XCTAssertEqual(diagnostic.outputFailure, .emptyOutput)
         }
 
         let logged = try String(contentsOf: invocationLogURL, encoding: .utf8)
@@ -155,7 +159,11 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             try await refresher.refresh()
             XCTFail("Expected process failure")
         } catch let error as ClaudeCodeRefresherError {
-            XCTAssertEqual(error, .processFailed(1))
+            guard case let .processFailed(diagnostic) = error else {
+                return XCTFail("Expected processFailed, got \(error)")
+            }
+            XCTAssertEqual(diagnostic.exitStatus, 1)
+            XCTAssertNil(diagnostic.outputFailure)
         }
 
         let cache = try XCTUnwrap(StatuslineCacheStore(cacheURL: cacheURL).read())
@@ -257,7 +265,9 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             _ = try await (first, second)
             XCTFail("Expected missing usage failure")
         } catch let error as ClaudeCodeRefresherError {
-            XCTAssertEqual(error, .noUsageData)
+            guard case .noUsageData = error else {
+                return XCTFail("Expected noUsageData, got \(error)")
+            }
         }
 
         let count = try readInvocationCount()
