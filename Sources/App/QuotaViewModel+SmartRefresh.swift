@@ -104,7 +104,23 @@ extension QuotaViewModel {
         case .fast:
             return fastInterval
         case .cooldown:
-            return min(slowInterval, max(2 * fastInterval, 60))
+            return SmartRefreshPolicy.cooldownInterval(
+                slowInterval: slowInterval,
+                fastInterval: fastInterval
+            )
         }
+    }
+
+    func effectiveFastInterval(for providerId: String) -> TimeInterval {
+        let fastInterval = AutoRefreshPreferences.fastInterval
+        guard let minimum = providerRefreshCharacteristics(for: providerId).minimumInterval else {
+            return fastInterval
+        }
+        return max(fastInterval, minimum)
+    }
+
+    func providerMinimumIntervalOverridesFastRefresh(for providerId: String) -> Bool {
+        let minimum = providerRefreshCharacteristics(for: providerId).minimumInterval ?? 0
+        return minimum > AutoRefreshPreferences.fastInterval
     }
 }

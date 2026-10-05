@@ -50,6 +50,47 @@ final class AutoRefreshSmartSafetyTests: XCTestCase {
         XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
     }
 
+    func testRenewingFastStatusDoesNotReawardTheMenuBarBoost() async {
+        AutoRefreshPreferences.setEnabled(true, for: RefreshSpyProvider.providerId)
+        AutoRefreshPreferences.mode = .smart
+        let clock = TestElapsedClock()
+        let provider = RefreshSpyProvider()
+        let activityDate = Date(timeIntervalSinceReferenceDate: 10000)
+        let viewModel = makeAutoRefreshViewModel(
+            provider: provider,
+            sleeper: { _ in throw CancellationError() },
+            elapsed: { clock.elapsed() },
+            boundarySleeper: { _ in throw CancellationError() },
+            activityNow: { activityDate }
+        )
+
+        await waitForFetches(on: provider, count: 1)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+
+        viewModel.manualRefresh(for: RefreshSpyProvider.providerId)
+        await waitForFetches(on: provider, count: 2)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+
+        let afterEntry = viewModel.activityRuntime.policy.effectiveScore(
+            for: RefreshSpyProvider.providerId,
+            at: activityDate
+        )
+        XCTAssertEqual(afterEntry, MenuBarProviderActivityPolicy.fastEntryAward)
+
+        viewModel.startSmartExtension(for: RefreshSpyProvider.providerId, duration: 15 * 60)
+        await waitForFetches(on: provider, count: 3)
+        await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)
+
+        XCTAssertTrue(viewModel.isFastAutomaticRefreshActive(for: RefreshSpyProvider.providerId))
+        XCTAssertEqual(
+            viewModel.activityRuntime.policy.effectiveScore(
+                for: RefreshSpyProvider.providerId,
+                at: activityDate
+            ),
+            afterEntry
+        )
+    }
+
     func testManualRefreshHintIsIgnoredWhenAutomaticRefreshIsOff() async {
         let clock = TestElapsedClock()
         let provider = RefreshSpyProvider()

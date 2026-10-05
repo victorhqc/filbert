@@ -159,7 +159,8 @@ func makeAutoRefreshViewModel(
     elapsed: @escaping @Sendable () -> TimeInterval = { 0 },
     boundarySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
         throw CancellationError()
-    }
+    },
+    activityNow: @escaping @Sendable () -> Date = { Date() }
 ) -> QuotaViewModel {
     ProviderEnablement.setEnabled(true, for: RefreshSpyProvider.providerId)
     let registry = ProviderRegistry()
@@ -169,7 +170,8 @@ func makeAutoRefreshViewModel(
         errorLog: AppTestErrorLog.make(),
         autoRefreshSleeper: sleeper,
         smartRefreshBoundarySleeper: boundarySleeper,
-        smartRefreshElapsed: elapsed
+        smartRefreshElapsed: elapsed,
+        activityNow: activityNow
     )
 }
 
@@ -190,7 +192,7 @@ func waitForFetchCompletion(on viewModel: QuotaViewModel, providerId: String) as
 }
 
 func waitForIntervals(on recorder: IntervalRecorder, count: Int) async {
-    for _ in 0 ..< 100 where await recorder.intervals().count < count {
+    for _ in 0 ..< 1000 where await recorder.intervals().count < count {
         await Task.yield()
     }
     let intervals = await recorder.intervals()

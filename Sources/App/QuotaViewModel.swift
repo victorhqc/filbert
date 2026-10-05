@@ -187,6 +187,14 @@ final class QuotaViewModel {
         return AutoRefreshPreferences.quietWindow
     }
 
+    var autoRefreshCooldownInterval: TimeInterval {
+        _ = autoRefreshSettingsRevision
+        return SmartRefreshPolicy.cooldownInterval(
+            slowInterval: AutoRefreshPreferences.slowInterval,
+            fastInterval: AutoRefreshPreferences.fastInterval
+        )
+    }
+
     func isAutoRefreshEnabled(for providerId: String) -> Bool {
         _ = autoRefreshSettingsRevision
         return AutoRefreshPreferences.isEnabled(for: providerId)

@@ -39,6 +39,15 @@ public struct SmartRefreshPolicy: Sendable {
     /// longer than this, even while observations keep changing.
     public static let inferenceEpisodeCap: TimeInterval = 10 * 60
 
+    /// The single derived cooldown cadence. Kept here so the scheduler and the
+    /// settings copy cannot drift apart.
+    public static func cooldownInterval(
+        slowInterval: TimeInterval,
+        fastInterval: TimeInterval
+    ) -> TimeInterval {
+        min(slowInterval, max(2 * fastInterval, 60))
+    }
+
     private var states: [String: State] = [:]
 
     public init() {}

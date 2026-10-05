@@ -2231,13 +2231,22 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } }
       }
     },
-    "Smart refresh starts every %@. Usage changes switch that provider to every %@ for a while, then it returns to the slow interval." : {
+    "Quiet window" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die intelligente Aktualisierung beginnt alle %@. Nutzungsänderungen stellen diesen Anbieter für eine Weile auf alle %@ um, danach kehrt er zum langsamen Intervall zurück." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh starts every %@. Usage changes switch that provider to every %@ for a while, then it returns to the slow interval." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@ durante un tiempo y luego vuelve al intervalo lento." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@ durante un tiempo y luego vuelve al intervalo lento." } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ruhefenster" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Quiet window" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de reposo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de reposo" } }
+      }
+    },
+    "Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ for %3$@, then every %4$@ once more before returning to the slow interval." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die intelligente Aktualisierung prüft alle %1$@. Nach einer Nutzungsänderung prüft ein Anbieter %3$@ lang alle %2$@, danach noch einmal alle %4$@, bevor er zum langsamen Intervall zurückkehrt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ for %3$@, then every %4$@ once more before returning to the slow interval." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente consulta cada %1$@. Tras un cambio de uso, un proveedor consulta cada %2$@ durante %3$@ y luego una vez más cada %4$@ antes de volver al intervalo lento." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente consulta cada %1$@. Tras un cambio de uso, un proveedor consulta cada %2$@ durante %3$@ y luego una vez más cada %4$@ antes de volver al intervalo lento." } }
       }
     },
     "Selected interval: %@" : {
@@ -2292,6 +2301,96 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is waiting for setup." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } }
+      }
+    },
+    "Fast checks are on due to recent activity." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelle Prüfungen sind wegen aktueller Aktivität aktiv." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast checks are on due to recent activity." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas están activas por actividad reciente." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas están activas por actividad reciente." } }
+      }
+    },
+    "Keep checking" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Weiter prüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando" } }
+      }
+    },
+    "Keep checking for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Weiter prüfen für %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } }
+      }
+    },
+    "Keep checking: %@ left." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Weiter prüfen: noch %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking: %@ left." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando: quedan %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando: quedan %@." } }
+      }
+    },
+    "Stop extension" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Verlängerung beenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop extension" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión" } }
+      }
+    },
+    "Stop extension keeps automatic refresh on." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Beenden der Verlängerung lässt die automatische Aktualisierung eingeschaltet." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop extension keeps automatic refresh on." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión mantiene activada la actualización automática." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión mantiene activada la actualización automática." } }
+      }
+    },
+    "Provider limit: checks no more often than every %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anbietergrenze: höchstens alle %@ prüfen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider limit: checks no more often than every %@." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite del proveedor: consultas como máximo cada %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite del proveedor: consultas como máximo cada %@." } }
+      }
+    },
+    "These checks may use some of your %@ quota." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Diese Prüfungen können einen Teil deines %@-Kontingents verbrauchen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "These checks may use some of your %@ quota." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas pueden usar parte de tu cuota de %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas pueden usar parte de tu cuota de %@." } }
+      }
+    },
+    "The quota cost of these checks is unknown." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Kontingentkosten dieser Prüfungen sind unbekannt." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The quota cost of these checks is unknown." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El coste en cuota de estas consultas es desconocido." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El coste en cuota de estas consultas es desconocido." } }
+      }
+    },
+    "These checks are documented as not using quota. Frequency limits may still apply." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Diese Prüfungen gelten laut Dokumentation als kontingentfrei. Es können dennoch Frequenzgrenzen gelten." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "These checks are documented as not using quota. Frequency limits may still apply." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas están documentadas como sin uso de cuota. Aun así pueden aplicarse límites de frecuencia." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas están documentadas como sin uso de cuota. Aun así pueden aplicarse límites de frecuencia." } }
       }
     },
     "%lld seconds" : {
