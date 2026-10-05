@@ -25,6 +25,7 @@ final class AutoRefreshPreferencesTests: XCTestCase {
         XCTAssertEqual(AutoRefreshPreferences.mode, .regular)
         XCTAssertEqual(AutoRefreshPreferences.slowInterval, 5 * 60)
         XCTAssertEqual(AutoRefreshPreferences.fastInterval, 30)
+        XCTAssertEqual(AutoRefreshPreferences.quietWindow, 5 * 60)
     }
 
     func testProviderOptInPersistsIndependently() {
@@ -44,10 +45,18 @@ final class AutoRefreshPreferencesTests: XCTestCase {
         AutoRefreshPreferences.mode = .smart
         AutoRefreshPreferences.slowInterval = 17 * 60
         AutoRefreshPreferences.fastInterval = 25
+        AutoRefreshPreferences.quietWindow = 10 * 60
 
         XCTAssertEqual(AutoRefreshPreferences.mode, .smart)
         XCTAssertEqual(AutoRefreshPreferences.slowInterval, 17 * 60)
         XCTAssertEqual(AutoRefreshPreferences.fastInterval, 25)
+        XCTAssertEqual(AutoRefreshPreferences.quietWindow, 10 * 60)
+    }
+
+    func testQuietWindowOptionsCoverEverySupportedStop() {
+        let expected: [TimeInterval] = [2 * 60, 5 * 60, 10 * 60, 15 * 60]
+        XCTAssertEqual(AutoRefreshPreferences.quietWindowOptions, expected)
+        XCTAssertEqual(AutoRefreshPreferences.defaultQuietWindow, 5 * 60)
     }
 
     func testIntervalOptionsCoverEverySupportedStop() {
@@ -63,9 +72,11 @@ final class AutoRefreshPreferencesTests: XCTestCase {
         defaults.set("unknown", forKey: "automatic-refresh-mode")
         defaults.set(7 * 60 + 1, forKey: "automatic-refresh-slow-interval")
         defaults.set(27, forKey: "automatic-refresh-fast-interval")
+        defaults.set(9 * 60, forKey: "automatic-refresh-quiet-window")
 
         XCTAssertEqual(AutoRefreshPreferences.mode, .regular)
         XCTAssertEqual(AutoRefreshPreferences.slowInterval, 5 * 60)
         XCTAssertEqual(AutoRefreshPreferences.fastInterval, 30)
+        XCTAssertEqual(AutoRefreshPreferences.quietWindow, 5 * 60)
     }
 }
