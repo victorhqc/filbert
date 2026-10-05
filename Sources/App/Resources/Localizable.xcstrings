@@ -2231,13 +2231,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } }
       }
     },
-    "Smart refresh starts every %@. Usage changes switch that provider to every %@; three unchanged checks return it to slow." : {
+    "Smart refresh starts every %@. Usage changes switch that provider to every %@ for a while, then it returns to the slow interval." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die intelligente Aktualisierung beginnt alle %@. Nutzungsänderungen stellen diesen Anbieter auf alle %@ um; drei unveränderte Prüfungen stellen ihn wieder langsam." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh starts every %@. Usage changes switch that provider to every %@; three unchanged checks return it to slow." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@; tres consultas sin cambios lo devuelven al ritmo lento." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@; tres consultas sin cambios lo devuelven al ritmo lento." } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die intelligente Aktualisierung beginnt alle %@. Nutzungsänderungen stellen diesen Anbieter für eine Weile auf alle %@ um, danach kehrt er zum langsamen Intervall zurück." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh starts every %@. Usage changes switch that provider to every %@ for a while, then it returns to the slow interval." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@ durante un tiempo y luego vuelve al intervalo lento." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente empieza cada %@. Los cambios de uso pasan ese proveedor a cada %@ durante un tiempo y luego vuelve al intervalo lento." } }
       }
     },
     "Selected interval: %@" : {

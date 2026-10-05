@@ -30,6 +30,48 @@ extension QuotaViewModel {
         refreshLoops[providerId] = nil
     }
 
+    func scheduleSmartRefreshBoundary(for providerId: String) {
+        cancelSmartRefreshBoundary(for: providerId)
+        guard AutoRefreshPreferences.mode == .smart,
+              isEligibleForAutoRefresh(providerId)
+        else {
+            return
+        }
+
+        let now = smartRefreshElapsed()
+        guard let boundary = smartRefreshPolicy.nextPhaseBoundary(
+            for: providerId,
+            at: now,
+            quietWindow: AutoRefreshPreferences.quietWindow
+        ) else {
+            return
+        }
+
+        let delay = max(0, boundary - now)
+        let revision = smartRefreshBoundaryRevisions[providerId, default: 0]
+        smartRefreshBoundaryTasks[providerId] = Task { @MainActor [weak self] in
+            do {
+                try await self?.smartRefreshBoundarySleeper(delay)
+            } catch {
+                return
+            }
+            guard !Task.isCancelled,
+                  let self,
+                  smartRefreshBoundaryRevisions[providerId, default: 0] == revision
+            else {
+                return
+            }
+            smartRefreshBoundaryTasks[providerId] = nil
+            syncFastRefreshStatus(for: providerId)
+        }
+    }
+
+    func cancelSmartRefreshBoundary(for providerId: String) {
+        smartRefreshBoundaryRevisions[providerId, default: 0] += 1
+        smartRefreshBoundaryTasks[providerId]?.cancel()
+        smartRefreshBoundaryTasks[providerId] = nil
+    }
+
     func isEnabled(_ providerId: String) -> Bool {
         enabledProviderIds.contains(providerId)
     }
@@ -129,12 +171,19 @@ extension QuotaViewModel {
     }
 
     func automaticRefreshInterval(for providerId: String) -> TimeInterval {
-        guard AutoRefreshPreferences.mode == .smart,
-              smartRefreshPolicy.cadence(for: providerId) == .fast
-        else {
+        guard AutoRefreshPreferences.mode == .smart else {
             return AutoRefreshPreferences.slowInterval
         }
-        return AutoRefreshPreferences.fastInterval
+        let slowInterval = AutoRefreshPreferences.slowInterval
+        let fastInterval = AutoRefreshPreferences.fastInterval
+        switch smartRefreshCadence(for: providerId) {
+        case .slow:
+            return slowInterval
+        case .fast:
+            return fastInterval
+        case .cooldown:
+            return min(slowInterval, max(2 * fastInterval, 60))
+        }
     }
 
     func performScheduledRefresh(
@@ -230,14 +279,28 @@ extension QuotaViewModel {
         _ quota: ProviderQuota,
         for providerId: String
     ) -> SmartRefreshPolicy.Decision {
-        smartRefreshPolicy.recordSuccess(quota, for: providerId)
+        smartRefreshPolicy.recordSuccess(
+            quota,
+            for: providerId,
+            at: smartRefreshElapsed(),
+            quietWindow: AutoRefreshPreferences.quietWindow
+        )
+    }
+
+    func smartRefreshCadence(for providerId: String) -> SmartRefreshPolicy.Cadence {
+        smartRefreshPolicy.cadence(
+            for: providerId,
+            at: smartRefreshElapsed(),
+            quietWindow: AutoRefreshPreferences.quietWindow
+        )
     }
 
     func syncFastRefreshStatus(for providerId: String) {
         let shouldShowStatus = AutoRefreshPreferences.mode == .smart
             && isEligibleForAutoRefresh(providerId)
-            && smartRefreshPolicy.cadence(for: providerId) == .fast
+            && smartRefreshCadence(for: providerId) == .fast
         setFastRefreshStatusVisible(shouldShowStatus, for: providerId)
+        scheduleSmartRefreshBoundary(for: providerId)
     }
 
     func syncFastRefreshStatuses() {

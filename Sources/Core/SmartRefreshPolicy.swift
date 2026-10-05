@@ -4,6 +4,7 @@ public struct SmartRefreshPolicy: Sendable {
     public enum Cadence: Equatable, Sendable {
         case slow
         case fast
+        case cooldown
     }
 
     public enum Classification: Equatable, Sendable {
@@ -41,7 +42,9 @@ public struct SmartRefreshPolicy: Sendable {
     @discardableResult
     public mutating func recordSuccess(
         _ quota: ProviderQuota,
-        for providerId: String
+        for providerId: String,
+        at elapsed: TimeInterval,
+        quietWindow: TimeInterval
     ) -> Decision {
         let snapshot = ActivitySnapshot(observation: quota.activityObservation)
         var state = states[providerId] ?? State()
@@ -49,40 +52,48 @@ public struct SmartRefreshPolicy: Sendable {
         guard let previousSnapshot = state.snapshot else {
             state.snapshot = snapshot
             states[providerId] = state
-            return Decision(classification: .baseline, cadence: state.cadence)
+            return Decision(
+                classification: .baseline,
+                cadence: state.cadence(at: elapsed, quietWindow: quietWindow)
+            )
         }
 
         state.snapshot = snapshot
         let reasons = previousSnapshot.changeReasons(comparedTo: snapshot)
         guard reasons.isEmpty else {
-            state.cadence = .fast
-            state.consecutiveUnchangedChecks = 0
+            state.activityTime = elapsed
             states[providerId] = state
             return Decision(
                 classification: .changed,
-                cadence: state.cadence,
+                cadence: .fast,
                 reasons: reasons
             )
         }
 
-        if state.cadence == .fast {
-            state.consecutiveUnchangedChecks += 1
-            if state.consecutiveUnchangedChecks == Self.unchangedChecksBeforeSlowing {
-                state.cadence = .slow
-                state.consecutiveUnchangedChecks = 0
-            }
-        }
         states[providerId] = state
-        return Decision(classification: .unchanged, cadence: state.cadence)
+        return Decision(
+            classification: .unchanged,
+            cadence: state.cadence(at: elapsed, quietWindow: quietWindow)
+        )
+    }
+
+    @discardableResult
+    public mutating func recordActivityHint(
+        for providerId: String,
+        at elapsed: TimeInterval
+    ) -> Cadence {
+        var state = states[providerId] ?? State()
+        state.activityTime = elapsed
+        states[providerId] = state
+        return .fast
     }
 
     @discardableResult
     public mutating func recordFailure(for providerId: String) -> Cadence {
         var state = states[providerId] ?? State()
-        state.cadence = .slow
-        state.consecutiveUnchangedChecks = 0
+        state.activityTime = nil
         states[providerId] = state
-        return state.cadence
+        return .slow
     }
 
     public mutating func reset(for providerId: String) {
@@ -93,22 +104,51 @@ public struct SmartRefreshPolicy: Sendable {
         states.removeAll()
     }
 
-    public func cadence(for providerId: String) -> Cadence {
-        states[providerId]?.cadence ?? .slow
+    public func cadence(
+        for providerId: String,
+        at elapsed: TimeInterval,
+        quietWindow: TimeInterval
+    ) -> Cadence {
+        states[providerId]?.cadence(at: elapsed, quietWindow: quietWindow) ?? .slow
     }
 
-    public func consecutiveUnchangedChecks(for providerId: String) -> Int {
-        states[providerId]?.consecutiveUnchangedChecks ?? 0
+    public func nextPhaseBoundary(
+        for providerId: String,
+        at elapsed: TimeInterval,
+        quietWindow: TimeInterval
+    ) -> TimeInterval? {
+        states[providerId]?.nextPhaseBoundary(at: elapsed, quietWindow: quietWindow)
     }
-
-    private static let unchangedChecksBeforeSlowing = 3
 }
 
 private extension SmartRefreshPolicy {
     struct State: Sendable {
         var snapshot: ActivitySnapshot?
-        var cadence: Cadence = .slow
-        var consecutiveUnchangedChecks = 0
+        var activityTime: TimeInterval?
+
+        func cadence(at elapsed: TimeInterval, quietWindow: TimeInterval) -> Cadence {
+            guard let activityTime else { return .slow }
+            let since = elapsed - activityTime
+            if since < quietWindow {
+                return .fast
+            }
+            if since < 2 * quietWindow {
+                return .cooldown
+            }
+            return .slow
+        }
+
+        func nextPhaseBoundary(at elapsed: TimeInterval, quietWindow: TimeInterval) -> TimeInterval? {
+            guard let activityTime else { return nil }
+            let since = elapsed - activityTime
+            if since < quietWindow {
+                return activityTime + quietWindow
+            }
+            if since < 2 * quietWindow {
+                return activityTime + 2 * quietWindow
+            }
+            return nil
+        }
     }
 
     struct ActivitySnapshot: Equatable, Sendable {

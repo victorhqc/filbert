@@ -79,8 +79,8 @@ struct RefreshSettingsView: View {
             String.localizedStringWithFormat(
                 String(
                     localized: """
-                    Smart refresh starts every %@. Usage changes switch that provider to every %@; \
-                    three unchanged checks return it to slow.
+                    Smart refresh starts every %@. Usage changes switch that provider to every %@ \
+                    for a while, then it returns to the slow interval.
                     """
                 ),
                 durationText(viewModel.autoRefreshSlowInterval),

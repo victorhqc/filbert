@@ -8,8 +8,10 @@ public enum AutoRefreshMode: String, CaseIterable, Hashable, Sendable {
 public enum AutoRefreshPreferences {
     public static let defaultSlowInterval: TimeInterval = 5 * 60
     public static let defaultFastInterval: TimeInterval = 30
+    public static let defaultQuietWindow: TimeInterval = 5 * 60
     public static let slowIntervalOptions: [TimeInterval] = (1 ... 60).map { TimeInterval($0 * 60) }
     public static let fastIntervalOptions: [TimeInterval] = stride(from: 10, through: 60, by: 5).map(TimeInterval.init)
+    public static let quietWindowOptions: [TimeInterval] = [2, 5, 10, 15].map { TimeInterval($0 * 60) }
 
     private nonisolated(unsafe) static var defaults: UserDefaults = .standard
 
@@ -59,12 +61,27 @@ public enum AutoRefreshPreferences {
         set { defaults.set(supportedFastInterval(newValue), forKey: fastIntervalStorageKey) }
     }
 
+    public static var quietWindow: TimeInterval {
+        get {
+            interval(
+                forKey: quietWindowStorageKey,
+                supportedValues: quietWindowOptions,
+                defaultValue: defaultQuietWindow
+            )
+        }
+        set { defaults.set(supportedQuietWindow(newValue), forKey: quietWindowStorageKey) }
+    }
+
     public static func supportedSlowInterval(_ interval: TimeInterval) -> TimeInterval {
         supportedInterval(interval, supportedValues: slowIntervalOptions, defaultValue: defaultSlowInterval)
     }
 
     public static func supportedFastInterval(_ interval: TimeInterval) -> TimeInterval {
         supportedInterval(interval, supportedValues: fastIntervalOptions, defaultValue: defaultFastInterval)
+    }
+
+    public static func supportedQuietWindow(_ interval: TimeInterval) -> TimeInterval {
+        supportedInterval(interval, supportedValues: quietWindowOptions, defaultValue: defaultQuietWindow)
     }
 
     public static func setUserDefaults(_ defaults: UserDefaults) {
@@ -98,4 +115,5 @@ public enum AutoRefreshPreferences {
     private static let modeStorageKey = "automatic-refresh-mode"
     private static let slowIntervalStorageKey = "automatic-refresh-slow-interval"
     private static let fastIntervalStorageKey = "automatic-refresh-fast-interval"
+    private static let quietWindowStorageKey = "automatic-refresh-quiet-window"
 }
