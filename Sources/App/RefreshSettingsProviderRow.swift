@@ -68,6 +68,7 @@ struct RefreshSettingsProviderRow: View {
                 }
                 fastStatus
                 extensionMenu
+                caption(keepCheckingExplanation)
             }
         }
     }
@@ -75,7 +76,10 @@ struct RefreshSettingsProviderRow: View {
     @ViewBuilder
     private var fastStatus: some View {
         if let remaining = viewModel.smartExtensionRemaining(for: provider.id) {
-            extensionStatus(remaining)
+            VStack(alignment: .leading, spacing: 8) {
+                extensionStatus(remaining)
+                caption(stopExplanation)
+            }
         } else if viewModel.isFastAutomaticRefreshActive(for: provider.id) {
             Label(
                 String(localized: "Fast checks are on due to recent activity."),
@@ -104,6 +108,8 @@ struct RefreshSettingsProviderRow: View {
                 provider.displayName
             )
         )
+        .accessibilityHint(keepCheckingExplanation)
+        .help(keepCheckingExplanation)
     }
 
     private func overrideLabel(_ text: String) -> some View {
@@ -115,7 +121,7 @@ struct RefreshSettingsProviderRow: View {
     }
 
     private func extensionStatus(_ remaining: TimeInterval) -> some View {
-        let remainingText = extensionRemainingText(remaining)
+        let remainingText = extensionStatusText(remaining)
         return HStack(spacing: 10) {
             Label(remainingText, systemImage: "bolt.fill")
                 .font(.caption)
@@ -126,8 +132,8 @@ struct RefreshSettingsProviderRow: View {
                 viewModel.stopSmartExtension(for: provider.id)
             }
             .buttonStyle(.borderless)
-            .accessibilityHint(stopExtensionHint)
-            .help(stopExtensionHint)
+            .accessibilityHint(stopExplanation)
+            .help(stopExplanation)
         }
     }
 
@@ -198,14 +204,33 @@ struct RefreshSettingsProviderRow: View {
         )
     }
 
-    private func extensionRemainingText(_ remaining: TimeInterval) -> String {
+    private var keepCheckingExplanation: String {
         String.localizedStringWithFormat(
-            String(localized: "Keep checking: %@ left."),
-            refreshDurationText(remaining)
+            String(localized: "Checks every %@ for the time you choose, even when usage does not change."),
+            refreshDurationText(viewModel.effectiveFastInterval(for: provider.id))
         )
     }
 
-    private var stopExtensionHint: String {
-        String(localized: "Stop extension keeps automatic refresh on.")
+    private var stopExplanation: String {
+        String(
+            localized: """
+            Stopping ends the fast checks early. Automatic refresh stays on and the normal \
+            Smart timing resumes.
+            """
+        )
+    }
+
+    private func caption(_ text: String) -> some View {
+        Text(text)
+            .font(.caption)
+            .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
+    }
+
+    private func extensionStatusText(_ remaining: TimeInterval) -> String {
+        String.localizedStringWithFormat(
+            String(localized: "Fast checks for %@ more."),
+            refreshDurationText(remaining)
+        )
     }
 }

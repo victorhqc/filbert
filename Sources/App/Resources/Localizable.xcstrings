@@ -2330,13 +2330,22 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } }
       }
     },
-    "Keep checking: %@ left." : {
+    "Fast checks for %@ more." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Weiter prüfen: noch %@." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking: %@ left." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando: quedan %@." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando: quedan %@." } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelle Prüfungen noch %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast checks for %@ more." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas rápidas durante %@ más." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas rápidas durante %@ más." } }
+      }
+    },
+    "Checks every %@ for the time you choose, even when usage does not change." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Prüft für die gewählte Zeit alle %@, auch wenn sich die Nutzung nicht ändert." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Checks every %@ for the time you choose, even when usage does not change." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consulta cada %@ durante el tiempo que elijas, aunque el uso no cambie." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consulta cada %@ durante el tiempo que elijas, aunque el uso no cambie." } }
       }
     },
     "Stop extension" : {
@@ -2348,13 +2357,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión" } }
       }
     },
-    "Stop extension keeps automatic refresh on." : {
+    "Stopping ends the fast checks early. Automatic refresh stays on and the normal Smart timing resumes." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Beenden der Verlängerung lässt die automatische Aktualisierung eingeschaltet." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop extension keeps automatic refresh on." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión mantiene activada la actualización automática." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión mantiene activada la actualización automática." } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Beenden stoppt die schnellen Prüfungen vorzeitig. Die automatische Aktualisierung bleibt eingeschaltet, und der normale intelligente Rhythmus wird wieder aufgenommen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stopping ends the fast checks early. Automatic refresh stays on and the normal Smart timing resumes." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detener finaliza antes las consultas rápidas. La actualización automática sigue activada y se reanuda el ritmo inteligente normal." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener finaliza antes las consultas rápidas. La actualización automática sigue activada y se reanuda el ritmo inteligente normal." } }
       }
     },
     "Provider limit: checks no more often than every %@." : {
