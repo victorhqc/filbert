@@ -3,11 +3,11 @@ import Core
 import XCTest
 
 final class OpenAICodexRefreshCharacteristicsTests: XCTestCase {
-    func testProvider_declaresPossibleConsumptionAndInferenceCapability() {
+    func testProvider_declaresUnknownCostAndInferenceCapability() {
         XCTAssertEqual(
             OpenAICodexProvider.refreshCharacteristics,
             ProviderRefreshCharacteristics(
-                costEvidence: .possibleConsumption,
+                costEvidence: .unknown,
                 canInvokeInference: true
             )
         )

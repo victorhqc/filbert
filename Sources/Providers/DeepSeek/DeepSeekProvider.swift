@@ -198,24 +198,17 @@ public struct DeepSeekProvider: AIProvider {
         )
     }
 
+    /// Only the total balance signals consumption. The granted and topped-up
+    /// balances are component allocations: a grant, top-up, or expiry moves
+    /// them without any inference usage, so they never count as activity.
     private func activityObservation(
         from response: DeepSeekBalanceResponse
     ) -> ProviderActivityObservation {
-        let metrics = response.balanceInfos.flatMap { balanceInfo in
-            [
-                activityMetric(
-                    id: "total-balance-\(balanceInfo.currency.lowercased())",
-                    value: balanceInfo.totalBalance
-                ),
-                activityMetric(
-                    id: "granted-balance-\(balanceInfo.currency.lowercased())",
-                    value: balanceInfo.grantedBalance
-                ),
-                activityMetric(
-                    id: "topped-up-balance-\(balanceInfo.currency.lowercased())",
-                    value: balanceInfo.toppedUpBalance
-                ),
-            ].compactMap { $0 }
+        let metrics = response.balanceInfos.compactMap { balanceInfo in
+            activityMetric(
+                id: "total-balance-\(balanceInfo.currency.lowercased())",
+                value: balanceInfo.totalBalance
+            )
         }
         return ProviderActivityObservation(
             metrics: metrics,

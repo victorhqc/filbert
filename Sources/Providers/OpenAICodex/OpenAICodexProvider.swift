@@ -32,7 +32,7 @@ public struct OpenAICodexProvider: AIProvider {
         url: URL(string: "https://developers.openai.com/codex/cli/")!
     )
     public static let refreshCharacteristics = ProviderRefreshCharacteristics(
-        costEvidence: .possibleConsumption,
+        costEvidence: .unknown,
         canInvokeInference: true
     )
 
