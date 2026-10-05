@@ -254,7 +254,7 @@ public struct ZAIProvider: AIProvider {
     private func activityObservation(from limits: [ZAILimit]) -> ProviderActivityObservation {
         let metrics = limits.compactMap { limit -> ProviderActivityMetric? in
             guard let id = activityMetricID(for: limit),
-                  let value = limit.currentValue ?? limit.usage ?? limit.percentage
+                  let value = consumption(for: limit)
             else {
                 return nil
             }
@@ -265,6 +265,12 @@ public struct ZAIProvider: AIProvider {
             )
         }
         return ProviderActivityObservation(metrics: metrics)
+    }
+
+    /// `usage` is the allowance for credit and web-tool shapes, so it never
+    /// counts as consumption here.
+    private func consumption(for limit: ZAILimit) -> Double? {
+        limit.currentValue ?? limit.percentage
     }
 
     private func activityMetricID(for limit: ZAILimit) -> String? {

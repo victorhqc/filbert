@@ -59,6 +59,10 @@ public struct ClaudeCodeProvider: AIProvider {
         linkLabel: String(localized: "Install Claude Code"),
         url: URL(string: "https://docs.claude.com/en/docs/claude-code/overview")!
     )
+    public static let refreshCharacteristics = ProviderRefreshCharacteristics(
+        costEvidence: .possibleConsumption,
+        canInvokeInference: true
+    )
 
     static let freshnessThreshold: TimeInterval = 3600
 
@@ -218,16 +222,22 @@ public struct ClaudeCodeProvider: AIProvider {
             lastUpdated: lastUpdated,
             error: lines.isEmpty ? String(localized: "Open Claude Code to populate usage data") : nil,
             isStale: isStale,
-            activityObservation: activityObservation(from: cache.rateLimits)
+            activityObservation: activityObservation(from: cache.rateLimits, isStale: isStale)
         )
     }
 
-    private func activityObservation(from rateLimits: RateLimits?) -> ProviderActivityObservation {
+    private func activityObservation(
+        from rateLimits: RateLimits?,
+        isStale: Bool
+    ) -> ProviderActivityObservation {
         let metrics = [
             activityMetric(id: "five-hour-usage", window: rateLimits?.fiveHour),
             activityMetric(id: "weekly-usage", window: rateLimits?.sevenDay),
         ].compactMap { $0 }
-        return ProviderActivityObservation(metrics: metrics)
+        return ProviderActivityObservation(
+            metrics: metrics,
+            freshness: isStale ? .stale : .fresh
+        )
     }
 
     private func activityMetric(id: String, window: Window?) -> ProviderActivityMetric? {

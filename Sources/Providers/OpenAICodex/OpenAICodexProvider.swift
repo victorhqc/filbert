@@ -31,6 +31,10 @@ public struct OpenAICodexProvider: AIProvider {
         linkLabel: String(localized: "Install Codex CLI"),
         url: URL(string: "https://developers.openai.com/codex/cli/")!
     )
+    public static let refreshCharacteristics = ProviderRefreshCharacteristics(
+        costEvidence: .possibleConsumption,
+        canInvokeInference: true
+    )
 
     private let locator: CodexLocator
     private let client: CodexAppServerClient

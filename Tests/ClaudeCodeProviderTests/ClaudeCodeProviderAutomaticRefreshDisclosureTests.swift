@@ -1,4 +1,5 @@
 @testable import ClaudeCodeProvider
+import Core
 import XCTest
 
 final class ClaudeCodeRefreshDisclosureTests: XCTestCase {
@@ -7,5 +8,15 @@ final class ClaudeCodeRefreshDisclosureTests: XCTestCase {
 
         XCTAssertEqual(disclosure.command, "claude -p \"/usage\"")
         XCTAssertEqual(disclosure.quotaName, "Claude Code")
+    }
+
+    func testProviderDeclaresPossibleConsumptionAndInferenceCapability() {
+        XCTAssertEqual(
+            ClaudeCodeProvider.refreshCharacteristics,
+            ProviderRefreshCharacteristics(
+                costEvidence: .possibleConsumption,
+                canInvokeInference: true
+            )
+        )
     }
 }
