@@ -12,14 +12,21 @@ struct CollectedSubprocessOutput {
 /// Drains a child's stdout and stderr while it runs so a full pipe cannot stall
 /// the child. Retention is bounded; stderr is counted and never kept.
 ///
-/// One reader thread owns both streams, so a read can never race with
-/// finalization: `finish` joins the reader before it takes the snapshot.
+/// One reader thread owns both streams, and `finish` returns a snapshot only
+/// after that thread reports completion. A reader that does not stop in time
+/// yields `nil` rather than a partial snapshot.
 final class SubprocessOutputCollector: @unchecked Sendable {
     static let captureLimit = 65536
 
+    enum StreamReadOutcome: Equatable {
+        case bytes
+        case closed
+        case retry
+    }
+
     private static let pollTimeoutMilliseconds: Int32 = 50
     private static let finalDrainDeadline: TimeInterval = 0.25
-    private static let joinTimeout = DispatchTimeInterval.milliseconds(500)
+    private static let joinTimeout: TimeInterval = 5
 
     private struct State {
         var stdout = Data()
@@ -32,7 +39,8 @@ final class SubprocessOutputCollector: @unchecked Sendable {
     private let captureLimit: Int
     private let state = OSAllocatedUnfairLock(initialState: State())
     private let shouldStop = OSAllocatedUnfairLock(initialState: false)
-    private let readerFinished = DispatchSemaphore(value: 0)
+    private let completion = NSCondition()
+    private var readerDone = false
     private var readerThread: Thread?
 
     init(
@@ -48,8 +56,11 @@ final class SubprocessOutputCollector: @unchecked Sendable {
         thread.start()
     }
 
-    func finish() -> CollectedSubprocessOutput {
+    /// Returns `nil` when the reader did not stop within the join bound, so no
+    /// snapshot is safe to use.
+    func finish() -> CollectedSubprocessOutput? {
         stop()
+        guard waitForReader() else { return nil }
         let snapshot = state.withLock { $0 }
         return CollectedSubprocessOutput(
             stdout: snapshot.stdout,
@@ -60,12 +71,29 @@ final class SubprocessOutputCollector: @unchecked Sendable {
     }
 
     func stop() {
-        let alreadyStopped = shouldStop.withLock { stopped -> Bool in
-            defer { stopped = true }
-            return stopped
+        shouldStop.withLock { $0 = true }
+    }
+
+    static func classifyReadResult(count: Int, error: Int32) -> StreamReadOutcome {
+        if count > 0 {
+            return .bytes
         }
-        guard !alreadyStopped else { return }
-        _ = readerFinished.wait(timeout: .now() + Self.joinTimeout)
+        if count == 0 {
+            return .closed
+        }
+        return error == EINTR || error == EAGAIN || error == EWOULDBLOCK ? .retry : .closed
+    }
+
+    private func waitForReader() -> Bool {
+        completion.lock()
+        defer { completion.unlock() }
+        let deadline = Date().addingTimeInterval(Self.joinTimeout)
+        while !readerDone {
+            if !completion.wait(until: deadline) {
+                return false
+            }
+        }
+        return true
     }
 
     private func readStreams() {
@@ -105,33 +133,64 @@ final class SubprocessOutputCollector: @unchecked Sendable {
             }
         }
 
-        drainBuffered(descriptor: stdoutHandle.fileDescriptor, buffer: &stdoutBuffer, retaining: true)
-        drainBuffered(descriptor: stderrHandle.fileDescriptor, buffer: &stderrBuffer, retaining: false)
-        readerFinished.signal()
+        let deadline = Date().addingTimeInterval(Self.finalDrainDeadline)
+        drainBuffered(deadline: deadline, stdoutBuffer: &stdoutBuffer, stderrBuffer: &stderrBuffer)
+        signalReaderFinished()
     }
 
     private func readAvailable(descriptor: Int32, buffer: inout [UInt8], retaining: Bool) -> Bool {
         let count = read(descriptor, &buffer, buffer.count)
-        guard count > 0 else {
-            let failure = errno
-            return failure == EINTR || failure == EAGAIN || failure == EWOULDBLOCK
+        switch Self.classifyReadResult(count: count, error: errno) {
+        case .bytes:
+            ingest(Data(bytes: buffer, count: count), retaining: retaining)
+            return true
+        case .retry:
+            return true
+        case .closed:
+            return false
         }
-        ingest(Data(bytes: buffer, count: count), retaining: retaining)
-        return true
     }
 
-    /// Reads only what is already buffered, bounded by a deadline so a
+    /// Drains only bytes already buffered. Both streams share one deadline, so a
     /// descendant that keeps the write end open cannot extend finalization.
-    private func drainBuffered(descriptor: Int32, buffer: inout [UInt8], retaining: Bool) {
-        let original = fcntl(descriptor, F_GETFL)
-        guard original >= 0, fcntl(descriptor, F_SETFL, original | O_NONBLOCK) == 0 else { return }
-        defer { _ = fcntl(descriptor, F_SETFL, original) }
-        let deadline = Date().addingTimeInterval(Self.finalDrainDeadline)
-        while Date() < deadline {
-            let count = read(descriptor, &buffer, buffer.count)
-            guard count > 0 else { break }
-            ingest(Data(bytes: buffer, count: count), retaining: retaining)
+    private func drainBuffered(deadline: Date, stdoutBuffer: inout [UInt8], stderrBuffer: inout [UInt8]) {
+        let stdoutFlags = makeNonBlocking(descriptor: stdoutHandle.fileDescriptor)
+        let stderrFlags = makeNonBlocking(descriptor: stderrHandle.fileDescriptor)
+        defer {
+            restoreFlags(descriptor: stdoutHandle.fileDescriptor, to: stdoutFlags)
+            restoreFlags(descriptor: stderrHandle.fileDescriptor, to: stderrFlags)
         }
+        while Date() < deadline {
+            let stdoutCount = read(stdoutHandle.fileDescriptor, &stdoutBuffer, stdoutBuffer.count)
+            if stdoutCount > 0 {
+                ingest(Data(bytes: stdoutBuffer, count: stdoutCount), retaining: true)
+            }
+            let stderrCount = read(stderrHandle.fileDescriptor, &stderrBuffer, stderrBuffer.count)
+            if stderrCount > 0 {
+                ingest(Data(bytes: stderrBuffer, count: stderrCount), retaining: false)
+            }
+            if stdoutCount <= 0, stderrCount <= 0 {
+                break
+            }
+        }
+    }
+
+    private func makeNonBlocking(descriptor: Int32) -> Int32 {
+        let flags = fcntl(descriptor, F_GETFL)
+        guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0 else { return -1 }
+        return flags
+    }
+
+    private func restoreFlags(descriptor: Int32, to flags: Int32) {
+        guard flags >= 0 else { return }
+        _ = fcntl(descriptor, F_SETFL, flags)
+    }
+
+    private func signalReaderFinished() {
+        completion.lock()
+        readerDone = true
+        completion.broadcast()
+        completion.unlock()
     }
 
     private func ingest(_ data: Data, retaining: Bool) {

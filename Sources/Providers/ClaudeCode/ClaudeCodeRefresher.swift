@@ -8,6 +8,7 @@ public enum ClaudeCodeRefresherError: Error, Equatable, Sendable {
     case workingDirectoryUnavailable
     case processFailed(SubprocessDiagnostic)
     case timedOut
+    case outputCollectionIncomplete
     case noUsageData(SubprocessDiagnostic)
 }
 
@@ -21,6 +22,8 @@ extension ClaudeCodeRefresherError: LocalizedError {
         case let .processFailed(diagnostic):
             Self.processFailureDescription(exitStatus: diagnostic.exitStatus)
         case .timedOut:
+            String(localized: "Claude Code refresh timed out. Retry the refresh.")
+        case .outputCollectionIncomplete:
             String(localized: "Claude Code refresh timed out. Retry the refresh.")
         case .noUsageData:
             String(localized: "Claude Code returned no usage data. Open Claude Code and retry.")
@@ -39,13 +42,14 @@ extension ClaudeCodeRefresherError: DiagnosticError {
         case .workingDirectoryUnavailable: "working-directory-unavailable"
         case .processFailed: "process-failed"
         case .timedOut: "refresh-timeout"
+        case .outputCollectionIncomplete: "output-collection-incomplete"
         case .noUsageData: "usage-data-missing"
         }
     }
 
     public var diagnosticSubprocess: SubprocessDiagnostic? {
         switch self {
-        case .binaryNotFound, .workingDirectoryUnavailable, .timedOut: nil
+        case .binaryNotFound, .workingDirectoryUnavailable, .timedOut, .outputCollectionIncomplete: nil
         case let .processFailed(diagnostic), let .noUsageData(diagnostic): diagnostic
         }
     }
@@ -242,7 +246,17 @@ public actor ClaudeCodeRefresher {
 
         try Task.checkCancellation()
 
-        let collected = collector.finish()
+        guard let collected = collector.finish() else {
+            throw ClaudeCodeRefresherError.outputCollectionIncomplete
+        }
+        try applySpawnResult(process: process, collected: collected, cacheStore: cacheStore)
+    }
+
+    private static func applySpawnResult(
+        process: Process,
+        collected: CollectedSubprocessOutput,
+        cacheStore: StatuslineCacheStore
+    ) throws {
         let validation = validateUsageOutput(
             collected.stdout,
             truncated: collected.stdoutTruncated

@@ -109,10 +109,12 @@ Make Claude Code refresh failures distinguishable in the private error log witho
   child's stderr is drained through a pipe. (providers 03 AC1) is updated to
   match.
 - Output collection no longer uses per-stream callbacks. One reader thread owns
-  both streams, and `finish` joins it before taking the snapshot, so a read
-  cannot race finalization. A final non-blocking drain is bounded by a deadline,
-  and a stream that reaches end-of-file is retired, so neither a descendant that
-  keeps writing nor an already-closed stream can extend or spin the refresh.
+  both streams, and `finish` accepts a snapshot only after that thread reports
+  completion within a join bound; otherwise it reports
+  `output-collection-incomplete` instead of a partial result. Both streams share
+  one final-drain deadline, so a descendant that keeps writing cannot extend
+  finalization. A zero-length read is end-of-file regardless of a stale `errno`,
+  so an already-closed stream cannot spin the reader.
 - `DiagnosticError.diagnosticExitStatus` is replaced by
   `diagnosticSubprocess.exitStatus`, so an exit-0 output failure records
   `exitStatus: 0`.

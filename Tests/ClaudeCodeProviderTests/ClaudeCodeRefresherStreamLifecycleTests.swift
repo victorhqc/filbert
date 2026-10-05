@@ -49,6 +49,35 @@ final class ClaudeCodeRefresherStreamLifecycleTests: XCTestCase {
         XCTAssertEqual(diagnostic.outputFailure, .outputTooLarge)
     }
 
+    func testRefresh_isBoundedWhenBothStreamsFloodDuringFinalization() async throws {
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-flooding-both",
+            body: """
+            #!/bin/bash
+            ( yes A ) &
+            yes B 1>&2 &
+            sleep 0.3
+            cat <<'JSON'
+            {"is_error":false,"result":"\(usageText(session: 12, week: 34))"}
+            JSON
+            exit 0
+            """
+        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+
+        let start = Date()
+        let error = try await capturedError(from: refresher)
+        let elapsed = Date().timeIntervalSince(start)
+
+        XCTAssertLessThan(elapsed, 5, "flooded streams must not extend finalization")
+        guard case let .noUsageData(diagnostic) = error else {
+            return XCTFail("Expected noUsageData, got \(error)")
+        }
+        XCTAssertTrue(diagnostic.stdoutTruncated)
+        XCTAssertEqual(diagnostic.outputFailure, .outputTooLarge)
+        XCTAssertGreaterThan(diagnostic.stderrBytes, 0)
+    }
+
     func testRefresh_handlesClosedStdoutWhileChildStaysAlive() async throws {
         let fakeBinary = try writeFakeBinary(
             name: "fake-claude-closed-stdout",
