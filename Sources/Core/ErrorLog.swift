@@ -75,6 +75,11 @@ private extension ErrorLog {
         var decodingFailure: String?
         var causeCode: String?
         var exitStatus: Int32?
+        var stdoutBytes: Int?
+        var stderrBytes: Int?
+        var stdoutTruncated: Bool?
+        var cliReportedError: Bool?
+        var outputFailure: OutputFailure?
     }
 
     enum StorageFailure: Error {
@@ -99,7 +104,14 @@ private extension ErrorLog {
         )
         if let diagnostic = error as? any DiagnosticError {
             record.causeCode = bounded(diagnostic.diagnosticCode)
-            record.exitStatus = diagnostic.diagnosticExitStatus
+            if let subprocess = diagnostic.diagnosticSubprocess {
+                record.exitStatus = subprocess.exitStatus
+                record.stdoutBytes = subprocess.stdoutBytes
+                record.stderrBytes = subprocess.stderrBytes
+                record.stdoutTruncated = subprocess.stdoutTruncated
+                record.cliReportedError = subprocess.cliReportedError
+                record.outputFailure = subprocess.outputFailure
+            }
         }
         addSafeErrorMetadata(error, to: &record)
         let encoder = JSONEncoder()

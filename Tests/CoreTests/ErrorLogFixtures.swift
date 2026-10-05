@@ -3,7 +3,17 @@ import Foundation
 
 struct SafeDiagnosticFailure: DiagnosticError, LocalizedError {
     let diagnosticCode = "process-exited"
-    let diagnosticExitStatus: Int32? = 17
+    var diagnosticSubprocess: SubprocessDiagnostic? {
+        SubprocessDiagnostic(
+            exitStatus: 17,
+            stdoutBytes: 2048,
+            stderrBytes: 96,
+            stdoutTruncated: true,
+            cliReportedError: false,
+            outputFailure: .usageWindowsMissing
+        )
+    }
+
     var errorDescription: String? {
         "SECRET-response-body"
     }
