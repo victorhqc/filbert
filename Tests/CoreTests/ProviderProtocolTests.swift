@@ -179,6 +179,34 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(name, "cpu")
     }
 
+    // MARK: - ProviderRefreshCharacteristics
+
+    func testRefreshCharacteristics_defaultsAreConservative() {
+        let characteristics = ProviderRefreshCharacteristics()
+
+        XCTAssertEqual(characteristics.costEvidence, .unknown)
+        XCTAssertNil(characteristics.minimumInterval)
+        XCTAssertNil(characteristics.retryDeadline)
+        XCTAssertFalse(characteristics.canInvokeInference)
+    }
+
+    func testProviderRefreshCharacteristics_inheritedDefaultIsConservative() {
+        XCTAssertEqual(GlyphProvider.refreshCharacteristics, ProviderRefreshCharacteristics())
+    }
+
+    @MainActor
+    func testRegistry_transportsRefreshCharacteristics() throws {
+        let registry = ProviderRegistry()
+        registry.register(RefreshCharacteristicsProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+
+        XCTAssertEqual(
+            info.refreshCharacteristics,
+            RefreshCharacteristicsProvider.refreshCharacteristics
+        )
+    }
+
     // MARK: - ProviderSetupError
 
     func testProviderSetupError_notSupported_isEquatable() {
@@ -258,6 +286,23 @@ private struct AutomaticRefreshDisclosureProvider: AIProvider {
             lines: [],
             lastUpdated: Date()
         )
+    }
+}
+
+private struct RefreshCharacteristicsProvider: AIProvider {
+    static let providerId = "refresh-characteristics"
+    static let providerName = "Refresh Characteristics"
+    static let providerDescription = "Test provider"
+    static let baseURL = URL(string: "https://example.com")!
+    static let refreshCharacteristics = ProviderRefreshCharacteristics(
+        costEvidence: .possibleConsumption,
+        minimumInterval: 600,
+        retryDeadline: 300,
+        canInvokeInference: true
+    )
+
+    func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
+        fatalError("The metadata transport test does not fetch quota data.")
     }
 }
 

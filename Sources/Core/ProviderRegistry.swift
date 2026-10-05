@@ -30,6 +30,7 @@ public final class ProviderRegistry {
                 description: type(of: provider).providerDescription,
                 disclaimer: type(of: provider).providerDisclaimer,
                 automaticRefreshDisclosure: type(of: provider).automaticRefreshDisclosure,
+                refreshCharacteristics: type(of: provider).refreshCharacteristics,
                 defaultBaseURL: type(of: provider).baseURL,
                 authShape: type(of: provider).authShape,
                 setupHelp: type(of: provider).setupHelp,

@@ -159,6 +159,8 @@ public protocol AIProvider: Sendable {
     static var providerDescription: String { get }
     static var providerDisclaimer: String? { get }
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? { get }
+    /// Provider-owned refresh limits and quota-cost evidence (core 11 AC8).
+    static var refreshCharacteristics: ProviderRefreshCharacteristics { get }
     /// Host root only; path segments stay inside `fetchQuota`.
     static var baseURL: URL { get }
     /// Non-payload discriminator the registry branches on so it never
@@ -233,6 +235,12 @@ public extension AIProvider {
 
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? {
         nil
+    }
+
+    /// Conservative default: unknown cost evidence and no inference capability,
+    /// so a provider that states nothing never claims free or inferential work.
+    static var refreshCharacteristics: ProviderRefreshCharacteristics {
+        ProviderRefreshCharacteristics()
     }
 
     /// Defaults to `true` — only correct for `.apiKey` providers, which the
