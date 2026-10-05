@@ -57,6 +57,15 @@ extension ClaudeCodeRefresherError: DiagnosticError {
 
 // MARK: - Refresher
 
+private struct SpawnConfiguration: Sendable {
+    let locator: ClaudeCodeLocator
+    let cacheStore: StatuslineCacheStore
+    let spawnTimeout: TimeInterval
+    let terminateGrace: TimeInterval
+    let workingDirectoryProvider: @Sendable () -> URL?
+    let outputCaptureLimit: Int
+}
+
 /// Spawns `claude -p "/usage"` headlessly and parses the same `NN% used ·
 /// resets …` figures the TUI shows, then writes the cache. The TUI statusline
 /// helper only fires inside Claude Code's interactive session; this path makes
@@ -106,6 +115,7 @@ public actor ClaudeCodeRefresher {
     private let terminateGrace: TimeInterval
     private let spawnDebounce: TimeInterval
     private let workingDirectoryProvider: @Sendable () -> URL?
+    private let outputCaptureLimit: Int
 
     private var lastSpawnAt: Date?
     private var lastFailure: (any Error)?
@@ -122,6 +132,7 @@ public actor ClaudeCodeRefresher {
         terminateGrace = Self.terminateGraceSeconds
         spawnDebounce = Self.spawnDebounceSeconds
         workingDirectoryProvider = { @Sendable in Self.makeDefaultWorkingDirectory() }
+        outputCaptureLimit = SubprocessOutputCollector.captureLimit
     }
 
     init(
@@ -132,7 +143,8 @@ public actor ClaudeCodeRefresher {
         spawnDebounce: TimeInterval,
         workingDirectoryProvider: @escaping @Sendable () -> URL? = {
             @Sendable in ClaudeCodeRefresher.makeDefaultWorkingDirectory()
-        }
+        },
+        outputCaptureLimit: Int = SubprocessOutputCollector.captureLimit
     ) {
         self.locator = locator
         self.cacheStore = cacheStore
@@ -140,6 +152,7 @@ public actor ClaudeCodeRefresher {
         self.terminateGrace = terminateGrace
         self.spawnDebounce = spawnDebounce
         self.workingDirectoryProvider = workingDirectoryProvider
+        self.outputCaptureLimit = outputCaptureLimit
     }
 
     // MARK: - Public entry point
@@ -170,14 +183,16 @@ public actor ClaudeCodeRefresher {
         // follow-up clicks within the debounce window.
         lastSpawnAt = Date()
 
-        let task = Task<Void, Error> { [locator, cacheStore, spawnTimeout, terminateGrace, workingDirectoryProvider] in
-            try await Self.runSpawnOnce(
-                locator: locator,
-                cacheStore: cacheStore,
-                spawnTimeout: spawnTimeout,
-                terminateGrace: terminateGrace,
-                workingDirectoryProvider: workingDirectoryProvider
-            )
+        let configuration = SpawnConfiguration(
+            locator: locator,
+            cacheStore: cacheStore,
+            spawnTimeout: spawnTimeout,
+            terminateGrace: terminateGrace,
+            workingDirectoryProvider: workingDirectoryProvider,
+            outputCaptureLimit: outputCaptureLimit
+        )
+        let task = Task<Void, Error> {
+            try await Self.runSpawnOnce(configuration)
         }
         inFlightTask = task
 
@@ -198,15 +213,9 @@ public actor ClaudeCodeRefresher {
 
     // MARK: - Spawn lifecycle
 
-    private static func runSpawnOnce(
-        locator: ClaudeCodeLocator,
-        cacheStore: StatuslineCacheStore,
-        spawnTimeout: TimeInterval,
-        terminateGrace: TimeInterval,
-        workingDirectoryProvider: @Sendable () -> URL?
-    ) async throws {
+    private static func runSpawnOnce(_ configuration: SpawnConfiguration) async throws {
         try Task.checkCancellation()
-        guard let binaryPath = locator.resolve() else {
+        guard let binaryPath = configuration.locator.resolve() else {
             throw ClaudeCodeRefresherError.binaryNotFound
         }
 
@@ -214,7 +223,7 @@ public actor ClaudeCodeRefresher {
         // CWD discovery does not touch macOS-protected user locations. If the
         // directory cannot be created, abort and leave the cache untouched —
         // never fall back to inheriting the parent's CWD.
-        guard let workingDirectoryURL = workingDirectoryProvider() else {
+        guard let workingDirectoryURL = configuration.workingDirectoryProvider() else {
             throw ClaudeCodeRefresherError.workingDirectoryUnavailable
         }
 
@@ -232,7 +241,8 @@ public actor ClaudeCodeRefresher {
 
         let collector = SubprocessOutputCollector(
             stdoutHandle: stdoutPipe.fileHandleForReading,
-            stderrHandle: stderrPipe.fileHandleForReading
+            stderrHandle: stderrPipe.fileHandleForReading,
+            captureLimit: configuration.outputCaptureLimit
         )
         defer { collector.stop() }
 
@@ -240,8 +250,8 @@ public actor ClaudeCodeRefresher {
 
         try await waitForExitOrTerminate(
             process,
-            spawnTimeout: spawnTimeout,
-            terminateGrace: terminateGrace
+            spawnTimeout: configuration.spawnTimeout,
+            terminateGrace: configuration.terminateGrace
         )
 
         try Task.checkCancellation()
@@ -249,7 +259,7 @@ public actor ClaudeCodeRefresher {
         guard let collected = collector.finish() else {
             throw ClaudeCodeRefresherError.outputCollectionIncomplete
         }
-        try applySpawnResult(process: process, collected: collected, cacheStore: cacheStore)
+        try applySpawnResult(process: process, collected: collected, cacheStore: configuration.cacheStore)
     }
 
     private static func applySpawnResult(

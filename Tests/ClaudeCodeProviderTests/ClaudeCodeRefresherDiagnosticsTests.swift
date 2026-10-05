@@ -50,6 +50,101 @@ final class ClaudeCodeRefresherDiagnosticsTests: XCTestCase {
         XCTAssertNil(numberValue.cliReportedError)
     }
 
+    func testValidateUsageOutput_readsStructuredReport() {
+        let data = reportJSON(limits: [
+            row(kind: "session", percent: "54", resetsAt: "2026-10-05T13:50:00.473061+00:00"),
+            row(kind: "weekly_all", percent: "18", resetsAt: "2026-10-09T06:00:00.473081+00:00"),
+        ].joined(separator: ","))
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertNil(validation.failure)
+        XCTAssertNil(validation.cliReportedError)
+        XCTAssertEqual(validation.windows.map(\.slot), [.fiveHour, .sevenDay])
+        XCTAssertEqual(validation.windows.first?.window.usedPercentage, 54)
+        XCTAssertEqual(validation.windows.last?.window.usedPercentage, 18)
+        XCTAssertNotNil(validation.windows.first?.window.resetsAt)
+    }
+
+    func testValidateUsageOutput_structuredTakesPrecedenceOverProse() {
+        let prose = usageText(session: 5, week: 6)
+        let report = usageReportValue(limits: row(kind: "session", percent: "54"))
+        let data = Data(#"{"result":"\#(prose)","usage_report":\#(report)}"#.utf8)
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertEqual(validation.windows.first { $0.slot == .fiveHour }?.window.usedPercentage, 54)
+        XCTAssertEqual(validation.windows.first { $0.slot == .sevenDay }?.window.usedPercentage, 6)
+    }
+
+    func testValidateUsageOutput_ignoresInactiveScopedAndUnknownRows() {
+        let data = reportJSON(limits: [
+            row(kind: "weekly_scoped", percent: "20"),
+            row(kind: "monthly", percent: "99"),
+            row(kind: "weekly_all", percent: "18", isActive: "false"),
+        ].joined(separator: ","))
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertNil(validation.failure)
+        XCTAssertEqual(validation.windows.count, 1)
+        XCTAssertEqual(validation.windows.first?.slot, .sevenDay)
+        XCTAssertEqual(validation.windows.first?.window.usedPercentage, 18)
+    }
+
+    func testValidateUsageOutput_malformedRowsDoNotDiscardValidRows() {
+        let data = reportJSON(limits: [
+            row(kind: "session", percent: "\"54\""),
+            "\"not a row\"",
+            row(kind: "session", percent: "60"),
+        ].joined(separator: ","))
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertEqual(validation.windows.count, 1)
+        XCTAssertEqual(validation.windows.first?.window.usedPercentage, 60)
+    }
+
+    func testValidateUsageOutput_missingPercentYieldsNoWindow() {
+        let data = reportJSON(limits: row(kind: "session", resetsAt: "2026-10-05T13:50:00+00:00"))
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertEqual(validation.failure, .usageWindowsMissing)
+        XCTAssertTrue(validation.windows.isEmpty)
+    }
+
+    func testValidateUsageOutput_invalidResetKeepsPercentage() {
+        let data = reportJSON(limits: row(kind: "session", percent: "54", resetsAt: "not a date"))
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertNil(validation.failure)
+        XCTAssertEqual(validation.windows.first?.window.usedPercentage, 54)
+        XCTAssertNil(validation.windows.first?.window.resetsAt)
+    }
+
+    func testValidateUsageOutput_errorObjectWithUsableStructuredDataStillFails() {
+        let report = usageReportValue(limits: row(kind: "session", percent: "54"))
+        let data = Data(#"{"is_error":true,"usage_report":\#(report)}"#.utf8)
+
+        let validation = ClaudeCodeRefresher.validateUsageOutput(data, truncated: false)
+
+        XCTAssertEqual(validation.failure, .cliReportedError)
+        XCTAssertEqual(validation.cliReportedError, true)
+        XCTAssertTrue(validation.windows.isEmpty)
+    }
+
+    func testParseISOTimestamp_acceptsFractionalAndPlainForms() throws {
+        let plain = try XCTUnwrap(ClaudeCodeRefresher.parseISOTimestamp("2026-10-05T13:50:00+00:00"))
+        let fractional = try XCTUnwrap(ClaudeCodeRefresher.parseISOTimestamp("2026-10-05T13:50:00.473061+00:00"))
+
+        XCTAssertEqual(plain, 1_791_208_200, accuracy: 0.5)
+        XCTAssertEqual(fractional, plain, accuracy: 1)
+        XCTAssertGreaterThan(fractional, plain)
+        XCTAssertNil(ClaudeCodeRefresher.parseISOTimestamp("not a date"))
+    }
+
     private static let failureCases: [FailureCase] = [
         FailureCase(
             name: "truncated beats everything",
@@ -103,6 +198,18 @@ final class ClaudeCodeRefresherDiagnosticsTests: XCTestCase {
             truncated: false,
             expected: .usageWindowsMissing
         ),
+        FailureCase(
+            name: "usage report without usable rows",
+            data: Data(#"{"usage_report":{"rate_limits":{"limits":[]}}}"#.utf8),
+            truncated: false,
+            expected: .usageWindowsMissing
+        ),
+        FailureCase(
+            name: "usage report not an object",
+            data: Data(#"{"usage_report":42}"#.utf8),
+            truncated: false,
+            expected: .usageWindowsMissing
+        ),
     ]
 
     private struct FailureCase {
@@ -116,6 +223,33 @@ final class ClaudeCodeRefresherDiagnosticsTests: XCTestCase {
         let line1 = "Current session: \(session)% used · resets Jul 21 at 12:59am (Europe/Berlin)"
         let line2 = "Current week (all models): \(week)% used · resets Jul 24 at 5:59am (Europe/Berlin)"
         return "\(line1)\\n\(line2)"
+    }
+
+    private func reportJSON(limits: String) -> Data {
+        Data(#"{"usage_report":\#(usageReportValue(limits: limits))}"#.utf8)
+    }
+
+    private func usageReportValue(limits: String) -> String {
+        #"{"rate_limits":{"limits":[\#(limits)]}}"#
+    }
+
+    private func row(
+        kind: String,
+        percent: String? = nil,
+        resetsAt: String? = nil,
+        isActive: String? = nil
+    ) -> String {
+        var fields = ["\"kind\":\"\(kind)\""]
+        if let percent {
+            fields.append("\"percent\":\(percent)")
+        }
+        if let resetsAt {
+            fields.append("\"resets_at\":\"\(resetsAt)\"")
+        }
+        if let isActive {
+            fields.append("\"is_active\":\(isActive)")
+        }
+        return "{\(fields.joined(separator: ","))}"
     }
 
     private func usageData(session: Int, week: Int) -> Data {

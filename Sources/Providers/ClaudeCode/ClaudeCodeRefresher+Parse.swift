@@ -53,23 +53,90 @@ extension ClaudeCodeRefresher {
         guard envelope.isError != true else {
             return UsageOutputValidation(windows: [], failure: .cliReportedError, cliReportedError: true)
         }
+
+        var prose: [ParsedWindow] = []
+        if case let .present(text) = envelope.resultState {
+            prose = parseUsageWindows(fromText: text)
+        }
+        let windows = mergeWindows(
+            prose: prose,
+            structured: parseStructuredWindows(from: envelope.limitRows)
+        )
+        guard windows.isEmpty else {
+            return UsageOutputValidation(windows: windows, failure: nil, cliReportedError: envelope.isError)
+        }
+        return UsageOutputValidation(
+            windows: [],
+            failure: failureReason(for: envelope),
+            cliReportedError: envelope.isError
+        )
+    }
+
+    /// Structured rows win per slot; the prose parser only fills a slot the
+    /// structured report left empty. Repeated structured rows for one kind
+    /// collapse to the last one.
+    private static func mergeWindows(prose: [ParsedWindow], structured: [ParsedWindow]) -> [ParsedWindow] {
+        var fiveHour: Window?
+        var sevenDay: Window?
+        for parsed in prose + structured {
+            switch parsed.slot {
+            case .fiveHour: fiveHour = parsed.window
+            case .sevenDay: sevenDay = parsed.window
+            }
+        }
+        var merged: [ParsedWindow] = []
+        if let fiveHour {
+            merged.append(ParsedWindow(slot: .fiveHour, window: fiveHour))
+        }
+        if let sevenDay {
+            merged.append(ParsedWindow(slot: .sevenDay, window: sevenDay))
+        }
+        return merged
+    }
+
+    private static func failureReason(for envelope: UsageEnvelope) -> OutputFailure {
+        if envelope.hasUsageReport {
+            return .usageWindowsMissing
+        }
         switch envelope.resultState {
-        case .missing:
-            return UsageOutputValidation(
-                windows: [], failure: .resultMissing, cliReportedError: envelope.isError
-            )
-        case .invalid:
-            return UsageOutputValidation(
-                windows: [], failure: .resultInvalid, cliReportedError: envelope.isError
-            )
-        case let .present(text):
-            let windows = parseUsageWindows(fromText: text)
-            return UsageOutputValidation(
-                windows: windows,
-                failure: windows.isEmpty ? .usageWindowsMissing : nil,
-                cliReportedError: envelope.isError
+        case .missing: return .resultMissing
+        case .invalid: return .resultInvalid
+        case .present: return .usageWindowsMissing
+        }
+    }
+
+    private static func parseStructuredWindows(from rows: [UsageRow]) -> [ParsedWindow] {
+        rows.compactMap { row in
+            guard let slot = structuredSlot(for: row.kind), let percent = row.percent else {
+                return nil
+            }
+            return ParsedWindow(
+                slot: slot,
+                window: Window(usedPercentage: percent, resetsAt: row.resetsAt.flatMap(parseISOTimestamp))
             )
         }
+    }
+
+    private static func structuredSlot(for kind: String?) -> WindowSlot? {
+        switch kind {
+        case "session": .fiveHour
+        case "weekly_all": .sevenDay
+        default: nil
+        }
+    }
+
+    /// `resets_at` carries fractional seconds and an offset. Foundation parses
+    /// the fractional form only with `.withFractionalSeconds` and the plain form
+    /// only without it, so both are tried.
+    static func parseISOTimestamp(_ text: String) -> TimeInterval? {
+        let withFractionalSeconds = ISO8601DateFormatter()
+        withFractionalSeconds.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        if let date = withFractionalSeconds.date(from: text) {
+            return date.timeIntervalSince1970
+        }
+        let plain = ISO8601DateFormatter()
+        plain.formatOptions = [.withInternetDateTime]
+        return plain.date(from: text)?.timeIntervalSince1970
     }
 
     static func parseUsageWindows(fromText text: String) -> [ParsedWindow] {
@@ -203,8 +270,8 @@ extension ClaudeCodeRefresher {
     }
 }
 
-/// The CLI emits a single object whose `result` field carries the usage text
-/// and whose `is_error` Boolean marks a failed run.
+/// A `/usage --output-format json` response. The root object carries the prose
+/// `result` and/or a structured `usage_report`; every other field is ignored.
 private struct UsageEnvelope: Decodable {
     enum ResultState {
         case missing
@@ -214,15 +281,18 @@ private struct UsageEnvelope: Decodable {
 
     let isError: Bool?
     let resultState: ResultState
+    let hasUsageReport: Bool
+    let limitRows: [UsageRow]
 
     private enum CodingKeys: String, CodingKey {
         case isError = "is_error"
         case result
+        case usageReport = "usage_report"
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        isError = try? container.decodeIfPresent(Bool.self, forKey: .isError)
+        isError = try? container.decode(Bool.self, forKey: .isError)
         if !container.contains(.result) {
             resultState = .missing
         } else if let text = try? container.decode(String.self, forKey: .result) {
@@ -230,5 +300,49 @@ private struct UsageEnvelope: Decodable {
         } else {
             resultState = .invalid
         }
+
+        hasUsageReport = container.contains(.usageReport)
+        limitRows = (try? container.decode(UsageReport.self, forKey: .usageReport))?
+            .rateLimits?.limits?.compactMap(\.value) ?? []
+    }
+}
+
+private struct UsageReport: Decodable {
+    let rateLimits: Payload?
+
+    enum CodingKeys: String, CodingKey {
+        case rateLimits = "rate_limits"
+    }
+
+    struct Payload: Decodable {
+        let limits: [Lossy<UsageRow>]?
+    }
+}
+
+private struct UsageRow: Decodable {
+    let kind: String?
+    let percent: Double?
+    let resetsAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case kind, percent
+        case resetsAt = "resets_at"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try? container.decode(String.self, forKey: .kind)
+        percent = try? container.decode(Double.self, forKey: .percent)
+        resetsAt = try? container.decode(String.self, forKey: .resetsAt)
+    }
+}
+
+/// Decodes each element independently so one malformed row does not drop the
+/// rest of the array.
+private struct Lossy<Wrapped: Decodable>: Decodable {
+    let value: Wrapped?
+
+    init(from decoder: Decoder) throws {
+        value = try? Wrapped(from: decoder)
     }
 }

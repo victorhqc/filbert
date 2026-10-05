@@ -10,6 +10,28 @@ final class SubprocessOutputCollectorTests: XCTestCase {
         let stderr = Pipe()
         let collector = SubprocessOutputCollector(
             stdoutHandle: stdout.fileHandleForReading,
+            stderrHandle: stderr.fileHandleForReading,
+            captureLimit: 64 * 1024
+        )
+        let payload = Data(repeating: 0x41, count: 96 * 1024)
+        try stdout.fileHandleForWriting.write(contentsOf: payload)
+
+        let collected = try XCTUnwrap(collector.finish())
+
+        XCTAssertEqual(collected.stdoutBytes, payload.count)
+        XCTAssertEqual(collected.stdout.count, 64 * 1024)
+        XCTAssertTrue(collected.stdoutTruncated)
+    }
+
+    func testDefaultCaptureLimitIsTwentyMiB() {
+        XCTAssertEqual(SubprocessOutputCollector.captureLimit, 20_971_520)
+    }
+
+    func testFinishRetainsPayloadLargerThanOneReadChunk() throws {
+        let stdout = Pipe()
+        let stderr = Pipe()
+        let collector = SubprocessOutputCollector(
+            stdoutHandle: stdout.fileHandleForReading,
             stderrHandle: stderr.fileHandleForReading
         )
         let payload = Data(repeating: 0x41, count: 96 * 1024)
@@ -18,8 +40,8 @@ final class SubprocessOutputCollectorTests: XCTestCase {
         let collected = try XCTUnwrap(collector.finish())
 
         XCTAssertEqual(collected.stdoutBytes, payload.count)
-        XCTAssertEqual(collected.stdout.count, SubprocessOutputCollector.captureLimit)
-        XCTAssertTrue(collected.stdoutTruncated)
+        XCTAssertEqual(collected.stdout.count, payload.count)
+        XCTAssertFalse(collected.stdoutTruncated)
     }
 
     func testClosedStreamDoesNotBlockTheOtherStream() throws {
@@ -47,7 +69,8 @@ final class SubprocessOutputCollectorTests: XCTestCase {
         let stderr = Pipe()
         let collector = SubprocessOutputCollector(
             stdoutHandle: stdout.fileHandleForReading,
-            stderrHandle: stderr.fileHandleForReading
+            stderrHandle: stderr.fileHandleForReading,
+            captureLimit: 4096
         )
         let flooding = OSAllocatedUnfairLock(initialState: true)
         let payload = Data(repeating: 0x41, count: 4096)

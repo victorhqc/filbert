@@ -96,7 +96,7 @@ final class ClaudeCodeRefresherSubprocessTests: XCTestCase {
             name: "fake-claude-large",
             body: "#!/bin/bash\nyes A | head -c 200000\nexit 0\n"
         )
-        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+        let refresher = makeRefresher(binaryPath: fakeBinary.path, outputCaptureLimit: 64 * 1024)
 
         let start = Date()
         let error = try await capturedError(from: refresher)
@@ -183,13 +183,56 @@ final class ClaudeCodeRefresherSubprocessTests: XCTestCase {
         XCTAssertEqual(cache.rateLimits?.fiveHour?.usedPercentage, 42)
     }
 
-    private func makeRefresher(binaryPath: String?) -> ClaudeCodeRefresher {
+    func testRefresh_acceptsInventoryLargerThan64KiB() async throws {
+        let inventory = String(repeating: "A", count: 100_000)
+        let payload = #"{"is_error":false,"result":"\#(usageText(session: 12, week: 34))","inventory":"\#(inventory)"}"#
+        let payloadURL = tmpDir.appendingPathComponent("inventory-payload.json")
+        try Data(payload.utf8).write(to: payloadURL)
+        XCTAssertGreaterThan(payload.utf8.count, 64 * 1024)
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-inventory",
+            body: "#!/bin/bash\ncat '\(payloadURL.path)'\n"
+        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+
+        try await refresher.refresh()
+
+        let cache = try XCTUnwrap(StatuslineCacheStore(cacheURL: cacheURL).read())
+        XCTAssertEqual(cache.rateLimits?.fiveHour?.usedPercentage, 12)
+        XCTAssertEqual(cache.rateLimits?.sevenDay?.usedPercentage, 34)
+    }
+
+    func testRefresh_inventorySentinelNeverReachesCacheOrLog() async throws {
+        let sentinel = "SENTINEL_INVENTORY_9f3c"
+        let errorLog = ErrorLog(directoryURL: tmpDir.appendingPathComponent("logs"))
+        let payload = #"{"is_error":false,"result":"\#(usageText(session: 12, week: 34))","plugins":["\#(sentinel)"]}"#
+        let payloadURL = tmpDir.appendingPathComponent("sentinel-payload.json")
+        try Data(payload.utf8).write(to: payloadURL)
+        let fakeBinary = try writeFakeBinary(
+            name: "fake-claude-sentinel",
+            body: "#!/bin/bash\ncat '\(payloadURL.path)'\n"
+        )
+        let refresher = makeRefresher(binaryPath: fakeBinary.path, errorLog: errorLog)
+
+        try await refresher.refresh()
+
+        let cache = try String(contentsOf: cacheURL, encoding: .utf8)
+        XCTAssertFalse(cache.contains(sentinel))
+        XCTAssertFalse(FileManager.default.fileExists(atPath: errorLog.fileURL.path))
+    }
+
+    private func makeRefresher(
+        binaryPath: String?,
+        outputCaptureLimit: Int = SubprocessOutputCollector.captureLimit,
+        errorLog: ErrorLog = .shared
+    ) -> ClaudeCodeRefresher {
         ClaudeCodeRefresher(
             locator: ClaudeCodeLocator(injectedPath: binaryPath),
-            cacheStore: StatuslineCacheStore(cacheURL: cacheURL),
+            cacheStore: StatuslineCacheStore(cacheURL: cacheURL, errorLog: errorLog),
             spawnTimeout: 30,
             terminateGrace: 2,
-            spawnDebounce: 60
+            spawnDebounce: 60,
+            outputCaptureLimit: outputCaptureLimit
         )
     }
 
