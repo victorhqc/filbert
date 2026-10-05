@@ -51,8 +51,8 @@ public struct SmartRefreshPolicy: Sendable {
         guard let observation = quota.activityObservation,
               observation.freshness != .stale
         else {
-            // Absent or provider-known-stale data renews nothing and retains the
-            // last accepted baseline (core 11 AC6).
+            // Absent or provider-known-stale data renews nothing and keeps the
+            // accepted baseline.
             states[providerId] = state
             return state.unchanged(at: elapsed, quietWindow: quietWindow)
         }
@@ -189,9 +189,9 @@ private extension SmartRefreshPolicy {
             !metrics.isEmpty || isKnown(availability)
         }
 
-        /// Retains the previous value for any field the newer observation omits,
-        /// so an empty or availability-only result never drops the accepted
-        /// baseline (core 11 AC6).
+        /// Keeps the previous value for any field the newer observation omits,
+        /// so an empty or availability-only result cannot drop the accepted
+        /// baseline.
         func merged(with newer: Self) -> Self {
             ActivitySnapshot(
                 metrics: newer.metrics.isEmpty ? metrics : newer.metrics,

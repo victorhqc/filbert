@@ -37,10 +37,9 @@ public struct ProviderQuota: Sendable {
     }
 }
 
-/// The provider's assertion about where an activity observation came from and
-/// whether it reflects current upstream state. Core treats `.stale` as unusable
-/// evidence; transport alone never decides freshness, so a cache read after a
-/// successful proactive refresh may still be `.fresh` (core 11 AC6).
+/// `.stale` is a provider assertion, not a transport fact: a cache read after a
+/// successful proactive refresh may still be `.fresh`, and Core discards
+/// `.stale` as evidence.
 public enum ProviderActivityFreshness: Sendable, Equatable {
     case fresh
     case stale
@@ -172,7 +171,6 @@ public protocol AIProvider: Sendable {
     static var providerDescription: String { get }
     static var providerDisclaimer: String? { get }
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? { get }
-    /// Provider-owned refresh limits and quota-cost evidence (core 11 AC8).
     static var refreshCharacteristics: ProviderRefreshCharacteristics { get }
     /// Host root only; path segments stay inside `fetchQuota`.
     static var baseURL: URL { get }
@@ -250,8 +248,8 @@ public extension AIProvider {
         nil
     }
 
-    /// Conservative default: unknown cost evidence and no inference capability,
-    /// so a provider that states nothing never claims free or inferential work.
+    /// Conservative default: a provider that states nothing never claims free or
+    /// inferential work.
     static var refreshCharacteristics: ProviderRefreshCharacteristics {
         ProviderRefreshCharacteristics()
     }
