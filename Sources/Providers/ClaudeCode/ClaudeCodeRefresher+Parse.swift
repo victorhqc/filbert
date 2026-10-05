@@ -53,23 +53,123 @@ extension ClaudeCodeRefresher {
         guard envelope.isError != true else {
             return UsageOutputValidation(windows: [], failure: .cliReportedError, cliReportedError: true)
         }
+
+        var prose: [ParsedWindow] = []
+        if case let .present(text) = envelope.resultState {
+            prose = parseUsageWindows(fromText: text)
+        }
+        let windows = mergeWindows(
+            prose: prose,
+            structured: parseStructuredWindows(from: envelope.limitRows)
+        )
+        guard windows.isEmpty else {
+            return UsageOutputValidation(windows: windows, failure: nil, cliReportedError: envelope.isError)
+        }
+        return UsageOutputValidation(
+            windows: [],
+            failure: failureReason(for: envelope),
+            cliReportedError: envelope.isError
+        )
+    }
+
+    /// Structured rows win per slot; the prose parser only fills a slot the
+    /// structured report left empty. Repeated structured rows for one kind
+    /// collapse to the last one.
+    private static func mergeWindows(prose: [ParsedWindow], structured: [ParsedWindow]) -> [ParsedWindow] {
+        var fiveHour: Window?
+        var sevenDay: Window?
+        for parsed in prose + structured {
+            switch parsed.slot {
+            case .fiveHour: fiveHour = parsed.window
+            case .sevenDay: sevenDay = parsed.window
+            }
+        }
+        var merged: [ParsedWindow] = []
+        if let fiveHour {
+            merged.append(ParsedWindow(slot: .fiveHour, window: fiveHour))
+        }
+        if let sevenDay {
+            merged.append(ParsedWindow(slot: .sevenDay, window: sevenDay))
+        }
+        return merged
+    }
+
+    private static func failureReason(for envelope: UsageEnvelope) -> OutputFailure {
+        if envelope.hasUsageReport {
+            return .usageWindowsMissing
+        }
         switch envelope.resultState {
-        case .missing:
-            return UsageOutputValidation(
-                windows: [], failure: .resultMissing, cliReportedError: envelope.isError
-            )
-        case .invalid:
-            return UsageOutputValidation(
-                windows: [], failure: .resultInvalid, cliReportedError: envelope.isError
-            )
-        case let .present(text):
-            let windows = parseUsageWindows(fromText: text)
-            return UsageOutputValidation(
-                windows: windows,
-                failure: windows.isEmpty ? .usageWindowsMissing : nil,
-                cliReportedError: envelope.isError
+        case .missing: return .resultMissing
+        case .invalid: return .resultInvalid
+        case .present: return .usageWindowsMissing
+        }
+    }
+
+    private static func parseStructuredWindows(from rows: [UsageRow]) -> [ParsedWindow] {
+        rows.compactMap { row in
+            guard let slot = structuredSlot(for: row.kind), let percent = row.percent else {
+                return nil
+            }
+            return ParsedWindow(
+                slot: slot,
+                window: Window(usedPercentage: percent, resetsAt: row.resetsAt.flatMap(parseISOTimestamp))
             )
         }
+    }
+
+    private static func structuredSlot(for kind: String?) -> WindowSlot? {
+        switch kind {
+        case "session": .fiveHour
+        case "weekly_all": .sevenDay
+        default: nil
+        }
+    }
+
+    /// `resets_at` is a strict ISO 8601 instant with optional fractional seconds
+    /// and a `Z` or `±HH:MM` offset. Foundation's formatters accept trailing text
+    /// and normalize impossible dates, so the whole string is matched and the
+    /// parsed components are round-tripped before the value is trusted.
+    static func parseISOTimestamp(_ text: String) -> TimeInterval? {
+        let pattern = #"\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2})\z"#
+        guard let match = firstMatch(pattern, in: text),
+              let year = integerValue(match[1]),
+              let month = integerValue(match[2]),
+              let day = integerValue(match[3]),
+              let hour = integerValue(match[4]),
+              let minute = integerValue(match[5]),
+              let second = integerValue(match[6]),
+              let timeZone = timeZone(fromOffset: match[8])
+        else { return nil }
+
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = timeZone
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        components.hour = hour
+        components.minute = minute
+        components.second = second
+        guard let date = calendar.date(from: components) else { return nil }
+        let roundTrip = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: date)
+        guard roundTrip.year == year, roundTrip.month == month, roundTrip.day == day,
+              roundTrip.hour == hour, roundTrip.minute == minute, roundTrip.second == second
+        else { return nil }
+
+        return date.timeIntervalSince1970 + (match[7].flatMap { Double("0" + $0) } ?? 0)
+    }
+
+    private static func integerValue(_ text: String?) -> Int? {
+        text.flatMap { Int($0) }
+    }
+
+    private static func timeZone(fromOffset offset: String?) -> TimeZone? {
+        guard let offset else { return nil }
+        guard offset != "Z" else { return TimeZone(secondsFromGMT: 0) }
+        let parts = offset.dropFirst().split(separator: ":")
+        guard parts.count == 2, let hours = Int(parts[0]), let minutes = Int(parts[1]) else { return nil }
+        let seconds = hours * 3600 + minutes * 60
+        return TimeZone(secondsFromGMT: offset.hasPrefix("-") ? -seconds : seconds)
     }
 
     static func parseUsageWindows(fromText text: String) -> [ParsedWindow] {
@@ -203,8 +303,8 @@ extension ClaudeCodeRefresher {
     }
 }
 
-/// The CLI emits a single object whose `result` field carries the usage text
-/// and whose `is_error` Boolean marks a failed run.
+/// A `/usage --output-format json` response. The root object carries the prose
+/// `result` and/or a structured `usage_report`; every other field is ignored.
 private struct UsageEnvelope: Decodable {
     enum ResultState {
         case missing
@@ -214,15 +314,18 @@ private struct UsageEnvelope: Decodable {
 
     let isError: Bool?
     let resultState: ResultState
+    let hasUsageReport: Bool
+    let limitRows: [UsageRow]
 
     private enum CodingKeys: String, CodingKey {
         case isError = "is_error"
         case result
+        case usageReport = "usage_report"
     }
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        isError = try? container.decodeIfPresent(Bool.self, forKey: .isError)
+        isError = try? container.decode(Bool.self, forKey: .isError)
         if !container.contains(.result) {
             resultState = .missing
         } else if let text = try? container.decode(String.self, forKey: .result) {
@@ -230,5 +333,49 @@ private struct UsageEnvelope: Decodable {
         } else {
             resultState = .invalid
         }
+
+        hasUsageReport = container.contains(.usageReport)
+        limitRows = (try? container.decode(UsageReport.self, forKey: .usageReport))?
+            .rateLimits?.limits?.compactMap(\.value) ?? []
+    }
+}
+
+private struct UsageReport: Decodable {
+    let rateLimits: Payload?
+
+    enum CodingKeys: String, CodingKey {
+        case rateLimits = "rate_limits"
+    }
+
+    struct Payload: Decodable {
+        let limits: [Lossy<UsageRow>]?
+    }
+}
+
+private struct UsageRow: Decodable {
+    let kind: String?
+    let percent: Double?
+    let resetsAt: String?
+
+    enum CodingKeys: String, CodingKey {
+        case kind, percent
+        case resetsAt = "resets_at"
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        kind = try? container.decode(String.self, forKey: .kind)
+        percent = try? container.decode(Double.self, forKey: .percent)
+        resetsAt = try? container.decode(String.self, forKey: .resetsAt)
+    }
+}
+
+/// Decodes each element independently so one malformed row does not drop the
+/// rest of the array.
+private struct Lossy<Wrapped: Decodable>: Decodable {
+    let value: Wrapped?
+
+    init(from decoder: Decoder) throws {
+        value = try? Wrapped(from: decoder)
     }
 }

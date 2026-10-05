@@ -35,7 +35,7 @@ final class ClaudeCodeRefresherStreamLifecycleTests: XCTestCase {
             exit 0
             """
         )
-        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+        let refresher = makeRefresher(binaryPath: fakeBinary.path, outputCaptureLimit: 64 * 1024)
 
         let start = Date()
         let error = try await capturedError(from: refresher)
@@ -63,7 +63,7 @@ final class ClaudeCodeRefresherStreamLifecycleTests: XCTestCase {
             exit 0
             """
         )
-        let refresher = makeRefresher(binaryPath: fakeBinary.path)
+        let refresher = makeRefresher(binaryPath: fakeBinary.path, outputCaptureLimit: 64 * 1024)
 
         let start = Date()
         let error = try await capturedError(from: refresher)
@@ -103,13 +103,17 @@ final class ClaudeCodeRefresherStreamLifecycleTests: XCTestCase {
         XCTAssertLessThan(elapsed, 5)
     }
 
-    private func makeRefresher(binaryPath: String) -> ClaudeCodeRefresher {
+    private func makeRefresher(
+        binaryPath: String,
+        outputCaptureLimit: Int = SubprocessOutputCollector.captureLimit
+    ) -> ClaudeCodeRefresher {
         ClaudeCodeRefresher(
             locator: ClaudeCodeLocator(injectedPath: binaryPath),
             cacheStore: StatuslineCacheStore(cacheURL: cacheURL),
             spawnTimeout: 30,
             terminateGrace: 2,
-            spawnDebounce: 60
+            spawnDebounce: 60,
+            outputCaptureLimit: outputCaptureLimit
         )
     }
 

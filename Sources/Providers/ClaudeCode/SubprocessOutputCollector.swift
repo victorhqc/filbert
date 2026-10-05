@@ -16,7 +16,9 @@ struct CollectedSubprocessOutput {
 /// after that thread reports completion. A reader that does not stop in time
 /// yields `nil` rather than a partial snapshot.
 final class SubprocessOutputCollector: @unchecked Sendable {
-    static let captureLimit = 65536
+    static let captureLimit = 20 * 1024 * 1024
+
+    private static let readChunkSize = 64 * 1024
 
     enum StreamReadOutcome: Equatable {
         case bytes
@@ -97,8 +99,8 @@ final class SubprocessOutputCollector: @unchecked Sendable {
     }
 
     private func readStreams() {
-        var stdoutBuffer = [UInt8](repeating: 0, count: captureLimit)
-        var stderrBuffer = [UInt8](repeating: 0, count: captureLimit)
+        var stdoutBuffer = [UInt8](repeating: 0, count: Self.readChunkSize)
+        var stderrBuffer = [UInt8](repeating: 0, count: Self.readChunkSize)
         var stdoutOpen = true
         var stderrOpen = true
 

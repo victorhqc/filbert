@@ -25,9 +25,9 @@ Make Claude Code refresh failures distinguishable in the private error log witho
   3. `invalid-json`: the captured output is not valid JSON.
   4. `invalid-envelope`: the JSON root is not an object.
   5. `cli-reported-error`: the object contains the Boolean `is_error: true`.
-  6. `result-missing`: the object has no `result` field.
-  7. `result-invalid`: the `result` field is null or is not a string.
-  8. `usage-windows-missing`: the string contains no supported usage windows.
+  6. `result-missing`: the object has neither a `result` field nor a `usage_report`.
+  7. `result-invalid`: a present `result` field is null or is not a string and there is no `usage_report`.
+  8. `usage-windows-missing`: the object supplies no supported usage window from the `result` text or the `usage_report.rate_limits.limits` rows.
 - **And** Filbert does not infer an authentication failure, HTTP status, or rate limit from missing usage figures.
 - **And** an error response never writes usage windows, even if its text matches the usage parser.
 
@@ -46,7 +46,7 @@ Make Claude Code refresh failures distinguishable in the private error log witho
 - **Given** a subprocess that writes output before it exits
 - **When** Filbert collects the output
 - **Then** Filbert drains standard output and standard error while the subprocess runs.
-- **And** Filbert retains at most 64 KiB of standard output for JSON parsing.
+- **And** Filbert retains at most 20 MiB (20,971,520 bytes) of standard output for JSON parsing.
 - **And** Filbert counts standard-error bytes without retaining the standard-error text.
 - **And** output beyond the capture limit does not block the subprocess or increase the retained buffer.
 - **And** Filbert rejects truncated standard output rather than parsing a partial response.
@@ -105,6 +105,7 @@ Make Claude Code refresh failures distinguishable in the private error log witho
 8. [x] Run the repository validation gate and review the diff for privacy and lifecycle regressions.
 
 ## Findings
+- (providers 15) raises the capture limit to 20 MiB, adds the `usage_report.rate_limits.limits` envelope, and restates the `result-missing`, `result-invalid`, and `usage-windows-missing` conditions above.
 - Standard error can no longer be `/dev/null`; (AC3) counts its bytes, so the
   child's stderr is drained through a pipe. (providers 03 AC1) is updated to
   match.
