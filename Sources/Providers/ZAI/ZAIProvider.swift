@@ -252,25 +252,30 @@ public struct ZAIProvider: AIProvider {
     }
 
     private func activityObservation(from limits: [ZAILimit]) -> ProviderActivityObservation {
-        let metrics = limits.compactMap { limit -> ProviderActivityMetric? in
-            guard let id = activityMetricID(for: limit),
-                  let value = consumption(for: limit)
-            else {
-                return nil
+        var metrics: [ProviderActivityMetric] = []
+        for limit in limits {
+            guard let id = activityMetricID(for: limit) else { continue }
+            // The coarse percentage is the base value, so each id keeps one
+            // stable unit. Absolute consumption, when reported, gets a
+            // distinct id so a response that drops it cannot flip the base id
+            // between units and read as activity. `usage` is the allowance and
+            // never counts here.
+            if let percentage = limit.percentage {
+                metrics.append(ProviderActivityMetric(
+                    id: id,
+                    kind: .usage,
+                    value: .number(Decimal(percentage))
+                ))
             }
-            return ProviderActivityMetric(
-                id: id,
-                kind: .usage,
-                value: .number(Decimal(value))
-            )
+            if let currentValue = limit.currentValue {
+                metrics.append(ProviderActivityMetric(
+                    id: "\(id)-absolute",
+                    kind: .usage,
+                    value: .number(Decimal(currentValue))
+                ))
+            }
         }
         return ProviderActivityObservation(metrics: metrics)
-    }
-
-    /// `usage` is the allowance for credit and web-tool shapes, so it never
-    /// counts as consumption here.
-    private func consumption(for limit: ZAILimit) -> Double? {
-        limit.currentValue ?? limit.percentage
     }
 
     private func activityMetricID(for limit: ZAILimit) -> String? {

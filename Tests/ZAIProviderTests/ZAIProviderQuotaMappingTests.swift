@@ -61,6 +61,7 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
             ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(13)),
             ProviderActivityMetric(id: "weekly-usage", kind: .usage, value: .number(16)),
             ProviderActivityMetric(id: "monthly-web-tool-usage", kind: .usage, value: .number(0)),
+            ProviderActivityMetric(id: "monthly-web-tool-usage-absolute", kind: .usage, value: .number(0)),
         ])
     }
 

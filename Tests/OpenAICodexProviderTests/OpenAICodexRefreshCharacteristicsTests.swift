@@ -3,12 +3,12 @@ import Core
 import XCTest
 
 final class OpenAICodexRefreshCharacteristicsTests: XCTestCase {
-    func testProvider_declaresUnknownCostAndInferenceCapability() {
+    func testProvider_declaresUnknownCostWithoutAnInferenceCap() {
         XCTAssertEqual(
             OpenAICodexProvider.refreshCharacteristics,
             ProviderRefreshCharacteristics(
                 costEvidence: .unknown,
-                canInvokeInference: true
+                canInvokeInference: false
             )
         )
     }

@@ -40,19 +40,36 @@ struct Window: Codable {
     let usedPercentage: Double?
     /// Unix epoch **seconds** when this window resets.
     let resetsAt: TimeInterval?
+    /// Unix epoch **seconds** when this window's figures were last written. A
+    /// window carried over from an earlier merge keeps its original time so it
+    /// is not promoted to fresh by a later write.
+    let writtenAt: TimeInterval?
 
     enum CodingKeys: String, CodingKey {
         case usedPercentage = "used_percentage"
         case resetsAt = "resets_at"
+        case writtenAt = "written_at"
     }
 
-    init(usedPercentage: Double? = nil, resetsAt: TimeInterval? = nil) {
+    init(usedPercentage: Double? = nil, resetsAt: TimeInterval? = nil, writtenAt: TimeInterval? = nil) {
         self.usedPercentage = usedPercentage
         self.resetsAt = resetsAt
+        self.writtenAt = writtenAt
     }
 
     var populated: Window? {
         usedPercentage != nil || resetsAt != nil ? self : nil
+    }
+
+    func stamped(at time: TimeInterval) -> Window {
+        Window(usedPercentage: usedPercentage, resetsAt: resetsAt, writtenAt: time)
+    }
+
+    /// Adopts the cache's write time only when this window carries none, so a
+    /// helper-written window still ages from the cache it came in.
+    func aged(fromCacheWrittenAt time: TimeInterval?) -> Window {
+        guard writtenAt == nil, let time else { return self }
+        return Window(usedPercentage: usedPercentage, resetsAt: resetsAt, writtenAt: time)
     }
 }
 

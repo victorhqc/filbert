@@ -33,7 +33,7 @@ public struct OpenAICodexProvider: AIProvider {
     )
     public static let refreshCharacteristics = ProviderRefreshCharacteristics(
         costEvidence: .unknown,
-        canInvokeInference: true
+        canInvokeInference: false
     )
 
     private let locator: CodexLocator

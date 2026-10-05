@@ -23,7 +23,8 @@ final class ZAIProviderObservationTests: XCTestCase {
         let quota = try await fetchQuota()
 
         XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(1000)),
+            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(1)),
+            ProviderActivityMetric(id: "five-hour-usage-absolute", kind: .usage, value: .number(1000)),
         ])
     }
 
@@ -62,9 +63,38 @@ final class ZAIProviderObservationTests: XCTestCase {
 
         XCTAssertEqual(baseline.lines.map(\.percentage), advanced.lines.map(\.percentage))
         XCTAssertEqual(advanced.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(1001)),
+            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(1)),
+            ProviderActivityMetric(id: "five-hour-usage-absolute", kind: .usage, value: .number(1001)),
         ])
         XCTAssertNotEqual(baseline.activityObservation, advanced.activityObservation)
+    }
+
+    func testFetchQuota_rawToPercentageOnlyToRawDoesNotReportActivity() async throws {
+        serve(
+            quotaData: Self.creditQuotaJSON(allowance: 100_000, currentValue: 1000, percentage: 1),
+            subscriptionJSON: Self.subscriptionJSON(version: "V2")
+        )
+        let raw = try await fetchQuota()
+
+        serve(
+            quotaData: Self.percentageOnlyQuotaJSON(percentage: 1),
+            subscriptionJSON: Self.subscriptionJSON(version: "V2")
+        )
+        let percentageOnly = try await fetchQuota()
+
+        serve(
+            quotaData: Self.creditQuotaJSON(allowance: 100_000, currentValue: 1000, percentage: 1),
+            subscriptionJSON: Self.subscriptionJSON(version: "V2")
+        )
+        let restored = try await fetchQuota()
+
+        var policy = SmartRefreshPolicy()
+        _ = policy.recordSuccess(raw, for: "zai", at: 0, quietWindow: 300)
+        let missingRaw = policy.recordSuccess(percentageOnly, for: "zai", at: 10, quietWindow: 300)
+        let returnedRaw = policy.recordSuccess(restored, for: "zai", at: 20, quietWindow: 300)
+
+        XCTAssertEqual(missingRaw.classification, .unchanged)
+        XCTAssertEqual(returnedRaw.classification, .unchanged)
     }
 
     private func fetchQuota() async throws -> ProviderQuota {
@@ -103,6 +133,19 @@ final class ZAIProviderObservationTests: XCTestCase {
               {"type": "CREDIT_LIMIT", "unit": 3, "number": 5,
                "usage": \(allowance), "currentValue": \(currentValue),
                "remaining": \(allowance - currentValue), "percentage": \(percentage)}
+            ]
+          }
+        }
+        """.utf8)
+    }
+
+    private static func percentageOnlyQuotaJSON(percentage: Double) -> Data {
+        Data("""
+        {
+          "data": {
+            "limits": [
+              {"type": "CREDIT_LIMIT", "unit": 3, "number": 5,
+               "usage": 100000, "remaining": 99000, "percentage": \(percentage)}
             ]
           }
         }
