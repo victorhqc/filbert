@@ -125,10 +125,9 @@ data source went through two iterations:
 - **And** the refresher spawns the child in a Filbert-owned directory below
   `FileManager.default.temporaryDirectory`, never the parent's CWD — the
   startup-isolation behavior is specified fully in (providers 06 AC1)
-- **And** the refresher captures **stdout** (via a `Pipe`), discards
-  **stderr** (`/dev/null`), and does not configure stdin. The `/usage` output
-  is a few KB — well under the OS pipe buffer — so stdout is drained after
-  the process is reaped
+- **And** the refresher captures **stdout** (via a `Pipe`) and drains it
+  while the process runs, counts **stderr** bytes without retaining the text
+  (providers 14 AC3), and does not configure stdin
 - **And** the process inherits an environment where `PATH` includes the
   directory the binary was resolved from, so Claude Code's own subprocess
   lookups still succeed
