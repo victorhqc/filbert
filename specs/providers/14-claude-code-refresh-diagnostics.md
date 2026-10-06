@@ -23,7 +23,7 @@ Make Claude Code refresh failures distinguishable in the private error log witho
   1. `output-too-large`: standard output exceeds the capture limit.
   2. `empty-output`: standard output contains no bytes or only whitespace.
   3. `invalid-json`: the captured output is not valid JSON.
-  4. `invalid-envelope`: the JSON root is not an object.
+  4. `invalid-envelope`: the JSON root is not an object. A message array is now also supported, and array roots have their own failure order (providers 16 AC2, providers 16 AC6).
   5. `cli-reported-error`: the object contains the Boolean `is_error: true`.
   6. `result-missing`: the object has neither a `result` field nor a `usage_report`.
   7. `result-invalid`: a present `result` field is null or is not a string and there is no `usage_report`.
@@ -41,6 +41,7 @@ Make Claude Code refresh failures distinguishable in the private error log witho
 - **And** the record omits `cliReportedError` when the field is absent, has another type, or cannot be decoded.
 - **And** existing process-failure codes remain unchanged.
 - **And** other providers need no code changes and receive no new fields unless they supply this metadata.
+- **And** the record also includes the optional `stdoutJSONShape` (providers 16 AC7).
 
 ### AC3: Bounded output collection
 - **Given** a subprocess that writes output before it exits
@@ -106,6 +107,7 @@ Make Claude Code refresh failures distinguishable in the private error log witho
 
 ## Findings
 - (providers 15) raises the capture limit to 20 MiB, adds the `usage_report.rate_limits.limits` envelope, and restates the `result-missing`, `result-invalid`, and `usage-windows-missing` conditions above.
+- (providers 16) accepts message arrays, adds `stdoutJSONShape`, and decides JSON validity with one `JSONDecoder` pass. A failure that `JSONDecoder` rejects is `invalid-json`.
 - Standard error can no longer be `/dev/null`; (AC3) counts its bytes, so the
   child's stderr is drained through a pipe. (providers 03 AC1) is updated to
   match.

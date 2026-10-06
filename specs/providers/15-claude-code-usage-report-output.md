@@ -39,7 +39,7 @@ Read Claude Code usage from supported JSON output shapes without rejecting norma
 - **When** Filbert validates the output
 - **Then** Filbert accepts one object that carries a string `result` and/or a root-level `usage_report`.
 - **And** the only usage positions Filbert reads are the `result` string and `usage_report.rate_limits.limits` rows.
-- **And** any other JSON root, including a scalar or an array, is an invalid envelope.
+- **And** any other JSON root, including a scalar or an array, is an invalid envelope. A message array is now also supported (providers 16 AC2, providers 16 AC3).
 - **And** failure mapping uses the existing codes: a non-object root is `invalid-envelope`; an object with neither `result` nor `usage_report` is `result-missing`; a present `result` that is null or not a string is `result-invalid`; a present report or result with no usable window is `usage-windows-missing`.
 - **And** Filbert does not search arbitrary nested objects for usage percentages.
 - **And** an envelope without usable usage data produces a failure, not a successful empty cache write.

@@ -11,8 +11,17 @@ public enum OutputFailure: String, Sendable, Equatable, CaseIterable, Encodable 
     case usageWindowsMissing = "usage-windows-missing"
 }
 
-/// Safe metadata about a completed subprocess run. Numeric and Boolean values
-/// only; captured process output never passes through this type.
+/// The kind of value at the root of a complete JSON document. Strings,
+/// numbers, and Booleans all collapse to `scalar`.
+public enum JSONRootShape: String, Sendable, Equatable, CaseIterable, Encodable {
+    case object
+    case array
+    case scalar
+    case null
+}
+
+/// Safe metadata about a completed subprocess run. Numeric, Boolean, and fixed
+/// enum values only; captured process output never passes through this type.
 public struct SubprocessDiagnostic: Sendable, Equatable {
     public var exitStatus: Int32
     public var stdoutBytes: Int
@@ -20,6 +29,7 @@ public struct SubprocessDiagnostic: Sendable, Equatable {
     public var stdoutTruncated: Bool
     public var cliReportedError: Bool?
     public var outputFailure: OutputFailure?
+    public var stdoutJSONShape: JSONRootShape?
 
     public init(
         exitStatus: Int32,
@@ -27,7 +37,8 @@ public struct SubprocessDiagnostic: Sendable, Equatable {
         stderrBytes: Int,
         stdoutTruncated: Bool,
         cliReportedError: Bool? = nil,
-        outputFailure: OutputFailure? = nil
+        outputFailure: OutputFailure? = nil,
+        stdoutJSONShape: JSONRootShape? = nil
     ) {
         self.exitStatus = exitStatus
         self.stdoutBytes = stdoutBytes
@@ -35,6 +46,7 @@ public struct SubprocessDiagnostic: Sendable, Equatable {
         self.stdoutTruncated = stdoutTruncated
         self.cliReportedError = cliReportedError
         self.outputFailure = outputFailure
+        self.stdoutJSONShape = stdoutJSONShape
     }
 }
 

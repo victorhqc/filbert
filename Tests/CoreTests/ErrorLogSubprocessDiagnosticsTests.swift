@@ -15,6 +15,19 @@ final class ErrorLogSubprocessDiagnosticsTests: XCTestCase {
         XCTAssertEqual(record["stdoutTruncated"] as? Bool, false)
         XCTAssertNil(record["cliReportedError"])
         XCTAssertNil(record["outputFailure"])
+        XCTAssertNil(record["stdoutJSONShape"])
+    }
+
+    func testRecordsEveryRootShapeValue() throws {
+        let log = try ErrorLog(directoryURL: temporaryDirectory())
+        for shape in JSONRootShape.allCases {
+            XCTAssertTrue(log.record(
+                component: "app", operation: "proactive-refresh", code: "operation-failed",
+                error: ShapedFailure(shape: shape)
+            ))
+        }
+        let shapes = try records(at: log.fileURL).map { $0["stdoutJSONShape"] as? String }
+        XCTAssertEqual(shapes, ["object", "array", "scalar", "null"])
     }
 
     func testOmitsSubprocessFieldsForErrorsWithoutMetadata() throws {
@@ -31,6 +44,22 @@ final class ErrorLogSubprocessDiagnosticsTests: XCTestCase {
         XCTAssertNil(record["stdoutTruncated"])
         XCTAssertNil(record["cliReportedError"])
         XCTAssertNil(record["outputFailure"])
+        XCTAssertNil(record["stdoutJSONShape"])
+    }
+
+    private struct ShapedFailure: DiagnosticError {
+        let diagnosticCode = "usage-data-missing"
+        let shape: JSONRootShape
+        var diagnosticSubprocess: SubprocessDiagnostic? {
+            SubprocessDiagnostic(
+                exitStatus: 0,
+                stdoutBytes: 9017,
+                stderrBytes: 0,
+                stdoutTruncated: false,
+                outputFailure: .invalidEnvelope,
+                stdoutJSONShape: shape
+            )
+        }
     }
 
     private struct MinimalFailure: DiagnosticError {

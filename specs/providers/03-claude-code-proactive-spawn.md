@@ -103,11 +103,14 @@ data source went through two iterations:
 - **Then** the refresher spawns the binary with argv
   `["--model", "haiku", "--max-turns", "1", "--no-session-persistence",
   "--safe-mode", "--strict-mcp-config", "--no-chrome",
+  "--settings", "{\"viewMode\":\"default\"}",
   "--tools", "", "--output-format", "json", "-p", "/usage"]` — no `--debug`,
   no interactive TUI, no other flags. `--safe-mode`, `--strict-mcp-config`,
   and `--no-chrome` are the startup-isolation flags added by
   (providers 06 AC1, AC2); see that spec for why they are distinct from
-  Claude's tool-permission modes (providers 06 AC3)
+  Claude's tool-permission modes (providers 06 AC3). The `--settings` pair
+  keeps a verbose view-mode user setting from turning the JSON output into a
+  message array (providers 16 AC1)
 - **And** `-p "/usage"` runs the built-in usage command non-interactively;
   its text output carries the session (5-hour) and week (7-day) percentages
   and reset times. `/usage` is model-free, so the spawn is effectively free
