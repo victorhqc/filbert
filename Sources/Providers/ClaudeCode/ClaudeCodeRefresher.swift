@@ -97,6 +97,10 @@ public actor ClaudeCodeRefresher {
     ///     user locations at startup.
     ///   - `--bare` is deliberately absent: it would disable the OAuth/Keychain
     ///     login the refresh must reuse.
+    ///   - A `viewMode: "verbose"` or `verbose: true` user setting turns
+    ///     `--output-format json` into a message array. `--safe-mode` does not
+    ///     drop ordinary settings, so `--settings` pins the default view for
+    ///     this run. Managed settings still win over it.
     static let spawnArguments: [String] = [
         "--model", "haiku",
         "--max-turns", "1",
@@ -104,6 +108,7 @@ public actor ClaudeCodeRefresher {
         "--safe-mode",
         "--strict-mcp-config",
         "--no-chrome",
+        "--settings", #"{"viewMode":"default"}"#,
         "--tools", "",
         "--output-format", "json",
         "-p", "/usage",
@@ -276,14 +281,14 @@ public actor ClaudeCodeRefresher {
             throw ClaudeCodeRefresherError.processFailed(diagnostic(
                 collected: collected,
                 exitStatus: process.terminationStatus,
-                cliReportedError: validation.cliReportedError
+                validation: validation
             ))
         }
         if let failure = validation.failure {
             throw ClaudeCodeRefresherError.noUsageData(diagnostic(
                 collected: collected,
                 exitStatus: process.terminationStatus,
-                cliReportedError: validation.cliReportedError,
+                validation: validation,
                 outputFailure: failure
             ))
         }
@@ -294,7 +299,7 @@ public actor ClaudeCodeRefresher {
     private static func diagnostic(
         collected: CollectedSubprocessOutput,
         exitStatus: Int32,
-        cliReportedError: Bool?,
+        validation: UsageOutputValidation,
         outputFailure: OutputFailure? = nil
     ) -> SubprocessDiagnostic {
         SubprocessDiagnostic(
@@ -302,8 +307,9 @@ public actor ClaudeCodeRefresher {
             stdoutBytes: collected.stdoutBytes,
             stderrBytes: collected.stderrBytes,
             stdoutTruncated: collected.stdoutTruncated,
-            cliReportedError: cliReportedError,
-            outputFailure: outputFailure
+            cliReportedError: validation.cliReportedError,
+            outputFailure: outputFailure,
+            stdoutJSONShape: validation.rootShape
         )
     }
 

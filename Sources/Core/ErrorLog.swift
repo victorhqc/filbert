@@ -80,6 +80,7 @@ private extension ErrorLog {
         var stdoutTruncated: Bool?
         var cliReportedError: Bool?
         var outputFailure: OutputFailure?
+        var stdoutJSONShape: JSONRootShape?
     }
 
     enum StorageFailure: Error {
@@ -111,6 +112,7 @@ private extension ErrorLog {
                 record.stdoutTruncated = subprocess.stdoutTruncated
                 record.cliReportedError = subprocess.cliReportedError
                 record.outputFailure = subprocess.outputFailure
+                record.stdoutJSONShape = subprocess.stdoutJSONShape
             }
         }
         addSafeErrorMetadata(error, to: &record)
