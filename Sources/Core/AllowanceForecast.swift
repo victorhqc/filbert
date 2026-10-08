@@ -17,19 +17,24 @@ public struct AllowanceForecast: Equatable, Sendable {
     public let observedAt: Date
     public let evidenceSpan: TimeInterval?
     public let isApproximate: Bool
+    /// Paused after the projected depletion time, or without an estimate and
+    /// closer to the limit than the engine can measure a rate.
+    public let isUncertainNearLimit: Bool
 
     public init(
         usageLineId: String,
         state: State,
         observedAt: Date,
         evidenceSpan: TimeInterval? = nil,
-        isApproximate: Bool = false
+        isApproximate: Bool = false,
+        isUncertainNearLimit: Bool = false
     ) {
         self.usageLineId = usageLineId
         self.state = state
         self.observedAt = observedAt
         self.evidenceSpan = evidenceSpan
         self.isApproximate = isApproximate
+        self.isUncertainNearLimit = isUncertainNearLimit
     }
 
     func observationAge(at now: Date) -> TimeInterval {

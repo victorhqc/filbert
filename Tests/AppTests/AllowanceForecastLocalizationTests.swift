@@ -18,6 +18,11 @@ final class AllowanceForecastLocalizationTests: XCTestCase {
         "About %1$@ of use remaining at recent pace, based on the last %2$@",
         "Not expected to run out before reset at recent pace, based on the last %@",
         "Timing is approximate",
+        "Limit reached",
+        "Limit reached, no more use available until reset",
+        "More than %@ of use remaining",
+        "More than %1$@ of use remaining · last %2$@",
+        "More than %1$@ of use remaining at recent pace, based on the last %2$@",
     ]
 
     func testEveryForecastStringIsTranslatedWithMatchingPlaceholders() throws {

@@ -4,7 +4,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1–6 are implemented. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8. The App items in step 7 and the App tests in step 8 are pending. The branch merges only after steps 3–10.
+- Status: steps 1–6 are implemented. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8. Step 7 is implemented. The App tests in step 8 for failed refreshes, the wake and clock-change observers, and history clearing are pending. The branch merges only after steps 3–10.
 - This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
 - The forecast assumes continued recent consumption. It does not model calendar time, typical daily usage, or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
@@ -244,8 +244,8 @@ Estimate how long each supported allowance would last at the user's recent pace,
 4. [x] Keep every threshold in one shared internal `AllowanceForecastPolicy`, with `let` fields. Apply the values in "Policy values" below. A provider with a stricter freshness limit marks its observation `.stale`. Per-provider calculator overrides stay out of scope.
 5. [x] Feed accepted results into the forecaster from the existing results path. Invalidate on lifecycle revision changes, sleep and wake, and `NSSystemClockDidChange`. Clear history on provider disable or removal, credential save, delete, or import, and endpoint changes.
 6. [x] In `QuotaView`, compose the headline from the binding line, with the smaller secondary line below it. Otherwise render the provider's headline unchanged. Pass every other forecast into `UsageLineRow` by line ID as one small line above the reset text. Use a `TimelineView` for aging. Leave compact status, the collapsed header, and menu-bar selection untouched. The layout follows "Card layout" below.
-7. [ ] Apply the fixes from the review of 2026-10-08:
-   - [ ] The headline rules in (AC9), with "Limit reached" and its accessibility sentence.
+7. [x] Apply the fixes from the review of 2026-10-08:
+   - [x] The headline rules in (AC9), with "Limit reached" and its accessibility sentence.
    - [x] Rejected data pauses its history: `.unknown` or `.stale` freshness, `isStale` quotas, invalid samples, and missing metrics (AC4).
    - [x] Core removes the history of a missing metric after the maximum horizon. `hasHistory` counts only the remaining histories (AC4).
    - [x] After an interruption, only a sample newer than the interruption becomes the new baseline (AC4).
@@ -254,12 +254,12 @@ Estimate how long each supported allowance would last at the user's recent pace,
    - [x] Count the learning limit from the last baseline. Remove `learningDisplayLimit` and use the maximum horizon (AC9).
    - [x] Decide the state in the order of (AC7).
    - [x] Report quiet when the estimate leaves the maximum horizon after 15 minutes without consumption (AC6).
-   - [ ] Use the beyond-reset headline only when the headline line has its own beyond-reset forecast (AC9).
+   - [x] Use the beyond-reset headline only when the headline line has its own beyond-reset forecast (AC9).
    - [x] End "Updates too far apart to estimate" after the last long interval plus the maximum gap (AC9).
    - [x] Produce no estimate from a result that is not finite (AC5).
-   - [ ] Show "More than 4w of use remaining" above 4 weeks (AC9).
-   - [ ] Evaluate forecasts at the later of the timeline date and the current time, so a new sample never shows paused for one tick.
-   - [ ] Make Smart refresh compare the descriptor without its timing, so a new limit or period counts as a change (core 11).
+   - [x] Show "More than 4w of use remaining" above 4 weeks (AC9).
+   - [x] Evaluate forecasts at the later of the timeline date and the current time, so a new sample never shows paused for one tick.
+   - [x] Make Smart refresh compare the descriptor without its timing, so a new limit or period counts as a change (core 11).
    - [x] Move `QuotaHeadlineAndRows` to `QuotaView+HeadlineAndRows.swift`. Put only the forecast text inside the `TimelineView`.
    - [x] Use "headline" in code: rename `Title`, `titleBinding`, `ForecastTitle`, and the catalog keys.
    - [x] Remove `forecastNow`. Give `recordAllowanceObservation` an `at:` argument and pass `activityRuntime.now()`.
@@ -278,9 +278,9 @@ Estimate how long each supported allowance would last at the user's recent pace,
    - [ ] History clearing on `saveOverrideURL`, `importCredentials`, and `deleteKey`.
    - [x] Reset drift across many samples starts a new period.
    - [x] Missing metrics, duplicate usage line IDs, and the state order.
-   - [ ] Each headline rule, including "Limit reached" for a line without a descriptor.
-   - [ ] The beyond-reset accessibility sentence, and approximate timing in the headline.
-   - [ ] Budget pace and compact status with forecasts present. This replaces `testForecastsLeaveBudgetPaceAndCompactStatusUnchanged`, which cannot fail.
+   - [x] Each headline rule, including "Limit reached" for a line without a descriptor.
+   - [x] The beyond-reset accessibility sentence, and approximate timing in the headline.
+   - [x] Budget pace and compact status with forecasts present. This replaces `testForecastsLeaveBudgetPaceAndCompactStatusUnchanged`, which cannot fail.
 9. [ ] Run the focused tests and the repository validation gate. Then manually inspect normal-width popovers and VoiceOver in the limit-reached, estimated, beyond reset, learning, quiet, too far apart, and paused states.
 10. [ ] Land the provider opt-ins. Mark each one here as it lands. The branch merges only after all four:
     - [ ] Claude Code five-hour and weekly windows (providers 17)
@@ -354,7 +354,7 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 
 ### Implementation findings
 
-- A descriptor's timing changes on every write. Smart refresh therefore compares a metric's kind, value, and descriptor without its timing, so its change detection stays as it was (core 11).
+- A descriptor's timing changes on every write. Smart refresh therefore compares a metric's kind, value, and descriptor without its timing (core 11). It compares reset timestamps within the reset tolerance, because OpenCode Go and Claude Code jitter them on every read (providers 17, providers 20). Exact equality would hold Smart refresh in its fast cadence.
 - The last usable rate updates only on an observation that shows consumption, or when no rate exists yet. Otherwise the quiet threshold would grow as the recent window slides over a quiet period, and quiet could never arrive.
 - A line at 100% in the headline's limit group gives the "Limit reached" headline (AC9). The headline never shows remaining use for a group that is already blocked.
 - Catalog keys need identifier characters for string symbol generation. The headline formats use semantic keys, like the existing "Accessibility sentence format".
@@ -368,6 +368,10 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - A quota without an activity observation pauses the provider's histories, the same as `.unknown` freshness.
 - Two histories that name one usage line ID, e.g. one missing and one new, also produce no forecast for that line. The debug assertion sits in the public `record`; Core tests call the internal path that has no assertion.
 - An interruption keeps the later of the sleep and wake times, so only a sample newer than the wake can become the baseline.
+- Rule 2 in (AC9) needs data that only Core has. `AllowanceForecast` carries `isUncertainNearLimit`: the state is paused after the projected depletion time, or the state has no estimate and less than the minimum consumption remains. An exhausted measurement also sets it. A passed reset clears it.
+- "Limit reached" reads the line's unrounded percentage, so a line at 99.6% that displays "100%" does not match. A line without a reset date counts as the one that resets last.
+- "Limit reached" needs no forecast history. Without history, the headline renders once with the rows and has no `TimelineView`.
+- The headline keeps its accessibility sentences as ordered parts. Semantic catalog keys do not resolve under `swift test`, so tests assert the parts, not the joined label.
 - The headline and each forecast row line have their own `TimelineView`. Each one evaluates the forecasts at its own tick, so at a state change they can disagree for up to one minute.
 
 ## Risks

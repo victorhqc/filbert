@@ -10,12 +10,15 @@ extension QuotaViewModel {
         allowanceForecaster.hasHistory(for: providerId)
     }
 
+    /// A timeline tick can predate the latest sample, which would read as
+    /// paused until the next tick.
     func allowanceForecastPresentation(
         for quota: ProviderQuota,
         providerId: String,
-        at now: Date
+        at timelineDate: Date
     ) -> AllowanceForecastPresentation {
-        AllowanceForecastPresentation(
+        let now = max(timelineDate, activityRuntime.now())
+        return AllowanceForecastPresentation(
             quota: quota,
             forecasts: allowanceForecaster.forecasts(for: providerId, at: now),
             now: now

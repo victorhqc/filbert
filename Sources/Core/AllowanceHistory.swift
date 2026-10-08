@@ -138,7 +138,8 @@ struct AllowanceHistory: Sendable {
             state: state,
             observedAt: latest.time,
             evidenceSpan: usesEstimate ? estimate?.span : nil,
-            isApproximate: usesEstimate ? estimate?.isApproximate ?? false : latest.isApproximate
+            isApproximate: usesEstimate ? estimate?.isApproximate ?? false : latest.isApproximate,
+            isUncertainNearLimit: isUncertainNearLimit(in: state, at: now, estimate: estimate, policy: policy)
         )
     }
 
@@ -231,6 +232,34 @@ private extension AllowanceHistory {
         }
         // Only a provider measurement can report exhaustion.
         return now >= depletesAt ? .paused : .estimated(depletesAt: depletesAt)
+    }
+
+    func isUncertainNearLimit(
+        in state: AllowanceForecast.State,
+        at now: Date,
+        estimate: AllowanceRateEstimate?,
+        policy: AllowanceForecastPolicy
+    ) -> Bool {
+        switch state {
+        case .estimated, .beyondReset:
+            return false
+        case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
+            break
+        }
+        if let resetsAt = descriptor.accounting.resetsAt, now >= resetsAt {
+            return false
+        }
+        let remaining = remaining(at: latest)
+        if remaining < policy.minimumConsumptionSteps * descriptor.resolution {
+            return true
+        }
+        guard state == .paused,
+              let estimate,
+              let depletesAt = projectedDepletion(of: remaining, at: estimate)
+        else {
+            return false
+        }
+        return now >= depletesAt
     }
 
     func projectedDepletion(of remaining: Decimal, at estimate: AllowanceRateEstimate) -> Date? {

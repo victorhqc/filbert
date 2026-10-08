@@ -6,47 +6,65 @@ final class SmartRefreshPolicyDescriptorTests: SmartRefreshPolicyTestCase {
     private let origin = Date(timeIntervalSince1970: 1_800_000_000)
 
     func testDescriptorTimingAloneRemainsUnchanged() {
-        var policy = SmartRefreshPolicy()
-        _ = policy.recordSuccess(quota(value: 10, writtenAt: origin), for: "provider", at: 0, quietWindow: quietWindow)
+        XCTAssertEqual(classify(after: descriptorQuota(writtenAt: origin.addingTimeInterval(60))), .unchanged)
+    }
 
-        let decision = policy.recordSuccess(
-            quota(value: 10, writtenAt: origin.addingTimeInterval(60)),
-            for: "provider",
-            at: 60,
-            quietWindow: quietWindow
-        )
+    func testResetJitterInsideTheToleranceRemainsUnchanged() {
+        let jittered = descriptorQuota(resetsAt: defaultReset.addingTimeInterval(0.4))
 
-        XCTAssertEqual(decision.classification, .unchanged)
+        XCTAssertEqual(classify(after: jittered), .unchanged)
     }
 
     func testChangedValueWithADescriptorIsStillAChange() {
-        var policy = SmartRefreshPolicy()
-        _ = policy.recordSuccess(quota(value: 10, writtenAt: origin), for: "provider", at: 0, quietWindow: quietWindow)
-
-        let decision = policy.recordSuccess(
-            quota(value: 11, writtenAt: origin.addingTimeInterval(60)),
-            for: "provider",
-            at: 60,
-            quietWindow: quietWindow
-        )
-
-        XCTAssertEqual(decision.classification, .changed)
+        XCTAssertEqual(classify(after: descriptorQuota(value: 11)), .changed)
     }
 
-    private func quota(value: Decimal, writtenAt: Date) -> ProviderQuota {
-        quota(
+    func testNewLimitIsAChange() {
+        XCTAssertEqual(classify(after: descriptorQuota(limit: 200)), .changed)
+    }
+
+    func testNewPeriodIsAChange() {
+        let nextPeriod = descriptorQuota(resetsAt: defaultReset.addingTimeInterval(5 * 60 * 60))
+
+        XCTAssertEqual(classify(after: nextPeriod), .changed)
+    }
+
+    func testWithdrawnDescriptorIsAChange() {
+        XCTAssertEqual(classify(after: descriptorQuota(hasDescriptor: false)), .changed)
+    }
+
+    private var defaultReset: Date {
+        origin.addingTimeInterval(3600)
+    }
+
+    private func classify(after next: ProviderQuota) -> SmartRefreshPolicy.Classification {
+        var policy = SmartRefreshPolicy()
+        _ = policy.recordSuccess(descriptorQuota(), for: "provider", at: 0, quietWindow: quietWindow)
+        return policy.recordSuccess(next, for: "provider", at: 60, quietWindow: quietWindow).classification
+    }
+
+    private func descriptorQuota(
+        value: Decimal = 10,
+        limit: Decimal = 100,
+        resetsAt: Date? = nil,
+        writtenAt: Date? = nil,
+        hasDescriptor: Bool = true
+    ) -> ProviderQuota {
+        let writtenAt = writtenAt ?? origin
+        let descriptor = AllowanceForecastDescriptor(
+            accounting: .fixedPeriod(limit: limit, resetsAt: resetsAt ?? defaultReset),
+            unit: .percentagePoints,
+            resolution: 1,
+            timing: .source(writtenAt),
+            usageLineId: "usage"
+        )
+        return quota(
             metrics: [
                 ProviderActivityMetric(
                     id: "usage",
                     kind: .usage,
                     value: .number(value),
-                    forecastDescriptor: AllowanceForecastDescriptor(
-                        accounting: .fixedPeriod(limit: 100, resetsAt: origin.addingTimeInterval(3600)),
-                        unit: .percentagePoints,
-                        resolution: 1,
-                        timing: .source(writtenAt),
-                        usageLineId: "usage"
-                    )
+                    forecastDescriptor: hasDescriptor ? descriptor : nil
                 ),
             ],
             freshness: .fresh,

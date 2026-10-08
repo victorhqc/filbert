@@ -7,11 +7,16 @@ struct AllowanceForecastPresentation: Equatable {
         let label: String?
         let value: String
         let status: String
-        let detail: String
-        let accessibilityLabel: String
+        let detail: String?
+        /// Read after the subject, in order.
+        let accessibilitySentences: [String]
 
         var subject: String {
             Self.subject(label: label, value: value)
+        }
+
+        var accessibilityLabel: String {
+            AllowanceForecastPresentation.joinedSentences([subject] + accessibilitySentences)
         }
 
         var text: String {
@@ -27,6 +32,14 @@ struct AllowanceForecastPresentation: Equatable {
     struct Line: Equatable {
         let text: String
         let accessibilityLabel: String
+    }
+
+    static let longestDisplayedEstimate: TimeInterval = 4 * 7 * 24 * 60 * 60
+
+    static func joinedSentences(_ sentences: [String]) -> String {
+        sentences.dropFirst().reduce(sentences.first ?? "") { joined, sentence in
+            String.localizedStringWithFormat(String(localized: "Accessibility sentence format"), joined, sentence)
+        }
     }
 
     let headline: Headline?
@@ -54,9 +67,14 @@ struct AllowanceForecastPresentation: Equatable {
 }
 
 private extension AllowanceForecastPresentation {
+    enum HeadlineReason {
+        case limitReached
+        case forecast(AllowanceForecast)
+    }
+
     struct HeadlineBinding {
         let line: UsageLine
-        let forecast: AllowanceForecast
+        let reason: HeadlineReason
         let showsLabel: Bool
     }
 
@@ -69,67 +87,72 @@ private extension AllowanceForecastPresentation {
         let groupLines = headlineLine.limitGroup.map { group in
             quota.lines.filter { $0.limitGroup == group }
         } ?? [headlineLine]
+        func binding(_ line: UsageLine, _ reason: HeadlineReason) -> HeadlineBinding {
+            HeadlineBinding(line: line, reason: reason, showsLabel: line.id != headlineId)
+        }
+
+        if let blockedLine = limitReachedLine(in: groupLines) {
+            return binding(blockedLine, .limitReached)
+        }
+
         let groupForecasts = groupLines.compactMap { line in
             line.id.flatMap { forecasts[$0] }.map { (line: line, forecast: $0) }
         }
-        guard !groupForecasts.isEmpty,
-              !groupForecasts.contains(where: { $0.forecast.state == .exhausted })
-        else {
-            return nil
-        }
+        guard !groupForecasts.contains(where: \.forecast.isUncertainNearLimit) else { return nil }
 
         let earliest = groupForecasts
             .compactMap { entry in entry.forecast.depletesAt.map { (entry: entry, depletesAt: $0) } }
             .min { $0.depletesAt < $1.depletesAt }?
             .entry
         if let earliest {
-            return HeadlineBinding(
-                line: earliest.line,
-                forecast: earliest.forecast,
-                showsLabel: earliest.line.id != headlineId
-            )
+            return binding(earliest.line, .forecast(earliest.forecast))
         }
 
-        guard groupForecasts.allSatisfy(\.forecast.isBeyondReset) else { return nil }
-        let forecast = forecasts[headlineId] ?? groupForecasts[0].forecast
-        return HeadlineBinding(line: headlineLine, forecast: forecast, showsLabel: false)
+        guard let headlineForecast = forecasts[headlineId],
+              headlineForecast.isBeyondReset,
+              groupForecasts.allSatisfy(\.forecast.isBeyondReset)
+        else {
+            return nil
+        }
+        return binding(headlineLine, .forecast(headlineForecast))
+    }
+
+    /// The line that resets last blocks usage longest.
+    static func limitReachedLine(in lines: [UsageLine]) -> UsageLine? {
+        lines
+            .filter { line in QuotaStatusResolver.percentage(for: line).map { $0 >= 100 } ?? false }
+            .max { ($0.resetDate ?? .distantFuture) < ($1.resetDate ?? .distantFuture) }
     }
 
     static func headline(for binding: HeadlineBinding, now: Date) -> Headline? {
         guard let value = valueText(for: binding.line) else { return nil }
-        let span = binding.forecast.evidenceSpan ?? 0
+        let label = binding.showsLabel ? binding.line.label : nil
 
         let status: String
-        let detail: String
-        switch binding.forecast.state {
-        case .estimated:
-            status = String.localizedStringWithFormat(
-                String(localized: "About %@ of use remaining"),
-                CoarseDurationFormatting.string(from: clampedRemaining(binding.forecast, now: now))
-            )
-            detail = String.localizedStringWithFormat(
-                String(localized: "Based on the last %@"),
-                CoarseDurationFormatting.evidenceSpan(span)
-            )
-        case .beyondReset:
-            status = String(localized: "Not expected to run out")
-            detail = String(localized: "before reset at recent pace")
-        case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
-            return nil
+        let detail: String?
+        let sentences: [String]
+        switch binding.reason {
+        case .limitReached:
+            status = String(localized: "Limit reached")
+            detail = binding.line.resetDate.map(QuotaFormatting.countdown(to:))
+            sentences = [String(localized: "Limit reached, no more use available until reset"), detail]
+                .compactMap(\.self)
+        case let .forecast(forecast):
+            let span = CoarseDurationFormatting.evidenceSpan(forecast.evidenceSpan ?? 0)
+            switch forecast.state {
+            case .estimated:
+                status = RemainingUse(forecast, now: now).headlineStatus
+                detail = String.localizedStringWithFormat(String(localized: "Based on the last %@"), span)
+            case .beyondReset:
+                status = String(localized: "Not expected to run out")
+                detail = String(localized: "before reset at recent pace")
+            case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
+                return nil
+            }
+            sentences = accessibilitySentences(for: forecast, now: now) ?? [status]
         }
 
-        let label = binding.showsLabel ? binding.line.label : nil
-        return Headline(
-            label: label,
-            value: value,
-            status: status,
-            detail: detail,
-            accessibilityLabel: String.localizedStringWithFormat(
-                String(localized: "Accessibility sentence format"),
-                Headline.subject(label: label, value: value),
-                accessibilitySentence(for: binding.forecast, now: now) ?? status
-            )
-        )
+        return Headline(label: label, value: value, status: status, detail: detail, accessibilitySentences: sentences)
     }
 
     static func valueText(for line: UsageLine) -> String? {
@@ -146,11 +169,7 @@ private extension AllowanceForecastPresentation {
         let text: String
         switch forecast.state {
         case .estimated:
-            text = String.localizedStringWithFormat(
-                String(localized: "About %1$@ of use remaining · last %2$@"),
-                CoarseDurationFormatting.string(from: clampedRemaining(forecast, now: now)),
-                span
-            )
+            text = RemainingUse(forecast, now: now).rowText(span: span)
         case .beyondReset:
             text = String.localizedStringWithFormat(
                 String(localized: "Not expected to run out before reset · last %@"),
@@ -167,19 +186,16 @@ private extension AllowanceForecastPresentation {
         case .exhausted, .insufficient:
             return nil
         }
-        return Line(text: text, accessibilityLabel: accessibilitySentence(for: forecast, now: now) ?? text)
+        let sentences = accessibilitySentences(for: forecast, now: now) ?? [text]
+        return Line(text: text, accessibilityLabel: joinedSentences(sentences))
     }
 
-    static func accessibilitySentence(for forecast: AllowanceForecast, now: Date) -> String? {
+    static func accessibilitySentences(for forecast: AllowanceForecast, now: Date) -> [String]? {
         let span = CoarseDurationFormatting.evidenceSpan(forecast.evidenceSpan ?? 0)
         let sentence: String
         switch forecast.state {
         case .estimated:
-            sentence = String.localizedStringWithFormat(
-                String(localized: "About %1$@ of use remaining at recent pace, based on the last %2$@"),
-                CoarseDurationFormatting.string(from: clampedRemaining(forecast, now: now), unitsStyle: .full),
-                span
-            )
+            sentence = RemainingUse(forecast, now: now).accessibilitySentence(span: span)
         case .beyondReset:
             sentence = String.localizedStringWithFormat(
                 String(localized: "Not expected to run out before reset at recent pace, based on the last %@"),
@@ -188,16 +204,45 @@ private extension AllowanceForecastPresentation {
         case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
             return nil
         }
-        guard forecast.isApproximate else { return sentence }
-        return String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            sentence,
-            String(localized: "Timing is approximate")
-        )
+        guard forecast.isApproximate else { return [sentence] }
+        return [sentence, String(localized: "Timing is approximate")]
+    }
+}
+
+private struct RemainingUse {
+    let duration: TimeInterval
+    let exceedsLongestDisplayedEstimate: Bool
+
+    init(_ forecast: AllowanceForecast, now: Date) {
+        let remaining = max(forecast.remainingUse(at: now) ?? 0, 60)
+        let longest = AllowanceForecastPresentation.longestDisplayedEstimate
+        duration = min(remaining, longest)
+        exceedsLongestDisplayedEstimate = remaining > longest
     }
 
-    static func clampedRemaining(_ forecast: AllowanceForecast, now: Date) -> TimeInterval {
-        max(forecast.remainingUse(at: now) ?? 0, 60)
+    var headlineStatus: String {
+        let format = exceedsLongestDisplayedEstimate
+            ? String(localized: "More than %@ of use remaining")
+            : String(localized: "About %@ of use remaining")
+        return String.localizedStringWithFormat(format, CoarseDurationFormatting.string(from: duration))
+    }
+
+    func rowText(span: String) -> String {
+        let format = exceedsLongestDisplayedEstimate
+            ? String(localized: "More than %1$@ of use remaining · last %2$@")
+            : String(localized: "About %1$@ of use remaining · last %2$@")
+        return String.localizedStringWithFormat(format, CoarseDurationFormatting.string(from: duration), span)
+    }
+
+    func accessibilitySentence(span: String) -> String {
+        let format = exceedsLongestDisplayedEstimate
+            ? String(localized: "More than %1$@ of use remaining at recent pace, based on the last %2$@")
+            : String(localized: "About %1$@ of use remaining at recent pace, based on the last %2$@")
+        return String.localizedStringWithFormat(
+            format,
+            CoarseDurationFormatting.string(from: duration, unitsStyle: .full),
+            span
+        )
     }
 }
 

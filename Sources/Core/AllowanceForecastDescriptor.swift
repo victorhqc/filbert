@@ -54,3 +54,21 @@ public struct AllowanceForecastDescriptor: Equatable, Sendable {
         self.usageLineId = usageLineId
     }
 }
+
+extension AllowanceForecastDescriptor {
+    /// Ignores timing, which changes on every write, and reset jitter within
+    /// the tolerance.
+    func describesSameAllowance(as other: Self, resetTolerance: TimeInterval) -> Bool {
+        guard unit == other.unit, resolution == other.resolution, usageLineId == other.usageLineId else {
+            return false
+        }
+        switch (accounting, other.accounting) {
+        case (.balance, .balance):
+            return true
+        case let (.fixedPeriod(limit, resetsAt), .fixedPeriod(otherLimit, otherResetsAt)):
+            return limit == otherLimit && abs(resetsAt.timeIntervalSince(otherResetsAt)) <= resetTolerance
+        case (.balance, .fixedPeriod), (.fixedPeriod, .balance):
+            return false
+        }
+    }
+}

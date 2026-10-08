@@ -2,8 +2,8 @@
 import Core
 import XCTest
 
-final class AllowanceForecastPresentationTests: XCTestCase {
-    private let now = Date(timeIntervalSince1970: 1_800_000_000)
+final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTestCase {
+    private let week: TimeInterval = 7 * 24 * 60 * 60
 
     func testEstimatedHeadlineLineReplacesTheCountdownAndAddsTheEvidenceLine() throws {
         let presentation = present(
@@ -15,55 +15,9 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         XCTAssertNil(headline.label)
         XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
-        XCTAssertEqual(headline.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(20 * 60))")
+        XCTAssertEqual(headline.detail, "Based on the last \(span(20 * 60))")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(presentation.rowLines["weekly"]?.text, "Learning your usage rate…")
-    }
-
-    func testEarliestEstimateInTheLimitGroupBindsAndAddsItsLabel() throws {
-        let presentation = present(
-            fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
-            weekly: estimated("weekly", in: 30 * 60, span: 40 * 60)
-        )
-
-        let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertEqual(headline.label, "Weekly")
-        XCTAssertEqual(headline.value, "95%")
-        XCTAssertEqual(headline.status, "About \(abbreviated(30 * 60)) of use remaining")
-        XCTAssertEqual(headline.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(40 * 60))")
-        XCTAssertNil(presentation.rowLines["weekly"])
-        XCTAssertEqual(
-            presentation.rowLines["five-hour"]?.text,
-            "About \(abbreviated(80 * 60)) of use remaining · last \(CoarseDurationFormatting.evidenceSpan(20 * 60))"
-        )
-    }
-
-    func testEveryGroupLineBeyondResetComposesTheBeyondResetHeadline() throws {
-        let presentation = present(
-            fiveHour: beyondReset("five-hour"),
-            weekly: beyondReset("weekly")
-        )
-
-        let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertNil(headline.label)
-        XCTAssertEqual(headline.value, "3%")
-        XCTAssertEqual(headline.status, "Not expected to run out")
-        XCTAssertEqual(headline.detail, "before reset at recent pace")
-        XCTAssertNil(presentation.rowLines["five-hour"])
-        XCTAssertEqual(
-            presentation.rowLines["weekly"]?.text,
-            "Not expected to run out before reset · last \(CoarseDurationFormatting.evidenceSpan(60 * 60))"
-        )
-    }
-
-    func testBeyondResetWithAnotherGroupLineLearningKeepsTheProviderHeadline() {
-        let presentation = present(
-            fiveHour: beyondReset("five-hour"),
-            weekly: forecast("weekly", .learning)
-        )
-
-        XCTAssertNil(presentation.headline)
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
     }
 
     func testWeakerStatesKeepTheProviderHeadlineAndShowOneRowLine() {
@@ -83,26 +37,6 @@ final class AllowanceForecastPresentationTests: XCTestCase {
             XCTAssertEqual(presentation.rowLines["five-hour"]?.text, text, "\(state)")
             XCTAssertEqual(presentation.rowLines["five-hour"]?.accessibilityLabel, text, "\(state)")
         }
-    }
-
-    func testExhaustedGroupLineKeepsTheProviderHeadline() {
-        let presentation = present(
-            fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
-            weekly: forecast("weekly", .exhausted)
-        )
-
-        XCTAssertNil(presentation.headline)
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
-    }
-
-    func testHeadlineNeverChangesWithoutANamedHeadlineLine() {
-        let presentation = present(
-            fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
-            headlineUsageLineId: nil
-        )
-
-        XCTAssertNil(presentation.headline)
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
     }
 
     func testIndependentPoolsNeverCompeteForTheHeadline() throws {
@@ -142,12 +76,15 @@ final class AllowanceForecastPresentationTests: XCTestCase {
 
         let row = try XCTUnwrap(presentation.rowLines["weekly"])
         let remaining = CoarseDurationFormatting.string(from: 26 * 60 * 60, unitsStyle: .full)
-        let span = CoarseDurationFormatting.evidenceSpan(2 * 60 * 60)
         XCTAssertEqual(
             row.accessibilityLabel,
-            "About \(remaining) of use remaining at recent pace, based on the last \(span)"
+            "About \(remaining) of use remaining at recent pace, based on the last \(span(2 * 60 * 60))"
         )
-        XCTAssertNotEqual(try XCTUnwrap(presentation.headline).accessibilityLabel, presentation.headline?.text)
+        let headlineRemaining = CoarseDurationFormatting.string(from: 80 * 60, unitsStyle: .full)
+        XCTAssertEqual(
+            try XCTUnwrap(presentation.headline).accessibilitySentences,
+            ["About \(headlineRemaining) of use remaining at recent pace, based on the last \(span(20 * 60))"]
+        )
         XCTAssertFalse(row.text.contains(" left"))
     }
 
@@ -168,6 +105,17 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         XCTAssertFalse(approximateRow.text.contains("approximate"))
     }
 
+    func testApproximateTimingAppearsOnlyInTheHeadlineAccessibilityText() throws {
+        let exact = try XCTUnwrap(present(fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60)).headline)
+        let approximate = try XCTUnwrap(
+            present(fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60, approximate: true)).headline
+        )
+
+        XCTAssertEqual(approximate.status, exact.status)
+        XCTAssertEqual(approximate.detail, exact.detail)
+        XCTAssertEqual(approximate.accessibilitySentences, exact.accessibilitySentences + ["Timing is approximate"])
+    }
+
     func testEstimatesLongerThanADayDropMinutePrecision() {
         let withMinutes = present(fiveHour: estimated("five-hour", in: 28 * 60 * 60 + 30 * 60, span: 3600))
         let wholeHours = present(fiveHour: estimated("five-hour", in: 28 * 60 * 60, span: 3600))
@@ -179,6 +127,33 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         )
     }
 
+    func testEstimatesLongerThanFourWeeksReadMoreThanFourWeeks() throws {
+        let presentation = present(
+            fiveHour: estimated("five-hour", in: 5 * week, span: 2 * 60 * 60),
+            weekly: estimated("weekly", in: 6 * week, span: 2 * 60 * 60),
+            weeklyGroup: nil
+        )
+
+        let headline = try XCTUnwrap(presentation.headline)
+        let row = try XCTUnwrap(presentation.rowLines["weekly"])
+        let fourWeeks = CoarseDurationFormatting.string(from: 4 * week, unitsStyle: .full)
+        XCTAssertEqual(headline.status, "More than \(abbreviated(4 * week)) of use remaining")
+        XCTAssertEqual(row.text, "More than \(abbreviated(4 * week)) of use remaining · last \(span(2 * 60 * 60))")
+        XCTAssertEqual(
+            row.accessibilityLabel,
+            "More than \(fourWeeks) of use remaining at recent pace, based on the last \(span(2 * 60 * 60))"
+        )
+    }
+
+    func testAnEstimateOfExactlyFourWeeksIsStillAnEstimate() throws {
+        let presentation = present(fiveHour: estimated("five-hour", in: 4 * week, span: 2 * 60 * 60))
+
+        XCTAssertEqual(
+            try XCTUnwrap(presentation.headline).status,
+            "About \(abbreviated(4 * week)) of use remaining"
+        )
+    }
+
     func testRenderingAgesTheEstimateWithoutMovingTheDepletionTime() throws {
         let forecasts = ["five-hour": estimated("five-hour", in: 80 * 60, span: 20 * 60)]
         let later = now.addingTimeInterval(20 * 60)
@@ -186,97 +161,5 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         let presentation = AllowanceForecastPresentation(quota: makeQuota(), forecasts: forecasts, now: later)
 
         XCTAssertEqual(try XCTUnwrap(presentation.headline).status, "About \(abbreviated(60 * 60)) of use remaining")
-    }
-
-    func testForecastsLeaveBudgetPaceAndCompactStatusUnchanged() {
-        let reset = now.addingTimeInterval(3 * 24 * 60 * 60)
-        let plain = UsageLine(
-            label: "Weekly",
-            percentage: 40,
-            resetDate: reset,
-            windowDuration: UsageWindowDuration.week
-        )
-        let forecastLine = UsageLine(
-            label: "Weekly",
-            percentage: 40,
-            resetDate: reset,
-            windowDuration: UsageWindowDuration.week,
-            id: "weekly",
-            limitGroup: "claude"
-        )
-
-        XCTAssertEqual(BudgetPace(line: forecastLine, now: now), BudgetPace(line: plain, now: now))
-        XCTAssertEqual(
-            QuotaStatusResolver.compactTier(for: makeQuota(lines: [forecastLine]), at: now),
-            QuotaStatusResolver.compactTier(for: makeQuota(lines: [plain]), at: now)
-        )
-    }
-}
-
-private extension AllowanceForecastPresentationTests {
-    func present(
-        fiveHour: AllowanceForecast? = nil,
-        weekly: AllowanceForecast? = nil,
-        weeklyGroup: String? = "claude",
-        headlineUsageLineId: String? = "five-hour"
-    ) -> AllowanceForecastPresentation {
-        let lines = [
-            UsageLine(label: "5-hour window", percentage: 3, id: "five-hour", limitGroup: "claude"),
-            UsageLine(label: "Weekly", percentage: 95, id: "weekly", limitGroup: weeklyGroup),
-        ]
-        var forecasts: [String: AllowanceForecast] = [:]
-        forecasts["five-hour"] = fiveHour
-        forecasts["weekly"] = weekly
-        return AllowanceForecastPresentation(
-            quota: makeQuota(lines: lines, headlineUsageLineId: headlineUsageLineId),
-            forecasts: forecasts,
-            now: now
-        )
-    }
-
-    func makeQuota(
-        lines: [UsageLine] = [UsageLine(label: "5-hour window", percentage: 3, id: "five-hour")],
-        headlineUsageLineId: String? = "five-hour"
-    ) -> ProviderQuota {
-        ProviderQuota(
-            providerId: "provider",
-            providerName: "Provider",
-            headline: "3% · resets in 5 hours",
-            lines: lines,
-            lastUpdated: now,
-            headlineUsageLineId: headlineUsageLineId
-        )
-    }
-
-    func forecast(_ id: String, _ state: AllowanceForecast.State) -> AllowanceForecast {
-        AllowanceForecast(usageLineId: id, state: state, observedAt: now)
-    }
-
-    func estimated(
-        _ id: String,
-        in remaining: TimeInterval,
-        span: TimeInterval,
-        approximate: Bool = false
-    ) -> AllowanceForecast {
-        AllowanceForecast(
-            usageLineId: id,
-            state: .estimated(depletesAt: now.addingTimeInterval(remaining)),
-            observedAt: now,
-            evidenceSpan: span,
-            isApproximate: approximate
-        )
-    }
-
-    func beyondReset(_ id: String) -> AllowanceForecast {
-        AllowanceForecast(
-            usageLineId: id,
-            state: .beyondReset(resetsAt: now.addingTimeInterval(5 * 60 * 60)),
-            observedAt: now,
-            evidenceSpan: 60 * 60
-        )
-    }
-
-    func abbreviated(_ interval: TimeInterval) -> String {
-        CoarseDurationFormatting.string(from: interval)
     }
 }

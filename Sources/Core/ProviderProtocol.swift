@@ -97,9 +97,19 @@ public struct ProviderActivityMetric: Equatable, Sendable {
 }
 
 extension ProviderActivityMetric {
-    /// Ignores the forecast descriptor, whose timing changes on every write.
     func measuresSameValue(as other: Self) -> Bool {
-        kind == other.kind && value == other.value
+        guard kind == other.kind, value == other.value else { return false }
+        switch (forecastDescriptor, other.forecastDescriptor) {
+        case (.none, .none):
+            return true
+        case let (.some(descriptor), .some(otherDescriptor)):
+            return descriptor.describesSameAllowance(
+                as: otherDescriptor,
+                resetTolerance: AllowanceForecastPolicy.standard.resetTolerance
+            )
+        case (.some, .none), (.none, .some):
+            return false
+        }
     }
 }
 

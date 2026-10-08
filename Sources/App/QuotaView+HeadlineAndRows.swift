@@ -17,7 +17,7 @@ struct QuotaHeadlineAndRows: View {
                         headline(presentation(at: date).headline)
                     }
                 } else {
-                    headline(nil)
+                    headline(presentation(at: Date()).headline)
                 }
                 if let headlineColor {
                     Circle()

@@ -15,6 +15,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
     let resetsAt: Date
     var consumed: Decimal = 20
     var isStale = false
+    var windowDuration: TimeInterval?
     var fetchCallCount = 0
 
     init(clock: ActivityTestClock, resetsAt: Date) {
@@ -28,12 +29,24 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
 
     func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
         fetchCallCount += 1
+        return currentQuota()
+    }
+
+    func currentQuota() -> ProviderQuota {
         let percentage = NSDecimalNumber(decimal: consumed).doubleValue
+        let line = UsageLine(
+            label: "Window",
+            percentage: percentage,
+            resetDate: resetsAt,
+            windowDuration: windowDuration,
+            id: "window",
+            limitGroup: "spy"
+        )
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
             headline: "\(Int(percentage))% · resets soon",
-            lines: [UsageLine(label: "Window", percentage: percentage, id: "window", limitGroup: "spy")],
+            lines: [line],
             lastUpdated: clock.date,
             isStale: isStale,
             activityObservation: ProviderActivityObservation(
@@ -93,6 +106,32 @@ final class AllowanceForecastViewModelTests: XCTestCase {
         XCTAssertEqual(harness.provider.fetchCallCount, 5)
     }
 
+    func testATimelineTickBeforeTheLatestSampleUsesTheCurrentTime() async throws {
+        let harness = makeHarness()
+        await drive(harness, trace: [(0, 20), (5, 23), (10, 25), (15, 28), (20, 30)])
+
+        let presentation = try presentation(harness, at: minute(18))
+
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertEqual(headline.status, "About \(CoarseDurationFormatting.string(from: 140 * 60)) of use remaining")
+    }
+
+    func testForecastsLeaveBudgetPaceAndCompactStatusUnchanged() async throws {
+        let harness = makeHarness(resetsAt: minute(3 * 24 * 60))
+        harness.provider.windowDuration = UsageWindowDuration.week
+        await drive(harness, trace: [(0, 20), (5, 23), (10, 25), (15, 28), (20, 30)])
+
+        let shown = try loadedQuota(harness)
+        let presentation = try presentation(harness, at: minute(20))
+        let reported = harness.provider.currentQuota()
+
+        XCTAssertNotNil(presentation.headline)
+        XCTAssertEqual(shown.headline, reported.headline)
+        let pace = try XCTUnwrap(BudgetPace(line: shown.lines[0], now: minute(20)))
+        XCTAssertEqual(pace, BudgetPace(line: reported.lines[0], now: minute(20)))
+        XCTAssertEqual(QuotaStatusResolver.compactTier(for: shown, at: minute(20)), pace.tier)
+    }
+
     func testSleepPausesTheForecastUntilANewBaseline() async throws {
         let harness = makeHarness()
         await drive(harness, trace: [(0, 20), (5, 23), (10, 25), (15, 28), (20, 30)])
@@ -143,9 +182,9 @@ private extension AllowanceForecastViewModelTests {
         origin.addingTimeInterval(value * 60)
     }
 
-    func makeHarness() -> ForecastHarness {
+    func makeHarness(resetsAt: Date? = nil) -> ForecastHarness {
         let clock = ActivityTestClock(origin)
-        let provider = ForecastSpyProvider(clock: clock, resetsAt: minute(5 * 60))
+        let provider = ForecastSpyProvider(clock: clock, resetsAt: resetsAt ?? minute(5 * 60))
         ProviderEnablement.setEnabled(true, for: ForecastSpyProvider.providerId)
         AutoRefreshPreferences.setEnabled(false, for: ForecastSpyProvider.providerId)
         let registry = ProviderRegistry()
@@ -183,11 +222,18 @@ private extension AllowanceForecastViewModelTests {
         XCTAssertNil(harness.viewModel.fetchTasks[providerId])
     }
 
-    func presentation(_ harness: ForecastHarness, at date: Date) throws -> AllowanceForecastPresentation {
-        let providerId = ForecastSpyProvider.providerId
-        guard case let .loaded(quota) = harness.viewModel.providerStates[providerId] else {
+    func loadedQuota(_ harness: ForecastHarness) throws -> ProviderQuota {
+        guard case let .loaded(quota) = harness.viewModel.providerStates[ForecastSpyProvider.providerId] else {
             throw ProviderNotLoaded()
         }
-        return harness.viewModel.allowanceForecastPresentation(for: quota, providerId: providerId, at: date)
+        return quota
+    }
+
+    func presentation(_ harness: ForecastHarness, at date: Date) throws -> AllowanceForecastPresentation {
+        try harness.viewModel.allowanceForecastPresentation(
+            for: loadedQuota(harness),
+            providerId: ForecastSpyProvider.providerId,
+            at: date
+        )
     }
 }

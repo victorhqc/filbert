@@ -19,9 +19,11 @@ struct ForecastHeadline: View {
         VStack(alignment: .leading, spacing: 1) {
             Text(headline.text)
                 .font(.headline)
-            Text(headline.detail)
-                .font(.caption)
-                .foregroundStyle(.secondary)
+            if let detail = headline.detail {
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(headline.accessibilityLabel)
