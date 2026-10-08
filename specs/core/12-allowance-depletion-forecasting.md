@@ -4,7 +4,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1, 2, 4, 5, and 6 are implemented. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8. Step 3, the rest of step 7, and step 8 are pending. The branch merges only after steps 3–10.
+- Status: steps 1–6 are implemented. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8. The App items in step 7 and the App tests in step 8 are pending. The branch merges only after steps 3–10.
 - This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
 - The forecast assumes continued recent consumption. It does not model calendar time, typical daily usage, or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
@@ -240,23 +240,24 @@ Estimate how long each supported allowance would last at the user's recent pace,
    ```
 
 2. [x] Implement a pure Core `AllowanceForecaster`. Callers pass the current time. Key history by provider ID and metric ID. Model these states explicitly: learning, estimated, beyond reset, quiet, too far apart, paused, exhausted, insufficient. Exhausted and insufficient render no forecast text. Keep accounting-period boundaries separate from recent-rate segments.
-3. [ ] Estimate the rate with the interpolated fixed window from (AC5). Remove repeated samples as (AC5) describes. Do not add regression. The first version used the endpoint delta from the last sample before the cutoff. Extra observations moved that sample and changed the rate.
+3. [x] Estimate the rate with the interpolated fixed window from (AC5). Remove repeated samples as (AC5) describes. Do not add regression. The first version used the endpoint delta from the last sample before the cutoff. Extra observations moved that sample and changed the rate.
 4. [x] Keep every threshold in one shared internal `AllowanceForecastPolicy`, with `let` fields. Apply the values in "Policy values" below. A provider with a stricter freshness limit marks its observation `.stale`. Per-provider calculator overrides stay out of scope.
 5. [x] Feed accepted results into the forecaster from the existing results path. Invalidate on lifecycle revision changes, sleep and wake, and `NSSystemClockDidChange`. Clear history on provider disable or removal, credential save, delete, or import, and endpoint changes.
 6. [x] In `QuotaView`, compose the headline from the binding line, with the smaller secondary line below it. Otherwise render the provider's headline unchanged. Pass every other forecast into `UsageLineRow` by line ID as one small line above the reset text. Use a `TimelineView` for aging. Leave compact status, the collapsed header, and menu-bar selection untouched. The layout follows "Card layout" below.
 7. [ ] Apply the fixes from the review of 2026-10-08:
    - [ ] The headline rules in (AC9), with "Limit reached" and its accessibility sentence.
-   - [ ] Rejected data pauses its history: `.unknown` or `.stale` freshness, `isStale` quotas, invalid samples, and missing metrics (AC4).
-   - [ ] Core removes the history of a missing metric after the maximum horizon. `hasHistory` counts only the remaining histories (AC4).
-   - [ ] After an interruption, only a sample newer than the interruption becomes the new baseline (AC4).
-   - [ ] Two metrics with one usage line ID produce no forecast. Add a debug assertion (AC1).
-   - [ ] Compare each reset timestamp with the first one of the period (AC3).
-   - [ ] Count the learning limit from the last baseline. Remove `learningDisplayLimit` and use the maximum horizon (AC9).
-   - [ ] Decide the state in the order of (AC7).
-   - [ ] Report quiet when the estimate leaves the maximum horizon after 15 minutes without consumption (AC6).
+   - [x] Rejected data pauses its history: `.unknown` or `.stale` freshness, `isStale` quotas, invalid samples, and missing metrics (AC4).
+   - [x] Core removes the history of a missing metric after the maximum horizon. `hasHistory` counts only the remaining histories (AC4).
+   - [x] After an interruption, only a sample newer than the interruption becomes the new baseline (AC4).
+   - [x] Two metrics with one usage line ID produce no forecast. Add a debug assertion (AC1).
+   - [x] Compare each reset timestamp with the first one of the period (AC3).
+   - [x] Count the learning limit from the last baseline. Remove `learningDisplayLimit` and use the maximum horizon (AC9).
+   - [x] Decide the state in the order of (AC7).
+   - [x] Report quiet when the estimate leaves the maximum horizon after 15 minutes without consumption (AC6).
    - [ ] Use the beyond-reset headline only when the headline line has its own beyond-reset forecast (AC9).
-   - [ ] End "Updates too far apart to estimate" after the last long interval plus the maximum gap (AC9).
-   - [ ] Produce no estimate from a result that is not finite. Show "More than 4w of use remaining" above 4 weeks (AC5, AC9).
+   - [x] End "Updates too far apart to estimate" after the last long interval plus the maximum gap (AC9).
+   - [x] Produce no estimate from a result that is not finite (AC5).
+   - [ ] Show "More than 4w of use remaining" above 4 weeks (AC9).
    - [ ] Evaluate forecasts at the later of the timeline date and the current time, so a new sample never shows paused for one tick.
    - [ ] Make Smart refresh compare the descriptor without its timing, so a new limit or period counts as a change (core 11).
    - [x] Move `QuotaHeadlineAndRows` to `QuotaView+HeadlineAndRows.swift`. Put only the forecast text inside the `TimelineView`.
@@ -268,15 +269,15 @@ Estimate how long each supported allowance would last at the user's recent pace,
    - [x] Remove the doc comments that restate acceptance criteria.
    - [x] Make `observationAge(at:)`, `resetAll()`, and `policy` internal or remove them. Require `maximumRetainedObservations` of 2 or more.
 8. [ ] Add the tests from (AC12) that are still missing:
-   - [ ] Bursts at the start and at the end of a window.
-   - [ ] Extra observations without a new value, including repeated manual refreshes, produce the same rate.
-   - [ ] A 10-second fast interval keeps two hours of evidence.
-   - [ ] 15-minute and 29-minute slow intervals produce an estimate. A 31-minute slow interval shows "too far apart".
+   - [x] Bursts at the start and at the end of a window.
+   - [x] Extra observations without a new value, including repeated manual refreshes, produce the same rate.
+   - [x] A 10-second fast interval keeps two hours of evidence.
+   - [x] 15-minute and 29-minute slow intervals produce an estimate. A 31-minute slow interval shows "too far apart".
    - [ ] A failed refresh adds no sample.
-   - [ ] Wake, a forward clock jump, and the `NSSystemClockDidChange` observer.
+   - [ ] Wake and the `NSSystemClockDidChange` observer. Core covers the forward clock jump.
    - [ ] History clearing on `saveOverrideURL`, `importCredentials`, and `deleteKey`.
-   - [ ] Reset drift across many samples starts a new period.
-   - [ ] Missing metrics, duplicate usage line IDs, and the state order.
+   - [x] Reset drift across many samples starts a new period.
+   - [x] Missing metrics, duplicate usage line IDs, and the state order.
    - [ ] Each headline rule, including "Limit reached" for a line without a descriptor.
    - [ ] The beyond-reset accessibility sentence, and approximate timing in the headline.
    - [ ] Budget pace and compact status with forecasts present. This replaces `testForecastsLeaveBudgetPaceAndCompactStatusUnchanged`, which cannot fail.
@@ -359,8 +360,14 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - Catalog keys need identifier characters for string symbol generation. The headline formats use semantic keys, like the existing "Accessibility sentence format".
 - Evidence spans show one unit, rounded to the nearest hour from one hour up, e.g. "last 2 hours".
 - Commit `4fd967f` implements steps 1–6 with Core and App tests. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8.
-- `learningDisplayLimit` is removed, and learning uses the maximum horizon. Learning still counts from the segment start until step 7 counts it from the last baseline.
+- `learningDisplayLimit` is removed. Learning lasts the maximum horizon from the last baseline.
 - The maximum observation age is a separate policy field from the maximum gap. Both are 30 minutes.
+- The window grows only to reach the minimum consumption. The observation count covers the observations from the sample at or before the window start to the latest one, including removed repeated samples. Without that start sample, a 29-minute interval has only two observations in a 30-minute window.
+- History keeps the last sample at or before the maximum-horizon cutoff, so the 2-hour window can interpolate its start.
+- `Decimal` division returns NaN on underflow, e.g. a resolution of 10⁻¹⁰⁰. Core treats a rate or a projection that is not finite as no estimate.
+- A quota without an activity observation pauses the provider's histories, the same as `.unknown` freshness.
+- Two histories that name one usage line ID, e.g. one missing and one new, also produce no forecast for that line. The debug assertion sits in the public `record`; Core tests call the internal path that has no assertion.
+- An interruption keeps the later of the sleep and wake times, so only a sample newer than the wake can become the baseline.
 - The headline and each forecast row line have their own `TimelineView`. Each one evaluates the forecasts at its own tick, so at a state change they can disagree for up to one minute.
 
 ## Risks

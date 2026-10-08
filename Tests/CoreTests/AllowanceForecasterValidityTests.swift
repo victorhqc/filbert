@@ -31,6 +31,32 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
         XCTAssertEqual(state(at: minute(55)), .quiet)
     }
 
+    func testQuietFollowsWhenTheEstimateLeavesTheMaximumHorizon() {
+        for value in stride(from: 0.0, through: 180, by: 10) {
+            let consumed = Decimal(min(Int(value) / 60, 2))
+            record(fixedPeriodMetric(consumed: consumed, at: minute(value)))
+            if value == 170 {
+                XCTAssertNotNil(depletion(at: minute(value)))
+            }
+        }
+
+        XCTAssertEqual(state(at: minute(180)), .quiet)
+    }
+
+    func testLearningLimitCountsFromTheLastBaseline() {
+        recordTrace(linearTrace)
+        for value in stride(from: 25.0, through: 125, by: 5) {
+            recordTrace([(value, 30)])
+        }
+        XCTAssertEqual(state(at: minute(125)), .quiet)
+
+        recordTrace([(130, 32)])
+        XCTAssertEqual(state(at: minute(130)), .insufficient)
+
+        recordTrace([(135, 34)])
+        XCTAssertNotNil(depletion(at: minute(135)))
+    }
+
     func testNoConsumptionWithoutAPriorRateIsLearningNotQuiet() {
         for value in stride(from: 0.0, through: 60, by: 5) {
             record(fixedPeriodMetric(consumed: 5, at: minute(value)))
@@ -101,7 +127,7 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
     func testSleepInterruptionPausesAndRequiresANewBaseline() {
         recordTrace(linearTrace)
 
-        forecaster.interruptAll()
+        forecaster.interruptAll(at: minute(21))
         XCTAssertEqual(state(at: minute(21)), .paused)
 
         recordTrace([(25, 33), (30, 35)])
@@ -114,10 +140,16 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
 
         recordTrace([(70, 4)])
         XCTAssertEqual(state(at: minute(70)), .tooFarApart)
-        XCTAssertEqual(state(at: minute(101)), .tooFarApart)
 
         recordTrace([(75, 5)])
         XCTAssertEqual(state(at: minute(75)), .learning)
+    }
+
+    func testUpdatesTooFarApartEndsAfterTheLastLongIntervalPlusTheMaximumGap() {
+        recordTrace([(0, 0), (35, 2), (70, 4)])
+
+        XCTAssertEqual(state(at: minute(134)), .tooFarApart)
+        XCTAssertEqual(state(at: minute(135)), .paused)
     }
 
     func testClockMovingBackwardPausesAndIgnoresOlderObservations() {
@@ -127,6 +159,29 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
 
         XCTAssertEqual(forecast(at: minute(20))?.observedAt, minute(20))
         XCTAssertEqual(state(at: minute(10)), .paused)
+    }
+
+    func testForwardClockJumpPausesAndRequiresANewBaseline() {
+        recordTrace(linearTrace)
+
+        XCTAssertEqual(state(at: minute(200)), .paused)
+
+        recordTrace([(200, 31)])
+        XCTAssertEqual(state(at: minute(200)), .learning)
+        XCTAssertEqual(forecast(at: minute(200))?.observedAt, minute(200))
+    }
+
+    func testInterruptionAcceptsOnlyABaselineNewerThanTheInterruption() {
+        recordTrace(linearTrace)
+        forecaster.interruptAll(at: minute(22))
+
+        record(fixedPeriodMetric(consumed: 31, at: minute(21)), receivedAt: minute(23))
+        XCTAssertEqual(state(at: minute(23)), .paused)
+        XCTAssertEqual(forecast(at: minute(23))?.observedAt, minute(20))
+
+        recordTrace([(25, 33)])
+        XCTAssertEqual(state(at: minute(25)), .learning)
+        XCTAssertEqual(forecast(at: minute(25))?.observedAt, minute(25))
     }
 
     func testFutureMeasurementTimesAreRejected() {

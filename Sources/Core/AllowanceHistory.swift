@@ -4,6 +4,8 @@ struct AllowanceSample: Equatable, Sendable {
     let value: Decimal
     let time: Date
     let isApproximate: Bool
+    /// Accepted observations since the previous stored sample, this one included.
+    var observationCount = 1
 }
 
 extension AllowanceSample {
@@ -46,16 +48,20 @@ struct AllowanceRateEstimate: Equatable, Sendable {
 struct AllowanceHistory: Sendable {
     private(set) var descriptor: AllowanceForecastDescriptor
     private(set) var samples: [AllowanceSample]
-    private(set) var segmentStart: Date
+    private(set) var baselineAt: Date
+    private(set) var periodResetsAt: Date?
     private(set) var lastConsumptionAt: Date
     private(set) var lastUsableRate: Decimal?
     private(set) var consecutiveLongIntervals = 0
-    private(set) var isInterrupted = false
+    private(set) var lastLongInterval: TimeInterval = 0
+    private(set) var interruptedAt: Date?
+    private(set) var isPaused = false
 
     init(baseline: AllowanceSample, descriptor: AllowanceForecastDescriptor) {
         self.descriptor = descriptor
         samples = [baseline]
-        segmentStart = baseline.time
+        baselineAt = baseline.time
+        periodResetsAt = descriptor.accounting.resetsAt
         lastConsumptionAt = baseline.time
     }
 
@@ -68,7 +74,8 @@ struct AllowanceHistory: Sendable {
         descriptor newDescriptor: AllowanceForecastDescriptor,
         policy: AllowanceForecastPolicy
     ) {
-        if isInterrupted {
+        if let interruptedAt {
+            guard sample.time > interruptedAt else { return }
             consecutiveLongIntervals = 0
             rebaseline(at: sample, descriptor: newDescriptor)
             return
@@ -78,7 +85,12 @@ struct AllowanceHistory: Sendable {
         guard sample.time > previous.time else { return }
 
         let interval = sample.time.timeIntervalSince(previous.time)
-        consecutiveLongIntervals = interval > policy.maximumGap ? consecutiveLongIntervals + 1 : 0
+        if interval > policy.maximumGap {
+            consecutiveLongIntervals += 1
+            lastLongInterval = interval
+        } else {
+            consecutiveLongIntervals = 0
+        }
         guard interval <= policy.maximumGap,
               continuesPeriod(with: newDescriptor, at: sample.time, policy: policy),
               consumed(from: previous, to: sample) >= 0
@@ -87,9 +99,10 @@ struct AllowanceHistory: Sendable {
             return
         }
 
-        let wasQuiet = isQuiet(policy: policy)
+        let wasQuiet = isQuiet(estimate: rateEstimate(policy: policy), policy: policy)
         let showsConsumption = consumed(from: previous, to: sample) > 0
         descriptor = newDescriptor
+        isPaused = false
         if showsConsumption {
             if wasQuiet {
                 startSegment(at: previous)
@@ -105,8 +118,12 @@ struct AllowanceHistory: Sendable {
         }
     }
 
-    mutating func interrupt() {
-        isInterrupted = true
+    mutating func interrupt(at date: Date) {
+        interruptedAt = max(interruptedAt ?? date, date)
+    }
+
+    mutating func pause() {
+        isPaused = true
     }
 
     func forecast(at now: Date, policy: AllowanceForecastPolicy) -> AllowanceForecast {
@@ -125,88 +142,115 @@ struct AllowanceHistory: Sendable {
         )
     }
 
-    /// Endpoint delta over the recent horizon. It reaches further back only
-    /// to meet the minimum consumption. Intermediate samples never count.
     func rateEstimate(policy: AllowanceForecastPolicy) -> AllowanceRateEstimate? {
-        let latest = latest
         let minimumConsumption = policy.minimumConsumptionSteps * descriptor.resolution
-        let recentCutoff = latest.time.addingTimeInterval(-policy.recentHorizon)
-        let maximumCutoff = latest.time.addingTimeInterval(-policy.maximumHorizon)
-        guard let earliestIndex = samples.firstIndex(where: { $0.time >= maximumCutoff }) else { return nil }
-
-        var startIndex = max(samples.lastIndex { $0.time <= recentCutoff } ?? earliestIndex, earliestIndex)
-        while startIndex > earliestIndex, consumed(from: samples[startIndex], to: latest) < minimumConsumption {
-            startIndex -= 1
+        var horizon = policy.recentHorizon
+        var window = rateWindow(spanning: horizon)
+        while window.consumption < minimumConsumption, horizon < policy.maximumHorizon {
+            horizon = min(horizon + policy.recentHorizon, policy.maximumHorizon)
+            window = rateWindow(spanning: horizon)
         }
 
-        let start = samples[startIndex]
-        let consumption = consumed(from: start, to: latest)
-        let span = latest.time.timeIntervalSince(start.time)
-        guard samples.endIndex - startIndex >= policy.minimumObservationCount,
+        let span = latest.time.timeIntervalSince(window.start)
+        guard window.observationCount >= policy.minimumObservationCount,
               span >= policy.minimumEvidenceSpan,
               span > 0,
-              consumption >= minimumConsumption,
-              consumption > 0
+              window.consumption >= minimumConsumption,
+              window.consumption > 0
         else {
             return nil
         }
+        let rate = window.consumption / Decimal(span)
+        guard rate.isFinite, rate > 0 else { return nil }
         return AllowanceRateEstimate(
-            ratePerSecond: consumption / Decimal(span),
+            ratePerSecond: rate,
             span: span,
-            isApproximate: samples[startIndex...].contains { $0.isApproximate }
+            isApproximate: samples[window.lowerIndex...].contains { $0.isApproximate }
         )
     }
 }
 
 private extension AllowanceHistory {
+    struct Window {
+        let start: Date
+        let lowerIndex: Int
+        let consumption: Decimal
+        let observationCount: Int
+    }
+
+    func rateWindow(spanning horizon: TimeInterval) -> Window {
+        let start = max(latest.time.addingTimeInterval(-horizon), samples[0].time)
+        let lowerIndex = samples.lastIndex { $0.time <= start } ?? 0
+        let lower = samples[lowerIndex]
+        var startValue = lower.value
+        if lower.time < start, lowerIndex + 1 < samples.endIndex {
+            let upper = samples[lowerIndex + 1]
+            let elapsed = Decimal(start.timeIntervalSince(lower.time))
+            let duration = Decimal(upper.time.timeIntervalSince(lower.time))
+            startValue += (upper.value - lower.value) * elapsed / duration
+        }
+        return Window(
+            start: start,
+            lowerIndex: lowerIndex,
+            consumption: consumed(from: startValue, to: latest.value),
+            observationCount: samples[(lowerIndex + 1)...].reduce(1) { $0 + $1.observationCount }
+        )
+    }
+
     func state(
         at now: Date,
         estimate: AllowanceRateEstimate?,
         policy: AllowanceForecastPolicy
     ) -> AllowanceForecast.State {
-        if isInterrupted {
+        if let resetsAt = descriptor.accounting.resetsAt, now >= resetsAt {
             return .paused
         }
         let remaining = remaining(at: latest)
         if remaining <= 0 {
             return .exhausted
         }
+        if interruptedAt != nil || isPaused {
+            return .paused
+        }
         if consecutiveLongIntervals >= policy.tooFarApartIntervalCount {
-            return .tooFarApart
+            let age = now.timeIntervalSince(latest.time)
+            return age < lastLongInterval + policy.maximumGap ? .tooFarApart : .paused
         }
         if isEvidenceStale(at: now, policy: policy) {
             return .paused
         }
-        if isQuiet(policy: policy) {
+        if isQuiet(estimate: estimate, policy: policy) {
             return .quiet
         }
-        guard let estimate else {
-            return now.timeIntervalSince(segmentStart) < policy.maximumHorizon ? .learning : .insufficient
+        guard let estimate, let depletesAt = projectedDepletion(of: remaining, at: estimate) else {
+            return now.timeIntervalSince(baselineAt) < policy.maximumHorizon ? .learning : .insufficient
         }
 
-        let depletesAt = latest.time.addingTimeInterval((remaining / estimate.ratePerSecond).doubleValue)
-        if case let .fixedPeriod(_, resetsAt) = descriptor.accounting, depletesAt >= resetsAt {
+        if let resetsAt = descriptor.accounting.resetsAt, depletesAt >= resetsAt {
             return .beyondReset(resetsAt: resetsAt)
         }
         // Only a provider measurement can report exhaustion.
         return now >= depletesAt ? .paused : .estimated(depletesAt: depletesAt)
     }
 
-    func isEvidenceStale(at now: Date, policy: AllowanceForecastPolicy) -> Bool {
-        let age = now.timeIntervalSince(latest.time)
-        if age > policy.maximumObservationAge || age < -policy.futureTimestampTolerance {
-            return true
-        }
-        if case let .fixedPeriod(_, resetsAt) = descriptor.accounting, now >= resetsAt {
-            return true
-        }
-        return false
+    func projectedDepletion(of remaining: Decimal, at estimate: AllowanceRateEstimate) -> Date? {
+        let duration = (remaining / estimate.ratePerSecond).doubleValue
+        guard duration.isFinite else { return nil }
+        return latest.time.addingTimeInterval(duration)
     }
 
-    func isQuiet(policy: AllowanceForecastPolicy) -> Bool {
+    func isEvidenceStale(at now: Date, policy: AllowanceForecastPolicy) -> Bool {
+        let age = now.timeIntervalSince(latest.time)
+        return age > policy.maximumObservationAge || age < -policy.futureTimestampTolerance
+    }
+
+    func isQuiet(estimate: AllowanceRateEstimate?, policy: AllowanceForecastPolicy) -> Bool {
         guard let lastUsableRate else { return false }
-        let threshold = policy.quietThreshold(resolution: descriptor.resolution, ratePerSecond: lastUsableRate)
-        return latest.time.timeIntervalSince(lastConsumptionAt) >= threshold
+        let quietFor = latest.time.timeIntervalSince(lastConsumptionAt)
+        if quietFor >= policy.quietThreshold(resolution: descriptor.resolution, ratePerSecond: lastUsableRate) {
+            return true
+        }
+        return estimate == nil && quietFor >= policy.minimumQuietThreshold
     }
 
     func continuesPeriod(
@@ -224,20 +268,25 @@ private extension AllowanceHistory {
         case (.balance, .balance):
             return true
         case let (.fixedPeriod(oldLimit, oldResetsAt), .fixedPeriod(newLimit, newResetsAt)):
+            guard let periodResetsAt else { return false }
             return oldLimit == newLimit
                 && oldResetsAt > time
-                && abs(newResetsAt.timeIntervalSince(oldResetsAt)) <= policy.resetTolerance
+                && abs(newResetsAt.timeIntervalSince(periodResetsAt)) <= policy.resetTolerance
         case (.balance, .fixedPeriod), (.fixedPeriod, .balance):
             return false
         }
     }
 
     func consumed(from earlier: AllowanceSample, to later: AllowanceSample) -> Decimal {
+        consumed(from: earlier.value, to: later.value)
+    }
+
+    func consumed(from earlier: Decimal, to later: Decimal) -> Decimal {
         switch descriptor.accounting {
         case .fixedPeriod:
-            later.value - earlier.value
+            later - earlier
         case .balance:
-            earlier.value - later.value
+            earlier - later
         }
     }
 
@@ -253,25 +302,38 @@ private extension AllowanceHistory {
     mutating func rebaseline(at sample: AllowanceSample, descriptor newDescriptor: AllowanceForecastDescriptor) {
         descriptor = newDescriptor
         samples = [sample]
-        segmentStart = sample.time
+        baselineAt = sample.time
+        periodResetsAt = newDescriptor.accounting.resetsAt
         lastConsumptionAt = sample.time
         lastUsableRate = nil
-        isInterrupted = false
+        interruptedAt = nil
+        isPaused = false
     }
 
     mutating func startSegment(at sample: AllowanceSample) {
         samples = [sample]
-        segmentStart = sample.time
     }
 
     mutating func append(_ sample: AllowanceSample, policy: AllowanceForecastPolicy) {
+        var sample = sample
+        if samples.count >= 2, samples.suffix(2).allSatisfy({ $0.value == sample.value }) {
+            sample.observationCount += samples.removeLast().observationCount
+        }
         samples.append(sample)
+
         let cutoff = sample.time.addingTimeInterval(-policy.maximumHorizon)
-        if let firstRetained = samples.firstIndex(where: { $0.time >= cutoff }), firstRetained > 0 {
-            samples.removeFirst(firstRetained)
+        if let anchor = samples.lastIndex(where: { $0.time <= cutoff }), anchor > 0 {
+            samples.removeFirst(anchor)
         }
         if samples.count > policy.maximumRetainedObservations {
             samples.removeFirst(samples.count - policy.maximumRetainedObservations)
         }
+    }
+}
+
+private extension AllowanceForecastDescriptor.Accounting {
+    var resetsAt: Date? {
+        guard case let .fixedPeriod(_, resetsAt) = self else { return nil }
+        return resetsAt
     }
 }

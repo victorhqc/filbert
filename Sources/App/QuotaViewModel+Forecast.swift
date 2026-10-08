@@ -2,12 +2,8 @@ import Core
 import Foundation
 
 extension QuotaViewModel {
-    func recordAllowanceObservation(
-        _ observation: ProviderActivityObservation?,
-        for providerId: String,
-        at date: Date
-    ) {
-        allowanceForecaster.record(observation, for: providerId, at: date)
+    func recordAllowanceObservation(from quota: ProviderQuota, for providerId: String, at date: Date) {
+        allowanceForecaster.record(quota.activityObservation, isStale: quota.isStale, for: providerId, at: date)
     }
 
     func hasAllowanceForecasts(for providerId: String) -> Bool {
@@ -27,7 +23,7 @@ extension QuotaViewModel {
     }
 
     func interruptAllowanceForecasts() {
-        allowanceForecaster.interruptAll()
+        allowanceForecaster.interruptAll(at: activityRuntime.now())
     }
 
     func clearAllowanceForecasts(for providerId: String) {

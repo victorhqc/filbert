@@ -68,20 +68,27 @@ class AllowanceForecasterTestCase: XCTestCase {
     func record(
         _ metrics: ProviderActivityMetric...,
         freshness: ProviderActivityFreshness = .fresh,
+        isStale: Bool = false,
         receivedAt: Date? = nil,
         providerId: String? = nil
     ) {
         let latestTiming = metrics.compactMap { $0.forecastDescriptor?.timing.date }.max() ?? origin
-        forecaster.record(
+        forecaster.accept(
             ProviderActivityObservation(metrics: metrics, freshness: freshness),
+            isStale: isStale,
             for: providerId ?? self.providerId,
             at: receivedAt ?? latestTiming
         )
     }
 
-    func recordTrace(_ points: [(minute: Double, consumed: Decimal)], id: String = "five-hour") {
+    func recordTrace(
+        _ points: [(minute: Double, consumed: Decimal)],
+        id: String = "five-hour",
+        providerId: String? = nil
+    ) {
         for point in points {
-            record(fixedPeriodMetric(id: id, consumed: point.consumed, at: minute(point.minute)))
+            let metric = fixedPeriodMetric(id: id, consumed: point.consumed, at: minute(point.minute))
+            record(metric, providerId: providerId)
         }
     }
 
@@ -93,8 +100,12 @@ class AllowanceForecasterTestCase: XCTestCase {
         forecaster.forecasts(for: providerId ?? self.providerId, at: time)[lineId]
     }
 
-    func state(at time: Date, lineId: String = "five-hour") -> AllowanceForecast.State? {
-        forecast(at: time, lineId: lineId)?.state
+    func state(
+        at time: Date,
+        lineId: String = "five-hour",
+        providerId: String? = nil
+    ) -> AllowanceForecast.State? {
+        forecast(at: time, lineId: lineId, providerId: providerId)?.state
     }
 
     func depletion(at time: Date, lineId: String = "five-hour") -> Date? {

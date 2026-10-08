@@ -34,6 +34,22 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
         XCTAssertEqual(depletesAt.timeIntervalSince(minute(20)), 140 * 60, accuracy: 0.001)
     }
 
+    func testResetDriftAcrossManySamplesStartsANewPeriod() {
+        for (index, point) in linearTrace.enumerated() {
+            record(fixedPeriodMetric(
+                consumed: point.consumed,
+                at: minute(point.minute),
+                resetsAt: defaultReset.addingTimeInterval(Double(index) * 20)
+            ))
+            if index == 3 {
+                XCTAssertNotNil(depletion(at: minute(point.minute)))
+            }
+        }
+
+        XCTAssertEqual(state(at: minute(20)), .learning)
+        XCTAssertEqual(forecast(at: minute(20))?.observedAt, minute(20))
+    }
+
     func testResetMovingBeyondTheToleranceStartsANewPeriod() {
         recordTrace(linearTrace)
 
@@ -64,14 +80,14 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
     }
 
     func testLimitOrUnitChangesClearHistory() {
-        recordTrace(linearTrace, id: "limit")
-        recordTrace(linearTrace, id: "unit")
+        recordTrace(linearTrace, providerId: "limit")
+        recordTrace(linearTrace, providerId: "unit")
 
-        record(fixedPeriodMetric(id: "limit", consumed: 31, at: minute(25), limit: 200))
-        record(fixedPeriodMetric(id: "unit", consumed: 31, at: minute(25), unit: .credits))
+        record(fixedPeriodMetric(consumed: 31, at: minute(25), limit: 200), providerId: "limit")
+        record(fixedPeriodMetric(consumed: 31, at: minute(25), unit: .credits), providerId: "unit")
 
-        XCTAssertEqual(state(at: minute(25), lineId: "limit"), .learning)
-        XCTAssertEqual(state(at: minute(25), lineId: "unit"), .learning)
+        XCTAssertEqual(state(at: minute(25), providerId: "limit"), .learning)
+        XCTAssertEqual(state(at: minute(25), providerId: "unit"), .learning)
     }
 
     func testMetricArrivingWithoutItsDescriptorClearsHistory() {
@@ -116,9 +132,8 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
         XCTAssertEqual(euros.timeIntervalSince(minute(60)), 0, accuracy: 0.001)
     }
 
-    func testMalformedMeasurementsNeitherStartNorDisturbHistory() {
+    func testMalformedMeasurementsStartNoHistory() {
         recordTrace(linearTrace)
-        let original = forecast(at: minute(20))
 
         let malformed: [ProviderActivityMetric] = [
             fixedPeriodMetric(id: "nan", consumed: .nan, at: minute(20)),
@@ -131,17 +146,16 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
                 id: "discrete",
                 kind: .usage,
                 value: .discrete("high"),
-                forecastDescriptor: fixedPeriodMetric(consumed: 1, at: minute(20)).forecastDescriptor
+                forecastDescriptor: fixedPeriodMetric(id: "discrete", consumed: 1, at: minute(20)).forecastDescriptor
             ),
         ]
         for metric in malformed {
-            record(metric)
+            record(metric, fixedPeriodMetric(consumed: 30, at: minute(20)))
         }
-        record(fixedPeriodMetric(consumed: .nan, at: minute(21)))
 
         let forecasts = forecaster.forecasts(for: providerId, at: minute(20))
         XCTAssertEqual(Set(forecasts.keys), ["five-hour"])
-        XCTAssertEqual(forecast(at: minute(20)), original)
+        XCTAssertEqual(forecast(at: minute(20))?.evidenceSpan, 20 * 60)
     }
 
     func testResettingAProviderClearsOnlyItsHistory() {

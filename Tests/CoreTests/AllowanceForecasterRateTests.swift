@@ -53,7 +53,7 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
         XCTAssertEqual(forecast(at: minute(60))?.evidenceSpan, 30 * 60)
     }
 
-    func testSegmentExtendsBackOnlyAsFarAsTheMinimumConsumptionNeeds() throws {
+    func testWindowGrowsInRecentHorizonStepsUntilTheMinimumConsumption() throws {
         for value in stride(from: -30.0, through: 0, by: 5) {
             record(fixedPeriodMetric(consumed: 0, at: minute(value)))
         }
@@ -64,7 +64,7 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
 
         let forecast = try XCTUnwrap(forecast(at: minute(45)))
 
-        XCTAssertEqual(forecast.evidenceSpan, 45 * 60)
+        XCTAssertEqual(forecast.evidenceSpan, 60 * 60)
         guard case .estimated = forecast.state else {
             return XCTFail("Expected an estimate, got \(forecast.state)")
         }
@@ -77,11 +77,11 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
     }
 
     func testTooFewObservationsOrTooShortASpanStaysLearning() {
-        recordTrace([(0, 0), (12, 5)], id: "sparse")
-        recordTrace([(0, 0), (3, 2), (6, 4)], id: "short")
+        recordTrace([(0, 0), (12, 5)], providerId: "sparse")
+        recordTrace([(0, 0), (3, 2), (6, 4)], providerId: "short")
 
-        XCTAssertEqual(state(at: minute(12), lineId: "sparse"), .learning)
-        XCTAssertEqual(state(at: minute(6), lineId: "short"), .learning)
+        XCTAssertEqual(state(at: minute(12), providerId: "sparse"), .learning)
+        XCTAssertEqual(state(at: minute(6), providerId: "short"), .learning)
     }
 
     func testDepletionAfterTheResetIsReportedAsBeyondReset() {
@@ -116,6 +116,15 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
             let expected: AllowanceForecast.State = value < 120 ? .learning : .insufficient
             XCTAssertEqual(state(at: minute(value), lineId: "weekly"), expected, "minute \(value)")
         }
+    }
+
+    func testRateThatIsNotFiniteProducesNoEstimate() {
+        let resolution = Decimal(sign: .plus, exponent: -100, significand: 1)
+        for (value, steps) in [(0.0, Decimal(0)), (10, 2), (20, 4)] {
+            record(fixedPeriodMetric(consumed: steps * resolution, at: minute(value), resolution: resolution))
+        }
+
+        XCTAssertEqual(state(at: minute(20)), .learning)
     }
 
     func testBalanceDepletesTowardZeroInItsOwnUnit() throws {

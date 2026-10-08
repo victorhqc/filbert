@@ -14,6 +14,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
     let clock: ActivityTestClock
     let resetsAt: Date
     var consumed: Decimal = 20
+    var isStale = false
     var fetchCallCount = 0
 
     init(clock: ActivityTestClock, resetsAt: Date) {
@@ -34,6 +35,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
             headline: "\(Int(percentage))% · resets soon",
             lines: [UsageLine(label: "Window", percentage: percentage, id: "window", limitGroup: "spy")],
             lastUpdated: clock.date,
+            isStale: isStale,
             activityObservation: ProviderActivityObservation(
                 metrics: [
                     ProviderActivityMetric(
@@ -98,6 +100,21 @@ final class AllowanceForecastViewModelTests: XCTestCase {
         harness.viewModel.handleActivityWillSleep()
 
         let presentation = try presentation(harness, at: minute(21))
+        XCTAssertNil(presentation.headline)
+        XCTAssertEqual(presentation.rowLines["window"]?.text, "Forecast paused until fresh data arrives")
+    }
+
+    func testStaleQuotaPausesTheForecast() async throws {
+        let harness = makeHarness()
+        await drive(harness, trace: [(0, 20), (5, 23), (10, 25), (15, 28), (20, 30)])
+
+        harness.clock.date = minute(22)
+        harness.provider.consumed = 31
+        harness.provider.isStale = true
+        harness.viewModel.manualRefresh(for: ForecastSpyProvider.providerId)
+        await waitForFetch(harness, count: 6)
+
+        let presentation = try presentation(harness, at: minute(22))
         XCTAssertNil(presentation.headline)
         XCTAssertEqual(presentation.rowLines["window"]?.text, "Forecast paused until fresh data arrives")
     }
