@@ -32,7 +32,7 @@ public struct AllowanceForecast: Equatable, Sendable {
         self.isApproximate = isApproximate
     }
 
-    public func observationAge(at now: Date) -> TimeInterval {
+    func observationAge(at now: Date) -> TimeInterval {
         now.timeIntervalSince(observedAt)
     }
 

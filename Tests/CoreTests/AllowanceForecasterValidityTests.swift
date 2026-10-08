@@ -56,10 +56,10 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
     func testStoppedObservationsPauseTheEstimate() {
         recordTrace(linearTrace)
 
-        guard case .estimated = state(at: minute(35)) else {
-            return XCTFail("Expected an estimate within the maximum gap")
+        guard case .estimated = state(at: minute(50)) else {
+            return XCTFail("Expected an estimate within the maximum observation age")
         }
-        XCTAssertEqual(state(at: minute(36)), .paused)
+        XCTAssertEqual(state(at: minute(51)), .paused)
     }
 
     func testRepeatedReadsOfOneCachedObservationAddNoSample() {
@@ -72,7 +72,7 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
 
         XCTAssertEqual(forecast(at: minute(10)), original)
         XCTAssertEqual(forecast(at: minute(14))?.observedAt, minute(10))
-        XCTAssertEqual(state(at: minute(26)), .paused)
+        XCTAssertEqual(state(at: minute(41)), .paused)
     }
 
     func testUnknownAndStaleFreshnessNeverEnterHistory() {
@@ -109,15 +109,15 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
     }
 
     func testTwoConsecutiveLongIntervalsReportUpdatesTooFarApart() {
-        recordTrace([(0, 0), (20, 2)])
-        XCTAssertEqual(state(at: minute(20)), .learning)
+        recordTrace([(0, 0), (35, 2)])
+        XCTAssertEqual(state(at: minute(35)), .learning)
 
-        recordTrace([(40, 4)])
-        XCTAssertEqual(state(at: minute(40)), .tooFarApart)
-        XCTAssertEqual(state(at: minute(59)), .tooFarApart)
+        recordTrace([(70, 4)])
+        XCTAssertEqual(state(at: minute(70)), .tooFarApart)
+        XCTAssertEqual(state(at: minute(101)), .tooFarApart)
 
-        recordTrace([(45, 5)])
-        XCTAssertEqual(state(at: minute(45)), .learning)
+        recordTrace([(75, 5)])
+        XCTAssertEqual(state(at: minute(75)), .learning)
     }
 
     func testClockMovingBackwardPausesAndIgnoresOlderObservations() {

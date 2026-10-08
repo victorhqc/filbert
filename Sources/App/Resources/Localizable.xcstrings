@@ -2717,7 +2717,7 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } }
       }
     },
-    "Forecast title format" : {
+    "Forecast headline format" : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },

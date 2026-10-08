@@ -85,17 +85,6 @@ extension QuotaViewModel {
                 }
             }
         )
-        activityRuntime.lifecycleObserverTokens.append(
-            NotificationCenter.default.addObserver(
-                forName: .NSSystemClockDidChange,
-                object: nil,
-                queue: .main
-            ) { [weak self] _ in
-                Task { @MainActor [weak self] in
-                    self?.interruptAllowanceForecasts()
-                }
-            }
-        )
     }
 
     func resetActivityForInvalidProviders(registeredProviderIds: Set<String>) {

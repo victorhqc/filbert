@@ -5,17 +5,17 @@ import XCTest
 final class AllowanceForecastPresentationTests: XCTestCase {
     private let now = Date(timeIntervalSince1970: 1_800_000_000)
 
-    func testEstimatedTitleLineReplacesTheCountdownAndAddsTheEvidenceLine() throws {
+    func testEstimatedHeadlineLineReplacesTheCountdownAndAddsTheEvidenceLine() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: forecast("weekly", .learning)
         )
 
-        let title = try XCTUnwrap(presentation.title)
-        XCTAssertNil(title.label)
-        XCTAssertEqual(title.value, "3%")
-        XCTAssertEqual(title.status, "About \(abbreviated(80 * 60)) of use remaining")
-        XCTAssertEqual(title.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(20 * 60))")
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertNil(headline.label)
+        XCTAssertEqual(headline.value, "3%")
+        XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
+        XCTAssertEqual(headline.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(20 * 60))")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(presentation.rowLines["weekly"]?.text, "Learning your usage rate…")
     }
@@ -26,11 +26,11 @@ final class AllowanceForecastPresentationTests: XCTestCase {
             weekly: estimated("weekly", in: 30 * 60, span: 40 * 60)
         )
 
-        let title = try XCTUnwrap(presentation.title)
-        XCTAssertEqual(title.label, "Weekly")
-        XCTAssertEqual(title.value, "95%")
-        XCTAssertEqual(title.status, "About \(abbreviated(30 * 60)) of use remaining")
-        XCTAssertEqual(title.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(40 * 60))")
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertEqual(headline.label, "Weekly")
+        XCTAssertEqual(headline.value, "95%")
+        XCTAssertEqual(headline.status, "About \(abbreviated(30 * 60)) of use remaining")
+        XCTAssertEqual(headline.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(40 * 60))")
         XCTAssertNil(presentation.rowLines["weekly"])
         XCTAssertEqual(
             presentation.rowLines["five-hour"]?.text,
@@ -38,17 +38,17 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         )
     }
 
-    func testEveryGroupLineBeyondResetComposesTheBeyondResetTitle() throws {
+    func testEveryGroupLineBeyondResetComposesTheBeyondResetHeadline() throws {
         let presentation = present(
             fiveHour: beyondReset("five-hour"),
             weekly: beyondReset("weekly")
         )
 
-        let title = try XCTUnwrap(presentation.title)
-        XCTAssertNil(title.label)
-        XCTAssertEqual(title.value, "3%")
-        XCTAssertEqual(title.status, "Not expected to run out")
-        XCTAssertEqual(title.detail, "before reset at recent pace")
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertNil(headline.label)
+        XCTAssertEqual(headline.value, "3%")
+        XCTAssertEqual(headline.status, "Not expected to run out")
+        XCTAssertEqual(headline.detail, "before reset at recent pace")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(
             presentation.rowLines["weekly"]?.text,
@@ -56,17 +56,17 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         )
     }
 
-    func testBeyondResetWithAnotherGroupLineLearningKeepsTheProviderTitle() {
+    func testBeyondResetWithAnotherGroupLineLearningKeepsTheProviderHeadline() {
         let presentation = present(
             fiveHour: beyondReset("five-hour"),
             weekly: forecast("weekly", .learning)
         )
 
-        XCTAssertNil(presentation.title)
+        XCTAssertNil(presentation.headline)
         XCTAssertNotNil(presentation.rowLines["five-hour"])
     }
 
-    func testWeakerStatesKeepTheProviderTitleAndShowOneRowLine() {
+    func testWeakerStatesKeepTheProviderHeadlineAndShowOneRowLine() {
         let expectations: [(AllowanceForecast.State, String?)] = [
             (.learning, "Learning your usage rate…"),
             (.quiet, "No recent consumption detected"),
@@ -79,42 +79,42 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         for (state, text) in expectations {
             let presentation = present(fiveHour: forecast("five-hour", state))
 
-            XCTAssertNil(presentation.title, "\(state)")
+            XCTAssertNil(presentation.headline, "\(state)")
             XCTAssertEqual(presentation.rowLines["five-hour"]?.text, text, "\(state)")
             XCTAssertEqual(presentation.rowLines["five-hour"]?.accessibilityLabel, text, "\(state)")
         }
     }
 
-    func testExhaustedGroupLineKeepsTheProviderTitle() {
+    func testExhaustedGroupLineKeepsTheProviderHeadline() {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: forecast("weekly", .exhausted)
         )
 
-        XCTAssertNil(presentation.title)
+        XCTAssertNil(presentation.headline)
         XCTAssertNotNil(presentation.rowLines["five-hour"])
     }
 
-    func testTitleNeverChangesWithoutANamedHeadlineLine() {
+    func testHeadlineNeverChangesWithoutANamedHeadlineLine() {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             headlineUsageLineId: nil
         )
 
-        XCTAssertNil(presentation.title)
+        XCTAssertNil(presentation.headline)
         XCTAssertNotNil(presentation.rowLines["five-hour"])
     }
 
-    func testIndependentPoolsNeverCompeteForTheTitle() throws {
+    func testIndependentPoolsNeverCompeteForTheHeadline() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: estimated("weekly", in: 30 * 60, span: 40 * 60),
             weeklyGroup: nil
         )
 
-        let title = try XCTUnwrap(presentation.title)
-        XCTAssertNil(title.label)
-        XCTAssertEqual(title.status, "About \(abbreviated(80 * 60)) of use remaining")
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertNil(headline.label)
+        XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
         XCTAssertNotNil(presentation.rowLines["weekly"])
     }
 
@@ -147,7 +147,7 @@ final class AllowanceForecastPresentationTests: XCTestCase {
             row.accessibilityLabel,
             "About \(remaining) of use remaining at recent pace, based on the last \(span)"
         )
-        XCTAssertNotEqual(try XCTUnwrap(presentation.title).accessibilityLabel, presentation.title?.text)
+        XCTAssertNotEqual(try XCTUnwrap(presentation.headline).accessibilityLabel, presentation.headline?.text)
         XCTAssertFalse(row.text.contains(" left"))
     }
 
@@ -172,7 +172,7 @@ final class AllowanceForecastPresentationTests: XCTestCase {
         let withMinutes = present(fiveHour: estimated("five-hour", in: 28 * 60 * 60 + 30 * 60, span: 3600))
         let wholeHours = present(fiveHour: estimated("five-hour", in: 28 * 60 * 60, span: 3600))
 
-        XCTAssertEqual(withMinutes.title, wholeHours.title)
+        XCTAssertEqual(withMinutes.headline, wholeHours.headline)
         XCTAssertEqual(
             CoarseDurationFormatting.string(from: 8 * 24 * 60 * 60 + 5 * 60 * 60),
             CoarseDurationFormatting.string(from: 8 * 24 * 60 * 60)
@@ -185,7 +185,7 @@ final class AllowanceForecastPresentationTests: XCTestCase {
 
         let presentation = AllowanceForecastPresentation(quota: makeQuota(), forecasts: forecasts, now: later)
 
-        XCTAssertEqual(try XCTUnwrap(presentation.title).status, "About \(abbreviated(60 * 60)) of use remaining")
+        XCTAssertEqual(try XCTUnwrap(presentation.headline).status, "About \(abbreviated(60 * 60)) of use remaining")
     }
 
     func testForecastsLeaveBudgetPaceAndCompactStatusUnchanged() {

@@ -47,6 +47,23 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertNil(line.details)
     }
 
+    func testForecastOptInFields_defaultToNil() {
+        let metric = ProviderActivityMetric(id: "usage", kind: .usage, value: .number(1))
+        let line = UsageLine(label: "Usage", percentage: 1)
+        let quota = ProviderQuota(
+            providerId: "provider",
+            providerName: "Provider",
+            headline: "1%",
+            lines: [line],
+            lastUpdated: Date()
+        )
+
+        XCTAssertNil(metric.forecastDescriptor)
+        XCTAssertNil(line.id)
+        XCTAssertNil(line.limitGroup)
+        XCTAssertNil(quota.headlineUsageLineId)
+    }
+
     func testProviderQuota_errorStoresMessage() {
         let quota = ProviderQuota(
             providerId: "test",

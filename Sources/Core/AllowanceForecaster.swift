@@ -1,11 +1,14 @@
 import Foundation
 
-/// History stays in memory. Never persist it.
 public struct AllowanceForecaster: Sendable {
-    public let policy: AllowanceForecastPolicy
+    let policy: AllowanceForecastPolicy
     private var histories: [String: [String: AllowanceHistory]] = [:]
 
-    public init(policy: AllowanceForecastPolicy = .standard) {
+    public init() {
+        self.init(policy: .standard)
+    }
+
+    init(policy: AllowanceForecastPolicy) {
         self.policy = policy
     }
 
@@ -14,7 +17,6 @@ public struct AllowanceForecaster: Sendable {
         for providerId: String,
         at now: Date
     ) {
-        // Smart refresh counts `.unknown` as activity (core 11). History does not.
         guard let observation, observation.freshness == .fresh else { return }
 
         var providerHistories = histories[providerId] ?? [:]
@@ -55,7 +57,6 @@ public struct AllowanceForecaster: Sendable {
         histories[providerId] != nil
     }
 
-    /// Sleep, wake, and clock changes break contiguity.
     public mutating func interruptAll() {
         for (providerId, providerHistories) in histories {
             histories[providerId] = providerHistories.mapValues { history in
@@ -68,9 +69,5 @@ public struct AllowanceForecaster: Sendable {
 
     public mutating func reset(for providerId: String) {
         histories[providerId] = nil
-    }
-
-    public mutating func resetAll() {
-        histories.removeAll()
     }
 }

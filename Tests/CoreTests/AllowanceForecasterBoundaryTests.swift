@@ -152,14 +152,10 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
 
         XCTAssertFalse(forecaster.hasHistory(for: providerId))
         XCTAssertTrue(forecaster.hasHistory(for: "other"))
-
-        forecaster.resetAll()
-        XCTAssertFalse(forecaster.hasHistory(for: "other"))
     }
 
     func testRetainedObservationsAreBounded() throws {
-        var policy = AllowanceForecastPolicy.standard
-        policy.maximumRetainedObservations = 5
+        let policy = AllowanceForecastPolicy(maximumRetainedObservations: 5)
         let descriptor = try XCTUnwrap(fixedPeriodMetric(consumed: 0, at: minute(0)).forecastDescriptor)
         var history = AllowanceHistory(
             baseline: AllowanceSample(value: 0, time: minute(0), isApproximate: false),

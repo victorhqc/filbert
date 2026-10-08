@@ -3,27 +3,6 @@ import Core
 import Foundation
 import XCTest
 
-final class TestDateClock: @unchecked Sendable {
-    private let lock = NSLock()
-    private var value: Date
-
-    init(_ value: Date) {
-        self.value = value
-    }
-
-    func now() -> Date {
-        lock.lock()
-        defer { lock.unlock() }
-        return value
-    }
-
-    func set(_ date: Date) {
-        lock.lock()
-        defer { lock.unlock() }
-        value = date
-    }
-}
-
 /// Uses only the generic contract: no Core or App code knows this provider.
 final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
     static let providerId = "forecast-spy"
@@ -32,12 +11,12 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
     static let baseURL = URL(string: "https://example.com")!
     static let authShape: ProviderAuth.Shape = .apiKeyFree
 
-    let clock: TestDateClock
+    let clock: ActivityTestClock
     let resetsAt: Date
     var consumed: Decimal = 20
     var fetchCallCount = 0
 
-    init(clock: TestDateClock, resetsAt: Date) {
+    init(clock: ActivityTestClock, resetsAt: Date) {
         self.clock = clock
         self.resetsAt = resetsAt
     }
@@ -54,7 +33,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
             providerName: Self.providerName,
             headline: "\(Int(percentage))% · resets soon",
             lines: [UsageLine(label: "Window", percentage: percentage, id: "window", limitGroup: "spy")],
-            lastUpdated: clock.now(),
+            lastUpdated: clock.date,
             activityObservation: ProviderActivityObservation(
                 metrics: [
                     ProviderActivityMetric(
@@ -65,7 +44,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
                             accounting: .fixedPeriod(limit: 100, resetsAt: resetsAt),
                             unit: .percentagePoints,
                             resolution: 1,
-                            timing: .source(clock.now()),
+                            timing: .source(clock.date),
                             usageLineId: "window"
                         )
                     ),
@@ -106,9 +85,9 @@ final class AllowanceForecastViewModelTests: XCTestCase {
         let presentation = try presentation(harness, at: minute(20))
         _ = try self.presentation(harness, at: minute(25))
 
-        let title = try XCTUnwrap(presentation.title)
-        XCTAssertEqual(title.value, "30%")
-        XCTAssertEqual(title.status, "About \(CoarseDurationFormatting.string(from: 140 * 60)) of use remaining")
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertEqual(headline.value, "30%")
+        XCTAssertEqual(headline.status, "About \(CoarseDurationFormatting.string(from: 140 * 60)) of use remaining")
         XCTAssertEqual(harness.provider.fetchCallCount, 5)
     }
 
@@ -119,7 +98,7 @@ final class AllowanceForecastViewModelTests: XCTestCase {
         harness.viewModel.handleActivityWillSleep()
 
         let presentation = try presentation(harness, at: minute(21))
-        XCTAssertNil(presentation.title)
+        XCTAssertNil(presentation.headline)
         XCTAssertEqual(presentation.rowLines["window"]?.text, "Forecast paused until fresh data arrives")
     }
 
@@ -139,7 +118,7 @@ private struct ProviderNotLoaded: Error {}
 private struct ForecastHarness {
     let viewModel: QuotaViewModel
     let provider: ForecastSpyProvider
-    let clock: TestDateClock
+    let clock: ActivityTestClock
 }
 
 private extension AllowanceForecastViewModelTests {
@@ -148,7 +127,7 @@ private extension AllowanceForecastViewModelTests {
     }
 
     func makeHarness() -> ForecastHarness {
-        let clock = TestDateClock(origin)
+        let clock = ActivityTestClock(origin)
         let provider = ForecastSpyProvider(clock: clock, resetsAt: minute(5 * 60))
         ProviderEnablement.setEnabled(true, for: ForecastSpyProvider.providerId)
         AutoRefreshPreferences.setEnabled(false, for: ForecastSpyProvider.providerId)
@@ -159,14 +138,14 @@ private extension AllowanceForecastViewModelTests {
             errorLog: AppTestErrorLog.make(),
             autoRefreshSleeper: { _ in throw CancellationError() },
             smartRefreshBoundarySleeper: { _ in throw CancellationError() },
-            forecastNow: { clock.now() }
+            activityNow: { clock.date }
         )
         return ForecastHarness(viewModel: viewModel, provider: provider, clock: clock)
     }
 
     func drive(_ harness: ForecastHarness, trace: [(minute: Double, consumed: Decimal)]) async {
         for (index, point) in trace.enumerated() {
-            harness.clock.set(minute(point.minute))
+            harness.clock.date = minute(point.minute)
             harness.provider.consumed = point.consumed
             if index > 0 {
                 harness.viewModel.manualRefresh(for: ForecastSpyProvider.providerId)

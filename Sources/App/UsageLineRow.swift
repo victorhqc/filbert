@@ -4,7 +4,7 @@ import SwiftUI
 
 struct UsageLineRow: View {
     let line: UsageLine
-    var forecast: AllowanceForecastPresentation.Line?
+    var forecast: AllowanceForecastLineSource?
 
     var body: some View {
         if shouldUseBudgetPacing {
@@ -21,7 +21,7 @@ struct UsageLineRow: View {
 
 private struct StandardUsageLineRow: View {
     let line: UsageLine
-    let forecast: AllowanceForecastPresentation.Line?
+    let forecast: AllowanceForecastLineSource?
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -47,7 +47,11 @@ private struct StandardUsageLineRow: View {
             }
 
             if let forecast {
-                ForecastRowLine(line: forecast)
+                AllowanceForecastTimeline { date in
+                    if let line = forecast(date) {
+                        ForecastRowLine(line: line)
+                    }
+                }
             }
 
             if let resetDate = line.resetDate {
@@ -69,21 +73,24 @@ private struct StandardUsageLineRow: View {
 
 private struct PacedUsageLineRow: View {
     let line: UsageLine
-    let forecast: AllowanceForecastPresentation.Line?
+    let forecast: AllowanceForecastLineSource?
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
             if let pace = BudgetPace(line: line, now: context.date) {
-                paceContent(pace)
+                paceContent(pace, forecast: forecast?(context.date))
             } else {
                 StandardUsageLineRow(line: line, forecast: forecast)
             }
         }
     }
 
-    private func paceContent(_ pace: BudgetPace) -> some View {
+    private func paceContent(
+        _ pace: BudgetPace,
+        forecast: AllowanceForecastPresentation.Line?
+    ) -> some View {
         let color = ProviderVisualStyle.tierColor(pace.tier, scheme: colorScheme)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
@@ -116,7 +123,7 @@ private struct PacedUsageLineRow: View {
         .padding(.vertical, 2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(line.label)
-        .accessibilityValue(paceAccessibilityValue(pace))
+        .accessibilityValue(paceAccessibilityValue(pace, forecast: forecast))
     }
 
     private func usedPercentageText(_ percentage: Double) -> String {
@@ -151,7 +158,10 @@ private struct PacedUsageLineRow: View {
         }
     }
 
-    private func paceAccessibilityValue(_ pace: BudgetPace) -> String {
+    private func paceAccessibilityValue(
+        _ pace: BudgetPace,
+        forecast: AllowanceForecastPresentation.Line?
+    ) -> String {
         let paceStatus = switch pace.tier {
         case .good:
             String(localized: "Within current allowance")

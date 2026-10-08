@@ -1,10 +1,9 @@
 import Core
 import Foundation
 
-/// Only estimated and beyond-reset forecasts change the title.
 struct AllowanceForecastPresentation: Equatable {
-    struct Title: Equatable {
-        /// Set when the binding line is not the line the title names.
+    struct Headline: Equatable {
+        /// Set when the binding line is not the line the headline names.
         let label: String?
         let value: String
         let status: String
@@ -16,7 +15,7 @@ struct AllowanceForecastPresentation: Equatable {
         }
 
         var text: String {
-            String.localizedStringWithFormat(String(localized: "Forecast title format"), subject, status)
+            String.localizedStringWithFormat(String(localized: "Forecast headline format"), subject, status)
         }
 
         static func subject(label: String?, value: String) -> String {
@@ -30,26 +29,19 @@ struct AllowanceForecastPresentation: Equatable {
         let accessibilityLabel: String
     }
 
-    static let empty = AllowanceForecastPresentation(title: nil, rowLines: [:])
-
-    let title: Title?
+    let headline: Headline?
     /// Keyed by usage line ID.
     let rowLines: [String: Line]
 
-    init(title: Title?, rowLines: [String: Line]) {
-        self.title = title
-        self.rowLines = rowLines
-    }
-
     init(quota: ProviderQuota, forecasts: [String: AllowanceForecast], now: Date) {
-        let binding = Self.titleBinding(quota: quota, forecasts: forecasts)
-        let title = binding.flatMap { Self.title(for: $0, now: now) }
-        self.title = title
+        let binding = Self.headlineBinding(quota: quota, forecasts: forecasts)
+        let headline = binding.flatMap { Self.headline(for: $0, now: now) }
+        self.headline = headline
 
         var rowLines: [String: Line] = [:]
         for line in quota.lines {
             guard let id = line.id,
-                  title == nil || id != binding?.line.id,
+                  headline == nil || id != binding?.line.id,
                   let forecast = forecasts[id],
                   let rowLine = Self.rowLine(for: forecast, now: now)
             else {
@@ -62,14 +54,13 @@ struct AllowanceForecastPresentation: Equatable {
 }
 
 private extension AllowanceForecastPresentation {
-    struct TitleBinding {
+    struct HeadlineBinding {
         let line: UsageLine
         let forecast: AllowanceForecast
         let showsLabel: Bool
     }
 
-    /// The earliest estimate in the limit group binds. Other pools never compete.
-    static func titleBinding(quota: ProviderQuota, forecasts: [String: AllowanceForecast]) -> TitleBinding? {
+    static func headlineBinding(quota: ProviderQuota, forecasts: [String: AllowanceForecast]) -> HeadlineBinding? {
         guard let headlineId = quota.headlineUsageLineId,
               let headlineLine = quota.lines.first(where: { $0.id == headlineId })
         else {
@@ -92,7 +83,7 @@ private extension AllowanceForecastPresentation {
             .min { $0.depletesAt < $1.depletesAt }?
             .entry
         if let earliest {
-            return TitleBinding(
+            return HeadlineBinding(
                 line: earliest.line,
                 forecast: earliest.forecast,
                 showsLabel: earliest.line.id != headlineId
@@ -101,10 +92,10 @@ private extension AllowanceForecastPresentation {
 
         guard groupForecasts.allSatisfy(\.forecast.isBeyondReset) else { return nil }
         let forecast = forecasts[headlineId] ?? groupForecasts[0].forecast
-        return TitleBinding(line: headlineLine, forecast: forecast, showsLabel: false)
+        return HeadlineBinding(line: headlineLine, forecast: forecast, showsLabel: false)
     }
 
-    static func title(for binding: TitleBinding, now: Date) -> Title? {
+    static func headline(for binding: HeadlineBinding, now: Date) -> Headline? {
         guard let value = valueText(for: binding.line) else { return nil }
         let span = binding.forecast.evidenceSpan ?? 0
 
@@ -128,14 +119,14 @@ private extension AllowanceForecastPresentation {
         }
 
         let label = binding.showsLabel ? binding.line.label : nil
-        return Title(
+        return Headline(
             label: label,
             value: value,
             status: status,
             detail: detail,
             accessibilityLabel: String.localizedStringWithFormat(
                 String(localized: "Accessibility sentence format"),
-                Title.subject(label: label, value: value),
+                Headline.subject(label: label, value: value),
                 accessibilitySentence(for: binding.forecast, now: now) ?? status
             )
         )
@@ -179,7 +170,6 @@ private extension AllowanceForecastPresentation {
         return Line(text: text, accessibilityLabel: accessibilitySentence(for: forecast, now: now) ?? text)
     }
 
-    /// VoiceOver gets the full sentence, not the abbreviated visible text.
     static func accessibilitySentence(for forecast: AllowanceForecast, now: Date) -> String? {
         let span = CoarseDurationFormatting.evidenceSpan(forecast.evidenceSpan ?? 0)
         let sentence: String

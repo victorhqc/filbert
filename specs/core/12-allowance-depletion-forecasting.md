@@ -4,7 +4,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1, 2, 5, and 6 are implemented. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8, which are pending. The branch merges only after steps 3–10.
+- Status: steps 1, 2, 4, 5, and 6 are implemented. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8. Step 3, the rest of step 7, and step 8 are pending. The branch merges only after steps 3–10.
 - This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
 - The forecast assumes continued recent consumption. It does not model calendar time, typical daily usage, or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
@@ -241,7 +241,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 2. [x] Implement a pure Core `AllowanceForecaster`. Callers pass the current time. Key history by provider ID and metric ID. Model these states explicitly: learning, estimated, beyond reset, quiet, too far apart, paused, exhausted, insufficient. Exhausted and insufficient render no forecast text. Keep accounting-period boundaries separate from recent-rate segments.
 3. [ ] Estimate the rate with the interpolated fixed window from (AC5). Remove repeated samples as (AC5) describes. Do not add regression. The first version used the endpoint delta from the last sample before the cutoff. Extra observations moved that sample and changed the rate.
-4. [ ] Keep every threshold in one shared internal `AllowanceForecastPolicy`, with `let` fields. Apply the values in "Policy values" below. A provider with a stricter freshness limit marks its observation `.stale`. Per-provider calculator overrides stay out of scope.
+4. [x] Keep every threshold in one shared internal `AllowanceForecastPolicy`, with `let` fields. Apply the values in "Policy values" below. A provider with a stricter freshness limit marks its observation `.stale`. Per-provider calculator overrides stay out of scope.
 5. [x] Feed accepted results into the forecaster from the existing results path. Invalidate on lifecycle revision changes, sleep and wake, and `NSSystemClockDidChange`. Clear history on provider disable or removal, credential save, delete, or import, and endpoint changes.
 6. [x] In `QuotaView`, compose the headline from the binding line, with the smaller secondary line below it. Otherwise render the provider's headline unchanged. Pass every other forecast into `UsageLineRow` by line ID as one small line above the reset text. Use a `TimelineView` for aging. Leave compact status, the collapsed header, and menu-bar selection untouched. The layout follows "Card layout" below.
 7. [ ] Apply the fixes from the review of 2026-10-08:
@@ -259,14 +259,14 @@ Estimate how long each supported allowance would last at the user's recent pace,
    - [ ] Produce no estimate from a result that is not finite. Show "More than 4w of use remaining" above 4 weeks (AC5, AC9).
    - [ ] Evaluate forecasts at the later of the timeline date and the current time, so a new sample never shows paused for one tick.
    - [ ] Make Smart refresh compare the descriptor without its timing, so a new limit or period counts as a change (core 11).
-   - [ ] Move `QuotaHeadlineAndRows` to `QuotaView+HeadlineAndRows.swift`. Put only the forecast text inside the `TimelineView`.
-   - [ ] Use "headline" in code: rename `Title`, `titleBinding`, `ForecastTitle`, and the catalog keys.
-   - [ ] Remove `forecastNow`. Give `recordAllowanceObservation` an `at:` argument and pass `activityRuntime.now()`.
-   - [ ] Install the clock-change observer in its own method, with a `handleSystemClockDidChange` handler.
-   - [ ] Move the Smart refresh test to a `SmartRefreshPolicy*Tests` file and the default-nil test to `ProviderProtocolTests.swift`. Use `ActivityTestClock` in place of `TestDateClock`.
-   - [ ] Move the `Decimal` extension to `Decimal+Double.swift`, with internal access.
-   - [ ] Remove the doc comments that restate acceptance criteria.
-   - [ ] Make `observationAge(at:)`, `resetAll()`, and `policy` internal or remove them. Require `maximumRetainedObservations` of 2 or more.
+   - [x] Move `QuotaHeadlineAndRows` to `QuotaView+HeadlineAndRows.swift`. Put only the forecast text inside the `TimelineView`.
+   - [x] Use "headline" in code: rename `Title`, `titleBinding`, `ForecastTitle`, and the catalog keys.
+   - [x] Remove `forecastNow`. Give `recordAllowanceObservation` an `at:` argument and pass `activityRuntime.now()`.
+   - [x] Install the clock-change observer in its own method, with a `handleSystemClockDidChange` handler.
+   - [x] Move the Smart refresh test to a `SmartRefreshPolicy*Tests` file and the default-nil test to `ProviderProtocolTests.swift`. Use `ActivityTestClock` in place of `TestDateClock`.
+   - [x] Move the `Decimal` extension to `Decimal+Double.swift`, with internal access.
+   - [x] Remove the doc comments that restate acceptance criteria.
+   - [x] Make `observationAge(at:)`, `resetAll()`, and `policy` internal or remove them. Require `maximumRetainedObservations` of 2 or more.
 8. [ ] Add the tests from (AC12) that are still missing:
    - [ ] Bursts at the start and at the end of a window.
    - [ ] Extra observations without a new value, including repeated manual refreshes, produce the same rate.
@@ -359,6 +359,9 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - Catalog keys need identifier characters for string symbol generation. The headline formats use semantic keys, like the existing "Accessibility sentence format".
 - Evidence spans show one unit, rounded to the nearest hour from one hour up, e.g. "last 2 hours".
 - Commit `4fd967f` implements steps 1–6 with Core and App tests. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8.
+- `learningDisplayLimit` is removed, and learning uses the maximum horizon. Learning still counts from the segment start until step 7 counts it from the last baseline.
+- The maximum observation age is a separate policy field from the maximum gap. Both are 30 minutes.
+- The headline and each forecast row line have their own `TimelineView`. Each one evaluates the forecasts at its own tick, so at a state change they can disagree for up to one minute.
 
 ## Risks
 

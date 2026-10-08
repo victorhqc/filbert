@@ -83,7 +83,7 @@ final class QuotaViewModel {
 
     var allowanceForecaster = AllowanceForecaster()
 
-    let forecastNow: @Sendable () -> Date
+    var systemClockObserverToken: NSObjectProtocol?
 
     // MARK: - Init
 
@@ -104,8 +104,7 @@ final class QuotaViewModel {
         activityExpirationSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
         },
-        activityNow: @escaping @Sendable () -> Date = { Date() },
-        forecastNow: @escaping @Sendable () -> Date = { Date() }
+        activityNow: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.keychain = keychain
         self.registry = registry
@@ -113,13 +112,13 @@ final class QuotaViewModel {
         self.autoRefreshSleeper = autoRefreshSleeper
         self.smartRefreshBoundarySleeper = smartRefreshBoundarySleeper
         self.smartRefreshElapsed = smartRefreshElapsed
-        self.forecastNow = forecastNow
         activityRuntime = MenuBarProviderActivityRuntime(
             expirationSleeper: activityExpirationSleeper,
             now: activityNow
         )
 
         installActivityLifecycleObservers()
+        installSystemClockObserver()
 
         var enabledIds: Set<String> = []
         for info in registry.registeredProviders {

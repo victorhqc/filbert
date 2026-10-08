@@ -181,7 +181,7 @@ private extension AllowanceHistory {
             return .quiet
         }
         guard let estimate else {
-            return now.timeIntervalSince(segmentStart) < policy.learningDisplayLimit ? .learning : .insufficient
+            return now.timeIntervalSince(segmentStart) < policy.maximumHorizon ? .learning : .insufficient
         }
 
         let depletesAt = latest.time.addingTimeInterval((remaining / estimate.ratePerSecond).doubleValue)
@@ -194,7 +194,7 @@ private extension AllowanceHistory {
 
     func isEvidenceStale(at now: Date, policy: AllowanceForecastPolicy) -> Bool {
         let age = now.timeIntervalSince(latest.time)
-        if age > policy.maximumGap || age < -policy.futureTimestampTolerance {
+        if age > policy.maximumObservationAge || age < -policy.futureTimestampTolerance {
             return true
         }
         if case let .fixedPeriod(_, resetsAt) = descriptor.accounting, now >= resetsAt {
@@ -203,7 +203,6 @@ private extension AllowanceHistory {
         return false
     }
 
-    /// Needs a prior rate. A slow allowance is never quiet during active work.
     func isQuiet(policy: AllowanceForecastPolicy) -> Bool {
         guard let lastUsableRate else { return false }
         let threshold = policy.quietThreshold(resolution: descriptor.resolution, ratePerSecond: lastUsableRate)
@@ -233,7 +232,6 @@ private extension AllowanceHistory {
         }
     }
 
-    /// Negative values are corrections or top-ups, never consumption.
     func consumed(from earlier: AllowanceSample, to later: AllowanceSample) -> Decimal {
         switch descriptor.accounting {
         case .fixedPeriod:

@@ -1,57 +1,44 @@
 import Foundation
 
-public struct AllowanceForecastPolicy: Equatable, Sendable {
-    public var recentHorizon: TimeInterval
-    /// Used only to reach the minimum consumption.
-    public var maximumHorizon: TimeInterval
-    public var minimumObservationCount: Int
-    public var minimumEvidenceSpan: TimeInterval
-    public var minimumConsumptionSteps: Decimal
-    public var minimumQuietThreshold: TimeInterval
-    public var learningDisplayLimit: TimeInterval
-    public var maximumGap: TimeInterval
-    public var tooFarApartIntervalCount: Int
-    public var resetTolerance: TimeInterval
-    public var futureTimestampTolerance: TimeInterval
-    public var maximumRetainedObservations: Int
+struct AllowanceForecastPolicy: Equatable, Sendable {
+    static let standard = AllowanceForecastPolicy()
 
-    public static let standard = AllowanceForecastPolicy(
-        recentHorizon: 30 * 60,
-        maximumHorizon: 2 * 60 * 60,
-        minimumObservationCount: 3,
-        minimumEvidenceSpan: 10 * 60,
-        minimumConsumptionSteps: 2,
-        minimumQuietThreshold: 15 * 60,
-        learningDisplayLimit: 2 * 60 * 60,
-        maximumGap: 15 * 60,
-        tooFarApartIntervalCount: 2,
-        resetTolerance: 60,
-        futureTimestampTolerance: 60,
-        maximumRetainedObservations: 256
-    )
+    let recentHorizon: TimeInterval
+    let maximumHorizon: TimeInterval
+    let minimumObservationCount: Int
+    let minimumEvidenceSpan: TimeInterval
+    let minimumConsumptionSteps: Decimal
+    let minimumQuietThreshold: TimeInterval
+    let maximumGap: TimeInterval
+    let maximumObservationAge: TimeInterval
+    let tooFarApartIntervalCount: Int
+    let resetTolerance: TimeInterval
+    let futureTimestampTolerance: TimeInterval
+    let maximumRetainedObservations: Int
 
-    public init(
-        recentHorizon: TimeInterval,
-        maximumHorizon: TimeInterval,
-        minimumObservationCount: Int,
-        minimumEvidenceSpan: TimeInterval,
-        minimumConsumptionSteps: Decimal,
-        minimumQuietThreshold: TimeInterval,
-        learningDisplayLimit: TimeInterval,
-        maximumGap: TimeInterval,
-        tooFarApartIntervalCount: Int,
-        resetTolerance: TimeInterval,
-        futureTimestampTolerance: TimeInterval,
-        maximumRetainedObservations: Int
+    init(
+        recentHorizon: TimeInterval = 30 * 60,
+        maximumHorizon: TimeInterval = 2 * 60 * 60,
+        minimumObservationCount: Int = 3,
+        minimumEvidenceSpan: TimeInterval = 10 * 60,
+        minimumConsumptionSteps: Decimal = 2,
+        minimumQuietThreshold: TimeInterval = 15 * 60,
+        maximumGap: TimeInterval = 30 * 60,
+        maximumObservationAge: TimeInterval = 30 * 60,
+        tooFarApartIntervalCount: Int = 2,
+        resetTolerance: TimeInterval = 60,
+        futureTimestampTolerance: TimeInterval = 60,
+        maximumRetainedObservations: Int = 256
     ) {
+        precondition(maximumRetainedObservations >= 2, "A rate needs at least two retained observations")
         self.recentHorizon = recentHorizon
         self.maximumHorizon = maximumHorizon
         self.minimumObservationCount = minimumObservationCount
         self.minimumEvidenceSpan = minimumEvidenceSpan
         self.minimumConsumptionSteps = minimumConsumptionSteps
         self.minimumQuietThreshold = minimumQuietThreshold
-        self.learningDisplayLimit = learningDisplayLimit
         self.maximumGap = maximumGap
+        self.maximumObservationAge = maximumObservationAge
         self.tooFarApartIntervalCount = tooFarApartIntervalCount
         self.resetTolerance = resetTolerance
         self.futureTimestampTolerance = futureTimestampTolerance
@@ -61,11 +48,5 @@ public struct AllowanceForecastPolicy: Equatable, Sendable {
     func quietThreshold(resolution: Decimal, ratePerSecond: Decimal) -> TimeInterval {
         let stepDuration = (resolution / ratePerSecond).doubleValue
         return min(max(2 * stepDuration, minimumQuietThreshold), maximumHorizon)
-    }
-}
-
-extension Decimal {
-    var doubleValue: Double {
-        NSDecimalNumber(decimal: self).doubleValue
     }
 }
