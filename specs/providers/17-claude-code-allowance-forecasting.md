@@ -4,7 +4,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 
 ## Context
 
-- Status: draft for review. Depends on (core 12) and lands with it as the first consumer.
+- Status: draft for review. Depends on (core 12). (core 12) merges only together with this spec and (providers 18, providers 19, providers 20).
 - `Sources/Providers/ClaudeCode/ClaudeCodeProvider.swift` — maps the `five-hour-usage` and `weekly-usage` metrics. A window's `written_at` falls back to the cache `written_at`. Freshness expires after one hour (providers 02, providers 06).
 - `Sources/Providers/ClaudeCode/StatuslineCacheStore.swift` — has two writers: the statusline helper during Claude Code sessions (providers 02) and the proactive `/usage` refresh (providers 03, providers 15, providers 16).
 - `percent` is an integer in the usage report (providers 15). The resolution is 1 percentage point unless verification shows finer statusline values.
@@ -29,7 +29,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 - **Then** the metric carries a fixed-period descriptor with limit 100, the window's reset timestamp, unit percentage points, and the verified resolution
 - **And** the timing is the window's `written_at`, or the cache `written_at` when the window has none, never `Date()`
 - **And** the `UsageLine` ID equals the metric ID
-- **And** the title line is the five-hour window, or the weekly window when the five-hour window is absent, matching today's title
+- **And** the headline line is the five-hour window, or the weekly window when the five-hour window is absent, matching today's headline
 - **And** both windows share one limit group, because either one blocks usage when it runs out (core 12 AC8)
 - **And** a window without `resets_at` carries no descriptor.
 
@@ -38,8 +38,10 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 - **Given** Claude Code is idle and no proactive refresh rewrites the cache
 - **When** the app reads the same cache again
 - **Then** the read is a duplicate and adds no sample (core 12 AC4)
-- **And** the forecast pauses once the maximum gap passes; this is expected, not a defect
+- **And** the forecast pauses once the maximum age passes; this is expected, not a defect
 - **And** a proactive refresh that writes a new reading is a genuine observation, even when values are unchanged, so quiet can be detected
+- **And** when only proactive refreshes write the cache, and two consecutive writes are more than the maximum gap apart, the row shows "Updates too far apart to estimate" (core 12 AC9); this is expected, because the source data changes that slowly
+- **And** the next statusline writes during a session are close together again, so the row returns to learning from a new baseline
 - **And** windows older than the one-hour freshness limit are excluded, as today.
 
 ### AC4: No new provider work

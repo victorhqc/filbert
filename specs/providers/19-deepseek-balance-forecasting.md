@@ -26,7 +26,7 @@ Opt DeepSeek's per-currency total balance into balance forecasting (core 12).
 - **Given** a successful live response
 - **When** the provider maps it
 - **Then** the observation is `.fresh` with approximate receipt timing
-- **And** the resolution is the currency's verified minor unit
+- **And** the resolution is the verified smallest change that `total_balance` can show, in the currency's major unit, e.g. 0.01 for a balance with two decimals (core 12 AC1)
 - **And** recorded evidence shows how soon a charge appears in `total_balance`; a delay longer than a few minutes is documented as a limitation.
 
 ### AC3: Lines have stable IDs
@@ -35,7 +35,7 @@ Opt DeepSeek's per-currency total balance into balance forecasting (core 12).
 - **When** it assigns IDs
 - **Then** each line has a stable ID per currency and component
 - **And** the headline finds its line by ID, not by localized label
-- **And** the title line is the first currency's total balance, matching today's title, so an estimate reads like "2,97 CN¥ · About 3 days of use remaining".
+- **And** the headline line is the first currency's total balance, matching today's headline, so an estimate reads like "2,97 CN¥ · About 3 days of use remaining".
 
 ### AC4: Balance changes that are not spend are handled conservatively
 

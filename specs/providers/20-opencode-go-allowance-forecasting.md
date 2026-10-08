@@ -30,7 +30,7 @@ Opt OpenCode Go's weekly and monthly windows into allowance forecasting (core 12
 - **Then** the metric carries a fixed-period descriptor with limit 100, the window's `resetsAt`, unit percentage points, and resolution 1
 - **And** the provider passes `resetsAt` unchanged; Core's reset tolerance absorbs millisecond jitter (core 12 AC3)
 - **And** the `UsageLine` ID equals the metric ID
-- **And** the provider names no title line, because its title is a fixed label, so weekly and monthly forecasts appear only inside their rows
+- **And** the provider names no headline line, because its headline is a fixed label, so weekly and monthly forecasts appear only inside their rows and the headline rules of (core 12 AC9) do not apply
 - **And** all three windows share one limit group, including the unsupported rolling window, because any of them blocks usage.
 
 ### AC3: Timing is approximate

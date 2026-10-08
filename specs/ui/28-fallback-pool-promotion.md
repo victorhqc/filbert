@@ -9,7 +9,7 @@ When a provider's limit group runs out and its credit or money pool starts to de
 - Today Codex shows its credits as a small detail under the five-hour row (providers 05 AC7). When the windows reach 100%, the card still leads with the exhausted windows while work continues on credits.
 - Whether a provider switches to credits on its own, or only after a user setting, is not verified. The app detects the switch from the data instead: the pool must decrease while the limits are exhausted.
 - `Sources/Core/ProviderProtocol.swift` — `UsageLine` gains an optional fallback declaration.
-- `Sources/App/QuotaView.swift` — renders the title and rows in provider order.
+- `Sources/App/QuotaView.swift` — renders the headline and rows in provider order.
 - `Sources/App/UsageLineRow.swift` — renders rows and their small detail lines.
 - `Sources/App/QuotaStatusResolver.swift` — `resolve(for:)` picks the first percentage line, so exhausted windows show as critical even while credits are in use. The collapsed card (`CompactProviderStatus.swift`) and the menu bar (`MenuBarProviderPresentation.swift`, `MenuBarStatusVisual.swift`) both read this status.
 - `Sources/Core/BalanceThresholds.swift` — user-configurable low and ok balance thresholds, shared by every balance status.
@@ -31,7 +31,7 @@ When a provider's limit group runs out and its credit or money pool starts to de
 
 - **Given** a limit group with a declared fallback pool, and at least one line in the group reports 100% used
 - **When** two consecutive accepted observations, both taken while the group is exhausted, show the pool's balance decreasing
-- **Then** the provider promotes the pool
+- **Then** the app promotes the pool; the provider only declares the candidate (AC1)
 - **And** a balance increase never promotes the pool, because the user may have just topped up
 - **And** an unchanged balance does not promote the pool
 - **And** the first observation after launch, or after the group becomes exhausted, only sets the baseline
@@ -43,10 +43,10 @@ When a provider's limit group runs out and its credit or money pool starts to de
 
 - **Given** a promoted pool
 - **When** the expanded card renders
-- **Then** the title shows the pool, e.g. "Credits: 1,159.57", replacing the exhausted window's title
-- **And** when the pool has an estimated forecast, the title adds it with the evidence line below, e.g. "Credits: 1,159.57 · About 3h of use remaining" and "Based on the last 20 minutes" (core 12 AC9)
+- **Then** the headline shows the pool, e.g. "Credits: 1,159.57", replacing the "Limit reached" headline (core 12 AC9)
+- **And** when the pool has an estimated forecast, the headline adds it with the evidence line below, e.g. "Credits: 1,159.57 · About 3h of use remaining" and "Based on the last 20 minutes" (core 12 AC9)
 - **And** the pool's row renders first, in the main row style
-- **And** each exhausted window moves to a small detail line where the credits used to sit, e.g. "5-hour window · Limit reached · resets in 2h 10m"
+- **And** each exhausted window moves to a small detail line under the pool's row, e.g. "5-hour window · Limit reached · resets in 2h 10m"
 - **And** windows in the group that are not exhausted keep their normal rows and forecast lines
 - **And** no text predicts when consumption will switch back to the windows, apart from their reset countdown (core 12 AC8).
 
@@ -99,7 +99,7 @@ When a provider's limit group runs out and its credit or money pool starts to de
   - no demotion while another window in the group is still at 100%
   - the menu bar returning from the glyph to the ring
   - stale data
-  - the promoted title with and without a forecast
+  - the promoted headline with and without a forecast
   - the collapsed-card and menu-bar status, including the balance tier
   - VoiceOver text.
 
@@ -110,7 +110,7 @@ When a provider's limit group runs out and its credit or money pool starts to de
 3. Add a pure App resolver that takes the lines and the tracker state, and returns either the normal layout or the promoted layout: the pool line, the exhausted lines, and the remaining rows. Keep it free of SwiftUI so `Tests/AppTests` can cover it.
 4. Make `QuotaStatusResolver.resolve(for:)` use that resolver, so the collapsed card and the menu bar follow the promoted pool.
 5. Render the promoted layout in `QuotaView` and `UsageLineRow`. Reuse the small detail-line style for exhausted windows.
-6. Declare Codex credits as the candidate fallback for its window group in (providers 18).
+6. Declare Codex credits as the candidate fallback for its window group in the Codex provider. (providers 18) adds the credits row with no limit group. This step adds only the declaration, so (providers 18) does not depend on this spec.
 7. Run the focused tests and the repository validation gate. Manually check the promoted card at normal width, the collapsed card, the menu bar, and VoiceOver.
 
 ```
