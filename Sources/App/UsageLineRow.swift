@@ -92,13 +92,14 @@ private struct PacedUsageLineRow: View {
         forecast: AllowanceForecastPresentation.Line?
     ) -> some View {
         let color = ProviderVisualStyle.tierColor(pace.tier, scheme: colorScheme)
+        let text = PacedUsageLineText(pace: pace, forecast: forecast)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(line.label)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
-                Text(usedPercentageText(pace.usedPercentage))
+                Text(text.used)
                     .font(.subheadline.monospacedDigit())
                     .foregroundColor(color)
             }
@@ -110,9 +111,9 @@ private struct PacedUsageLineRow: View {
             }
 
             HStack(spacing: 8) {
-                Text(remainingTimeText(pace.remainingTime))
+                Text(text.remainingTime)
                 Spacer(minLength: 4)
-                Text(remainingAllowanceText(pace.allowance))
+                Text(text.allowance)
                     .multilineTextAlignment(.trailing)
             }
             .font(.caption.monospacedDigit())
@@ -123,72 +124,7 @@ private struct PacedUsageLineRow: View {
         .padding(.vertical, 2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(line.label)
-        .accessibilityValue(paceAccessibilityValue(pace, forecast: forecast))
-    }
-
-    private func usedPercentageText(_ percentage: Double) -> String {
-        let formatted = percentage.formatted(.number.precision(.fractionLength(0)))
-        return String.localizedStringWithFormat(String(localized: "%@%% used"), formatted)
-    }
-
-    private func remainingTimeText(_ remainingTime: TimeInterval) -> String {
-        String.localizedStringWithFormat(
-            String(localized: "%@ left"),
-            CoarseDurationFormatting.string(from: remainingTime)
-        )
-    }
-
-    private func remainingAllowanceText(_ allowance: BudgetPace.Allowance) -> String {
-        switch allowance {
-        case let .perUnit(percentage, unit):
-            let format = switch unit {
-            case .day: String(localized: "About %@%%/day available")
-            case .week: String(localized: "About %@%%/week available")
-            }
-            return String.localizedStringWithFormat(
-                format,
-                percentage.formatted(.number.precision(.fractionLength(1)))
-            )
-        case let .untilReset(percentage):
-            let formatted = percentage.formatted(.number.precision(.fractionLength(0)))
-            return String.localizedStringWithFormat(
-                String(localized: "%@%% available until reset"),
-                formatted
-            )
-        }
-    }
-
-    private func paceAccessibilityValue(
-        _ pace: BudgetPace,
-        forecast: AllowanceForecastPresentation.Line?
-    ) -> String {
-        let paceStatus = switch pace.tier {
-        case .good:
-            String(localized: "Within current allowance")
-        case .warn, .critical:
-            String(localized: "Over current allowance")
-        }
-        let value = String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            usedPercentageText(pace.usedPercentage),
-            remainingTimeText(pace.remainingTime)
-        )
-        let allowance = String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            paceStatus,
-            remainingAllowanceText(pace.allowance)
-        )
-        let paceValue = String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            value,
-            allowance
-        )
-        guard let forecast else { return paceValue }
-        return String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            paceValue,
-            forecast.accessibilityLabel
-        )
+        .accessibilityValue(text.accessibilityValue)
     }
 }
 

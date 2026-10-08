@@ -268,14 +268,14 @@ Estimate how long each supported allowance would last at the user's recent pace,
    - [x] Move the `Decimal` extension to `Decimal+Double.swift`, with internal access.
    - [x] Remove the doc comments that restate acceptance criteria.
    - [x] Make `observationAge(at:)`, `resetAll()`, and `policy` internal or remove them. Require `maximumRetainedObservations` of 2 or more.
-8. [ ] Add the tests from (AC12) that are still missing:
+8. [x] Add the tests from (AC12) that are still missing:
    - [x] Bursts at the start and at the end of a window.
    - [x] Extra observations without a new value, including repeated manual refreshes, produce the same rate.
    - [x] A 10-second fast interval keeps two hours of evidence.
    - [x] 15-minute and 29-minute slow intervals produce an estimate. A 31-minute slow interval shows "too far apart".
-   - [ ] A failed refresh adds no sample.
-   - [ ] Wake and the `NSSystemClockDidChange` observer. Core covers the forward clock jump.
-   - [ ] History clearing on `saveOverrideURL`, `importCredentials`, and `deleteKey`.
+   - [x] A failed refresh adds no sample.
+   - [x] Wake and the `NSSystemClockDidChange` observer. Core covers the forward clock jump.
+   - [x] History clearing on `saveOverrideURL`, `importCredentials`, and `deleteKey`.
    - [x] Reset drift across many samples starts a new period.
    - [x] Missing metrics, duplicate usage line IDs, and the state order.
    - [x] Each headline rule, including "Limit reached" for a line without a descriptor.
@@ -373,6 +373,8 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - "Limit reached" needs no forecast history. Without history, the headline renders once with the rows and has no `TimelineView`.
 - The headline keeps its accessibility sentences as ordered parts. Semantic catalog keys do not resolve under `swift test`, so tests assert the parts, not the joined label.
 - The headline and each forecast row line have their own `TimelineView`. Each one evaluates the forecasts at its own tick, so at a state change they can disagree for up to one minute.
+- The texts of a budget-pace row live in `PacedUsageLineText`. Thus a test can compare the row with and without a forecast. Compact status reads only the quota, so a forecast cannot change it.
+- The App forecast tests use an `.apiKey` test provider, because `saveOverrideURL` ignores providers without an API key.
 
 ## Risks
 
