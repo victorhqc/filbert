@@ -4,12 +4,13 @@ import SwiftUI
 
 struct UsageLineRow: View {
     let line: UsageLine
+    var forecast: AllowanceForecastPresentation.Line?
 
     var body: some View {
         if shouldUseBudgetPacing {
-            PacedUsageLineRow(line: line)
+            PacedUsageLineRow(line: line, forecast: forecast)
         } else {
-            StandardUsageLineRow(line: line)
+            StandardUsageLineRow(line: line, forecast: forecast)
         }
     }
 
@@ -20,6 +21,7 @@ struct UsageLineRow: View {
 
 private struct StandardUsageLineRow: View {
     let line: UsageLine
+    let forecast: AllowanceForecastPresentation.Line?
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -44,6 +46,10 @@ private struct StandardUsageLineRow: View {
                 UsageBar(percentage: percentage, color: percentageColor(percentage))
             }
 
+            if let forecast {
+                ForecastRowLine(line: forecast)
+            }
+
             if let resetDate = line.resetDate {
                 Text(QuotaFormatting.countdown(to: resetDate))
                     .font(.caption)
@@ -63,6 +69,7 @@ private struct StandardUsageLineRow: View {
 
 private struct PacedUsageLineRow: View {
     let line: UsageLine
+    let forecast: AllowanceForecastPresentation.Line?
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -71,7 +78,7 @@ private struct PacedUsageLineRow: View {
             if let pace = BudgetPace(line: line, now: context.date) {
                 paceContent(pace)
             } else {
-                StandardUsageLineRow(line: line)
+                StandardUsageLineRow(line: line, forecast: forecast)
             }
         }
     }
@@ -90,6 +97,10 @@ private struct PacedUsageLineRow: View {
             }
 
             BudgetPaceBar(pace: pace, color: color)
+
+            if let forecast {
+                ForecastRowLine(line: forecast)
+            }
 
             HStack(spacing: 8) {
                 Text(remainingTimeText(pace.remainingTime))
@@ -114,17 +125,10 @@ private struct PacedUsageLineRow: View {
     }
 
     private func remainingTimeText(_ remainingTime: TimeInterval) -> String {
-        let formatter = DateComponentsFormatter()
-        // DateComponentsFormatter throws NSInternalInconsistencyException for
-        // .weekOfYear; .weekOfMonth is the only supported week unit.
-        formatter.allowedUnits = remainingTime >= 7 * 24 * 60 * 60
-            ? [.weekOfMonth, .day]
-            : remainingTime >= 24 * 60 * 60 ? [.day, .hour] : [.hour, .minute]
-        formatter.maximumUnitCount = 2
-        formatter.unitsStyle = .abbreviated
-        formatter.zeroFormattingBehavior = .dropAll
-        let formatted = formatter.string(from: remainingTime) ?? ""
-        return String.localizedStringWithFormat(String(localized: "%@ left"), formatted)
+        String.localizedStringWithFormat(
+            String(localized: "%@ left"),
+            CoarseDurationFormatting.string(from: remainingTime)
+        )
     }
 
     private func remainingAllowanceText(_ allowance: BudgetPace.Allowance) -> String {
@@ -164,10 +168,16 @@ private struct PacedUsageLineRow: View {
             paceStatus,
             remainingAllowanceText(pace.allowance)
         )
-        return String.localizedStringWithFormat(
+        let paceValue = String.localizedStringWithFormat(
             String(localized: "Accessibility sentence format"),
             value,
             allowance
+        )
+        guard let forecast else { return paceValue }
+        return String.localizedStringWithFormat(
+            String(localized: "Accessibility sentence format"),
+            paceValue,
+            forecast.accessibilityLabel
         )
     }
 }

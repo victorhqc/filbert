@@ -53,9 +53,11 @@ extension QuotaViewModel {
 
     func handleActivityWillSleep() {
         cancelActivityExpiration()
+        interruptAllowanceForecasts()
     }
 
     func handleActivityDidWake() {
+        interruptAllowanceForecasts()
         refreshActivitySelection(at: activityRuntime.now())
     }
 
@@ -80,6 +82,17 @@ extension QuotaViewModel {
             ) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.handleActivityDidWake()
+                }
+            }
+        )
+        activityRuntime.lifecycleObserverTokens.append(
+            NotificationCenter.default.addObserver(
+                forName: .NSSystemClockDidChange,
+                object: nil,
+                queue: .main
+            ) { [weak self] _ in
+                Task { @MainActor [weak self] in
+                    self?.interruptAllowanceForecasts()
                 }
             }
         )

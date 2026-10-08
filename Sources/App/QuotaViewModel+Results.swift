@@ -36,6 +36,7 @@ extension QuotaViewModel {
             case let .success(quota):
                 setRefreshError(proactiveRefreshErrors[id], for: id)
                 setState(.loaded(quota), for: id)
+                recordAllowanceObservation(quota.activityObservation, for: id)
                 recordActivityObservation(
                     for: id,
                     observation: quota.activityObservation,

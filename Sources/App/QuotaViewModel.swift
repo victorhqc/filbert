@@ -79,6 +79,12 @@ final class QuotaViewModel {
 
     var autoRefreshSettingsRevision = 0
 
+    // MARK: - Allowance forecasting
+
+    var allowanceForecaster = AllowanceForecaster()
+
+    let forecastNow: @Sendable () -> Date
+
     // MARK: - Init
 
     init(
@@ -98,7 +104,8 @@ final class QuotaViewModel {
         activityExpirationSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
         },
-        activityNow: @escaping @Sendable () -> Date = { Date() }
+        activityNow: @escaping @Sendable () -> Date = { Date() },
+        forecastNow: @escaping @Sendable () -> Date = { Date() }
     ) {
         self.keychain = keychain
         self.registry = registry
@@ -106,6 +113,7 @@ final class QuotaViewModel {
         self.autoRefreshSleeper = autoRefreshSleeper
         self.smartRefreshBoundarySleeper = smartRefreshBoundarySleeper
         self.smartRefreshElapsed = smartRefreshElapsed
+        self.forecastNow = forecastNow
         activityRuntime = MenuBarProviderActivityRuntime(
             expirationSleeper: activityExpirationSleeper,
             now: activityNow
@@ -313,6 +321,7 @@ final class QuotaViewModel {
             recordError(error, operation: "save-override", providerId: providerId)
             throw error
         }
+        clearAllowanceForecasts(for: providerId)
         if isEnabled(providerId), registry.isConfigured(providerId) {
             performFetch(for: providerId)
         }

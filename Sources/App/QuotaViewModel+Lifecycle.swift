@@ -154,6 +154,7 @@ extension QuotaViewModel {
         smartRefreshPolicy.reset(for: providerId)
         clearSmartRetryDeadline(for: providerId)
         activityRuntime.policy.reset(for: providerId)
+        clearAllowanceForecasts(for: providerId)
         syncFastRefreshStatus(for: providerId)
         fetchTasks[providerId]?.cancel()
         fetchTasks[providerId] = nil

@@ -270,6 +270,7 @@ Proposed initial policy values, subject to review:
 | Maximum observation gap or age | 15 minutes, or a stricter provider freshness limit |
 | "Too far apart" trigger | 2 consecutive accepted intervals above the maximum gap |
 | Reset tolerance | 60 seconds |
+| Future timestamp tolerance | 60 seconds; a later measurement time is inconsistent timing |
 | Maximum retained observations | 256 per metric |
 
 A provider refreshed less often than every 15 minutes, and never sped up by Smart refresh, shows "Updates too far apart to estimate". The app explains this state; it never speeds up refresh to resolve it. The thresholds are estimation policy, not proof of coding-session boundaries.
@@ -282,6 +283,15 @@ Rejected alternatives:
 - Elapsed-weighted linear regression adds complexity. Endpoint delta is cadence-invariant by construction and matches it on whole-point data.
 - Regression across lifetime history mixes old work, idle time, and accounting periods.
 - Calendar runway based on typical daily use needs durable history and an idle-time model. It is outside this version.
+
+Implementation findings:
+
+- A descriptor's timing changes on every write. Smart refresh therefore compares only a metric's kind and value, so its change detection stays as it was (core 11).
+- The last usable rate updates only on an observation that shows consumption, or when no rate exists yet. Otherwise the quiet threshold would grow as the recent window slides over a quiet period, and quiet could never arrive.
+- An exhausted line in the title's limit group keeps the provider's title. The title never shows remaining use for a group that is already blocked.
+- Catalog keys need identifier characters for string symbol generation. The title formats use the semantic keys "Forecast title format" and "Forecast labeled value format", like the existing "Accessibility sentence format".
+- Evidence spans show one unit, rounded to the nearest hour from one hour up, e.g. "last 2 hours".
+- Steps 1–6 are implemented with Core and App tests. The manual popover and VoiceOver inspection in step 7 waits for the first provider opt-in (providers 17).
 
 ## Risks
 

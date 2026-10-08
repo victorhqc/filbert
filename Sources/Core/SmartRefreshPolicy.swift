@@ -358,7 +358,7 @@ private extension SmartRefreshPolicy {
                 )
                 for metricId in Set(previousMetrics.keys).union(currentMetrics.keys) {
                     switch (previousMetrics[metricId], currentMetrics[metricId]) {
-                    case let (.some(previous), .some(next)) where previous != next:
+                    case let (.some(previous), .some(next)) where !previous.measuresSameValue(as: next):
                         reasons.formUnion([previous.kind.reason, next.kind.reason])
                     case let (.some(previous), .none):
                         reasons.insert(previous.kind.reason)
