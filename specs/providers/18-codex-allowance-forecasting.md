@@ -1,0 +1,69 @@
+## Objective
+
+Opt Codex usage windows and finite credits into allowance forecasting (core 12), with credits on their own allowance row.
+
+## Context
+
+- Status: draft for review. Depends on (core 12). (ui 28) adds the fallback-pool declaration for the credits row after this spec lands.
+- `Sources/Providers/OpenAICodex/OpenAICodexProvider.swift` — maps the `primary-window-usage`, `secondary-window-usage`, and `credits` metrics. Sets `lastUpdated` to `Date()`. Attaches credits as a detail of the first window row (providers 05 AC7).
+- `Sources/Providers/OpenAICodex/CodexAppServerClient.swift` — `account/rateLimits/read` returns `usedPercent`, `resetsAt`, `windowDurationMins`, and `credits { balance, unlimited }` (providers 05).
+- Activity freshness is `.unknown` today. Open question: does the read return live server state, or a snapshot cached from the last Codex turn?
+- Credits are consumed only after the five-hour or weekly window runs out. They form a separate pool.
+- `Tests/OpenAICodexProviderTests/` — mapping and fixture tests.
+
+## Acceptance Criteria
+
+### AC1: Freshness is verified before opting in
+
+- **Given** the `account/rateLimits/read` response
+- **When** its freshness is verified
+- **Then** recorded evidence shows whether the read reflects live server state or a cached snapshot
+- **And** if live, observations are `.fresh` with approximate receipt timing
+- **And** if the read can return a cached snapshot without a source timestamp, windows carry no descriptor and show no forecast UI
+- **And** the evidence is stored in provider fixtures and summarized in this spec.
+
+### AC2: Window semantics are verified before opting in
+
+- **Given** a primary or secondary window
+- **When** the provider declares it a fixed period
+- **Then** recorded evidence shows that `resetsAt` stays stable within one period
+- **And** `windowDurationMins` never establishes fixed-period semantics on its own (core 12 AC2)
+- **And** a verified window carries a fixed-period descriptor with limit 100, unit percentage points, and the verified resolution
+- **And** its `UsageLine` ID equals its metric ID
+- **And** the headline line is the shortest window, matching today's headline; the credits row is never the headline line
+- **And** the primary and secondary windows share one limit group (core 12 AC8).
+
+### AC3: Credits are their own allowance row
+
+- **Given** the snapshot reports credits
+- **When** the provider maps it
+- **Then** credits become a separate `UsageLine` with ID `credits`, no longer a detail of the first window row
+- **And** finite credits carry a balance descriptor in the credits unit; the resolution is the verified smallest change that the balance can show, in credits (core 12 AC1)
+- **And** unknown resolution produces no descriptor
+- **And** the row displays the balance with two localized decimals, e.g. "1,159.57", not the raw upstream string "1159.5692275000"; the metric keeps the unrounded value
+- **And** unlimited credits show "Unlimited credits" and carry no descriptor
+- **And** absent credit data produces no credits row, as today (providers 05 AC7)
+- **And** the credits row shows the same forecast states as every other row (core 12 AC9): learning after a baseline, an estimate when credits decrease, and no forecast text when credits stay flat after the learning limit
+- **And** the credit forecast reflects only observed credit depletion
+- **And** the credits row has no limit group, because credits are a separate pool (core 12 AC8)
+- **And** no text predicts when consumption will switch from windows to credits (core 12 AC8)
+- **And** a credit purchase is a balance increase and re-baselines (core 12 AC3).
+
+### AC4: Fixtures cover real refresh patterns
+
+- **Given** the mapping is implemented
+- **When** provider tests run
+- **Then** they cover live and cached freshness outcomes, stable resets, period rollover, finite, unlimited, and absent credits, a credit purchase, unparseable balances, and the separate credits row.
+
+## Plan
+
+1. Compare `account/rateLimits/read` results during a Codex session, after it ends, and after usage from another machine. Record whether values change without a local turn.
+2. Record `resetsAt` stability and the resolution of the credit balance.
+3. Move credits to their own row. Add descriptors and line IDs only where the evidence supports them.
+4. Add the fixtures and tests from AC4.
+
+## Risks
+
+- Moving credits to their own row is a visible UI change for Codex users.
+- If the read returns cached snapshots, Codex windows may never be forecastable. Do not fall back to receipt time for cached data.
+- Credits can stay flat for days. After each launch, wake, or gap, the credits row shows "Learning your usage rate…" for two hours, and then no forecast text. An estimate appears only after the windows run out and credits start to move.

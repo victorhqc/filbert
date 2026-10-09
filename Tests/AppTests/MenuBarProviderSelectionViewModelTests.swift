@@ -217,14 +217,6 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
     }
 }
 
-private final class ActivityTestClock: @unchecked Sendable {
-    var date: Date
-
-    init(_ date: Date) {
-        self.date = date
-    }
-}
-
 private actor ActivityExpirationRecorder {
     private var intervals: [TimeInterval] = []
 

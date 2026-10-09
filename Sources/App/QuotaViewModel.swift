@@ -79,6 +79,12 @@ final class QuotaViewModel {
 
     var autoRefreshSettingsRevision = 0
 
+    // MARK: - Allowance forecasting
+
+    var allowanceForecaster = AllowanceForecaster()
+
+    var systemClockObserverToken: NSObjectProtocol?
+
     // MARK: - Init
 
     init(
@@ -112,6 +118,7 @@ final class QuotaViewModel {
         )
 
         installActivityLifecycleObservers()
+        installSystemClockObserver()
 
         var enabledIds: Set<String> = []
         for info in registry.registeredProviders {
@@ -313,6 +320,7 @@ final class QuotaViewModel {
             recordError(error, operation: "save-override", providerId: providerId)
             throw error
         }
+        clearAllowanceForecasts(for: providerId)
         if isEnabled(providerId), registry.isConfigured(providerId) {
             performFetch(for: providerId)
         }
