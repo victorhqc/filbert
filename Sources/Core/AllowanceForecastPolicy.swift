@@ -26,7 +26,7 @@ struct AllowanceForecastPolicy: Equatable, Sendable {
         maximumGap: TimeInterval = 30 * 60,
         maximumObservationAge: TimeInterval = 30 * 60,
         tooFarApartIntervalCount: Int = 2,
-        resetTolerance: TimeInterval = 60,
+        resetTolerance: TimeInterval = 5 * 60,
         futureTimestampTolerance: TimeInterval = 60,
         maximumRetainedObservations: Int = 256
     ) {
