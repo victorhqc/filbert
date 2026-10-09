@@ -38,6 +38,7 @@ struct ForecastRowLine: View {
         Text(line.text)
             .font(.caption)
             .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityLabel(line.accessibilityLabel)
             .help(line.accessibilityLabel)
     }

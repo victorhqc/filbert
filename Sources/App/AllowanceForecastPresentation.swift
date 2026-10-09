@@ -108,10 +108,7 @@ private extension AllowanceForecastPresentation {
             return binding(earliest.line, .forecast(earliest.forecast))
         }
 
-        guard let headlineForecast = forecasts[headlineId],
-              headlineForecast.isBeyondReset,
-              groupForecasts.allSatisfy(\.forecast.isBeyondReset)
-        else {
+        guard let headlineForecast = forecasts[headlineId], headlineForecast.isBeyondReset else {
             return nil
         }
         return binding(headlineLine, .forecast(headlineForecast))
