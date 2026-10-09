@@ -41,6 +41,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 - **Then** the provider reports the highest percentage it saw for that window in the current period
 - **And** the provider keeps that value in memory per window, with the first `resets_at` of the period
 - **And** a `resets_at` within the reset tolerance of (core 12) belongs to the same period; a larger difference, or a window without `resets_at`, starts a new period with the current value
+- **And** a write without the window, e.g. the statusline write without windows, or a window without a percentage, leaves the memory unchanged
 - **And** the provider reads the tolerance from Core; it does not repeat the number
 - **And** the displayed percentage, the activity metric, and the forecast use the same value (core 12 AC1)
 - **And** the displayed percentage no longer alternates between the two writers
@@ -84,7 +85,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 ## Plan
 
 1. [x] Capture statusline and `/usage` cache samples across one five-hour period and one weekly reset. Record whether `resets_at` is stable and whether `used_percentage` carries fractions.
-2. [ ] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
+2. [x] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
 3. [ ] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
 4. [ ] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
 5. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data.
