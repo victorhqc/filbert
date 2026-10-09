@@ -73,6 +73,7 @@ public struct ClaudeCodeProvider: AIProvider {
     private let installer: StatuslineHelperInstaller
     private let refresher: ClaudeCodeRefresher
     private let errorLog: ErrorLog
+    private let windowPeaks = ClaudeCodeWindowPeaks()
 
     public init(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(),
@@ -183,7 +184,10 @@ public struct ClaudeCodeProvider: AIProvider {
 
     // MARK: - Mapping
 
-    private func map(cache: StatuslineCache) -> ProviderQuota {
+    private func map(cache read: StatuslineCache) -> ProviderQuota {
+        // The display, the activity metric, and the forecast all read the
+        // peaked value (providers 17 AC3).
+        let cache = StatuslineCache(writtenAt: read.writtenAt, rateLimits: windowPeaks.apply(to: read.rateLimits))
         var lines: [UsageLine] = []
         let fiveHour = cache.rateLimits?.fiveHour?.populated
         let sevenDay = cache.rateLimits?.sevenDay?.populated
