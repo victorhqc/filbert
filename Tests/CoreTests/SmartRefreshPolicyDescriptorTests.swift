@@ -10,7 +10,7 @@ final class SmartRefreshPolicyDescriptorTests: SmartRefreshPolicyTestCase {
     }
 
     func testResetJitterInsideTheToleranceRemainsUnchanged() {
-        let jittered = descriptorQuota(resetsAt: defaultReset.addingTimeInterval(0.4))
+        let jittered = descriptorQuota(resetsAt: defaultReset.addingTimeInterval(60))
 
         XCTAssertEqual(classify(after: jittered), .unchanged)
     }
