@@ -58,7 +58,7 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
         let peaks = ClaudeCodeWindowPeaks()
 
         XCTAssertEqual(fiveHour(peaks, 7, resetsAt: fiveHourReset), 7)
-        XCTAssertNil(peaks.apply(to: nil))
+        XCTAssertNil(peaks.peaked(nil))
         XCTAssertEqual(fiveHour(peaks, 6, resetsAt: fiveHourReset), 7)
     }
 
@@ -73,15 +73,15 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
     func testWindowsKeepSeparatePeaks() {
         let peaks = ClaudeCodeWindowPeaks()
 
-        _ = peaks.apply(to: RateLimits(
+        _ = peaks.peaked(RateLimits(
             fiveHour: Window(usedPercentage: 7, resetsAt: fiveHourReset),
             sevenDay: Window(usedPercentage: 3, resetsAt: weeklyReset)
         ))
-        let peaked = peaks.apply(to: RateLimits(
+        let peaked = peaks.peaked(RateLimits(
             fiveHour: Window(usedPercentage: 6, resetsAt: fiveHourReset),
             sevenDay: nil
         ))
-        let weekly = peaks.apply(to: RateLimits(
+        let weekly = peaks.peaked(RateLimits(
             fiveHour: nil,
             sevenDay: Window(usedPercentage: 2, resetsAt: weeklyReset)
         ))
@@ -96,7 +96,7 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
         let peaks = ClaudeCodeWindowPeaks()
         _ = fiveHour(peaks, 7, resetsAt: fiveHourReset)
 
-        let peaked = peaks.apply(to: RateLimits(
+        let peaked = peaks.peaked(RateLimits(
             fiveHour: Window(usedPercentage: 6, resetsAt: fiveHourReset + 60, writtenAt: 1_799_990_000),
             sevenDay: nil
         ))?.fiveHour
@@ -140,7 +140,7 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
     }
 
     private func fiveHour(_ peaks: ClaudeCodeWindowPeaks, _ percentage: Double?, resetsAt: TimeInterval?) -> Double? {
-        peaks.apply(to: RateLimits(
+        peaks.peaked(RateLimits(
             fiveHour: Window(usedPercentage: percentage, resetsAt: resetsAt),
             sevenDay: nil
         ))?.fiveHour?.usedPercentage
