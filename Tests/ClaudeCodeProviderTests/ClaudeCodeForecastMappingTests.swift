@@ -81,6 +81,14 @@ final class ClaudeCodeForecastMappingTests: XCTestCase {
         XCTAssertEqual(quota.activityObservation?.metrics, [])
     }
 
+    func testADuplicateReadRepeatsTheSameMetrics() async throws {
+        let cache = bothWindows()
+
+        let quotas = try await fetchQuotas([cache, cache])
+
+        XCTAssertEqual(quotas[0].activityObservation, quotas[1].activityObservation)
+    }
+
     private func bothWindows() -> StatuslineCache {
         StatuslineCache(
             writtenAt: now,
@@ -106,6 +114,10 @@ final class ClaudeCodeForecastMappingTests: XCTestCase {
     }
 
     private func fetchQuota(_ cache: StatuslineCache) async throws -> ProviderQuota {
+        try await fetchQuotas([cache])[0]
+    }
+
+    private func fetchQuotas(_ caches: [StatuslineCache]) async throws -> [ProviderQuota] {
         let temporaryDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
@@ -113,10 +125,12 @@ final class ClaudeCodeForecastMappingTests: XCTestCase {
         let cacheStore = StatuslineCacheStore(
             cacheURL: temporaryDirectory.appendingPathComponent("claude-code.json")
         )
-        try cacheStore.write(cache)
-        return try await ClaudeCodeProvider(cacheStore: cacheStore).fetchQuota(
-            auth: .apiKeyFree,
-            baseURL: ClaudeCodeProvider.baseURL
-        )
+        let provider = ClaudeCodeProvider(cacheStore: cacheStore)
+        var quotas: [ProviderQuota] = []
+        for cache in caches {
+            try cacheStore.write(cache)
+            try await quotas.append(provider.fetchQuota(auth: .apiKeyFree, baseURL: ClaudeCodeProvider.baseURL))
+        }
+        return quotas
     }
 }

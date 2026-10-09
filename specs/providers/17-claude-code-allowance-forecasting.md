@@ -87,7 +87,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 1. [x] Capture statusline and `/usage` cache samples across one five-hour period and one weekly reset. Record whether `resets_at` is stable and whether `used_percentage` carries fractions.
 2. [x] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
 3. [x] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
-4. [ ] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
+4. [x] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
 5. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data.
 
 ### Evidence
@@ -109,8 +109,13 @@ Two captures copied each change of `~/.cache/filbert/claude-code.json` on 2026-1
 - 294 statusline writes (median 2.8 seconds apart), 37 `/usage` writes, and 1 write without windows.
 - The statusline had whole percentages and a steady `resets_at` of 19:40:00 and 13:00:00 on all writes.
 - The statusline percentage was 1 point less than the `/usage` percentage for the same window. Examples: 3 and 4, and 6 and 7, within seconds. The weekly window showed 2 on the statusline and 3 on `/usage` from 15:14 to 16:12.
-- Each switch from `/usage` to the statusline was a decrease: 21 decreases in 75 minutes (10 five-hour, 11 weekly). Without (AC3), each decrease is a correction under (core 12 AC3). The history would then restart every 3 minutes, and no estimate could form.
+- Each switch from `/usage` to the statusline was a decrease: 21 decreases in 75 minutes (10 five-hour, 11 weekly). Without (AC3), each decrease is a correction under (core 12 AC3), and the history restarts.
 - The write without windows was `{"written_at":…}` at 14:58:20, before the first API response of the session.
+
+**Replay of capture 2 through the provider and Core (fixture `claude-code-cache-terminal.json`):**
+
+- With (AC3), the five-hour line formed a rate after 16 minutes. It stayed beyond reset until use stopped, then turned quiet. It never returned to learning.
+- Without (AC3), the five-hour line had a rate on one read out of 332, and was learning again on the next read.
 
 ## Risks
 
