@@ -300,7 +300,7 @@ private extension AllowanceHistory {
             guard let periodResetsAt else { return false }
             return oldLimit == newLimit
                 && oldResetsAt > time
-                && abs(newResetsAt.timeIntervalSince(periodResetsAt)) <= policy.resetTolerance
+                && policy.isSamePeriod(resetsAt: newResetsAt, periodResetsAt: periodResetsAt)
         case (.balance, .fixedPeriod), (.fixedPeriod, .balance):
             return false
         }
