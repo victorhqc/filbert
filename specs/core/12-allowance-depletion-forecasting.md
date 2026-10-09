@@ -145,7 +145,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
   1. **Limit reached.** A line in the group shows 100% in its current `UsageLine`, with or without a descriptor. The headline reads like "Weekly 100% · Limit reached", with the line's reset countdown below it. When several lines are at 100%, the line with the latest reset wins, because it blocks usage longest.
   2. **Uncertain near the limit.** A group line is paused after its projected depletion time, or a group line without an estimate has less than two resolution steps left. The headline stays as the provider wrote it.
   3. **Earliest estimate.** A group line has an estimated forecast. The estimate that runs out first wins. The headline reads like "3% · About 1h 20m of use remaining", with a smaller line below it like "Based on the last 20 minutes".
-  4. **Beyond reset.** The headline line has a beyond-reset forecast, and every other group line with a forecast is beyond reset too. The headline reads like "3% · Not expected to run out", with a smaller line "before reset at recent pace".
+  4. **Beyond reset.** The headline line has a beyond-reset forecast. Other group lines without a rate do not block it: learning, quiet, too far apart, insufficient, and paused away from the limit. Rules 1–3 have already excluded a line at 100%, a line uncertain near the limit, and any estimate. The headline reads like "3% · Not expected to run out", with a smaller line "before reset at recent pace".
 - **And** when no rule matches, the headline stays as the provider wrote it
 - **And** the winning line is the binding line; the headline shows the binding line's current value
 - **And** when the binding line is not the named headline line, the headline adds its label, e.g. "Weekly 95% · About 30m of use remaining"
@@ -293,7 +293,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 The panel is small, so forecasts add as little text as possible:
 
 - Only the headline rules in (AC9) change the headline. They replace the headline's reset countdown, which the row still shows below its bar. A smaller line under the headline gives the evidence, the condition, or the reset.
-- Every other state is one small gray line inside its row, just above the reset text. It never touches the headline.
+- Every other state is one small gray line inside its row, just above the reset text. It never touches the headline. A long text wraps to a second line; it is never truncated.
 - A row that is not the binding line shows its estimate as the same small line.
 - Approximate timing lives in the tooltip and VoiceOver only.
 
@@ -366,6 +366,8 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - History keeps the last sample at or before the maximum-horizon cutoff, so the 2-hour window can interpolate its start.
 - `Decimal` division returns NaN on underflow, e.g. a resolution of 10⁻¹⁰⁰. Core treats a rate or a projection that is not finite as no estimate.
 - A quota without an activity observation pauses the provider's histories, the same as `.unknown` freshness.
+- A manual check with Claude Code on 2026-10-09 showed the five-hour row beyond reset while weekly was learning. The earlier rule 4 needed every group line with a forecast to be beyond reset, so the headline never changed. Weekly windows move about one point every few hours, so they rarely form a rate. Rule 4 now ignores group lines without a rate, like rule 3.
+- The same check showed the row line "Not expected to run out before reset · last 10 minutes" truncated at normal width. Row lines now wrap.
 - A capture of Claude Code `/usage` writes on 2026-10-09 (229 writes, 09:39–14:46) showed `resets_at` in whole minutes, with a flip between two neighboring minutes on almost every write. The spread was exactly 60 seconds, which is the old tolerance with no margin. The reset tolerance is therefore 5 minutes. A real reset moves by hours or days. A sliding window moves its reset with each use, so it passes 5 minutes from the period's first reset after 5 minutes of use (providers 17).
 - Two histories that name one usage line ID, e.g. one missing and one new, also produce no forecast for that line. The debug assertion sits in the public `record`; Core tests call the internal path that has no assertion.
 - An interruption keeps the later of the sleep and wake times, so only a sample newer than the wake can become the baseline.
@@ -382,7 +384,7 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - Consumption is bursty, and models or workloads can change the rate at once. Conditional wording and short-lived evidence cannot remove this uncertainty.
 - The interpolated window is still sensitive to a burst at either end. A single delayed publication can inflate the rate until the burst leaves the window.
 - At whole-point resolution, weekly and monthly windows forecast only under sustained heavy use: two points within two hours. Most of the time they show learning and then no forecast text.
-- A group line that is still learning does not stop the headline estimate (AC9 rule 3). Example: Weekly at 97% in learning, next to a five-hour estimate of 3 hours. Weekly can run out first. A stricter rule would hide the headline estimate almost always, because weekly windows are usually in learning.
+- A group line that is still learning does not stop the headline estimate (AC9 rule 3) or the beyond-reset headline (AC9 rule 4). Example: Weekly at 97% in learning, next to a five-hour estimate of 3 hours. Weekly can run out first. A stricter rule would hide these headlines almost always, because weekly windows are usually in learning.
 - Rounded percentages and delayed publication can hide ongoing work. Quiet means no observed progress, not verified inactivity.
 - A balance endpoint cannot reveal consumption offset by a top-up within one interval. Net-depletion forecasts must not be labeled spend.
 - A local CLI can switch accounts without exposing a scope change. Core clears history only on the account changes in (AC11). A rate can span two accounts until a reset or correction re-baselines.
