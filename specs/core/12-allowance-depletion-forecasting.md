@@ -334,7 +334,7 @@ The other weak-state lines take the learning line's place: "No recent consumptio
 | Maximum observation gap | 30 minutes between the source timestamps of accepted samples |
 | Maximum observation age | 30 minutes |
 | "Too far apart" trigger | 2 consecutive accepted intervals above the maximum gap |
-| Reset tolerance | 60 seconds from the first reset timestamp of the period |
+| Reset tolerance | 5 minutes from the first reset timestamp of the period |
 | Future timestamp tolerance | 60 seconds; a later measurement time is inconsistent timing |
 | Maximum retained samples | 256 per metric, after Core removes repeated values |
 | Longest displayed estimate | 4 weeks |
@@ -366,6 +366,7 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - History keeps the last sample at or before the maximum-horizon cutoff, so the 2-hour window can interpolate its start.
 - `Decimal` division returns NaN on underflow, e.g. a resolution of 10⁻¹⁰⁰. Core treats a rate or a projection that is not finite as no estimate.
 - A quota without an activity observation pauses the provider's histories, the same as `.unknown` freshness.
+- A capture of Claude Code `/usage` writes on 2026-10-09 (229 writes, 09:39–14:46) showed `resets_at` in whole minutes, with a flip between two neighboring minutes on almost every write. The spread was exactly 60 seconds, which is the old tolerance with no margin. The reset tolerance is therefore 5 minutes. A real reset moves by hours or days. A sliding window moves its reset with each use, so it passes 5 minutes from the period's first reset after 5 minutes of use (providers 17).
 - Two histories that name one usage line ID, e.g. one missing and one new, also produce no forecast for that line. The debug assertion sits in the public `record`; Core tests call the internal path that has no assertion.
 - An interruption keeps the later of the sleep and wake times, so only a sample newer than the wake can become the baseline.
 - Rule 2 in (AC9) needs data that only Core has. `AllowanceForecast` carries `isUncertainNearLimit`: the state is paused after the projected depletion time, or the state has no estimate and less than the minimum consumption remains. An exhausted measurement also sets it. A passed reset clears it.
