@@ -45,6 +45,10 @@ struct AllowanceForecastPolicy: Equatable, Sendable {
         self.maximumRetainedObservations = maximumRetainedObservations
     }
 
+    func isSamePeriod(resetsAt: Date, periodResetsAt: Date) -> Bool {
+        abs(resetsAt.timeIntervalSince(periodResetsAt)) <= resetTolerance
+    }
+
     func quietThreshold(resolution: Decimal, ratePerSecond: Decimal) -> TimeInterval {
         let stepDuration = (resolution / ratePerSecond).doubleValue
         return min(max(2 * stepDuration, minimumQuietThreshold), maximumHorizon)
