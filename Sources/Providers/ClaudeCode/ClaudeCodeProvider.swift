@@ -65,6 +65,10 @@ public struct ClaudeCodeProvider: AIProvider {
     )
 
     static let freshnessThreshold: TimeInterval = 3600
+    static let fiveHourLineId = "five-hour-usage"
+    static let weeklyLineId = "weekly-usage"
+    /// Either window blocks the same subscription when it runs out.
+    static let subscriptionLimitGroup = "subscription"
 
     // MARK: - Dependencies
 
@@ -192,6 +196,7 @@ public struct ClaudeCodeProvider: AIProvider {
 
         if let fiveHour {
             lines.append(usageLine(
+                id: Self.fiveHourLineId,
                 label: String(localized: "5-hour window"),
                 window: fiveHour,
                 windowDuration: UsageWindowDuration.fiveHours
@@ -200,6 +205,7 @@ public struct ClaudeCodeProvider: AIProvider {
 
         if let sevenDay {
             lines.append(usageLine(
+                id: Self.weeklyLineId,
                 label: String(localized: "Weekly"),
                 window: sevenDay,
                 windowDuration: UsageWindowDuration.week
@@ -224,7 +230,8 @@ public struct ClaudeCodeProvider: AIProvider {
             lastUpdated: lastUpdated,
             error: lines.isEmpty ? String(localized: "Open Claude Code to populate usage data") : nil,
             isStale: isStale,
-            activityObservation: activityObservation(from: cache)
+            activityObservation: activityObservation(from: cache),
+            headlineUsageLineId: lines.first?.id
         )
     }
 
@@ -234,7 +241,7 @@ public struct ClaudeCodeProvider: AIProvider {
 
         let freshMetrics = entries.compactMap { entry in
             isFresh(entry.window, cacheWrittenAt: cache.writtenAt, now: now)
-                ? metric(id: entry.id, window: entry.window)
+                ? metric(id: entry.id, window: entry.window, cacheWrittenAt: cache.writtenAt)
                 : nil
         }
         if !freshMetrics.isEmpty {
@@ -244,7 +251,7 @@ public struct ClaudeCodeProvider: AIProvider {
         // Every known window is stale: keep the figures for the UI-visible
         // last-known data while marking the observation stale so Core discards
         // it as evidence.
-        let allMetrics = entries.compactMap { metric(id: $0.id, window: $0.window) }
+        let allMetrics = entries.compactMap { metric(id: $0.id, window: $0.window, cacheWrittenAt: cache.writtenAt) }
         return ProviderActivityObservation(
             metrics: allMetrics,
             freshness: allMetrics.isEmpty ? .unknown : .stale
@@ -253,26 +260,46 @@ public struct ClaudeCodeProvider: AIProvider {
 
     private func activityMetricEntries(from rateLimits: RateLimits?) -> [(id: String, window: Window)] {
         [
-            ("five-hour-usage", rateLimits?.fiveHour),
-            ("weekly-usage", rateLimits?.sevenDay),
+            (Self.fiveHourLineId, rateLimits?.fiveHour),
+            (Self.weeklyLineId, rateLimits?.sevenDay),
         ].compactMap { id, window in window.map { (id, $0) } }
     }
 
     private func isFresh(_ window: Window, cacheWrittenAt: TimeInterval, now: TimeInterval) -> Bool {
-        let writtenAt = window.writtenAt ?? cacheWrittenAt
-        return now - writtenAt <= Self.freshnessThreshold
+        now - (window.writtenAt ?? cacheWrittenAt) <= Self.freshnessThreshold
     }
 
-    private func metric(id: String, window: Window) -> ProviderActivityMetric? {
+    private func metric(id: String, window: Window, cacheWrittenAt: TimeInterval) -> ProviderActivityMetric? {
         guard let percentage = window.usedPercentage else { return nil }
         return ProviderActivityMetric(
             id: id,
             kind: .usage,
-            value: .number(Decimal(percentage))
+            value: .number(Decimal(percentage)),
+            forecastDescriptor: forecastDescriptor(
+                usageLineId: id,
+                window: window,
+                writtenAt: window.writtenAt ?? cacheWrittenAt
+            )
+        )
+    }
+
+    private func forecastDescriptor(
+        usageLineId: String,
+        window: Window,
+        writtenAt: TimeInterval
+    ) -> AllowanceForecastDescriptor? {
+        guard let resetsAt = window.resetsAt else { return nil }
+        return AllowanceForecastDescriptor(
+            accounting: .fixedPeriod(limit: 100, resetsAt: Date(timeIntervalSince1970: resetsAt)),
+            unit: .percentagePoints,
+            resolution: 1,
+            timing: .source(Date(timeIntervalSince1970: writtenAt)),
+            usageLineId: usageLineId
         )
     }
 
     private func usageLine(
+        id: String,
         label: String,
         window: Window,
         windowDuration: TimeInterval
@@ -281,7 +308,9 @@ public struct ClaudeCodeProvider: AIProvider {
             label: label,
             percentage: window.usedPercentage,
             resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) },
-            windowDuration: windowDuration
+            windowDuration: windowDuration,
+            id: id,
+            limitGroup: Self.subscriptionLimitGroup
         )
     }
 

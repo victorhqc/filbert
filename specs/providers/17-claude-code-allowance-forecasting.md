@@ -86,7 +86,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 
 1. [x] Capture statusline and `/usage` cache samples across one five-hour period and one weekly reset. Record whether `resets_at` is stable and whether `used_percentage` carries fractions.
 2. [x] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
-3. [ ] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
+3. [x] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
 4. [ ] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
 5. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data.
 
