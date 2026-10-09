@@ -162,10 +162,24 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertNotNil(presentation.rowLines["weekly"])
     }
 
-    func testBeyondResetWithAnotherGroupLineLearningKeepsTheProviderHeadline() {
+    func testBeyondResetIgnoresGroupLinesWithoutARate() throws {
+        let withoutRate: [AllowanceForecast.State] = [.learning, .quiet, .tooFarApart, .paused, .insufficient]
+        for state in withoutRate {
+            let presentation = present(
+                fiveHour: beyondReset("five-hour"),
+                weekly: forecast("weekly", state)
+            )
+
+            let headline = try XCTUnwrap(presentation.headline, "\(state)")
+            XCTAssertEqual(headline.status, "Not expected to run out", "\(state)")
+            XCTAssertNil(presentation.rowLines["five-hour"], "\(state)")
+        }
+    }
+
+    func testBeyondResetWithAGroupLineUncertainNearItsLimitKeepsTheProviderHeadline() {
         let presentation = present(
             fiveHour: beyondReset("five-hour"),
-            weekly: forecast("weekly", .learning)
+            weekly: forecast("weekly", .learning, uncertainNearLimit: true)
         )
 
         XCTAssertNil(presentation.headline)
