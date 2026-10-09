@@ -134,9 +134,9 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
 
         XCTAssertEqual(quota.lines.first?.percentage, 7)
         XCTAssertTrue(quota.headline.hasPrefix("7%"))
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(7)),
-        ])
+        let metric = try XCTUnwrap(quota.activityObservation?.metrics.first)
+        XCTAssertEqual(metric.value, .number(7))
+        XCTAssertEqual(metric.forecastDescriptor?.timing, .source(Date(timeIntervalSince1970: now + 1)))
     }
 
     private func fiveHour(_ peaks: ClaudeCodeWindowPeaks, _ percentage: Double?, resetsAt: TimeInterval?) -> Double? {
