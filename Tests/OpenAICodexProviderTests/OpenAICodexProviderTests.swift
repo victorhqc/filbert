@@ -121,6 +121,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(result.rateLimits?.primary?.usedPercent, 32)
         XCTAssertEqual(result.rateLimits?.primary?.windowDurationMins, 300)
         XCTAssertEqual(result.rateLimits?.credits?.balance, "12.50")
+        XCTAssertEqual(result.rateLimits?.credits?.hasCredits, true)
         XCTAssertNil(errorLog.availableFileURL)
     }
 
@@ -174,14 +175,14 @@ final class OpenAICodexProviderTests: XCTestCase {
                 "codex": CodexRateLimitSnapshot(
                     primary: CodexRateLimitWindow(usedPercent: 20, resetsAt: 3000, windowDurationMins: 60),
                     secondary: CodexRateLimitWindow(usedPercent: 40, resetsAt: 4000, windowDurationMins: 10080),
-                    credits: CodexCredits(balance: "12.5", unlimited: false)
+                    credits: CodexCredits(hasCredits: true, balance: "12.5", unlimited: false)
                 ),
             ]
         )
 
         let quota = provider.map(result, receivedAt: Date())
 
-        XCTAssertEqual(quota.lines.count, 2)
+        XCTAssertEqual(quota.lines.map(\.id), ["primary-window-usage", "secondary-window-usage", "credits"])
         XCTAssertEqual(quota.lines[0].percentage, 20)
         XCTAssertEqual(quota.lines[0].label, "60-minute window")
         XCTAssertEqual(quota.lines[0].resetDate, Date(timeIntervalSince1970: 3000))
@@ -190,14 +191,13 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertNil(quota.lines[0].used)
         XCTAssertNil(quota.lines[0].total)
         XCTAssertNil(quota.lines[0].unit)
-        XCTAssertEqual(quota.lines[0].details?.first?.label, "Credits")
-        XCTAssertEqual(quota.lines[0].details?.first?.value, "12.5")
+        XCTAssertNil(quota.lines[0].details)
+        XCTAssertEqual(quota.lines[2].balance, UsageBalance(amount: .finite(12.5), unit: .credits))
         XCTAssertTrue(quota.headline.hasPrefix("20%"))
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "primary-window-usage", kind: .usage, value: .number(20)),
-            ProviderActivityMetric(id: "secondary-window-usage", kind: .usage, value: .number(40)),
-            ProviderActivityMetric(id: "credits", kind: .credits, value: .number(12.5)),
-        ])
+        XCTAssertEqual(
+            quota.activityObservation?.metrics.map(\.value),
+            [.number(20), .number(40), .number(12.5)]
+        )
     }
 
     func testProvider_omitsMissingWindowsAndUsesUnlimitedCredits() {
@@ -206,7 +206,7 @@ final class OpenAICodexProviderTests: XCTestCase {
             rateLimits: CodexRateLimitSnapshot(
                 primary: nil,
                 secondary: nil,
-                credits: CodexCredits(balance: nil, unlimited: true)
+                credits: CodexCredits(hasCredits: true, balance: nil, unlimited: true)
             ),
             rateLimitsByLimitId: nil
         )
@@ -216,7 +216,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertEqual(quota.headline, "No usage limits reported")
         XCTAssertEqual(quota.lines.count, 1)
         XCTAssertEqual(quota.lines[0].label, "Credits")
-        XCTAssertEqual(quota.lines[0].details?.first?.value, "Unlimited credits")
+        XCTAssertEqual(quota.lines[0].balance, UsageBalance(amount: .unlimited, unit: .credits))
         XCTAssertEqual(quota.activityObservation?.metrics, [
             ProviderActivityMetric(id: "credits", kind: .credits, value: .discrete("unlimited")),
         ])

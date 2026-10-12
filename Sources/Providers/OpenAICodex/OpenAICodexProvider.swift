@@ -84,12 +84,10 @@ public struct OpenAICodexProvider: AIProvider {
     func map(_ result: CodexRateLimitReadResult, receivedAt: Date) -> ProviderQuota {
         let snapshot = result.rateLimitsByLimitId?["codex"] ?? result.rateLimits
         let windows = windowEntries(in: snapshot)
-        let creditDetails = creditDetails(for: snapshot?.credits)
-        var lines = windows.enumerated().map { index, entry in
-            usageLine(for: entry, details: index == 0 ? creditDetails : nil)
-        }
-        if windows.isEmpty, let creditDetails {
-            lines.append(UsageLine(label: String(localized: "Credits"), details: creditDetails))
+        let credits = creditsBalance(for: snapshot?.credits)
+        var lines = windows.map(usageLine(for:))
+        if let credits {
+            lines.append(creditsLine(for: credits))
         }
         let headlineWindow = shortestWindow(in: windows)
 
@@ -99,7 +97,7 @@ public struct OpenAICodexProvider: AIProvider {
             headline: headline(for: headlineWindow?.window),
             lines: lines,
             lastUpdated: receivedAt,
-            activityObservation: activityObservation(for: windows, credits: snapshot?.credits),
+            activityObservation: activityObservation(for: windows, credits: credits, receivedAt: receivedAt),
             headlineUsageLineId: headlineWindow?.id
         )
     }
@@ -126,7 +124,8 @@ public struct OpenAICodexProvider: AIProvider {
 
     private func activityObservation(
         for windows: [WindowEntry],
-        credits: CodexCredits?
+        credits: CodexCreditsBalance?,
+        receivedAt: Date
     ) -> ProviderActivityObservation {
         var metrics = windows.compactMap { entry in
             entry.window.usedPercent.map { percentage in
@@ -137,58 +136,23 @@ public struct OpenAICodexProvider: AIProvider {
                 )
             }
         }
-        if credits?.unlimited == true {
-            metrics.append(ProviderActivityMetric(
-                id: "credits",
-                kind: .credits,
-                value: .discrete("unlimited")
-            ))
-        } else if let balance = credits?.balance {
-            appendNumericCreditMetric(balance, to: &metrics)
+        if let creditsMetric = credits.flatMap({ creditsMetric(for: $0, receivedAt: receivedAt) }) {
+            metrics.append(creditsMetric)
         }
 
         // Each `account/rateLimits/read` asks the backend; nothing is cached.
         return ProviderActivityObservation(metrics: metrics, freshness: .fresh)
     }
 
-    private func appendNumericCreditMetric(
-        _ balance: String,
-        to metrics: inout [ProviderActivityMetric]
-    ) {
-        guard let value = Decimal(string: balance, locale: Locale(identifier: "en_US_POSIX")) else {
-            return
-        }
-        metrics.append(ProviderActivityMetric(
-            id: "credits",
-            kind: .credits,
-            value: .number(value)
-        ))
-    }
-
-    private func usageLine(for entry: WindowEntry, details: [UsageDetail]?) -> UsageLine {
+    private func usageLine(for entry: WindowEntry) -> UsageLine {
         UsageLine(
             label: windowLabel(for: entry.window.windowDurationMins),
             percentage: entry.window.usedPercent,
             resetDate: entry.window.resetsAt.map { Date(timeIntervalSince1970: $0) },
             windowDuration: entry.window.windowDurationMins.map { TimeInterval($0) * 60 },
-            details: details,
             id: entry.id,
             limitGroup: Self.subscriptionLimitGroup
         )
-    }
-
-    private func creditDetails(for credits: CodexCredits?) -> [UsageDetail]? {
-        guard let credits else { return nil }
-        if credits.unlimited == true {
-            return [UsageDetail(label: String(localized: "Credits"), value: String(localized: "Unlimited credits"))]
-        }
-        guard let balance = credits.balance else { return nil }
-        return [
-            UsageDetail(
-                label: String(localized: "Credits"),
-                value: balance
-            ),
-        ]
     }
 
     private func headline(for shortestWindow: CodexRateLimitWindow?) -> String {

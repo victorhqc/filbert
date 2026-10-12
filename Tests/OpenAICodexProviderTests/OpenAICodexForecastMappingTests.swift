@@ -48,24 +48,11 @@ final class OpenAICodexForecastMappingTests: XCTestCase {
         let quota = map(
             primary: nil,
             secondary: nil,
-            credits: CodexCredits(balance: "811.7749020000", unlimited: false)
+            credits: CodexCredits(hasCredits: true, balance: "811.7749020000", unlimited: false)
         )
 
         XCTAssertNil(quota.headlineUsageLineId)
-        XCTAssertEqual(quota.lines.map(\.label), ["Credits"])
-        XCTAssertNil(quota.lines.first?.id)
-    }
-
-    func testCreditDetailsKeepTheIdentityOfTheFirstWindow() {
-        let quota = map(
-            primary: fiveHour,
-            secondary: weekly,
-            credits: CodexCredits(balance: "12.5", unlimited: false)
-        )
-
-        XCTAssertEqual(quota.lines.first?.id, "primary-window-usage")
-        XCTAssertEqual(quota.lines.first?.limitGroup, "subscription")
-        XCTAssertEqual(quota.lines.first?.details?.first?.value, "12.5")
+        XCTAssertEqual(quota.lines.map(\.id), ["credits"])
     }
 
     private func map(

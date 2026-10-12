@@ -46,6 +46,7 @@ struct CodexRateLimitWindow: Decodable, Sendable {
 }
 
 struct CodexCredits: Decodable, Sendable {
+    let hasCredits: Bool?
     let balance: String?
     let unlimited: Bool?
 }

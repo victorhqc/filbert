@@ -54,12 +54,12 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 - **When** the provider maps it
 - **Then** credits become a separate `UsageLine` with ID `credits` after the window rows, no longer a detail of the first window row
 - **And** finite credits carry a balance descriptor in the credits unit, with one fixed resolution from the evidence (core 12 AC1)
-- **And** the provider never derives the resolution from the decimals of each string; the backend trims them, and a changed resolution re-baselines (core 12 AC3)
+- **And** the provider never derives the resolution from the decimals of each string; the number of decimals can differ between responses, and a changed resolution re-baselines (core 12 AC3)
 - **And** the row has a finite balance in the credits unit (core 13), so it shows two localized decimals and no currency symbol, e.g. "1,159.57", not the raw string "1159.5692275000"; the balance and the metric keep the unrounded value
 - **And** the credits row does not change compact status, the collapsed card header, or menu-bar selection (core 13 AC3); only (ui 28) promotion can change them
 - **And** unlimited credits have an unlimited balance, which shows "Unlimited", and carry no descriptor
 - **And** absent credits, or `hasCredits` false with `unlimited` not true, produce no credits row, as the Codex CLI does (providers 05 AC7)
-- **And** a balance that does not parse as a number carries no metric and no balance; the row shows the raw string as a detail
+- **And** a balance that does not parse whole as a number, e.g. "1,159.57", carries no metric and no balance; the row shows the raw string as a detail
 - **And** the credits row shows the same forecast states as every other row (core 12 AC9): learning after a baseline, an estimate when credits decrease, and no forecast text when credits stay flat after the learning limit
 - **And** the credit forecast reflects only observed credit depletion
 - **And** the credits row has no limit group, because credits are a separate pool (core 12 AC8)
@@ -97,7 +97,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 4. [ ] Map the provider. Keep all Codex interpretation inside the module:
    - [x] `.fresh`, one receipt time per read, line IDs, the limit group, and the headline line ID. With the headline line and the limit group, a window at 100% already shows "Limit reached" (core 12 AC9).
    - [ ] Window descriptors, after Plan step 2.
-   - [ ] The credits row and its descriptor, after (core 13).
+   - [x] The credits row and its descriptor, after (core 13). The resolution is 10⁻¹⁰, because every read in the capture so far has 10 decimals. A credits metric exists only when the credits row exists, so `hasCredits` false also drops the metric. Tests cover finite, unlimited, and absent credits, `hasCredits` false, a response without `hasCredits`, unparseable balances, a credits row without windows, a credit purchase, balances with different numbers of decimals, and a credits row that carries nothing that ranks a provider (core 13 AC3).
 5. [ ] Convert the capture into fixture traces with only receipt times, percentages, reset times, durations, and credit fields. Drop `accountId`, plan names, and limit names (providers 05 AC4). Add the fixtures and tests from (AC6).
 6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data.
 
@@ -121,7 +121,7 @@ The capture runs the provider's exchange from a local script and keeps the raw r
 - `rateLimitResetCredits` lists reset credits titled "Full reset (Weekly + 5 hr)", with `availableCount` 3. A user can spend one to reset both windows before `resetsAt`.
 - The five-hour window was at 0%. On each read, its `resetsAt` was the receipt time plus 300 minutes, within 1.3 seconds: 16:37:38 at 11:37:38, then 16:38:34 at 11:38:35.
 - The weekly window was at 38%, with a steady `resetsAt` of 2026-10-18 10:04:32 UTC. The reset has seconds, not whole minutes.
-- `balance` was "811.7749020000", with 10 decimals. `hasCredits` was true and `unlimited` false.
+- `balance` was "811.7749020000", with 10 decimals and trailing zeros, on all 79 reads up to 2026-10-12 13:01 UTC. `hasCredits` was true and `unlimited` false.
 
 ## Risks
 
