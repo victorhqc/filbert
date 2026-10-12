@@ -27,6 +27,12 @@ final class AllowanceForecastLocalizationTests: XCTestCase {
         "More than %@ of use remaining",
         "More than %1$@ of use remaining · last %2$@",
         "More than %1$@ of use remaining at recent pace, based on the last %2$@",
+        "Promoted pool value format",
+        "Using %@",
+        "%@ limit reached",
+        "%1$@ limit reached, %2$@",
+        "Limit reached · %@",
+        "%@: %@ credits remaining",
     ]
 
     func testEveryForecastStringIsTranslatedWithMatchingPlaceholders() throws {

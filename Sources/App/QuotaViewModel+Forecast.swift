@@ -4,6 +4,15 @@ import Foundation
 extension QuotaViewModel {
     func recordAllowanceObservation(from quota: ProviderQuota, for providerId: String, at date: Date) {
         allowanceForecaster.record(quota.activityObservation, isStale: quota.isStale, for: providerId, at: date)
+        fallbackPoolTracker.record(quota, for: providerId)
+    }
+
+    func promotedFallbackPoolIds(for providerId: String) -> Set<String> {
+        fallbackPoolTracker.promotedPoolIds(for: providerId)
+    }
+
+    func fallbackPoolLayout(for quota: ProviderQuota, providerId: String) -> FallbackPoolLayout? {
+        FallbackPoolLayout(lines: quota.lines, promotedPoolIds: promotedFallbackPoolIds(for: providerId))
     }
 
     func hasAllowanceForecasts(for providerId: String) -> Bool {
@@ -21,7 +30,8 @@ extension QuotaViewModel {
         return AllowanceForecastPresentation(
             quota: quota,
             forecasts: allowanceForecaster.forecasts(for: providerId, at: now),
-            now: now
+            now: now,
+            fallbackPool: fallbackPoolLayout(for: quota, providerId: providerId)
         )
     }
 
@@ -31,6 +41,7 @@ extension QuotaViewModel {
 
     func clearAllowanceForecasts(for providerId: String) {
         allowanceForecaster.reset(for: providerId)
+        fallbackPoolTracker.reset(for: providerId)
     }
 
     func handleSystemClockDidChange() {

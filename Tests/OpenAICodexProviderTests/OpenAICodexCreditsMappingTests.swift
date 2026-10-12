@@ -15,6 +15,7 @@ final class OpenAICodexCreditsMappingTests: XCTestCase {
         XCTAssertEqual(row.label, "Credits")
         XCTAssertEqual(row.balance, UsageBalance(amount: .finite(decimal("811.774902")), unit: .credits))
         XCTAssertNil(row.limitGroup)
+        XCTAssertEqual(row.fallbackForLimitGroup, "subscription")
         XCTAssertEqual(quota.headlineUsageLineId, "primary-window-usage")
     }
 

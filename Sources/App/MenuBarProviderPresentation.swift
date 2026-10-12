@@ -12,7 +12,8 @@ enum MenuBarProviderPresentation {
     static func resolve(
         providerInfo: ProviderInfo?,
         providerState: ProviderState?,
-        isFastRefreshActive: Bool
+        isFastRefreshActive: Bool,
+        promotedPoolIds: Set<String> = []
     ) -> Resolved? {
         guard let providerInfo,
               case let .loaded(quota) = providerState
@@ -20,7 +21,7 @@ enum MenuBarProviderPresentation {
             return nil
         }
 
-        let status = QuotaStatusResolver.resolve(for: quota)
+        let status = QuotaStatusResolver.resolve(for: quota, promotedPoolIds: promotedPoolIds)
         guard status != .fallback else { return nil }
 
         return Resolved(
@@ -43,6 +44,8 @@ enum MenuBarProviderPresentation {
             )
         case let .balance(_, formattedAmount):
             status = String(localized: "\(resolved.providerName): \(formattedAmount) remaining")
+        case let .credits(formattedAmount):
+            status = String(localized: "\(resolved.providerName): \(formattedAmount) credits remaining")
         case .fallback:
             return String(localized: "Filbert")
         }

@@ -107,7 +107,7 @@ struct AllowanceHistory: Sendable {
         descriptor = newDescriptor
         isPaused = false
         if showsConsumption {
-            if wasQuiet {
+            if wasQuiet || firstConsumptionAt == nil {
                 startSegment(at: previous)
             }
             lastConsumptionAt = sample.time

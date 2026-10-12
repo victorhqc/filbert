@@ -19,7 +19,7 @@ struct MenuBarStatusIcon: View {
             switch resolved.status {
             case let .window(percentage):
                 statusRow(percentageText(percentage), resolved: resolved)
-            case let .balance(_, formattedAmount):
+            case let .balance(_, formattedAmount), let .credits(formattedAmount):
                 statusRow(formattedAmount, resolved: resolved)
             case .fallback:
                 fallbackIcon
@@ -56,7 +56,8 @@ struct MenuBarStatusIcon: View {
         return MenuBarProviderPresentation.resolve(
             providerInfo: viewModel.providerInfo(for: providerId),
             providerState: viewModel.providerStates[providerId],
-            isFastRefreshActive: viewModel.isFastAutomaticRefreshActive(for: providerId)
+            isFastRefreshActive: viewModel.isFastAutomaticRefreshActive(for: providerId),
+            promotedPoolIds: viewModel.promotedFallbackPoolIds(for: providerId)
         )
     }
 

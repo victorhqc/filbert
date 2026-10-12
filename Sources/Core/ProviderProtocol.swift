@@ -140,6 +140,8 @@ public struct UsageLine: Sendable {
     /// Lines in one group cap the same usage, so whichever runs out first
     /// blocks it.
     public let limitGroup: String?
+    /// The limit group this pool can back once the group runs out.
+    public let fallbackForLimitGroup: String?
 
     public init(
         label: String,
@@ -152,7 +154,8 @@ public struct UsageLine: Sendable {
         windowDuration: TimeInterval? = nil,
         details: [UsageDetail]? = nil,
         id: String? = nil,
-        limitGroup: String? = nil
+        limitGroup: String? = nil,
+        fallbackForLimitGroup: String? = nil
     ) {
         assert(
             balance == nil || (used == nil && total == nil && percentage == nil),
@@ -169,6 +172,7 @@ public struct UsageLine: Sendable {
         self.details = details
         self.id = id
         self.limitGroup = limitGroup
+        self.fallbackForLimitGroup = fallbackForLimitGroup
     }
 }
 

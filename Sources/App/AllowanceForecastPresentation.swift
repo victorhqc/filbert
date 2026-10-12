@@ -3,20 +3,32 @@ import Foundation
 
 struct AllowanceForecastPresentation: Equatable {
     struct Headline: Equatable {
+        /// Names a pool that stands in for the headline line.
+        let label: String?
         let value: String
-        let status: String
+        let status: String?
         let detail: String?
-        /// Read after the value, in order.
+        /// Read after the subject, in order.
         let accessibilitySentences: [String]
 
+        var subject: String {
+            guard let label else { return value }
+            return String.localizedStringWithFormat(
+                String(localized: "Promoted pool value format", bundle: .module),
+                label,
+                value
+            )
+        }
+
         var accessibilityLabel: String {
-            AllowanceForecastPresentation.joinedSentences([value] + accessibilitySentences)
+            AllowanceForecastPresentation.joinedSentences([subject] + accessibilitySentences)
         }
 
         var text: String {
-            String.localizedStringWithFormat(
+            guard let status else { return subject }
+            return String.localizedStringWithFormat(
                 String(localized: "Forecast headline format", bundle: .module),
-                value,
+                subject,
                 status
             )
         }
@@ -43,18 +55,29 @@ struct AllowanceForecastPresentation: Equatable {
     /// Keyed by usage line ID.
     let rowLines: [String: Line]
 
-    init(quota: ProviderQuota, forecasts: [String: AllowanceForecast], now: Date) {
-        let headlineLine = quota.headlineUsageLineId.flatMap { id in quota.lines.first { $0.id == id } }
-        let headline = headlineLine.flatMap { line in
-            Self.headlineReason(for: line, forecasts: forecasts).flatMap { reason in
-                Self.headline(for: line, reason: reason, now: now)
+    init(
+        quota: ProviderQuota,
+        forecasts: [String: AllowanceForecast],
+        now: Date,
+        fallbackPool: FallbackPoolLayout? = nil
+    ) {
+        let headlineLine = fallbackPool?.pool
+            ?? quota.headlineUsageLineId.flatMap { id in quota.lines.first { $0.id == id } }
+        let headline = if let fallbackPool {
+            Self.poolHeadline(for: fallbackPool, forecasts: forecasts, now: now)
+        } else {
+            headlineLine.flatMap { line in
+                Self.headlineReason(for: line, forecasts: forecasts).flatMap { reason in
+                    Self.headline(for: line, reason: reason, now: now)
+                }
             }
         }
         self.headline = headline
 
+        let headlineShowsItsForecast = fallbackPool == nil ? headline != nil : headline?.status != nil
         var rowLines: [String: Line] = [:]
         for line in quota.lines {
-            guard let id = line.id, headline == nil || id != headlineLine?.id else { continue }
+            guard let id = line.id, !headlineShowsItsForecast || id != headlineLine?.id else { continue }
             if let headlineLine, Self.isOtherGroupLineAtLimit(line, headlineLine: headlineLine) {
                 rowLines[id] = Self.limitReachedRowLine
             } else if let forecast = forecasts[id], let rowLine = Self.rowLine(for: forecast, now: now) {
@@ -72,7 +95,7 @@ private extension AllowanceForecastPresentation {
     }
 
     static func headlineReason(for line: UsageLine, forecasts: [String: AllowanceForecast]) -> HeadlineReason? {
-        if isAtLimit(line) {
+        if QuotaStatusResolver.isAtLimit(line) {
             return .limitReached
         }
         guard let forecast = line.id.flatMap({ forecasts[$0] }), !forecast.isUncertainNearLimit else {
@@ -81,15 +104,11 @@ private extension AllowanceForecastPresentation {
         return .forecast(forecast)
     }
 
-    static func isAtLimit(_ line: UsageLine) -> Bool {
-        QuotaStatusResolver.percentage(for: line).map { $0 >= 100 } ?? false
-    }
-
     static func isOtherGroupLineAtLimit(_ line: UsageLine, headlineLine: UsageLine) -> Bool {
         line.id != headlineLine.id
             && line.limitGroup != nil
             && line.limitGroup == headlineLine.limitGroup
-            && isAtLimit(line)
+            && QuotaStatusResolver.isAtLimit(line)
     }
 
     static var limitReachedRowLine: Line {
@@ -130,7 +149,39 @@ private extension AllowanceForecastPresentation {
             sentences = accessibilitySentences(for: forecast, now: now) ?? [status]
         }
 
-        return Headline(value: value, status: status, detail: detail, accessibilitySentences: sentences)
+        return Headline(label: nil, value: value, status: status, detail: detail, accessibilitySentences: sentences)
+    }
+
+    static func poolHeadline(
+        for layout: FallbackPoolLayout,
+        forecasts: [String: AllowanceForecast],
+        now: Date
+    ) -> Headline? {
+        guard let value = valueText(for: layout.pool) else { return nil }
+        let forecastHeadline = headlineReason(for: layout.pool, forecasts: forecasts).flatMap { reason in
+            headline(for: layout.pool, reason: reason, now: now)
+        }
+        let inUse = String.localizedStringWithFormat(String(localized: "Using %@"), layout.pool.label)
+        return Headline(
+            label: layout.pool.label,
+            value: value,
+            status: forecastHeadline?.status,
+            detail: forecastHeadline?.detail,
+            accessibilitySentences: [inUse]
+                + layout.exhaustedLines.map(limitReachedSentence(for:))
+                + (forecastHeadline?.accessibilitySentences ?? [])
+        )
+    }
+
+    static func limitReachedSentence(for line: UsageLine) -> String {
+        guard let resetDate = line.resetDate else {
+            return String.localizedStringWithFormat(String(localized: "%@ limit reached"), line.label)
+        }
+        return String.localizedStringWithFormat(
+            String(localized: "%1$@ limit reached, %2$@"),
+            line.label,
+            QuotaFormatting.countdown(to: resetDate)
+        )
     }
 
     static func valueText(for line: UsageLine) -> String? {

@@ -4,7 +4,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The manual check with Codex (providers 18) added steps 12 (AC14) and 13 (AC15). The branch merges only after steps 9–11.
+- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The manual check with Codex (providers 18) added steps 12 (AC14), 13 (AC15), and 14 (AC16). The branch merges only after steps 9–11.
 - This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
 - Periods of one day or less assume continued recent consumption (AC5). Longer periods use the average pace since the period started, which already includes nights, weekends, and breaks (AC13). Neither models a schedule or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
@@ -207,6 +207,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **And** 15-minute and 29-minute slow intervals produce an estimate, and a 31-minute slow interval shows "Updates too far apart to estimate"
 - **And** a slow trace that gains one point after one hour shows no forecast text until that point, learning for two hours after it, and then no forecast text, never quiet and never an estimate (AC14)
 - **And** a flat balance shows no forecast text after a baseline, a wake, or a purchase, and a first decrease of one resolution step starts learning (AC14)
+- **And** tests (AC16): a flat stretch followed by steady consumption shows learning until the minimum evidence span has passed since the first consumption, then the rate of that consumption only
 - **And** tests (AC15): other lines' estimates, uncertainty, and limits never change the headline; their estimates show in their rows, also when they run out first; a group line at 100% reads "Limit reached" in its row
 - **And** local renders do not move the depletion timestamp or turn projected exhaustion into reported exhaustion
 - **And** UI tests cover row association by ID, each headline rule (AC9), an unchanged headline when no rule matches, at most one forecast line per row, every localized and accessible state, long-duration formatting, and preservation of budget pace and compact status with forecasts present
@@ -252,6 +253,15 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **And** e.g., a five-hour window at 65% that should last until its reset keeps the headline "65% · Should last until reset", while the weekly row reads "Runs out in about 1d 10h · last 32 hours"
 - **And** a weekly window that runs out in about 1h, next to a five-hour window that resets in 3 hours, shows "Runs out in about 1h · last 6 days" in its row; the headline still speaks for the five-hour window
 - **And** a weekly window at 100% reads "Limit reached" in its row, while the headline speaks for the five-hour window.
+
+### AC16: The first rate starts at the first consumption
+
+- **Given** an allowance with a recent-pace forecast (AC5) has seen no consumption since its baseline
+- **When** its first consumption arrives
+- **Then** the rate's evidence starts at the last sample before that consumption, as after a quiet period (AC6); the flat stretch before it is not evidence
+- **And** the minimum observation count and evidence span (AC5) apply from that sample, so the row shows learning until they are met
+- **And** e.g., credits that stayed flat and then fell 0.94, 2.52, and 4.57 credits a minute show learning for about 10 minutes and then a rate near 210 credits an hour, not about 1.9 credits an hour from a 30-minute window that was mostly flat (providers 18)
+- **And** long periods keep (AC13).
 
 ## Plan
 
@@ -342,6 +352,9 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [x] Bind the headline to the named headline line only. Remove the headline label and its catalog key.
     - [x] Show "Limit reached" in the row of another group line at 100%.
     - [x] Update the headline tests and add the tests from (AC12).
+14. [x] The first rate starts at the first consumption (AC16), from the Codex capture of 2026-10-12 (providers 18). The first credits estimate after the switch read "About 2W 4d" while credits fell about 210 an hour.
+    - [x] Start a new segment at the previous sample when the first consumption after a baseline arrives.
+    - [x] Update the tests that expect an estimate right after a flat stretch, and add the tests from (AC12).
 
 ### Card layout
 
@@ -447,7 +460,8 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - The App forecast tests use an `.apiKey` test provider, because `saveOverrideURL` ignores providers without an API key.
 - With (AC14), `AllowanceHistory` no longer needs the baseline time; the learning limit counts from the first consumption. Tests that showed a new baseline by its learning state now expect insufficient, and the App lifecycle tests check for an existing history with no row text.
 - With (AC15), the headline label, its "Forecast labeled value format" key, and the choice of the latest reset among lines at 100% are gone. The limit group now decides only which other lines read "Limit reached" in their rows.
-- After a flat stretch, one decrease of many resolution steps can give an estimate at once, because the flat samples already supply the observation count and the evidence span (AC5). Learning shows only while the evidence is still too thin.
+- Before (AC16), one decrease of many resolution steps after a flat stretch gave an estimate at once, because the flat samples supplied the observation count and the evidence span (AC5). (AC16) starts the segment at the sample before the first consumption, so the flat stretch no longer counts.
+- With (AC16), the Claude Code replay forms a faster rate, turns quiet after 15 minutes without a rise, and learns again on the next rise (providers 17). The window-growth test now starts its consumption early enough to need the 60-minute window.
 
 ## Risks
 

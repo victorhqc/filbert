@@ -32,7 +32,7 @@ final class ClaudeCodeCaptureReplayTests: XCTestCase {
 
         let afterFirstRate = try XCTUnwrap(statesAfterFirstRate(fiveHourStates(in: reads)))
 
-        XCTAssertFalse(afterFirstRate.contains(.learning))
+        XCTAssertFalse(restartsAfterARate(afterFirstRate))
     }
 
     func testWithoutTheMemoryTheTerminalCaptureRestartsAfterItsFirstRate() async throws {
@@ -40,7 +40,7 @@ final class ClaudeCodeCaptureReplayTests: XCTestCase {
 
         let afterFirstRate = try XCTUnwrap(statesAfterFirstRate(fiveHourStates(in: reads)))
 
-        XCTAssertTrue(afterFirstRate.contains(.learning))
+        XCTAssertTrue(restartsAfterARate(afterFirstRate))
     }
 
     private func replay(_ fixture: String, sharingOneProvider: Bool) async throws -> [Read] {
@@ -91,6 +91,13 @@ final class ClaudeCodeCaptureReplayTests: XCTestCase {
             }
         }
         return periods
+    }
+
+    /// A rate gives way to quiet when use stops. Learning or no text straight after it is a restart.
+    private func restartsAfterARate(_ states: ArraySlice<AllowanceForecast.State>) -> Bool {
+        zip(states, states.dropFirst()).contains { previous, next in
+            previous.hasRate && (next == .learning || next == .insufficient)
+        }
     }
 
     private func statesAfterFirstRate(_ states: [AllowanceForecast.State]) -> ArraySlice<AllowanceForecast.State>? {

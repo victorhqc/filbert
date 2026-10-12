@@ -118,6 +118,7 @@ Two captures copied each change of `~/.cache/filbert/claude-code.json` on 2026-1
 
 - With (AC3), the five-hour line formed a rate after 16 minutes. It stayed beyond reset until use stopped, then turned quiet. It never returned to learning.
 - Without (AC3), the five-hour line had a rate on one read out of 332, and was learning again on the next read.
+- With (core 12 AC16), the rate counts only from the first rise at 15:07:53, so it formed at 15:18:00 and was faster. The line turned quiet at 15:27:39, 15 minutes after the last rise. The next rise, at 15:28:14, started a new segment and learning again, as (core 12 AC6) intends. With (AC3), a rate still never drops straight to learning or to no text; without it, it does.
 
 ## Risks
 

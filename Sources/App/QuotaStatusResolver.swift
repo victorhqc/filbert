@@ -15,10 +15,16 @@ enum QuotaStatusResolver {
     enum Status: Equatable {
         case window(percentage: Double)
         case balance(amount: Double, formattedAmount: String)
+        case credits(formattedAmount: String)
         case fallback
     }
 
-    static func resolve(for quota: ProviderQuota) -> Status {
+    static func resolve(for quota: ProviderQuota, promotedPoolIds: Set<String> = []) -> Status {
+        let layout = FallbackPoolLayout(lines: quota.lines, promotedPoolIds: promotedPoolIds)
+        if let status = layout.flatMap({ poolStatus(of: $0.pool) }) {
+            return status
+        }
+
         if let percentageLine = firstPercentageLine(in: quota.lines) {
             if let pct = percentage(for: percentageLine) {
                 return .window(percentage: pct)
@@ -31,6 +37,18 @@ enum QuotaStatusResolver {
         }
 
         return .fallback
+    }
+
+    static func isAtLimit(_ line: UsageLine) -> Bool {
+        percentage(for: line).map { $0 >= 100 } ?? false
+    }
+
+    private static func poolStatus(of pool: UsageLine) -> Status? {
+        guard let text = amountText(for: pool) else { return nil }
+        if let amount = currencyAmount(of: pool) {
+            return .balance(amount: amount, formattedAmount: text)
+        }
+        return .credits(formattedAmount: text)
     }
 
     static func firstCurrencyBalance(in lines: [UsageLine]) -> Double? {
@@ -62,13 +80,13 @@ enum QuotaStatusResolver {
             case BalanceThresholds.low ..< BalanceThresholds.ok: .warn
             default: .good
             }
-        case .fallback:
+        case .credits, .fallback:
             nil
         }
     }
 
-    static func compactTier(for quota: ProviderQuota, at now: Date) -> Tier? {
-        let status = resolve(for: quota)
+    static func compactTier(for quota: ProviderQuota, promotedPoolIds: Set<String> = [], at now: Date) -> Tier? {
+        let status = resolve(for: quota, promotedPoolIds: promotedPoolIds)
         guard case .window = status,
               let line = firstPercentageLine(in: quota.lines),
               let pace = BudgetPace(line: line, now: now)

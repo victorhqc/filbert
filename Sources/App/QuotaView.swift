@@ -84,12 +84,11 @@ struct QuotaView: View {
 
     private func quotaContent(_ quota: ProviderQuota, providerId: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            // balance-only lines with non-positive or duplicate totals are filtered out before the rows render.
             QuotaHeadlineAndRows(
                 viewModel: viewModel,
                 providerId: providerId,
                 quota: quota,
-                lines: visibleUsageLines(quota.lines),
+                lines: rowLines(for: quota, providerId: providerId),
                 headlineColor: headlineBalanceColor(for: quota)
             )
 
@@ -157,11 +156,14 @@ struct QuotaView: View {
             return headerAccessibilityLabel(headerLabel, fastRefreshStatus: fastRefreshStatus)
         }
 
-        switch QuotaStatusResolver.resolve(for: quota) {
+        let promotedPoolIds = viewModel.promotedFallbackPoolIds(for: info.id)
+        switch QuotaStatusResolver.resolve(for: quota, promotedPoolIds: promotedPoolIds) {
         case let .window(percentage):
             headerLabel = String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
         case let .balance(_, formattedAmount):
             headerLabel = String(localized: "\(info.displayName): \(formattedAmount) remaining")
+        case let .credits(formattedAmount):
+            headerLabel = String(localized: "\(info.displayName): \(formattedAmount) credits remaining")
         case .fallback:
             headerLabel = info.displayName
         }
@@ -228,6 +230,13 @@ struct QuotaView: View {
     }
 
     // MARK: - Helpers
+
+    private func rowLines(for quota: ProviderQuota, providerId: String) -> [UsageLine] {
+        guard let layout = viewModel.fallbackPoolLayout(for: quota, providerId: providerId) else {
+            return visibleUsageLines(quota.lines)
+        }
+        return [layout.poolLine()] + visibleUsageLines(layout.otherLines)
+    }
 
     private func headlineBalanceColor(for quota: ProviderQuota) -> Color? {
         QuotaStatusResolver.firstCurrencyBalance(in: quota.lines).map {
@@ -347,7 +356,7 @@ private extension QuotaView {
             Spacer(minLength: 4)
 
             if collapsed, case let .loaded(quota) = state {
-                CompactProviderStatus(quota: quota)
+                CompactProviderStatus(quota: quota, promotedPoolIds: viewModel.promotedFallbackPoolIds(for: info.id))
             }
 
             Image(systemName: "chevron.right")

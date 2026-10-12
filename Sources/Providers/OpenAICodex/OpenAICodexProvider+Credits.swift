@@ -31,12 +31,18 @@ extension OpenAICodexProvider {
         let label = String(localized: "Credits")
         return switch balance {
         case let .amount(amount):
-            UsageLine(label: label, balance: UsageBalance(amount: amount, unit: .credits), id: Self.creditsLineId)
+            UsageLine(
+                label: label,
+                balance: UsageBalance(amount: amount, unit: .credits),
+                id: Self.creditsLineId,
+                fallbackForLimitGroup: Self.subscriptionLimitGroup
+            )
         case let .unparseable(raw):
             UsageLine(
                 label: label,
                 details: [UsageDetail(label: String(localized: "Balance"), value: raw)],
-                id: Self.creditsLineId
+                id: Self.creditsLineId,
+                fallbackForLimitGroup: Self.subscriptionLimitGroup
             )
         }
     }
