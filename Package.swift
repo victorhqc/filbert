@@ -123,7 +123,8 @@ let package = Package(
         .testTarget(
             name: "OpenAICodexProviderTests",
             dependencies: ["OpenAICodexProvider"],
-            path: "Tests/OpenAICodexProviderTests"
+            path: "Tests/OpenAICodexProviderTests",
+            resources: [.process("Fixtures")]
         ),
         .testTarget(
             name: "OpenCodeGoProviderTests",

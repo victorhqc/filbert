@@ -92,14 +92,14 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 ## Plan
 
 1. [ ] Capture `account/rateLimits/read` responses with the installed Codex CLI. Use the same exchange as the provider, no more often than every 30 seconds, because each read sends one or two backend requests. Cover an active session across one five-hour reset and one weekly reset, idle time, and usage from another machine or Codex cloud. Record the CLI version. Also record `rateLimitReachedType` and `spendControlReached` for (ui 28). CLI 0.145.0 sends no `ordinaryUsageAllowed`.
-2. [ ] From the capture, record whether `resetsAt` stays within the tolerance, whether `usedPercent` only rises, whether consecutive resets are `windowDurationMins` apart, when `resetsAt` is absent, and the most decimals in `balance`. If credits do not move during the capture, record that credit depletion is not observed.
+2. [ ] From the capture, record whether `resetsAt` stays within the tolerance, whether `usedPercent` only rises, whether consecutive resets are `windowDurationMins` apart, when `resetsAt` is absent, and the most decimals in `balance`. If credits do not move during the capture, record that credit depletion is not observed. The first session (Evidence) shows a steady reset and rising usage inside one five-hour period. Rollovers and usage from another machine are still open.
 3. [x] Decide how the credits row shows a plain number. Decided on 2026-10-12: a typed balance on `UsageLine` (core 13). A preformatted string leaves the number unreadable for (ui 28), and a typed unit on `total` keeps two meanings for `total`.
 4. [ ] Map the provider. Keep all Codex interpretation inside the module:
    - [x] `.fresh`, one receipt time per read, line IDs, the limit group, and the headline line ID. With the headline line and the limit group, a window at 100% already shows "Limit reached" (core 12 AC9).
    - [ ] Window descriptors, after Plan step 2. Implemented on 2026-10-12 from the rules in (AC3), ahead of the evidence: a window above 0% with `resetsAt` and `windowDurationMins` carries a fixed-period descriptor with receipt timing. Tests cover both windows, a window without a reset or a length, and an unused window whose moving reset is no change to Smart refresh. This stays open until Plan step 2 confirms (AC2) and the period length; if the capture disagrees, the mapping changes before merge.
    - [x] The credits row and its descriptor, after (core 13). The resolution is 10⁻¹⁰, because every read in the capture so far has 10 decimals. A credits metric exists only when the credits row exists, so `hasCredits` false also drops the metric. Tests cover finite, unlimited, and absent credits, `hasCredits` false, a response without `hasCredits`, unparseable balances, a credits row without windows, a credit purchase, balances with different numbers of decimals, and a credits row that carries nothing that ranks a provider (core 13 AC3).
-5. [ ] Convert the capture into fixture traces with only receipt times, percentages, reset times, durations, and credit fields. Drop `accountId`, plan names, and limit names (providers 05 AC4). Add the fixtures and tests from (AC6).
-6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data.
+5. [ ] Convert the capture into fixture traces with only receipt times, percentages, reset times, durations, and credit fields. Drop `accountId`, plan names, and limit names (providers 05 AC4). Add the fixtures and tests from (AC6). The first session is `codex-capture-first-session.json`, with replay tests. Fixtures for a five-hour rollover and a weekly rollover follow after Plan step 2.
+6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data. Seen on 2026-10-12 after the first session: the five-hour estimate in the headline, the weekly long-period estimate, and the credits row learning, with "811,77" in German formatting. Still to check: the collapsed Codex card, limit reached, beyond reset, quiet, too far apart, paused, and VoiceOver.
 
 ### Evidence
 
@@ -122,6 +122,20 @@ The capture runs the provider's exchange from a local script and keeps the raw r
 - The five-hour window was at 0%. On each read, its `resetsAt` was the receipt time plus 300 minutes, within 1.3 seconds: 16:37:38 at 11:37:38, then 16:38:34 at 11:38:35.
 - The weekly window was at 38%, with a steady `resetsAt` of 2026-10-18 10:04:32 UTC. The reset has seconds, not whole minutes.
 - `balance` was "811.7749020000", with 10 decimals and trailing zeros, on all 79 reads up to 2026-10-12 13:01 UTC. `hasCredits` was true and `unlimited` false.
+
+**First session, 2026-10-12, Codex used on this Mac from about 13:15 UTC:**
+
+- The five-hour window started at 13:15:27. The read at 13:15:35 already had the reset 18:15:27, exactly 300 minutes later, but still showed 0%. A started window can read 0%, so the 0% rule of (AC3) skips at most its first percentage point.
+- From 13:16:35 the window rose 2, 4, 5, 5, 7%, then stayed at 7% after use stopped. Its reset stayed at 18:15:27 to the second on every read.
+- The weekly window rose from 38% to 39% at 13:16:35. Its reset stayed at 10:04:32.
+- So far this matches a window that starts at its first use and resets one `windowDurationMins` later. A rollover, usage from another machine, and a longer period are not yet captured.
+
+**Replay of the first session through the provider and Core (fixture `codex-capture-first-session.json`, 37 reads from 12:55 to 13:31 UTC):**
+
+- The five-hour line had no forecast while unused. From the first rise it was learning for 10 minutes, then estimated. With usage flat at 7%, the estimate moved from 16:32 to 18:10 UTC, toward the reset.
+- The weekly line was estimated on every read, from the average pace since its period started (core 12 AC13).
+- The credits line was learning on every read, because the balance did not move.
+- Smart refresh saw a change only on the 4 reads where the five-hour percentage rose. Each window stayed in one period, and no value decreased.
 
 ## Risks
 
