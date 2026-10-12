@@ -135,19 +135,33 @@ private struct UsageDetailsRows: View {
         if let details, !details.isEmpty {
             VStack(alignment: .leading, spacing: 1) {
                 ForEach(details, id: \.label) { detail in
-                    HStack {
-                        Text(detail.label)
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                        Spacer()
-                        Text(detail.value)
-                            .font(.caption2.monospacedDigit())
-                            .foregroundColor(.secondary)
+                    ViewThatFits(in: .horizontal) {
+                        HStack {
+                            label(of: detail)
+                            Spacer()
+                            value(of: detail)
+                        }
+                        VStack(alignment: .leading, spacing: 0) {
+                            label(of: detail)
+                            value(of: detail)
+                                .fixedSize(horizontal: false, vertical: true)
+                        }
                     }
+                    .foregroundColor(.secondary)
                     .padding(.leading, 12)
                 }
             }
         }
+    }
+
+    private func label(of detail: UsageDetail) -> some View {
+        Text(detail.label)
+            .font(.caption2)
+    }
+
+    private func value(of detail: UsageDetail) -> some View {
+        Text(detail.value)
+            .font(.caption2.monospacedDigit())
     }
 }
 

@@ -134,6 +134,7 @@ Credits                   1,159.57
 - `QuotaStatusResolver.Status` gained `.credits(formattedAmount:)`: an amount without a tier. A promoted currency pool keeps `.balance`.
 - The presentation treats the pool as the headline line (core 12 AC15). Its headline always names the pool, adds the pool's estimate when there is one, and reads "Using Credits" and each reached limit to VoiceOver first. The name-style key "Promoted pool value format" passes `bundle: .module`.
 - The menu bar and the collapsed card take the promoted pool IDs from the view model; the menu-bar provider selection does not need them.
+- A scripted fake `codex` on 2026-10-12 showed the promoted card with credits learning, the menu-bar amount "794,65", and the normal card at 0% after the reset. At the popover's 280 pt width, "Limit reached · resets in 4 Minuten" did not fit beside "5-hour window" and was cut before the reset time. A detail line now moves its value under its label when the two do not fit on one line; details that fit keep one line.
 - A rebuild on 2026-10-12 after the Codex session had ended showed the normal layout with "100% · Limit reached" and credits at 744,30. The first read after a launch only sets the baseline (AC2), and the credits no longer fell, so the pool stayed in its row. The promoted layout needs a session that spends credits.
 
 ## Risks
