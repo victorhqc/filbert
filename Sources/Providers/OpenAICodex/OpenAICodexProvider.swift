@@ -36,6 +36,10 @@ public struct OpenAICodexProvider: AIProvider {
         canInvokeInference: false
     )
 
+    static let primaryWindowLineId = "primary-window-usage"
+    static let secondaryWindowLineId = "secondary-window-usage"
+    static let subscriptionLimitGroup = "subscription"
+
     private let locator: CodexLocator
     private let client: CodexAppServerClient
     private let coordinator: CodexFetchCoordinator
@@ -70,72 +74,81 @@ public struct OpenAICodexProvider: AIProvider {
             throw OpenAICodexError.binaryNotFound
         }
 
-        let result = try await coordinator.readRateLimits(
+        let read = try await coordinator.readRateLimits(
             using: client,
             executablePath: executablePath
         )
-        return map(result)
+        return map(read.result, receivedAt: read.receivedAt)
     }
 
-    func map(_ result: CodexRateLimitReadResult) -> ProviderQuota {
+    func map(_ result: CodexRateLimitReadResult, receivedAt: Date) -> ProviderQuota {
         let snapshot = result.rateLimitsByLimitId?["codex"] ?? result.rateLimits
-        let windows = [snapshot?.primary, snapshot?.secondary].compactMap { $0 }
-        var lines = windows.map(usageLine)
-
-        if let details = creditDetails(for: snapshot?.credits) {
-            if let firstLine = lines.first {
-                lines[0] = UsageLine(
-                    label: firstLine.label,
-                    percentage: firstLine.percentage,
-                    resetDate: firstLine.resetDate,
-                    windowDuration: firstLine.windowDuration,
-                    details: details
-                )
-            } else {
-                lines.append(UsageLine(label: String(localized: "Credits"), details: details))
-            }
+        let windows = windowEntries(in: snapshot)
+        let creditDetails = creditDetails(for: snapshot?.credits)
+        var lines = windows.enumerated().map { index, entry in
+            usageLine(for: entry, details: index == 0 ? creditDetails : nil)
         }
+        if windows.isEmpty, let creditDetails {
+            lines.append(UsageLine(label: String(localized: "Credits"), details: creditDetails))
+        }
+        let headlineWindow = shortestWindow(in: windows)
 
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: headline(for: windows),
+            headline: headline(for: headlineWindow?.window),
             lines: lines,
-            lastUpdated: Date(),
-            activityObservation: activityObservation(for: snapshot)
+            lastUpdated: receivedAt,
+            activityObservation: activityObservation(for: windows, credits: snapshot?.credits),
+            headlineUsageLineId: headlineWindow?.id
         )
     }
 
-    private func activityObservation(
-        for snapshot: CodexRateLimitSnapshot?
-    ) -> ProviderActivityObservation {
-        var metrics: [ProviderActivityMetric] = []
+    private struct WindowEntry {
+        let id: String
+        let window: CodexRateLimitWindow
+    }
 
-        if let primary = snapshot?.primary?.usedPercent {
-            metrics.append(ProviderActivityMetric(
-                id: "primary-window-usage",
-                kind: .usage,
-                value: .number(Decimal(primary))
-            ))
+    private func windowEntries(in snapshot: CodexRateLimitSnapshot?) -> [WindowEntry] {
+        [
+            (Self.primaryWindowLineId, snapshot?.primary),
+            (Self.secondaryWindowLineId, snapshot?.secondary),
+        ].compactMap { id, window in
+            window.map { WindowEntry(id: id, window: $0) }
         }
-        if let secondary = snapshot?.secondary?.usedPercent {
-            metrics.append(ProviderActivityMetric(
-                id: "secondary-window-usage",
-                kind: .usage,
-                value: .number(Decimal(secondary))
-            ))
+    }
+
+    private func shortestWindow(in windows: [WindowEntry]) -> WindowEntry? {
+        windows.min {
+            ($0.window.windowDurationMins ?? .max) < ($1.window.windowDurationMins ?? .max)
         }
-        if snapshot?.credits?.unlimited == true {
+    }
+
+    private func activityObservation(
+        for windows: [WindowEntry],
+        credits: CodexCredits?
+    ) -> ProviderActivityObservation {
+        var metrics = windows.compactMap { entry in
+            entry.window.usedPercent.map { percentage in
+                ProviderActivityMetric(
+                    id: entry.id,
+                    kind: .usage,
+                    value: .number(Decimal(percentage))
+                )
+            }
+        }
+        if credits?.unlimited == true {
             metrics.append(ProviderActivityMetric(
                 id: "credits",
                 kind: .credits,
                 value: .discrete("unlimited")
             ))
-        } else if let balance = snapshot?.credits?.balance {
+        } else if let balance = credits?.balance {
             appendNumericCreditMetric(balance, to: &metrics)
         }
 
-        return ProviderActivityObservation(metrics: metrics)
+        // Each `account/rateLimits/read` asks the backend; nothing is cached.
+        return ProviderActivityObservation(metrics: metrics, freshness: .fresh)
     }
 
     private func appendNumericCreditMetric(
@@ -152,12 +165,15 @@ public struct OpenAICodexProvider: AIProvider {
         ))
     }
 
-    private func usageLine(_ window: CodexRateLimitWindow) -> UsageLine {
+    private func usageLine(for entry: WindowEntry, details: [UsageDetail]?) -> UsageLine {
         UsageLine(
-            label: windowLabel(for: window.windowDurationMins),
-            percentage: window.usedPercent,
-            resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) },
-            windowDuration: window.windowDurationMins.map { TimeInterval($0) * 60 }
+            label: windowLabel(for: entry.window.windowDurationMins),
+            percentage: entry.window.usedPercent,
+            resetDate: entry.window.resetsAt.map { Date(timeIntervalSince1970: $0) },
+            windowDuration: entry.window.windowDurationMins.map { TimeInterval($0) * 60 },
+            details: details,
+            id: entry.id,
+            limitGroup: Self.subscriptionLimitGroup
         )
     }
 
@@ -175,10 +191,8 @@ public struct OpenAICodexProvider: AIProvider {
         ]
     }
 
-    private func headline(for windows: [CodexRateLimitWindow]) -> String {
-        guard let shortestWindow = windows.min(by: {
-            ($0.windowDurationMins ?? .max) < ($1.windowDurationMins ?? .max)
-        }) else {
+    private func headline(for shortestWindow: CodexRateLimitWindow?) -> String {
+        guard let shortestWindow else {
             return String(localized: "No usage limits reported")
         }
 
@@ -209,19 +223,25 @@ public struct OpenAICodexProvider: AIProvider {
     }
 }
 
+private struct CodexRateLimitRead: Sendable {
+    let result: CodexRateLimitReadResult
+    let receivedAt: Date
+}
+
 private actor CodexFetchCoordinator {
-    private var inFlight: Task<CodexRateLimitReadResult, Error>?
+    private var inFlight: Task<CodexRateLimitRead, Error>?
 
     func readRateLimits(
         using client: CodexAppServerClient,
         executablePath: String
-    ) async throws -> CodexRateLimitReadResult {
+    ) async throws -> CodexRateLimitRead {
         if let inFlight {
             return try await inFlight.value
         }
 
         let task = Task {
-            try await client.readRateLimits(at: executablePath)
+            let result = try await client.readRateLimits(at: executablePath)
+            return CodexRateLimitRead(result: result, receivedAt: Date())
         }
         inFlight = task
         defer { inFlight = nil }

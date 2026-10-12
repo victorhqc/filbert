@@ -4,13 +4,14 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 
 ## Context
 
-- Status: draft for review. The upstream source review is recorded (Evidence below). The capture in Plan step 1 is pending. Depends on (core 12). (core 12) merges only together with this spec and (providers 17, providers 19, providers 20). (ui 28) adds the fallback-pool declaration for the credits row after this spec lands.
+- Status: draft for review. The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12. Depends on (core 12), which is on `main` with (providers 17). The credits row depends on (core 13). (ui 28) adds the fallback-pool declaration for the credits row after this spec lands.
 - `Sources/Providers/OpenAICodex/OpenAICodexProvider.swift` — maps the `primary-window-usage`, `secondary-window-usage`, and `credits` metrics with `.unknown` freshness. Sets `lastUpdated` to `Date()` on each mapping. Attaches credits as a detail of the first window row (providers 05 AC7).
 - `Sources/Providers/OpenAICodex/CodexAppServerClient.swift` — starts a new `codex app-server` for each read (providers 05 AC3). Decodes `usedPercent`, `resetsAt`, `windowDurationMins`, and `credits { balance, unlimited }`. It does not decode `hasCredits`.
 - `account/rateLimits/read` sends a live backend request on each call. The response has no measurement timestamp. `usedPercent` is a whole number. `resetsAt` is the absolute reset time from the server (Evidence).
+- An unused window at 0% reports `resetsAt` as the server time plus the window length. The reset moves forward on each read until the window starts (Evidence).
 - `balance` is the backend string with no fixed number of decimals, e.g. "80", "12.5", or "1159.5692275000".
 - The Codex CLI hides window-limit warnings when the account has credits. This suggests that credits are used after a window runs out. It is not verified (ui 28).
-- `Sources/App/QuotaStatusResolver.swift` — `amountText(for:)` formats the `total` of a line as currency, and `resolve(for:)` reads a line with a `total` as a balance status. No `UsageLine` shape shows a plain number today.
+- No `UsageLine` shape shows a plain number today. The App reads a line without a percentage as a currency balance, and hides it unless it has a positive `total`. (core 13) adds a typed balance with a credits unit.
 - `Tests/OpenAICodexProviderTests/` — mapping and fixture tests.
 
 ## Acceptance Criteria
@@ -44,7 +45,8 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 - **And** the headline line is the shortest window, matching today's headline
 - **And** without a window, the provider names no headline line; the credits row is never the headline line
 - **And** both windows share one limit group, because either one blocks usage when it runs out (core 12 AC8)
-- **And** a window without `resetsAt` carries no descriptor.
+- **And** a window without `resetsAt` carries no descriptor
+- **And** a window at 0% carries no descriptor, because its `resetsAt` can move with each read; at the default 5-minute refresh, each move passes the reset tolerance of (core 12), starts a new period, and looks like a change to Smart refresh (core 11).
 
 ### AC4: Credits are their own allowance row
 
@@ -53,11 +55,11 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 - **Then** credits become a separate `UsageLine` with ID `credits` after the window rows, no longer a detail of the first window row
 - **And** finite credits carry a balance descriptor in the credits unit, with one fixed resolution from the evidence (core 12 AC1)
 - **And** the provider never derives the resolution from the decimals of each string; the backend trims them, and a changed resolution re-baselines (core 12 AC3)
-- **And** the row shows the balance with two localized decimals and no currency symbol, e.g. "1,159.57", not the raw string "1159.5692275000"; the metric keeps the unrounded value
-- **And** the credits row does not change compact status, the collapsed card header, or menu-bar selection; only (ui 28) promotion can change them
-- **And** unlimited credits show "Unlimited credits" and carry no descriptor
+- **And** the row has a finite balance in the credits unit (core 13), so it shows two localized decimals and no currency symbol, e.g. "1,159.57", not the raw string "1159.5692275000"; the balance and the metric keep the unrounded value
+- **And** the credits row does not change compact status, the collapsed card header, or menu-bar selection (core 13 AC3); only (ui 28) promotion can change them
+- **And** unlimited credits have an unlimited balance, which shows "Unlimited", and carry no descriptor
 - **And** absent credits, or `hasCredits` false with `unlimited` not true, produce no credits row, as the Codex CLI does (providers 05 AC7)
-- **And** a balance that does not parse as a number carries no metric; the row shows the raw string
+- **And** a balance that does not parse as a number carries no metric and no balance; the row shows the raw string as a detail
 - **And** the credits row shows the same forecast states as every other row (core 12 AC9): learning after a baseline, an estimate when credits decrease, and no forecast text when credits stay flat after the learning limit
 - **And** the credit forecast reflects only observed credit depletion
 - **And** the credits row has no limit group, because credits are a separate pool (core 12 AC8)
@@ -79,6 +81,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
   - `.fresh` observations with receipt timing, and coalesced fetches that share one receipt time
   - stable resets, a five-hour rollover, and a weekly rollover
   - a window without `resetsAt`
+  - an unused window at 0% whose `resetsAt` moves with each read, which carries no descriptor and is no change to Smart refresh
   - the headline line ID with two windows, one window, and no window
   - finite, unlimited, and absent credits, `hasCredits` false, and a response without `hasCredits`
   - a credits row without windows
@@ -88,10 +91,13 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 
 ## Plan
 
-1. [ ] Capture `account/rateLimits/read` responses with the installed Codex CLI. Use the same exchange as the provider, no more often than every 30 seconds, because each read sends one or two backend requests. Cover an active session across one five-hour reset and one weekly reset, idle time, and usage from another machine or Codex cloud. Record the CLI version. Also record `ordinaryUsageAllowed` and `rateLimitReachedType` for (ui 28).
+1. [ ] Capture `account/rateLimits/read` responses with the installed Codex CLI. Use the same exchange as the provider, no more often than every 30 seconds, because each read sends one or two backend requests. Cover an active session across one five-hour reset and one weekly reset, idle time, and usage from another machine or Codex cloud. Record the CLI version. Also record `rateLimitReachedType` and `spendControlReached` for (ui 28). CLI 0.145.0 sends no `ordinaryUsageAllowed`.
 2. [ ] From the capture, record whether `resetsAt` stays within the tolerance, whether `usedPercent` only rises, whether consecutive resets are `windowDurationMins` apart, when `resetsAt` is absent, and the most decimals in `balance`. If credits do not move during the capture, record that credit depletion is not observed.
-3. [ ] Decide how the credits row shows a plain number. Today `UsageLine` shows an amount only as currency through `total`, and a `total` changes `resolve(for:)` when no window has a percentage. Any App change stays generic, with no provider ID (core 12 AC1).
-4. [ ] Move credits to their own row. Add `.fresh`, receipt timing, descriptors, line IDs, the limit group, and the headline line ID. Keep all Codex interpretation inside the module.
+3. [x] Decide how the credits row shows a plain number. Decided on 2026-10-12: a typed balance on `UsageLine` (core 13). A preformatted string leaves the number unreadable for (ui 28), and a typed unit on `total` keeps two meanings for `total`.
+4. [ ] Map the provider. Keep all Codex interpretation inside the module:
+   - [x] `.fresh`, one receipt time per read, line IDs, the limit group, and the headline line ID. With the headline line and the limit group, a window at 100% already shows "Limit reached" (core 12 AC9).
+   - [ ] Window descriptors, after Plan step 2.
+   - [ ] The credits row and its descriptor, after (core 13).
 5. [ ] Convert the capture into fixture traces with only receipt times, percentages, reset times, durations, and credit fields. Drop `accountId`, plan names, and limit names (providers 05 AC4). Add the fixtures and tests from (AC6).
 6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data.
 
@@ -107,13 +113,22 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 - `CreditsSnapshot` is `{ hasCredits, unlimited, balance }`. `balance` passes through from the backend unchanged.
 - The response also carries `accountId` and `planType`, but no measurement timestamp.
 
-**Capture:** pending. This machine has Codex CLI 0.145.0. The capture confirms these fields for the installed version.
+**Capture, Codex CLI 0.145.0, one read per minute, from 2026-10-12 11:37 UTC:**
+
+The capture runs the provider's exchange from a local script and keeps the raw reads outside the repository. It replaces `accountId` with a short hash. The first reads show:
+
+- The response has no `accountId` and no `ordinaryUsageAllowed`. It has `planType`, `limitId` "codex", `limitName`, `individualLimit`, `rateLimitReachedType`, `spendControlReached`, and `rateLimitResetCredits`.
+- `rateLimitResetCredits` lists reset credits titled "Full reset (Weekly + 5 hr)", with `availableCount` 3. A user can spend one to reset both windows before `resetsAt`.
+- The five-hour window was at 0%. On each read, its `resetsAt` was the receipt time plus 300 minutes, within 1.3 seconds: 16:37:38 at 11:37:38, then 16:38:34 at 11:38:35.
+- The weekly window was at 38%, with a steady `resetsAt` of 2026-10-18 10:04:32 UTC. The reset has seconds, not whole minutes.
+- `balance` was "811.7749020000", with 10 decimals. `hasCredits` was true and `unlimited` false.
 
 ## Risks
 
 - Moving credits to their own row is a visible UI change for Codex users.
 - If the backend returns an older value after a newer one, each drop is a correction (core 12 AC3), and the history restarts. The capture must show that this does not occur. If it occurs, this spec needs a rule like (providers 17 AC3).
-- `codex login` can switch accounts. The response carries `accountId`, but Core has no field for an account change (core 12 AC11). The forecast can span two accounts until a reset re-baselines.
+- `codex login` can switch accounts. CLI 0.145.0 sends no `accountId`, and Core has no field for an account change (core 12 AC11). The forecast can span two accounts until a reset re-baselines.
+- A reset credit resets both windows before `resetsAt`. The windows drop to 0% and lose their descriptors (AC3), so their histories restart. This is correct, not a defect.
 - A plan change can change how much one percentage point is worth. A rate can span the change until the next reset.
 - Until (ui 28) lands, a window at 100% shows "Limit reached" in the headline (core 12 AC9), even when work continues on credits.
 - Credits can stay flat for days. After each launch, wake, or gap, the credits row shows "Learning your usage rate…" for two hours, and then no forecast text. An estimate appears only after the windows run out and credits start to move.

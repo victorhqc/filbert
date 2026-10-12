@@ -179,7 +179,7 @@ final class OpenAICodexProviderTests: XCTestCase {
             ]
         )
 
-        let quota = provider.map(result)
+        let quota = provider.map(result, receivedAt: Date())
 
         XCTAssertEqual(quota.lines.count, 2)
         XCTAssertEqual(quota.lines[0].percentage, 20)
@@ -211,7 +211,7 @@ final class OpenAICodexProviderTests: XCTestCase {
             rateLimitsByLimitId: nil
         )
 
-        let quota = provider.map(result)
+        let quota = provider.map(result, receivedAt: Date())
 
         XCTAssertEqual(quota.headline, "No usage limits reported")
         XCTAssertEqual(quota.lines.count, 1)
@@ -224,7 +224,7 @@ final class OpenAICodexProviderTests: XCTestCase {
 
     // MARK: - coalesced fetches
 
-    func testProvider_coalescesConcurrentFetches() async throws {
+    func testProvider_coalescesConcurrentFetchesIntoOneReceiptTime() async throws {
         let countURL = temporaryDirectory.appendingPathComponent("count")
         let rateLimitResult = "{\"jsonrpc\":\"2.0\",\"id\":2,\"result\":"
             + "{\"rateLimits\":{\"primary\":{\"usedPercent\":25,\"windowDurationMins\":300}}}}"
@@ -242,13 +242,17 @@ final class OpenAICodexProviderTests: XCTestCase {
         )
         let provider = makeProvider(executablePath: executable.path)
 
+        let start = Date()
         async let first = provider.fetchQuota(auth: .apiKeyFree, baseURL: OpenAICodexProvider.baseURL)
         async let second = provider.fetchQuota(auth: .apiKeyFree, baseURL: OpenAICodexProvider.baseURL)
-        _ = try await (first, second)
+        let quotas = try await (first, second)
+        let end = Date()
 
         let invocations = try String(contentsOf: countURL, encoding: .utf8)
             .split(whereSeparator: \.isNewline)
         XCTAssertEqual(invocations.count, 1)
+        XCTAssertEqual(quotas.0.lastUpdated, quotas.1.lastUpdated)
+        XCTAssertTrue((start ... end).contains(quotas.0.lastUpdated))
     }
 
     private func makeProvider(executablePath: String?) -> OpenAICodexProvider {
