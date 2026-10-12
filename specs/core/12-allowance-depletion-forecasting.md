@@ -145,7 +145,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
   1. **Limit reached.** A line in the group shows 100% in its current `UsageLine`, with or without a descriptor. The headline reads like "Weekly 100% · Limit reached", with the line's reset countdown below it. When several lines are at 100%, the line with the latest reset wins, because it blocks usage longest.
   2. **Uncertain near the limit.** A group line is paused after its projected depletion time, or a group line without an estimate has less than two resolution steps left. The headline stays as the provider wrote it.
   3. **Earliest estimate.** A group line has an estimated forecast. The estimate that runs out first wins. The headline reads like "3% · About 1h 20m of use remaining", with a smaller line below it like "Based on the last 20 minutes".
-  4. **Beyond reset.** The headline line has a beyond-reset forecast. Other group lines without a rate do not block it: learning, quiet, too far apart, insufficient, and paused away from the limit. Rules 1–3 have already excluded a line at 100%, a line uncertain near the limit, and any estimate. The headline reads like "3% · Not expected to run out", with a smaller line "before reset at recent pace".
+  4. **Beyond reset.** The headline line has a beyond-reset forecast. Other group lines without a rate do not block it: learning, quiet, too far apart, insufficient, and paused away from the limit. Rules 1–3 have already excluded a line at 100%, a line uncertain near the limit, and any estimate. The headline reads like "3% · Should last until reset", with a smaller line like "At your pace over the last 20 minutes". The row line reads like "Should last until reset · last 20 minutes".
 - **And** when no rule matches, the headline stays as the provider wrote it
 - **And** the winning line is the binding line; the headline shows the binding line's current value
 - **And** when the binding line is not the named headline line, the headline adds its label, e.g. "Weekly 95% · About 30m of use remaining"
@@ -310,8 +310,8 @@ About 1d 4h of use remaining · last 2 hours
 1d 2h left  About 83,8%/day available
 
 Beyond reset                          Another group line binds
-3% · Not expected to run out          Weekly 95% · About 30m of use remaining
-before reset at recent pace           Based on the last 40 minutes
+3% · Should last until reset          Weekly 95% · About 30m of use remaining
+At your pace over the last 20 minutes Based on the last 40 minutes
 
 Limit reached
 Weekly 100% · Limit reached
@@ -368,6 +368,8 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - A quota without an activity observation pauses the provider's histories, the same as `.unknown` freshness.
 - A manual check with Claude Code on 2026-10-09 showed the five-hour row beyond reset while weekly was learning. The earlier rule 4 needed every group line with a forecast to be beyond reset, so the headline never changed. Weekly windows move about one point every few hours, so they rarely form a rate. Rule 4 now ignores group lines without a rate, like rule 3.
 - The same check showed the row line "Not expected to run out before reset · last 10 minutes" truncated at normal width. Row lines now wrap.
+- The beyond-reset wording "Not expected to run out" with "before reset at recent pace" read as two unrelated fragments, and named no evidence span. It is now "Should last until reset" with "At your pace over the last 20 minutes", matching the estimate headline's "Based on the last …".
+- A manual check on 2026-10-12 showed the composed headline as the raw key "Forecast headline format". `String(localized:)` without `bundle:` reads `Bundle.main`, which has no catalog, so name-style keys fall back to the key. The forecast format keys now pass `bundle: .module`. The other lookups follow (ui 29).
 - A capture of Claude Code `/usage` writes on 2026-10-09 (229 writes, 09:39–14:46) showed `resets_at` in whole minutes, with a flip between two neighboring minutes on almost every write. The spread was exactly 60 seconds, which is the old tolerance with no margin. The reset tolerance is therefore 5 minutes. A real reset moves by hours or days. A sliding window moves its reset with each use, so it passes 5 minutes from the period's first reset after 5 minutes of use (providers 17).
 - Two histories that name one usage line ID, e.g. one missing and one new, also produce no forecast for that line. The debug assertion sits in the public `record`; Core tests call the internal path that has no assertion.
 - An interruption keeps the later of the sleep and wake times, so only a sample newer than the wake can become the baseline.

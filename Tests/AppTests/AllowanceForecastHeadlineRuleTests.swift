@@ -106,6 +106,20 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertNotNil(presentation.rowLines["five-hour"])
     }
 
+    func testTheComposedHeadlineReadsAsTextAndSentences() throws {
+        let headline = try XCTUnwrap(present(
+            fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
+            weekly: estimated("weekly", in: 30 * 60, span: 40 * 60)
+        ).headline)
+
+        let remaining = CoarseDurationFormatting.string(from: 30 * 60, unitsStyle: .full)
+        XCTAssertEqual(headline.text, "Weekly 95% · About \(abbreviated(30 * 60)) of use remaining")
+        XCTAssertEqual(
+            headline.accessibilityLabel,
+            "Weekly 95%. About \(remaining) of use remaining at recent pace, based on the last \(span(40 * 60))"
+        )
+    }
+
     func testEarliestEstimateInTheLimitGroupBindsAndAddsItsLabel() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
@@ -133,12 +147,12 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         let headline = try XCTUnwrap(presentation.headline)
         XCTAssertNil(headline.label)
         XCTAssertEqual(headline.value, "3%")
-        XCTAssertEqual(headline.status, "Not expected to run out")
-        XCTAssertEqual(headline.detail, "before reset at recent pace")
+        XCTAssertEqual(headline.status, "Should last until reset")
+        XCTAssertEqual(headline.detail, "At your pace over the last \(span(60 * 60))")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(
             presentation.rowLines["weekly"]?.text,
-            "Not expected to run out before reset · last \(span(60 * 60))"
+            "Should last until reset · last \(span(60 * 60))"
         )
     }
 
@@ -149,7 +163,7 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertEqual(
             headline.accessibilitySentences,
             [
-                "Not expected to run out before reset at recent pace, based on the last \(span(60 * 60))",
+                "Should last until reset at your pace over the last \(span(60 * 60))",
                 "Timing is approximate",
             ]
         )
@@ -171,7 +185,7 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
             )
 
             let headline = try XCTUnwrap(presentation.headline, "\(state)")
-            XCTAssertEqual(headline.status, "Not expected to run out", "\(state)")
+            XCTAssertEqual(headline.status, "Should last until reset", "\(state)")
             XCTAssertNil(presentation.rowLines["five-hour"], "\(state)")
         }
     }

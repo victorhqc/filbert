@@ -20,12 +20,20 @@ struct AllowanceForecastPresentation: Equatable {
         }
 
         var text: String {
-            String.localizedStringWithFormat(String(localized: "Forecast headline format"), subject, status)
+            String.localizedStringWithFormat(
+                String(localized: "Forecast headline format", bundle: .module),
+                subject,
+                status
+            )
         }
 
         static func subject(label: String?, value: String) -> String {
             guard let label else { return value }
-            return String.localizedStringWithFormat(String(localized: "Forecast labeled value format"), label, value)
+            return String.localizedStringWithFormat(
+                String(localized: "Forecast labeled value format", bundle: .module),
+                label,
+                value
+            )
         }
     }
 
@@ -38,7 +46,11 @@ struct AllowanceForecastPresentation: Equatable {
 
     static func joinedSentences(_ sentences: [String]) -> String {
         sentences.dropFirst().reduce(sentences.first ?? "") { joined, sentence in
-            String.localizedStringWithFormat(String(localized: "Accessibility sentence format"), joined, sentence)
+            String.localizedStringWithFormat(
+                String(localized: "Accessibility sentence format", bundle: .module),
+                joined,
+                sentence
+            )
         }
     }
 
@@ -141,8 +153,8 @@ private extension AllowanceForecastPresentation {
                 status = RemainingUse(forecast, now: now).headlineStatus
                 detail = String.localizedStringWithFormat(String(localized: "Based on the last %@"), span)
             case .beyondReset:
-                status = String(localized: "Not expected to run out")
-                detail = String(localized: "before reset at recent pace")
+                status = String(localized: "Should last until reset")
+                detail = String.localizedStringWithFormat(String(localized: "At your pace over the last %@"), span)
             case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
                 return nil
             }
@@ -169,7 +181,7 @@ private extension AllowanceForecastPresentation {
             text = RemainingUse(forecast, now: now).rowText(span: span)
         case .beyondReset:
             text = String.localizedStringWithFormat(
-                String(localized: "Not expected to run out before reset · last %@"),
+                String(localized: "Should last until reset · last %@"),
                 span
             )
         case .learning:
@@ -195,7 +207,7 @@ private extension AllowanceForecastPresentation {
             sentence = RemainingUse(forecast, now: now).accessibilitySentence(span: span)
         case .beyondReset:
             sentence = String.localizedStringWithFormat(
-                String(localized: "Not expected to run out before reset at recent pace, based on the last %@"),
+                String(localized: "Should last until reset at your pace over the last %@"),
                 span
             )
         case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:

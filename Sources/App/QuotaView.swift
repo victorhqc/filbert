@@ -171,7 +171,7 @@ struct QuotaView: View {
     private func headerAccessibilityLabel(_ headerLabel: String, fastRefreshStatus: String?) -> String {
         guard let fastRefreshStatus else { return headerLabel }
         return String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
+            String(localized: "Accessibility sentence format", bundle: .module),
             headerLabel,
             fastRefreshStatus
         )
