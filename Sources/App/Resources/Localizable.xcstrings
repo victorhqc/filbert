@@ -2843,6 +2843,51 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el reinicio, según %@ de historial" } }
       }
     },
+    "Runs out in about %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aufgebraucht in etwa %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } }
+      }
+    },
+    "At your average pace over the last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo, basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "At your average pace over the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } }
+      }
+    },
+    "Runs out in about %1$@ · last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aufgebraucht in etwa %1$@ · %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ · last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } }
+      }
+    },
+    "Runs out in about %1$@ at your average pace over the last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo in etwa %1$@ aufgebraucht, basierend auf %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ at your average pace over the last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } }
+      }
+    },
+    "Should last until reset at your average pace over the last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim durchschnittlichen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your average pace over the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } }
+      }
+    },
     "Timing is approximate" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -235,69 +235,6 @@ public struct ClaudeCodeProvider: AIProvider {
         )
     }
 
-    private func activityObservation(from cache: StatuslineCache) -> ProviderActivityObservation {
-        let now = Date().timeIntervalSince1970
-        let entries = activityMetricEntries(from: cache.rateLimits)
-
-        let freshMetrics = entries.compactMap { entry in
-            isFresh(entry.window, cacheWrittenAt: cache.writtenAt, now: now)
-                ? metric(id: entry.id, window: entry.window, cacheWrittenAt: cache.writtenAt)
-                : nil
-        }
-        if !freshMetrics.isEmpty {
-            return ProviderActivityObservation(metrics: freshMetrics, freshness: .fresh)
-        }
-
-        // Every known window is stale: keep the figures for the UI-visible
-        // last-known data while marking the observation stale so Core discards
-        // it as evidence.
-        let allMetrics = entries.compactMap { metric(id: $0.id, window: $0.window, cacheWrittenAt: cache.writtenAt) }
-        return ProviderActivityObservation(
-            metrics: allMetrics,
-            freshness: allMetrics.isEmpty ? .unknown : .stale
-        )
-    }
-
-    private func activityMetricEntries(from rateLimits: RateLimits?) -> [(id: String, window: Window)] {
-        [
-            (Self.fiveHourLineId, rateLimits?.fiveHour),
-            (Self.weeklyLineId, rateLimits?.sevenDay),
-        ].compactMap { id, window in window.map { (id, $0) } }
-    }
-
-    private func isFresh(_ window: Window, cacheWrittenAt: TimeInterval, now: TimeInterval) -> Bool {
-        now - (window.writtenAt ?? cacheWrittenAt) <= Self.freshnessThreshold
-    }
-
-    private func metric(id: String, window: Window, cacheWrittenAt: TimeInterval) -> ProviderActivityMetric? {
-        guard let percentage = window.usedPercentage else { return nil }
-        return ProviderActivityMetric(
-            id: id,
-            kind: .usage,
-            value: .number(Decimal(percentage)),
-            forecastDescriptor: forecastDescriptor(
-                usageLineId: id,
-                window: window,
-                writtenAt: window.writtenAt ?? cacheWrittenAt
-            )
-        )
-    }
-
-    private func forecastDescriptor(
-        usageLineId: String,
-        window: Window,
-        writtenAt: TimeInterval
-    ) -> AllowanceForecastDescriptor? {
-        guard let resetsAt = window.resetsAt else { return nil }
-        return AllowanceForecastDescriptor(
-            accounting: .fixedPeriod(limit: 100, resetsAt: Date(timeIntervalSince1970: resetsAt)),
-            unit: .percentagePoints,
-            resolution: 1,
-            timing: .source(Date(timeIntervalSince1970: writtenAt)),
-            usageLineId: usageLineId
-        )
-    }
-
     private func usageLine(
         id: String,
         label: String,

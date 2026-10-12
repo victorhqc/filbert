@@ -58,7 +58,11 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
                         kind: .usage,
                         value: .number(consumed),
                         forecastDescriptor: AllowanceForecastDescriptor(
-                            accounting: .fixedPeriod(limit: 100, resetsAt: resetsAt),
+                            accounting: .fixedPeriod(
+                                limit: 100,
+                                resetsAt: resetsAt,
+                                length: UsageWindowDuration.fiveHours
+                            ),
                             unit: .percentagePoints,
                             resolution: 1,
                             timing: .source(clock.date),

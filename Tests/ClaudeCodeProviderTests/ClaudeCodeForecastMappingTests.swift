@@ -23,9 +23,40 @@ final class ClaudeCodeForecastMappingTests: XCTestCase {
         ))
 
         XCTAssertEqual(quota.activityObservation?.metrics.map(\.forecastDescriptor), [
-            descriptor(lineId: "five-hour-usage", resetsAt: fiveHourReset, writtenAt: now - 30),
-            descriptor(lineId: "weekly-usage", resetsAt: weeklyReset, writtenAt: now - 60),
+            descriptor(
+                lineId: "five-hour-usage",
+                resetsAt: fiveHourReset,
+                length: UsageWindowDuration.fiveHours,
+                writtenAt: now - 30
+            ),
+            descriptor(
+                lineId: "weekly-usage",
+                resetsAt: weeklyReset,
+                length: UsageWindowDuration.week,
+                writtenAt: now - 60
+            ),
         ])
+    }
+
+    func testTheWeeklyWindowUsesTheAveragePaceSinceItsPeriodStarted() async throws {
+        let quota = try await fetchQuota(StatuslineCache(
+            writtenAt: now,
+            rateLimits: RateLimits(
+                fiveHour: Window(usedPercentage: 22, resetsAt: fiveHourReset),
+                sevenDay: Window(usedPercentage: 7, resetsAt: weeklyReset)
+            )
+        ))
+        var forecaster = AllowanceForecaster()
+        let readAt = Date(timeIntervalSince1970: now)
+        let weeklyResetsAt = Date(timeIntervalSince1970: weeklyReset)
+
+        forecaster.record(quota.activityObservation, isStale: false, for: ClaudeCodeProvider.providerId, at: readAt)
+        let forecasts = forecaster.forecasts(for: ClaudeCodeProvider.providerId, at: readAt)
+
+        XCTAssertEqual(forecasts["weekly-usage"]?.state, .beyondReset(resetsAt: weeklyResetsAt))
+        XCTAssertEqual(forecasts["weekly-usage"]?.pace, .periodAverage)
+        XCTAssertEqual(forecasts["five-hour-usage"]?.state, .learning)
+        XCTAssertEqual(forecasts["five-hour-usage"]?.pace, .recent)
     }
 
     func testTimingFallsBackToTheCacheWriteTime() async throws {
@@ -102,10 +133,11 @@ final class ClaudeCodeForecastMappingTests: XCTestCase {
     private func descriptor(
         lineId: String,
         resetsAt: TimeInterval,
+        length: TimeInterval,
         writtenAt: TimeInterval
     ) -> AllowanceForecastDescriptor {
         AllowanceForecastDescriptor(
-            accounting: .fixedPeriod(limit: 100, resetsAt: Date(timeIntervalSince1970: resetsAt)),
+            accounting: .fixedPeriod(limit: 100, resetsAt: Date(timeIntervalSince1970: resetsAt), length: length),
             unit: .percentagePoints,
             resolution: 1,
             timing: .source(Date(timeIntervalSince1970: writtenAt)),

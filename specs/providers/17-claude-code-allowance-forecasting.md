@@ -27,7 +27,8 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 
 - **Given** a verified window with a usable percentage and `resets_at`
 - **When** the provider maps the cache
-- **Then** the metric carries a fixed-period descriptor with limit 100, the window's reset timestamp, unit percentage points, and resolution 1
+- **Then** the metric carries a fixed-period descriptor with limit 100, the window's reset timestamp, a period length of 5 hours or 7 days, unit percentage points, and resolution 1
+- **And** the weekly window is a long period, so it uses the average pace since its period started (core 12 AC13)
 - **And** the timing is the window's `written_at`, or the cache `written_at` when the window has none, never `Date()`
 - **And** the `UsageLine` ID equals the metric ID
 - **And** the headline line is the five-hour window, or the weekly window when the five-hour window is absent, matching today's headline
@@ -88,7 +89,8 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 2. [x] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
 3. [x] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
 4. [x] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
-5. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data.
+5. [x] Pass the period length of each window (AC2), once (core 12) Plan step 10 adds it.
+6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data. The first check on 2026-10-12 led to (core 12 AC13).
 
 ### Evidence
 

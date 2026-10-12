@@ -27,7 +27,9 @@ Opt OpenCode Go's weekly and monthly windows into allowance forecasting (core 12
 
 - **Given** the weekly or monthly window
 - **When** the provider maps it
-- **Then** the metric carries a fixed-period descriptor with limit 100, the window's `resetsAt`, unit percentage points, and resolution 1
+- **Then** the metric carries a fixed-period descriptor with limit 100, the window's `resetsAt`, a period length, unit percentage points, and resolution 1
+- **And** the weekly length is 7 days; the monthly length follows the subscription anchor and is verified before opting in, because months differ in length
+- **And** both are long periods, so they use the average pace since the period started (core 12 AC13)
 - **And** the provider passes `resetsAt` unchanged; Core's reset tolerance absorbs millisecond jitter (core 12 AC3)
 - **And** the `UsageLine` ID equals the metric ID
 - **And** the provider names no headline line, because its headline is a fixed label, so weekly and monthly forecasts appear only inside their rows and the headline rules of (core 12 AC9) do not apply

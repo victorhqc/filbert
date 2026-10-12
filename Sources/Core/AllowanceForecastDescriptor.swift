@@ -3,7 +3,8 @@ import Foundation
 public struct AllowanceForecastDescriptor: Equatable, Sendable {
     public enum Accounting: Equatable, Sendable {
         /// The metric value is the amount consumed in the current period.
-        case fixedPeriod(limit: Decimal, resetsAt: Date)
+        /// The period starts at `resetsAt` minus `length`.
+        case fixedPeriod(limit: Decimal, resetsAt: Date, length: TimeInterval)
         /// The metric value is the amount remaining.
         case balance
     }
@@ -72,8 +73,10 @@ extension AllowanceForecastDescriptor {
         switch (accounting, other.accounting) {
         case (.balance, .balance):
             return true
-        case let (.fixedPeriod(limit, resetsAt), .fixedPeriod(otherLimit, otherResetsAt)):
-            return limit == otherLimit && policy.isSamePeriod(resetsAt: resetsAt, periodResetsAt: otherResetsAt)
+        case let (.fixedPeriod(limit, resetsAt, length), .fixedPeriod(otherLimit, otherResetsAt, otherLength)):
+            return limit == otherLimit
+                && length == otherLength
+                && policy.isSamePeriod(resetsAt: resetsAt, periodResetsAt: otherResetsAt)
         case (.balance, .fixedPeriod), (.fixedPeriod, .balance):
             return false
         }

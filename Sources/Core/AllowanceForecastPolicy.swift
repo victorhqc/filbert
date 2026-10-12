@@ -15,6 +15,9 @@ struct AllowanceForecastPolicy: Equatable, Sendable {
     let resetTolerance: TimeInterval
     let futureTimestampTolerance: TimeInterval
     let maximumRetainedObservations: Int
+    let longPeriodThreshold: TimeInterval
+    let longPeriodWarmUp: TimeInterval
+    let longPeriodMaximumObservationAge: TimeInterval
 
     init(
         recentHorizon: TimeInterval = 30 * 60,
@@ -28,7 +31,10 @@ struct AllowanceForecastPolicy: Equatable, Sendable {
         tooFarApartIntervalCount: Int = 2,
         resetTolerance: TimeInterval = 5 * 60,
         futureTimestampTolerance: TimeInterval = 60,
-        maximumRetainedObservations: Int = 256
+        maximumRetainedObservations: Int = 256,
+        longPeriodThreshold: TimeInterval = 24 * 60 * 60,
+        longPeriodWarmUp: TimeInterval = 24 * 60 * 60,
+        longPeriodMaximumObservationAge: TimeInterval = 6 * 60 * 60
     ) {
         precondition(maximumRetainedObservations >= 2, "A rate needs at least two retained observations")
         self.recentHorizon = recentHorizon
@@ -43,6 +49,9 @@ struct AllowanceForecastPolicy: Equatable, Sendable {
         self.resetTolerance = resetTolerance
         self.futureTimestampTolerance = futureTimestampTolerance
         self.maximumRetainedObservations = maximumRetainedObservations
+        self.longPeriodThreshold = longPeriodThreshold
+        self.longPeriodWarmUp = longPeriodWarmUp
+        self.longPeriodMaximumObservationAge = longPeriodMaximumObservationAge
     }
 
     func isSamePeriod(resetsAt: Date, periodResetsAt: Date) -> Bool {

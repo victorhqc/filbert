@@ -73,7 +73,7 @@ final class ClaudeCodeCaptureReplayTests: XCTestCase {
         for read in reads {
             for metric in read.metrics {
                 guard case let .number(value) = metric.value,
-                      case let .fixedPeriod(_, resetsAt)? = metric.forecastDescriptor?.accounting
+                      case let .fixedPeriod(_, resetsAt, _)? = metric.forecastDescriptor?.accounting
                 else {
                     firstResets[metric.id] = nil
                     continue
