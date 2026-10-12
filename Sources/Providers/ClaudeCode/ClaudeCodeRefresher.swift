@@ -66,15 +66,12 @@ private struct SpawnConfiguration: Sendable {
     let outputCaptureLimit: Int
 }
 
-/// Spawns `claude -p "/usage"` headlessly and parses the same `NN% used ·
-/// resets …` figures the TUI shows, then writes the cache. The TUI statusline
-/// helper only fires inside Claude Code's interactive session; this path makes
-/// the Refresh button work for users who drive Claude Code through an editor
-/// (e.g. Zed) and never open the TUI.
+/// Runs `claude -p "/usage"` and writes the parsed figures to the cache. The
+/// statusline helper runs only in the interactive TUI, so this makes Refresh
+/// work for editor users, e.g. Zed.
 ///
-/// An `actor` serializes the debounce timestamp and the in-flight task slot;
-/// all spawn work happens inside a child `Task` so the actor itself is never
-/// blocked by `Process.run` / `waitUntilExit`.
+/// Spawn work runs in a child `Task`, so `Process.run` and `waitUntilExit`
+/// never block the actor.
 public actor ClaudeCodeRefresher {
     static let spawnTimeoutSeconds: TimeInterval = 30
 
@@ -82,25 +79,16 @@ public actor ClaudeCodeRefresher {
 
     static let spawnDebounceSeconds: TimeInterval = 10
 
-    /// Notes on the non-obvious flags:
-    ///   - `--tools ""` is variadic, so it must be followed by another *flag* —
-    ///     never by the positional prompt — otherwise it swallows the prompt
-    ///     and `claude` errors with "Input must be provided … when using
-    ///     --print". Keeping `-p "/usage"` last makes the positional prompt
-    ///     unambiguous.
-    ///   - `--strict-mcp-config` is passed without a sibling `--mcp-config`,
-    ///     so no user, project, or local MCP server is loaded.
-    ///   - `--safe-mode` and `--no-chrome` suppress Claude Code's startup
-    ///     discovery surface (CLAUDE.md walk, skills, plugins, hooks, MCP
-    ///     servers, output styles, status-line commands, …) so a child that
-    ///     inherits an inert working directory cannot probe macOS-protected
-    ///     user locations at startup.
-    ///   - `--bare` is deliberately absent: it would disable the OAuth/Keychain
-    ///     login the refresh must reuse.
-    ///   - A `viewMode: "verbose"` or `verbose: true` user setting turns
-    ///     `--output-format json` into a message array. `--safe-mode` does not
-    ///     drop ordinary settings, so `--settings` pins the default view for
-    ///     this run. Managed settings still win over it.
+    /// - `--tools ""` is variadic. A flag must follow it, or it swallows the prompt
+    ///   and `claude` fails with "Input must be provided". `-p "/usage"` stays last.
+    /// - `--strict-mcp-config` without `--mcp-config` loads no MCP server.
+    /// - `--safe-mode` and `--no-chrome` skip startup discovery (CLAUDE.md, skills,
+    ///   plugins, hooks, MCP servers, status-line commands), so the child cannot
+    ///   probe protected user locations.
+    /// - `--bare` is absent: it disables the OAuth/Keychain login the refresh reuses.
+    /// - A `viewMode: "verbose"` or `verbose: true` setting turns `--output-format
+    ///   json` into a message array. `--safe-mode` keeps ordinary settings, so
+    ///   `--settings` pins the default view. Managed settings still win.
     static let spawnArguments: [String] = [
         "--model", "haiku",
         "--max-turns", "1",
@@ -163,9 +151,8 @@ public actor ClaudeCodeRefresher {
     // MARK: - Public entry point
 
     public func refresh() async throws {
-        // Coalesce before debounce: if a click arrives while a spawn is in
-        // flight, it should await that result — checking debounce first would
-        // short-circuit and miss the in-flight result.
+        // Check in-flight work before the debounce, or a click during a spawn
+        // misses that spawn's result.
         if let inFlightTask {
             try await inFlightTask.value
             return
@@ -184,8 +171,7 @@ public actor ClaudeCodeRefresher {
             }
         }
 
-        // Record the attempt *before* spawning so a failure still suppresses
-        // follow-up clicks within the debounce window.
+        // Set before spawning, so a failed spawn still debounces later clicks.
         lastSpawnAt = Date()
 
         let configuration = SpawnConfiguration(
@@ -224,10 +210,7 @@ public actor ClaudeCodeRefresher {
             throw ClaudeCodeRefresherError.binaryNotFound
         }
 
-        // Spawn inside an inert working directory so Claude Code's startup
-        // CWD discovery does not touch macOS-protected user locations. If the
-        // directory cannot be created, abort and leave the cache untouched —
-        // never fall back to inheriting the parent's CWD.
+        // Never fall back to the parent's working directory; abort instead.
         guard let workingDirectoryURL = configuration.workingDirectoryProvider() else {
             throw ClaudeCodeRefresherError.workingDirectoryUnavailable
         }
@@ -313,10 +296,8 @@ public actor ClaudeCodeRefresher {
         )
     }
 
-    /// Uses `terminationHandler` + a continuation rather than `waitUntilExit`,
-    /// because the latter is a blocking sync call that task-group cancellation
-    /// cannot interrupt — racing it against `Task.sleep` inside a group would
-    /// still wait for the process to actually die.
+    /// `waitUntilExit` blocks and ignores task cancellation, so a timeout race
+    /// would still wait for the process to die. `terminationHandler` does not.
     private static func waitForExitOrTerminate(
         _ process: Process,
         spawnTimeout: TimeInterval,

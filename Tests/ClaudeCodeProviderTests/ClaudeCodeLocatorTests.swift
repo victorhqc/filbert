@@ -19,8 +19,6 @@ final class ClaudeCodeLocatorTests: XCTestCase {
     // MARK: - real resolve runs without crashing
 
     func testResolve_realResolution_doesNotThrow() {
-        // Production initializer — may or may not find claude depending on
-        // the machine, but must not crash.
         let locator = ClaudeCodeLocator()
         _ = locator.resolve()
     }

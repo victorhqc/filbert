@@ -30,8 +30,7 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
 
     func testClaudeCodeProvider_conformsToProactiveRefreshable() {
         let provider = makeProvider()
-        // Erase to `any AIProvider` so the compiler cannot statically prove
-        // the conformance — the test is about runtime behaviour.
+        // Erased so the conformance is checked at runtime, not compile time.
         let anyProvider: any AIProvider = provider
         XCTAssert(anyProvider is ProactiveRefreshable)
     }
@@ -39,8 +38,7 @@ final class ClaudeCodeProviderProactiveRefreshTests: XCTestCase {
     // MARK: - proactiveRefresh delegates to the refresher
 
     func testProactiveRefresh_delegatesToRefresher_andRecordsDebounce() async throws {
-        // We can't stub the refresher actor directly, so point it at a fake
-        // binary that records each spawn to a log file.
+        // The refresher actor cannot be stubbed, so a fake binary logs each spawn.
         let spawnLogURL = tmpDir.appendingPathComponent("spawn.log")
         let fakeBinaryURL = try writeFakeClaudeBinary(
             body: "#!/bin/bash\necho spawned >> \"\(spawnLogURL.path)\"\n"

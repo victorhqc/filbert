@@ -6,8 +6,8 @@ import Foundation
 /// `/usage` prints lines like:
 ///   Current session: 77% used · resets Jul 21 at 12:59am (Europe/Berlin)
 ///   Current week (all models): 37% used · resets Jul 24 at 5:59am (Europe/Berlin)
-/// "Current session" is the 5-hour window; "Current week (all models)" is the
-/// 7-day window. Lines that don't match are skipped rather than guessed.
+/// "Current session" is the 5-hour window and "Current week (all models)" the
+/// 7-day window. Other lines are skipped, not guessed.
 extension ClaudeCodeRefresher {
     enum WindowSlot {
         case fiveHour
@@ -24,10 +24,9 @@ extension ClaudeCodeRefresher {
         "jul": 7, "aug": 8, "sep": 9, "oct": 10, "nov": 11, "dec": 12,
     ]
 
-    /// `resets_at` is a strict ISO 8601 instant with optional fractional seconds
-    /// and a `Z` or `±HH:MM` offset. Foundation's formatters accept trailing text
-    /// and normalize impossible dates, so the whole string is matched and the
-    /// parsed components are round-tripped before the value is trusted.
+    /// `resets_at` is strict ISO 8601 with optional fractional seconds and a `Z`
+    /// or `±HH:MM` offset. Foundation accepts trailing text and normalizes
+    /// impossible dates, so the whole string must match and round-trip.
     static func parseISOTimestamp(_ text: String) -> TimeInterval? {
         let pattern = #"\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(\.\d+)?(Z|[+-]\d{2}:\d{2})\z"#
         guard let match = firstMatch(pattern, in: text),
@@ -96,9 +95,8 @@ extension ClaudeCodeRefresher {
         )
     }
 
-    /// The year is absent from the reset text, so it's inferred as the nearest
-    /// occurrence (this year, rolled to next year if that would already be in
-    /// the past). Accepts both `12:59am` and `1am` styles.
+    /// The reset text has no year: this year's date, or next year's once it has
+    /// passed. Accepts `12:59am` and `1am`.
     static func parseResetPhrase(_ phrase: String) -> TimeInterval? {
         let pattern = #"([A-Za-z]{3,})\s+(\d{1,2})\s+at\s+(\d{1,2})(?::(\d{2}))?\s*(am|pm)\s*\(([^)]+)\)"#
         guard let match = firstMatch(pattern, in: phrase),
@@ -132,8 +130,7 @@ extension ClaudeCodeRefresher {
         components.year = currentYear
 
         guard let candidate = calendar.date(from: components) else { return nil }
-        // A reset that already passed (allowing 2-day slack for clock skew /
-        // month boundaries) must belong to next year.
+        // The 2-day slack covers clock skew; an older reset is next year's.
         if candidate < now.addingTimeInterval(-2 * 86400) {
             components.year = currentYear + 1
             if let rolled = calendar.date(from: components) {
@@ -160,9 +157,7 @@ extension ClaudeCodeRefresher {
         }
     }
 
-    /// Each parsed window replaces its slot; windows this run didn't report are
-    /// carried over from the existing cache as a defensive measure (`/usage`
-    /// normally prints both windows together).
+    /// Keeps windows this run did not report. `/usage` normally prints both.
     static func mergeAndWriteCache(
         windows: [ParsedWindow],
         into cacheStore: StatuslineCacheStore

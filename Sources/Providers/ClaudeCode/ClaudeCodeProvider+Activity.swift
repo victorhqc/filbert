@@ -15,9 +15,7 @@ extension ClaudeCodeProvider {
             return ProviderActivityObservation(metrics: freshMetrics, freshness: .fresh)
         }
 
-        // Every known window is stale: keep the figures for the UI-visible
-        // last-known data while marking the observation stale so Core discards
-        // it as evidence.
+        // All windows are stale. Keep the figures for display; Core ignores stale evidence.
         let allMetrics = entries.compactMap { metric(for: $0, cacheWrittenAt: cache.writtenAt) }
         return ProviderActivityObservation(
             metrics: allMetrics,
