@@ -31,7 +31,7 @@ final class AllowanceForecasterNearLimitTests: AllowanceForecasterTestCase {
             fixedPeriodMetric(id: "weekly", consumed: 98, at: minute(0))
         )
 
-        XCTAssertEqual(state(at: minute(1)), .learning)
+        XCTAssertEqual(state(at: minute(1)), .insufficient)
         XCTAssertEqual(forecast(at: minute(1))?.isUncertainNearLimit, true)
         XCTAssertEqual(forecast(at: minute(1), lineId: "weekly")?.isUncertainNearLimit, false)
     }

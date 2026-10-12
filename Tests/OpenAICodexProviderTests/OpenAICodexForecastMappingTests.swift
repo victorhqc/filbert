@@ -74,9 +74,8 @@ final class OpenAICodexForecastMappingTests: XCTestCase {
         XCTAssertEqual(quota.activityObservation?.metrics.map(\.forecastDescriptor), [nil, nil])
     }
 
-    /// From the capture: an unused five-hour window resets 300 minutes after
-    /// each read. Reads one second later than the 5-minute refresh move the
-    /// reset past the reset tolerance.
+    /// An unused window resets 300 minutes after each read. A read one second
+    /// late moves the reset past the 5-minute tolerance.
     func testAnUnusedWindowCarriesNoDescriptorAndItsMovingResetIsNoChange() {
         var policy = SmartRefreshPolicy()
         var classifications: [SmartRefreshPolicy.Classification] = []

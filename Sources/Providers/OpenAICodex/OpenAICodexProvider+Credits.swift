@@ -1,7 +1,6 @@
 import Core
 import Foundation
 
-/// One reading of `credits`, so the row, the metric, and the descriptor agree.
 enum CodexCreditsBalance: Equatable, Sendable {
     case amount(UsageBalance.Amount)
     case unparseable(String)
@@ -9,12 +8,12 @@ enum CodexCreditsBalance: Equatable, Sendable {
 
 extension OpenAICodexProvider {
     static let creditsLineId = "credits"
-    /// The backend sends 10 decimals (providers 18 Evidence). Fixed, because a
-    /// resolution read from each string would change and re-baseline (core 12 AC3).
+    /// The backend sends 10 decimals. A resolution taken from each string would
+    /// change between reads and restart the forecast.
     static let creditsResolution = Decimal(sign: .plus, exponent: -10, significand: 1)
 
-    /// Like the Codex CLI, shows credits only when the account has them or
-    /// they are unlimited (providers 05 AC7).
+    /// Matches the Codex CLI: no credits unless the account has them or they
+    /// are unlimited.
     func creditsBalance(for credits: CodexCredits?) -> CodexCreditsBalance? {
         guard let credits, credits.hasCredits != false || credits.unlimited == true else {
             return nil

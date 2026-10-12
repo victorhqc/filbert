@@ -1,7 +1,5 @@
 import Foundation
 
-/// An amount that remains. `UsageLine.used` and `UsageLine.total` measure
-/// consumption instead.
 public struct UsageBalance: Equatable, Sendable {
     public enum Amount: Equatable, Sendable {
         case finite(Decimal)

@@ -220,8 +220,7 @@ public struct DeepSeekProvider: AIProvider {
         }
     }
 
-    /// Empty components and equal amounts add nothing, so only the total
-    /// stays when two amounts of one currency match (ui 08 AC1).
+    /// Two equal amounts repeat each other, so only the total stays.
     private func balanceLines(for info: DeepSeekBalanceInfo) -> [UsageLine] {
         let amounts = BalanceComponent.allCases.compactMap { component in
             Self.decimal(from: component.rawAmount(in: info)).flatMap { amount in

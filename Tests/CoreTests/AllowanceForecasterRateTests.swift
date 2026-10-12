@@ -107,13 +107,14 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
         XCTAssertEqual(depletion(at: minute(10)), minute(1500))
     }
 
-    func testWeeklyStyleTraceShowsLearningForTwoHoursThenNoForecastText() {
+    func testSlowTraceShowsNoTextUntilItsFirstPointThenLearnsForTwoHours() {
         let resetsAt = minute(3 * 24 * 60)
-        for value in stride(from: 0.0, through: 180, by: 5) {
+        for value in stride(from: 0.0, through: 200, by: 5) {
             let consumed: Decimal = value < 60 ? 7 : 8
             record(fixedPeriodMetric(id: "weekly", consumed: consumed, at: minute(value), resetsAt: resetsAt))
 
-            let expected: AllowanceForecast.State = value < 120 ? .learning : .insufficient
+            let learns = value >= 60 && value < 180
+            let expected: AllowanceForecast.State = learns ? .learning : .insufficient
             XCTAssertEqual(state(at: minute(value), lineId: "weekly"), expected, "minute \(value)")
         }
     }

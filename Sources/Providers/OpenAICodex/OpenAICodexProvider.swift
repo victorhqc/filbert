@@ -145,8 +145,7 @@ public struct OpenAICodexProvider: AIProvider {
         return ProviderActivityObservation(metrics: metrics, freshness: .fresh)
     }
 
-    /// A window at 0% has not started, and its `resetsAt` moves with each
-    /// read (providers 18 AC3).
+    /// An unused window reports 0% and moves its `resetsAt` with each read.
     private func forecastDescriptor(
         for entry: WindowEntry,
         usedPercent: Double,

@@ -37,8 +37,7 @@ enum QuotaStatusResolver {
         lines.lazy.compactMap(currencyAmount(of:)).first
     }
 
-    /// `BalanceThresholds` are tuned for currency, so credits and unlimited
-    /// balances never rank a provider (core 13).
+    /// `BalanceThresholds` are in currency, so credits never rank a provider.
     private static func currencyAmount(of line: UsageLine) -> Double? {
         guard let balance = line.balance,
               case let .finite(amount) = balance.amount,
@@ -93,7 +92,6 @@ enum QuotaStatusResolver {
         return min(max(used / total * 100, 0), 100)
     }
 
-    /// A balance, or else an amount spent without a limit.
     static func amountText(for line: UsageLine) -> String? {
         if let balance = line.balance {
             return UsageAmountFormatting.string(for: balance)

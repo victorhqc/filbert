@@ -4,7 +4,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The branch merges only after steps 9–11.
+- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The manual check with Codex (providers 18) added step 12 (AC14). The branch merges only after steps 9–11.
 - This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
 - Periods of one day or less assume continued recent consumption (AC5). Longer periods use the average pace since the period started, which already includes nights, weekends, and breaks (AC13). Neither models a schedule or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
@@ -154,7 +154,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **Given** a row with a forecast descriptor is learning, quiet, too far apart, or paused
 - **When** the row renders
 - **Then** one small secondary line appears just above the row's reset text
-- **And** learning reads like "Learning your usage rate…", and shows only until the maximum horizon has passed since the last baseline; a new segment after quiet does not restart this limit
+- **And** learning reads like "Learning your usage rate…", and shows only from the first consumption after the last baseline until the maximum horizon has passed (AC14); a new segment after quiet does not restart this limit
 - **And** once the maximum horizon passes without enough evidence for a rate, the row shows no forecast text; it never shows an estimate built from insufficient data
 - **And** quiet reads like "No recent consumption detected"
 - **And** two consecutive accepted intervals longer than the maximum gap read like "Updates too far apart to estimate", in place of a learning state that cannot complete
@@ -191,7 +191,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **Given** forecasting is enabled
 - **When** Core retains measurements
 - **Then** it stores only bounded in-memory numeric history and the needed metric metadata
-- **And** app relaunch starts learning again
+- **And** app relaunch starts a new baseline, so learning starts again with the next consumption (AC14)
 - **And** disabling or removing a provider, saving, deleting, or importing its credentials, or changing its endpoint clears that provider's history
 - **And** these are the only account changes that Core knows; the contract has no field for a provider to report an account change
 - **And** logs contain no raw history, account identifiers, credentials, or provider payloads
@@ -206,7 +206,8 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **And** traces that differ only in extra observations without a new value produce the same rate, including bursty traces and repeated manual refreshes
 - **And** a 10-second fast interval keeps two hours of evidence
 - **And** 15-minute and 29-minute slow intervals produce an estimate, and a 31-minute slow interval shows "Updates too far apart to estimate"
-- **And** a weekly-style trace that gains one point in two hours shows learning for two hours and then no forecast text, never quiet and never an estimate
+- **And** a slow trace that gains one point after one hour shows no forecast text until that point, learning for two hours after it, and then no forecast text, never quiet and never an estimate (AC14)
+- **And** a flat balance shows no forecast text after a baseline, a wake, or a purchase, and a first decrease of one resolution step starts learning (AC14)
 - **And** local renders do not move the depletion timestamp or turn projected exhaustion into reported exhaustion
 - **And** UI tests cover row association by ID, each headline rule (AC9), the label of a binding line that is not the headline line, an unchanged headline when no rule matches, at most one forecast line per row, every localized and accessible state, long-duration formatting, and preservation of budget pace and compact status with forecasts present
 - **And** App tests cover history clearing on every lifecycle event in (AC11), and the sleep, wake, and clock-change observers
@@ -229,6 +230,17 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **And** an estimate reads like "Runs out in about 2d" with "At your average pace over the last 3 days"; the row reads like "Runs out in about 2d · last 3 days"
 - **And** beyond reset reads like "Should last until reset" with "At your average pace over the last 3 days"
 - **And** periods of one day or less keep the recent pace of (AC5), because continuous use within a few hours is realistic and is the risk to warn about.
+
+### AC14: Learning starts with observed consumption
+
+- **Given** an allowance with a recent-pace forecast (AC5), i.e. a balance or a period of one day or less, has a baseline and no rate
+- **When** no accepted sample since the baseline shows consumption
+- **Then** the state is insufficient, so the row shows no forecast text
+- **And** consumption is a fixed-period increase or a balance decrease between two accepted samples after the baseline; the baseline value itself is not consumption (AC3)
+- **And** learning starts with the first consumption after the baseline and lasts at most the maximum horizon from it; a new segment after quiet does not restart this limit
+- **And** a flat balance, e.g. credits used only after another pool runs out (providers 18), never shows "Learning your usage rate…" after a launch, wake, gap, or purchase
+- **And** a balance increase re-baselines (AC3), so a purchase alone never starts learning
+- **And** the quiet, too-far-apart, paused, exhausted, and estimated states are unchanged, and long periods keep (AC13).
 
 ## Plan
 
@@ -311,6 +323,10 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [ ] Codex windows and credits row (providers 18)
     - [ ] DeepSeek total balance (providers 19)
     - [ ] OpenCode Go weekly and monthly windows (providers 20)
+12. [x] Learning starts with consumption (AC14), from the manual check of 2026-10-12 with Codex credits (providers 18). A flat credits row showed "Learning your usage rate…" with nothing to learn.
+    - [x] Record the time of the first consumption after each baseline in `AllowanceHistory`. Without it and without a rate, the state is insufficient. With it, learning lasts the maximum horizon from that time.
+    - [x] Update the Core tests that expect learning right after a flat baseline, and add the tests from (AC12).
+    - [x] Update the Codex replay (providers 18): its baseline read and its flat credits now show no forecast text.
 
 ### Card layout
 
@@ -354,7 +370,7 @@ The other weak-state lines take the learning line's place: "No recent consumptio
 | Minimum evidence span | 10 minutes |
 | Minimum consumption | 2 resolution steps |
 | Quiet threshold | 2 × resolution ÷ last usable rate, clamped to 15 minutes – 2 hours; requires a prior usable rate |
-| Learning display limit | The maximum horizon after the last baseline, then no forecast text |
+| Learning display limit | The maximum horizon after the first consumption since the last baseline; no forecast text before that consumption or after the limit (AC14) |
 | Maximum observation gap | 30 minutes between the source timestamps of accepted samples |
 | Maximum observation age | 30 minutes |
 | "Too far apart" trigger | 2 consecutive accepted intervals above the maximum gap |
@@ -387,7 +403,7 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - Catalog keys need identifier characters for string symbol generation. The headline formats use semantic keys, like the existing "Accessibility sentence format".
 - Evidence spans show one unit, rounded to the nearest hour from one hour up, e.g. "last 2 hours".
 - Commit `4fd967f` implements steps 1–6 with Core and App tests. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8.
-- `learningDisplayLimit` is removed. Learning lasts the maximum horizon from the last baseline.
+- `learningDisplayLimit` is removed. Learning lasted the maximum horizon from the last baseline until (AC14) moved its start to the first consumption.
 - The maximum observation age is a separate policy field from the maximum gap. Both are 30 minutes.
 - The window grows only to reach the minimum consumption. The observation count covers the observations from the sample at or before the window start to the latest one, including removed repeated samples. Without that start sample, a 29-minute interval has only two observations in a 30-minute window.
 - History keeps the last sample at or before the maximum-horizon cutoff, so the 2-hour window can interpolate its start.
@@ -408,6 +424,8 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - The headline and each forecast row line have their own `TimelineView`. Each one evaluates the forecasts at its own tick, so at a state change they can disagree for up to one minute.
 - The texts of a budget-pace row live in `PacedUsageLineText`. Thus a test can compare the row with and without a forecast. Compact status reads only the quota, so a forecast cannot change it.
 - The App forecast tests use an `.apiKey` test provider, because `saveOverrideURL` ignores providers without an API key.
+- With (AC14), `AllowanceHistory` no longer needs the baseline time; the learning limit counts from the first consumption. Tests that showed a new baseline by its learning state now expect insufficient, and the App lifecycle tests check for an existing history with no row text.
+- After a flat stretch, one decrease of many resolution steps can give an estimate at once, because the flat samples already supply the observation count and the evidence span (AC5). Learning shows only while the evidence is still too thin.
 
 ## Risks
 

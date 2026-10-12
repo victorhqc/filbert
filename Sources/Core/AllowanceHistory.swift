@@ -52,9 +52,9 @@ struct AllowanceRateEstimate: Equatable, Sendable {
 struct AllowanceHistory: Sendable {
     private(set) var descriptor: AllowanceForecastDescriptor
     private(set) var samples: [AllowanceSample]
-    private(set) var baselineAt: Date
     private(set) var periodResetsAt: Date?
     private(set) var lastConsumptionAt: Date
+    private(set) var firstConsumptionAt: Date?
     private(set) var lastUsableRate: Decimal?
     private(set) var consecutiveLongIntervals = 0
     private(set) var lastLongInterval: TimeInterval = 0
@@ -64,7 +64,6 @@ struct AllowanceHistory: Sendable {
     init(baseline: AllowanceSample, descriptor: AllowanceForecastDescriptor) {
         self.descriptor = descriptor
         samples = [baseline]
-        baselineAt = baseline.time
         periodResetsAt = descriptor.accounting.resetsAt
         lastConsumptionAt = baseline.time
     }
@@ -112,6 +111,7 @@ struct AllowanceHistory: Sendable {
                 startSegment(at: previous)
             }
             lastConsumptionAt = sample.time
+            firstConsumptionAt = firstConsumptionAt ?? sample.time
         }
         append(sample, policy: policy)
 
@@ -233,9 +233,14 @@ private extension AllowanceHistory {
             return .quiet
         }
         guard let estimate, let depletesAt = projectedDepletion(of: remaining, at: estimate) else {
-            return now.timeIntervalSince(baselineAt) < policy.maximumHorizon ? .learning : .insufficient
+            return isLearning(at: now, policy: policy) ? .learning : .insufficient
         }
         return projectedState(depletesAt: depletesAt, at: now)
+    }
+
+    func isLearning(at now: Date, policy: AllowanceForecastPolicy) -> Bool {
+        guard let firstConsumptionAt else { return false }
+        return now.timeIntervalSince(firstConsumptionAt) < policy.maximumHorizon
     }
 
     func isUncertainNearLimit(
@@ -330,9 +335,9 @@ private extension AllowanceHistory {
     mutating func rebaseline(at sample: AllowanceSample, descriptor newDescriptor: AllowanceForecastDescriptor) {
         descriptor = newDescriptor
         samples = [sample]
-        baselineAt = sample.time
         periodResetsAt = newDescriptor.accounting.resetsAt
         lastConsumptionAt = sample.time
+        firstConsumptionAt = nil
         lastUsableRate = nil
         interruptedAt = nil
         isPaused = false

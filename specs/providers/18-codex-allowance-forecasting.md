@@ -4,7 +4,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 
 ## Context
 
-- Status: draft for review. The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12. Depends on (core 12), which is on `main` with (providers 17). The credits row depends on (core 13). (ui 28) adds the fallback-pool declaration for the credits row after this spec lands.
+- Status: in progress. Plan steps 3–4 are implemented, but the window descriptors stay open until Plan step 2 confirms (AC2). The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12 and runs past the weekly reset on 2026-10-18. Depends on (core 12), which is on `main` with (providers 17). The credits row depends on (core 13). (ui 28) adds the fallback-pool declaration for the credits row after this spec lands.
 - `Sources/Providers/OpenAICodex/OpenAICodexProvider.swift` — maps the `primary-window-usage`, `secondary-window-usage`, and `credits` metrics with `.unknown` freshness. Sets `lastUpdated` to `Date()` on each mapping. Attaches credits as a detail of the first window row (providers 05 AC7).
 - `Sources/Providers/OpenAICodex/CodexAppServerClient.swift` — starts a new `codex app-server` for each read (providers 05 AC3). Decodes `usedPercent`, `resetsAt`, `windowDurationMins`, and `credits { balance, unlimited }`. It does not decode `hasCredits`.
 - `account/rateLimits/read` sends a live backend request on each call. The response has no measurement timestamp. `usedPercent` is a whole number. `resetsAt` is the absolute reset time from the server (Evidence).
@@ -60,7 +60,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 - **And** unlimited credits have an unlimited balance, which shows "Unlimited", and carry no descriptor
 - **And** absent credits, or `hasCredits` false with `unlimited` not true, produce no credits row, as the Codex CLI does (providers 05 AC7)
 - **And** a balance that does not parse whole as a number, e.g. "1,159.57", carries no metric and no balance; the row shows the raw string as a detail
-- **And** the credits row shows the same forecast states as every other row (core 12 AC9): learning after a baseline, an estimate when credits decrease, and no forecast text when credits stay flat after the learning limit
+- **And** the credits row shows the same forecast states as every other row (core 12 AC9): no forecast text while credits stay flat (core 12 AC14), learning after they first decrease, and an estimate once they keep decreasing
 - **And** the credit forecast reflects only observed credit depletion
 - **And** the credits row has no limit group, because credits are a separate pool (core 12 AC8)
 - **And** no text predicts when consumption will switch from windows to credits (core 12 AC8)
@@ -99,7 +99,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
    - [ ] Window descriptors, after Plan step 2. Implemented on 2026-10-12 from the rules in (AC3), ahead of the evidence: a window above 0% with `resetsAt` and `windowDurationMins` carries a fixed-period descriptor with receipt timing. Tests cover both windows, a window without a reset or a length, and an unused window whose moving reset is no change to Smart refresh. This stays open until Plan step 2 confirms (AC2) and the period length; if the capture disagrees, the mapping changes before merge.
    - [x] The credits row and its descriptor, after (core 13). The resolution is 10⁻¹⁰, because every read in the capture so far has 10 decimals. A credits metric exists only when the credits row exists, so `hasCredits` false also drops the metric. Tests cover finite, unlimited, and absent credits, `hasCredits` false, a response without `hasCredits`, unparseable balances, a credits row without windows, a credit purchase, balances with different numbers of decimals, and a credits row that carries nothing that ranks a provider (core 13 AC3).
 5. [ ] Convert the capture into fixture traces with only receipt times, percentages, reset times, durations, and credit fields. Drop `accountId`, plan names, and limit names (providers 05 AC4). Add the fixtures and tests from (AC6). The first session is `codex-capture-first-session.json`, with replay tests. Fixtures for a five-hour rollover and a weekly rollover follow after Plan step 2.
-6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data. Seen on 2026-10-12 after the first session: the five-hour estimate in the headline, the weekly long-period estimate, and the credits row learning, with "811,77" in German formatting. Still to check: the collapsed Codex card, limit reached, beyond reset, quiet, too far apart, paused, and VoiceOver.
+6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data. Seen on 2026-10-12 after the first session: the five-hour estimate in the headline, the weekly long-period estimate, and the credits row learning, with "811,77" in German formatting. Learning on flat credits had nothing to learn, which led to (core 12 AC14). When the five-hour row turned quiet, the weekly line became the binding line, and the headline read "Weekly 39% · Runs out in about 1d 19h" (core 12 AC9). Still to check: the collapsed Codex card, limit reached, beyond reset, too far apart, paused, and VoiceOver.
 
 ### Evidence
 
@@ -132,9 +132,9 @@ The capture runs the provider's exchange from a local script and keeps the raw r
 
 **Replay of the first session through the provider and Core (fixture `codex-capture-first-session.json`, 37 reads from 12:55 to 13:31 UTC):**
 
-- The five-hour line had no forecast while unused. From the first rise it was learning for 10 minutes, then estimated. With usage flat at 7%, the estimate moved from 16:32 to 18:10 UTC, toward the reset.
+- The five-hour line had no forecast while unused. The first read above 0% was its baseline, without forecast text (core 12 AC14). From the next rise it was learning for 9 minutes, then estimated. With usage flat at 7%, the estimate moved from 16:32 to 18:10 UTC, toward the reset.
 - The weekly line was estimated on every read, from the average pace since its period started (core 12 AC13).
-- The credits line was learning on every read, because the balance did not move.
+- The credits line showed no forecast text on every read, because the balance did not move (core 12 AC14). Before (core 12 AC14), it showed "Learning your usage rate…".
 - Smart refresh saw a change only on the 4 reads where the five-hour percentage rose. Each window stayed in one period, and no value decreased.
 
 ## Risks
@@ -145,5 +145,5 @@ The capture runs the provider's exchange from a local script and keeps the raw r
 - A reset credit resets both windows before `resetsAt`. The windows drop to 0% and lose their descriptors (AC3), so their histories restart. This is correct, not a defect.
 - A plan change can change how much one percentage point is worth. A rate can span the change until the next reset.
 - Until (ui 28) lands, a window at 100% shows "Limit reached" in the headline (core 12 AC9), even when work continues on credits.
-- Credits can stay flat for days. After each launch, wake, or gap, the credits row shows "Learning your usage rate…" for two hours, and then no forecast text. An estimate appears only after the windows run out and credits start to move.
+- Credits can stay flat for days. The row then shows no forecast text (core 12 AC14). Learning and an estimate appear only after the windows run out and credits start to move.
 - `codex app-server` is experimental (providers 05). Field names can change between CLI releases.

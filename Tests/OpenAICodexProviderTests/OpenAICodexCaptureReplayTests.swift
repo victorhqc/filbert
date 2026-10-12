@@ -3,8 +3,6 @@ import Foundation
 @testable import OpenAICodexProvider
 import XCTest
 
-/// Replays sanitized reads of the capture in (providers 18 Evidence) through
-/// the provider and Core.
 final class OpenAICodexCaptureReplayTests: XCTestCase {
     private struct Read: Decodable {
         let receivedAt: TimeInterval
@@ -56,14 +54,23 @@ final class OpenAICodexCaptureReplayTests: XCTestCase {
         XCTAssertTrue(metrics.allSatisfy { $0?.forecastDescriptor?.accounting == .balance })
     }
 
-    func testTheFiveHourWindowForecastsOnlyAfterItStartsAndKeepsItsRate() throws {
-        let states = try fiveHourStates(in: replay(firstSession))
+    func testTheFiveHourWindowLearnsOnlyAfterItRisesAndKeepsItsRate() throws {
+        let states = try states(of: OpenAICodexProvider.primaryWindowLineId, in: replay(firstSession))
 
+        let baseline = try XCTUnwrap(states.firstIndex { $0 != nil })
         let learning = try XCTUnwrap(states.firstIndex(of: .learning))
         let estimated = try XCTUnwrap(states.firstIndex { $0?.isEstimated == true })
-        XCTAssertTrue(states[..<learning].allSatisfy { $0 == nil })
+        XCTAssertEqual(states[baseline], .insufficient)
+        XCTAssertEqual(learning, baseline + 1)
         XCTAssertTrue(states[learning ..< estimated].allSatisfy { $0 == .learning })
         XCTAssertTrue(states[estimated...].allSatisfy { $0?.isEstimated == true })
+    }
+
+    func testFlatCreditsNeverShowLearning() throws {
+        let states = try states(of: OpenAICodexProvider.creditsLineId, in: replay(firstSession))
+
+        XCTAssertFalse(states.isEmpty)
+        XCTAssertTrue(states.allSatisfy { $0 == .insufficient })
     }
 
     private func replay(_ fixture: String) throws -> [ProviderQuota] {
@@ -77,16 +84,14 @@ final class OpenAICodexCaptureReplayTests: XCTestCase {
         quota.activityObservation?.metrics.first { $0.id == id }
     }
 
-    private func fiveHourStates(in quotas: [ProviderQuota]) -> [AllowanceForecast.State?] {
+    private func states(of lineId: String, in quotas: [ProviderQuota]) -> [AllowanceForecast.State?] {
         let providerId = OpenAICodexProvider.providerId
         var forecaster = AllowanceForecaster()
         return quotas.map { quota in
             if let observation = quota.activityObservation {
                 forecaster.record(observation, isStale: false, for: providerId, at: quota.lastUpdated)
             }
-            return forecaster.forecasts(for: providerId, at: quota.lastUpdated)[
-                OpenAICodexProvider.primaryWindowLineId
-            ]?.state
+            return forecaster.forecasts(for: providerId, at: quota.lastUpdated)[lineId]?.state
         }
     }
 
