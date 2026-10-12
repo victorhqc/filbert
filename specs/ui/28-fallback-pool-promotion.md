@@ -6,6 +6,7 @@ When a provider's limit group runs out and its credit or money pool starts to de
 
 - Status: draft for review. No production changes accompany this proposal.
 - Builds on the line IDs, limit groups, and forecasts of (core 12). Codex is the first provider to use it (providers 18).
+- (core 12 AC15) keeps each line's notice with its line: another line never changes the headline, and a group line at 100% reads "Limit reached" in its row. Promoting a pool into the headline needs review against it.
 - Today Codex shows its credits as a small detail under the five-hour row (providers 05 AC7). When the windows reach 100%, the card still leads with the exhausted windows while work continues on credits.
 - Whether a provider switches to credits on its own, or only after a user setting, is not verified. The app detects the switch from the data instead: the pool must decrease while the limits are exhausted.
 - `Sources/Core/ProviderProtocol.swift` — `UsageLine` gains an optional fallback declaration.

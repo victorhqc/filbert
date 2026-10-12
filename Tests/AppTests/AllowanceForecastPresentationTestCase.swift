@@ -11,10 +11,18 @@ class AllowanceForecastPresentationTestCase: XCTestCase {
         weeklyGroup: String? = "claude",
         weeklyPercentage: Double = 95,
         extraLines: [UsageLine] = [],
-        headlineUsageLineId: String? = "five-hour"
+        headlineUsageLineId: String? = "five-hour",
+        fiveHourPercentage: Double = 3,
+        fiveHourReset: Date? = nil
     ) -> AllowanceForecastPresentation {
         let lines = [
-            UsageLine(label: "5-hour window", percentage: 3, id: "five-hour", limitGroup: "claude"),
+            UsageLine(
+                label: "5-hour window",
+                percentage: fiveHourPercentage,
+                resetDate: fiveHourReset,
+                id: "five-hour",
+                limitGroup: "claude"
+            ),
             UsageLine(label: "Weekly", percentage: weeklyPercentage, id: "weekly", limitGroup: weeklyGroup),
         ] + extraLines
         var forecasts: [String: AllowanceForecast] = [:]

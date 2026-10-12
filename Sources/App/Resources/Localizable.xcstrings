@@ -2726,15 +2726,6 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } }
       }
     },
-    "Forecast labeled value format" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } }
-      }
-    },
     "About %@ of use remaining" : {
       "extractionState" : "manual",
       "localizations" : {

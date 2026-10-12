@@ -12,7 +12,6 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         )
 
         let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertNil(headline.label)
         XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
         XCTAssertEqual(headline.detail, "Based on the last \(span(20 * 60))")
@@ -47,7 +46,6 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         )
 
         let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertNil(headline.label)
         XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
         XCTAssertNotNil(presentation.rowLines["weekly"])
     }

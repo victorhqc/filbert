@@ -4,7 +4,6 @@ import XCTest
 final class AllowanceForecastLocalizationTests: XCTestCase {
     private let forecastKeys = [
         "Forecast headline format",
-        "Forecast labeled value format",
         "About %@ of use remaining",
         "Based on the last %@",
         "Should last until reset",
