@@ -9,7 +9,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - `Package.swift` processes each module's `Resources/Localizable.xcstrings` into that module's resource bundle. Only `Bundle.module` reads it.
 - `String(localized:)` without `bundle:` reads `Bundle.main`. `Bundle.main` has no catalog, so the lookup returns the key. A key that is the English text looks correct. A name-style key shows raw.
 - `scripts/build-dmg.sh` builds with the native build system and compiles each catalog inside its module bundle under `Contents/Resources/`. The packaged app has the same gap.
-- The native build system copies `Localizable.xcstrings` raw into the module bundle, so even `bundle: .module` returns the key. Swift Build compiles it into `.lproj` folders. Swift 6.4 uses Swift Build by default; CI ran Swift 6.3.3 with the native build system, and the headline test failed there on 2026-10-12. CI now builds and tests with `--build-system swiftbuild`.
+- The native build system copies `Localizable.xcstrings` raw into the module bundle, so even `bundle: .module` returns the key. Swift Build compiles it into `.lproj` folders. Swift 6.4 uses Swift Build by default; CI ran Swift 6.3.3 with the native build system, and the headline test failed there on 2026-10-12. Swift Build on Swift 6.3.3 does not copy the Sparkle framework next to the test bundles, so CI keeps the native build system and compiles the catalogs before `swift test --skip-build`, as `scripts/build-dmg.sh` does.
 - Calls without `bundle:` on 2026-10-12:
   - `Sources/App` — about 200; 13 calls pass `bundle: .module`.
   - `Sources/Core` — 4.
@@ -71,7 +71,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 3. [ ] Add `bundle: .module` module by module: App, Core, then each provider. Fix the two `Automatic selection` keys with the App (AC2).
 4. [ ] Add catalogs for Claude Code and Codex, with translations (AC4).
 5. [ ] If step 1 requires it, declare the four languages in `packaging/Info.plist` (AC5).
-6. [x] Build and test CI with `--build-system swiftbuild`, so tests read compiled catalogs (AC6).
+6. [x] Compile the catalogs in CI before running the tests, so tests read compiled catalogs (AC6). Drop the step once CI uses Swift Build by default.
 7. [ ] Run the validation gate. Then manually check the popover, every settings tab, and each provider's states in German, Spanish, and English, at normal width and with VoiceOver.
 
 ## Risks

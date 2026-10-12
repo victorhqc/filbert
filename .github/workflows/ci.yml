@@ -59,16 +59,26 @@ jobs:
       - name: SwiftLint
         run: swiftlint
 
-      # Swift Build compiles string catalogs. The native build system copies
-      # them raw, so localized lookups return their keys in tests.
       - name: Build (debug)
-        run: swift build --build-system swiftbuild
+        run: swift build
 
       - name: Build (release)
-        run: swift build --build-system swiftbuild -c release
+        run: swift build -c release
 
+      # The native build system copies string catalogs raw, so localized
+      # lookups return their keys. Compile them first, as build-dmg.sh does.
+      # Swift Build on Swift 6.3 fails to load Sparkle in tests.
       - name: Test
-        run: swift test --build-system swiftbuild
+        run: |
+          set -euo pipefail
+          swift build --build-tests
+          BIN=$(swift build --show-bin-path)
+          find "$BIN" -maxdepth 2 -path '*.bundle/Localizable.xcstrings' -print0 |
+            while IFS= read -r -d '' catalog; do
+              xcrun xcstringstool compile "$catalog" --output-directory "$(dirname "$catalog")"
+              rm "$catalog"
+            done
+          swift test --skip-build
 
       - name: Workflow tests
         run: python3 scripts/test-automatic-updates.py
