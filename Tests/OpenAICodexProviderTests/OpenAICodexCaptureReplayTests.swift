@@ -10,6 +10,7 @@ final class OpenAICodexCaptureReplayTests: XCTestCase {
     }
 
     private let firstSession = "codex-capture-first-session"
+    private let fiveHourRollover = "codex-capture-five-hour-rollover"
 
     func testAnUnusedWindowCarriesNoDescriptorUntilItsPercentageRises() throws {
         let metrics = try replay(firstSession).map { metric(OpenAICodexProvider.primaryWindowLineId, in: $0) }
@@ -71,6 +72,32 @@ final class OpenAICodexCaptureReplayTests: XCTestCase {
 
         XCTAssertFalse(states.isEmpty)
         XCTAssertTrue(states.allSatisfy { $0 == .insufficient })
+    }
+
+    func testTheFiveHourRolloverStartsANewPeriodAtFirstUse() throws {
+        let periods = try periodFirstResets(in: replay(fiveHourRollover))
+
+        XCTAssertEqual(periods[OpenAICodexProvider.primaryWindowLineId], [1_791_828_927, 1_791_847_075])
+    }
+
+    func testTheWindowIsUnusedBetweenTheResetAndTheFirstRequest() throws {
+        let metrics = try replay(fiveHourRollover).map { metric(OpenAICodexProvider.primaryWindowLineId, in: $0) }
+
+        let unused = metrics.filter { $0?.value == .number(0) }
+        XCTAssertEqual(unused.count, 3)
+        XCTAssertTrue(unused.allSatisfy { $0?.forecastDescriptor == nil })
+    }
+
+    func testTheNewPeriodLearnsOnlyAfterItsFirstRise() throws {
+        let quotas = try replay(fiveHourRollover)
+        let states = states(of: OpenAICodexProvider.primaryWindowLineId, in: quotas)
+        let lastUnused = try XCTUnwrap(quotas.lastIndex {
+            metric(OpenAICodexProvider.primaryWindowLineId, in: $0)?.value == .number(0)
+        })
+
+        XCTAssertEqual(states[lastUnused], nil)
+        XCTAssertEqual(states[lastUnused + 1], .insufficient)
+        XCTAssertTrue(states[(lastUnused + 2)...].allSatisfy { $0 == .learning })
     }
 
     private func replay(_ fixture: String) throws -> [ProviderQuota] {
