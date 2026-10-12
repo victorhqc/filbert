@@ -132,7 +132,8 @@ public struct OpenAICodexProvider: AIProvider {
                 ProviderActivityMetric(
                     id: entry.id,
                     kind: .usage,
-                    value: .number(Decimal(percentage))
+                    value: .number(Decimal(percentage)),
+                    forecastDescriptor: forecastDescriptor(for: entry, usedPercent: percentage, receivedAt: receivedAt)
                 )
             }
         }
@@ -142,6 +143,32 @@ public struct OpenAICodexProvider: AIProvider {
 
         // Each `account/rateLimits/read` asks the backend; nothing is cached.
         return ProviderActivityObservation(metrics: metrics, freshness: .fresh)
+    }
+
+    /// A window at 0% has not started, and its `resetsAt` moves with each
+    /// read (providers 18 AC3).
+    private func forecastDescriptor(
+        for entry: WindowEntry,
+        usedPercent: Double,
+        receivedAt: Date
+    ) -> AllowanceForecastDescriptor? {
+        guard usedPercent > 0,
+              let resetsAt = entry.window.resetsAt,
+              let minutes = entry.window.windowDurationMins, minutes > 0
+        else {
+            return nil
+        }
+        return AllowanceForecastDescriptor(
+            accounting: .fixedPeriod(
+                limit: 100,
+                resetsAt: Date(timeIntervalSince1970: resetsAt),
+                length: TimeInterval(minutes) * 60
+            ),
+            unit: .percentagePoints,
+            resolution: 1,
+            timing: .receipt(receivedAt),
+            usageLineId: entry.id
+        )
     }
 
     private func usageLine(for entry: WindowEntry) -> UsageLine {

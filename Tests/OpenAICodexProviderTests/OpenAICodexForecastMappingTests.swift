@@ -55,10 +55,59 @@ final class OpenAICodexForecastMappingTests: XCTestCase {
         XCTAssertEqual(quota.lines.map(\.id), ["credits"])
     }
 
+    func testStartedWindowsCarryFixedPeriodDescriptorsWithReceiptTiming() {
+        let quota = map(primary: fiveHour, secondary: weekly)
+
+        XCTAssertEqual(quota.activityObservation?.metrics.map(\.forecastDescriptor), [
+            descriptor(id: "primary-window-usage", minutes: 300),
+            descriptor(id: "secondary-window-usage", minutes: 10080),
+        ])
+    }
+
+    func testAWindowWithoutAResetOrALengthCarriesNoDescriptor() {
+        let quota = map(
+            primary: CodexRateLimitWindow(usedPercent: 12, resetsAt: nil, windowDurationMins: 300),
+            secondary: CodexRateLimitWindow(usedPercent: 38, resetsAt: weekly.resetsAt, windowDurationMins: nil)
+        )
+
+        XCTAssertEqual(quota.activityObservation?.metrics.map(\.value), [.number(12), .number(38)])
+        XCTAssertEqual(quota.activityObservation?.metrics.map(\.forecastDescriptor), [nil, nil])
+    }
+
+    /// From the capture: an unused five-hour window resets 300 minutes after
+    /// each read. Reads one second later than the 5-minute refresh move the
+    /// reset past the reset tolerance.
+    func testAnUnusedWindowCarriesNoDescriptorAndItsMovingResetIsNoChange() {
+        var policy = SmartRefreshPolicy()
+        var classifications: [SmartRefreshPolicy.Classification] = []
+
+        for elapsed in [0, 301, 602] as [TimeInterval] {
+            let readAt = receivedAt.addingTimeInterval(elapsed)
+            let unused = CodexRateLimitWindow(
+                usedPercent: 0,
+                resetsAt: readAt.timeIntervalSince1970 + 300 * 60,
+                windowDurationMins: 300
+            )
+            let quota = map(primary: unused, secondary: weekly, readAt: readAt)
+
+            XCTAssertNil(quota.activityObservation?.metrics.first?.forecastDescriptor)
+            let decision = policy.recordSuccess(
+                quota,
+                for: OpenAICodexProvider.providerId,
+                at: elapsed,
+                quietWindow: 300
+            )
+            classifications.append(decision.classification)
+        }
+
+        XCTAssertEqual(classifications, [.baseline, .unchanged, .unchanged])
+    }
+
     private func map(
         primary: CodexRateLimitWindow?,
         secondary: CodexRateLimitWindow?,
-        credits: CodexCredits? = nil
+        credits: CodexCredits? = nil,
+        readAt: Date? = nil
     ) -> ProviderQuota {
         OpenAICodexProvider().map(
             CodexRateLimitReadResult(
@@ -67,7 +116,18 @@ final class OpenAICodexForecastMappingTests: XCTestCase {
                     "codex": CodexRateLimitSnapshot(primary: primary, secondary: secondary, credits: credits),
                 ]
             ),
-            receivedAt: receivedAt
+            receivedAt: readAt ?? receivedAt
+        )
+    }
+
+    private func descriptor(id: String, minutes: Int) -> AllowanceForecastDescriptor {
+        let length = TimeInterval(minutes * 60)
+        return AllowanceForecastDescriptor(
+            accounting: .fixedPeriod(limit: 100, resetsAt: receivedAt.addingTimeInterval(length), length: length),
+            unit: .percentagePoints,
+            resolution: 1,
+            timing: .receipt(receivedAt),
+            usageLineId: id
         )
     }
 

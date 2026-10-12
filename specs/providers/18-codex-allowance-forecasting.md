@@ -46,7 +46,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 - **And** without a window, the provider names no headline line; the credits row is never the headline line
 - **And** both windows share one limit group, because either one blocks usage when it runs out (core 12 AC8)
 - **And** a window without `resetsAt` carries no descriptor
-- **And** a window at 0% carries no descriptor, because its `resetsAt` can move with each read; at the default 5-minute refresh, each move passes the reset tolerance of (core 12), starts a new period, and looks like a change to Smart refresh (core 11).
+- **And** a window at 0% carries no descriptor, because its `resetsAt` can move with each read; at the default 5-minute refresh, a read that arrives late moves it past the reset tolerance of (core 12), which starts a new period and looks like a change to Smart refresh (core 11).
 
 ### AC4: Credits are their own allowance row
 
@@ -96,7 +96,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 3. [x] Decide how the credits row shows a plain number. Decided on 2026-10-12: a typed balance on `UsageLine` (core 13). A preformatted string leaves the number unreadable for (ui 28), and a typed unit on `total` keeps two meanings for `total`.
 4. [ ] Map the provider. Keep all Codex interpretation inside the module:
    - [x] `.fresh`, one receipt time per read, line IDs, the limit group, and the headline line ID. With the headline line and the limit group, a window at 100% already shows "Limit reached" (core 12 AC9).
-   - [ ] Window descriptors, after Plan step 2.
+   - [ ] Window descriptors, after Plan step 2. Implemented on 2026-10-12 from the rules in (AC3), ahead of the evidence: a window above 0% with `resetsAt` and `windowDurationMins` carries a fixed-period descriptor with receipt timing. Tests cover both windows, a window without a reset or a length, and an unused window whose moving reset is no change to Smart refresh. This stays open until Plan step 2 confirms (AC2) and the period length; if the capture disagrees, the mapping changes before merge.
    - [x] The credits row and its descriptor, after (core 13). The resolution is 10⁻¹⁰, because every read in the capture so far has 10 decimals. A credits metric exists only when the credits row exists, so `hasCredits` false also drops the metric. Tests cover finite, unlimited, and absent credits, `hasCredits` false, a response without `hasCredits`, unparseable balances, a credits row without windows, a credit purchase, balances with different numbers of decimals, and a credits row that carries nothing that ranks a provider (core 13 AC3).
 5. [ ] Convert the capture into fixture traces with only receipt times, percentages, reset times, durations, and credit fields. Drop `accountId`, plan names, and limit names (providers 05 AC4). Add the fixtures and tests from (AC6).
 6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Codex data.
