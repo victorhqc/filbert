@@ -235,8 +235,7 @@ public struct CursorProvider: AIProvider {
         if let bonus = plan.bonusSpend, bonus > 0 {
             lines.append(UsageLine(
                 label: String(localized: "Bonus credits"),
-                used: nil,
-                total: Double(bonus) / 100,
+                used: Double(bonus) / 100,
                 unit: "USD",
                 resetDate: resetDate
             ))

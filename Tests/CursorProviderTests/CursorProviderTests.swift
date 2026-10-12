@@ -65,7 +65,9 @@ final class CursorProviderTests: XCTestCase {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
         let bonusLine = try XCTUnwrap(quota.lines.first { $0.label == "Bonus credits" })
-        XCTAssertEqual(try XCTUnwrap(bonusLine.total), 20.0, accuracy: 0.01)
+        XCTAssertEqual(try XCTUnwrap(bonusLine.used), 20.0, accuracy: 0.01)
+        XCTAssertNil(bonusLine.total)
+        XCTAssertNil(bonusLine.balance)
         XCTAssertEqual(bonusLine.unit, "USD")
     }
 

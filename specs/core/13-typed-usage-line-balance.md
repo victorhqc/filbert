@@ -56,6 +56,7 @@ Give `UsageLine` a typed balance, so the App formats, shows, and ranks a balance
 - **When** the popover renders the card
 - **Then** it renders every line that the provider sends, in order
 - **And** the App no longer hides a line because of its amount, and no longer removes equal amounts
+- **And** a line with nothing to show stays hidden, as today: it has no percentage, no amount, and no details, e.g. a window that reports no percentage
 - **And** the rules of (ui 08 AC1) move into the DeepSeek provider (AC5).
 
 ### AC5: DeepSeek keeps its card
@@ -93,7 +94,7 @@ Give `UsageLine` a typed balance, so the App formats, shows, and ranks a balance
 
 ## Plan
 
-1. [ ] Add `UsageBalance` and `UsageLine.balance` to Core:
+1. [x] Add `UsageBalance` and `UsageLine.balance` to Core:
 
    ```swift
    public struct UsageBalance: Equatable, Sendable {
@@ -110,15 +111,23 @@ Give `UsageLine` a typed balance, so the App formats, shows, and ranks a balance
    }
    ```
 
-2. [ ] In the App, add one amount formatter. Use it in the row, in `valueText(for:)`, and in the status. Change `.balance(used:total:formattedAmount:)` to `.balance(amount:formattedAmount:)`, because no view reads `used`. Read the headline dot and the menu-bar label from the new status. Remove `FilteredBalanceLines.swift`.
-3. [ ] Migrate DeepSeek: balances, the choice of lines, and the headline from the response.
-4. [ ] Migrate the Cursor bonus line to `used`.
-5. [ ] Add the tests from (AC7). Run the validation gate. Manually check the DeepSeek and Cursor cards, the collapsed card, the menu bar, and VoiceOver.
+2. [x] In the App, add one amount formatter. Use it in the row, in `valueText(for:)`, and in the status. Change `.balance(used:total:formattedAmount:)` to `.balance(amount:formattedAmount:)`, because no view reads `used`. Read the headline dot and the menu-bar label from the new status. Replace `FilteredBalanceLines.swift` with the rule for lines with nothing to show (AC4).
+3. [x] Migrate DeepSeek: balances, the choice of lines, and the headline from the response.
+4. [x] Migrate the Cursor bonus line to `used`.
+5. [x] Add the tests from (AC7). Run the validation gate.
+6. [ ] Manually check the DeepSeek and Cursor cards, the collapsed card, the menu bar, and VoiceOver.
+
+### Implementation findings
+
+- `FilteredBalanceLines.swift` also hid every window line without a percentage, because such a line has no `total`. Without a rule, those lines would render with only a label. `visibleUsageLines` keeps them hidden, so the card hides only a line with nothing to show (AC4).
+- A Codex response without windows sends credits as a line with only details. The old filter hid it. It now renders, until (providers 18) gives it a balance.
+- The DeepSeek USD fixture has a zero granted balance and equal total and topped-up balances. The provider now sends one line, which is the line the App showed before.
 
 ## Risks
 
 - Every DeepSeek user sees a regression in the balance card. The tests in (AC5) pin the card for one currency.
 - With two currencies, DeepSeek can show more rows than today, because equal amounts in different currencies are no longer merged.
-- A Cursor on-demand line without `used` showed its limit as a balance. It now shows no amount.
+- A Cursor on-demand line without `used` showed its limit as a balance. It now has nothing to show, so it is hidden (AC4).
 - A Cursor bonus line gave the balance status when no percentage line was present. It no longer does.
+- The Cursor headline showed a tier dot from the bonus spend. The dot is gone, because an amount spent has no tier.
 - (providers 19 AC3) moves the DeepSeek headline lookup from the label to a line ID. After (AC5), the headline reads the response, so (providers 19) only adds the line IDs.

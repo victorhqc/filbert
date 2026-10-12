@@ -30,7 +30,7 @@ struct CompactProviderStatus: View {
                 }
                 .accessibilityHidden(true)
             }
-        case let .balance(_, _, formattedAmount):
+        case let .balance(_, formattedAmount):
             if let tier {
                 HStack(spacing: 4) {
                     Circle()

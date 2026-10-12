@@ -2897,6 +2897,15 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } }
       }
     },
+    "Unlimited" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Unbegrenzt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlimited" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } }
+      }
+    },
     "Limit reached" : {
       "extractionState" : "manual",
       "localizations" : {

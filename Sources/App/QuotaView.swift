@@ -89,7 +89,7 @@ struct QuotaView: View {
                 viewModel: viewModel,
                 providerId: providerId,
                 quota: quota,
-                lines: renderedLines(quota.lines),
+                lines: visibleUsageLines(quota.lines),
                 headlineColor: headlineBalanceColor(for: quota)
             )
 
@@ -160,7 +160,7 @@ struct QuotaView: View {
         switch QuotaStatusResolver.resolve(for: quota) {
         case let .window(percentage):
             headerLabel = String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
-        case let .balance(_, _, formattedAmount):
+        case let .balance(_, formattedAmount):
             headerLabel = String(localized: "\(info.displayName): \(formattedAmount) remaining")
         case .fallback:
             headerLabel = info.displayName
@@ -229,21 +229,10 @@ struct QuotaView: View {
 
     // MARK: - Helpers
 
-    private func percentage(for line: UsageLine) -> Double? {
-        QuotaStatusResolver.percentage(for: line)
-    }
-
-    private func renderedLines(_ lines: [UsageLine]) -> [UsageLine] {
-        filteredBalanceLines(lines, isPercentageLine: { percentage(for: $0) != nil })
-    }
-
     private func headlineBalanceColor(for quota: ProviderQuota) -> Color? {
-        guard let line = quota.lines.first(where: { percentage(for: $0) == nil }),
-              let total = line.total
-        else {
-            return nil
+        QuotaStatusResolver.firstCurrencyBalance(in: quota.lines).map {
+            ProviderVisualStyle.balanceTierColor($0, scheme: colorScheme)
         }
-        return ProviderVisualStyle.balanceTierColor(total, scheme: colorScheme)
     }
 }
 

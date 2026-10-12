@@ -19,7 +19,7 @@ struct MenuBarStatusIcon: View {
             switch resolved.status {
             case let .window(percentage):
                 statusRow(percentageText(percentage), resolved: resolved)
-            case let .balance(_, _, formattedAmount):
+            case let .balance(_, formattedAmount):
                 statusRow(formattedAmount, resolved: resolved)
             case .fallback:
                 fallbackIcon

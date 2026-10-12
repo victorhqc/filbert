@@ -42,6 +42,7 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertNil(line.total)
         XCTAssertNil(line.percentage)
         XCTAssertNil(line.unit)
+        XCTAssertNil(line.balance)
         XCTAssertNil(line.resetDate)
         XCTAssertNil(line.windowDuration)
         XCTAssertNil(line.details)

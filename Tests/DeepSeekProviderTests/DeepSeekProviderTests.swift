@@ -69,12 +69,15 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[2].label, "Topped up")
     }
 
-    func testFetchQuota_parsesStringAmountsToDouble() async throws {
+    func testFetchQuota_mapsAmountsToCurrencyBalances() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
 
-        XCTAssertEqual(try XCTUnwrap(quota.lines[0].total), 110.00, accuracy: 0.001)
-        XCTAssertEqual(try XCTUnwrap(quota.lines[1].total), 10.00, accuracy: 0.001)
-        XCTAssertEqual(try XCTUnwrap(quota.lines[2].total), 100.00, accuracy: 0.001)
+        XCTAssertEqual(quota.lines.map(\.balance), [
+            UsageBalance(amount: .finite(110), unit: .currency("CNY")),
+            UsageBalance(amount: .finite(10), unit: .currency("CNY")),
+            UsageBalance(amount: .finite(100), unit: .currency("CNY")),
+        ])
+        XCTAssertTrue(quota.lines.allSatisfy { $0.used == nil && $0.total == nil && $0.unit == nil })
     }
 
     func testFetchQuota_tracksOnlyTotalBalanceAsActivity() async throws {
@@ -107,21 +110,11 @@ final class DeepSeekProviderTests: XCTestCase {
         XCTAssertEqual(original.activityObservation?.metrics, afterReallocation.activityObservation?.metrics)
     }
 
-    func testFetchQuota_tagsEachLineWithRawCurrencyCode() async throws {
-        let quota = try await fetchWithMock(validResponseJSON())
-
-        for line in quota.lines {
-            XCTAssertEqual(line.unit, "CNY")
-        }
-    }
-
     func testFetchQuota_supportsUSDCurrency() async throws {
         let quota = try await fetchWithMock(usdResponseJSON())
 
-        XCTAssertEqual(quota.lines.count, 3)
-        for line in quota.lines {
-            XCTAssertEqual(line.unit, "USD")
-        }
+        XCTAssertEqual(quota.lines.map(\.label), ["Total balance"])
+        XCTAssertEqual(quota.lines.first?.balance?.unit, .currency("USD"))
     }
 
     // MARK: - is_available: false surfaced explicitly
