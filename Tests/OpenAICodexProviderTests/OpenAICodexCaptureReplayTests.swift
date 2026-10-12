@@ -11,6 +11,7 @@ final class OpenAICodexCaptureReplayTests: XCTestCase {
 
     private let firstSession = "codex-capture-first-session"
     private let fiveHourRollover = "codex-capture-five-hour-rollover"
+    private let creditsSwitch = "codex-capture-credits-switch"
 
     func testAnUnusedWindowCarriesNoDescriptorUntilItsPercentageRises() throws {
         let metrics = try replay(firstSession).map { metric(OpenAICodexProvider.primaryWindowLineId, in: $0) }
@@ -98,6 +99,53 @@ final class OpenAICodexCaptureReplayTests: XCTestCase {
         XCTAssertEqual(states[lastUnused], nil)
         XCTAssertEqual(states[lastUnused + 1], .insufficient)
         XCTAssertTrue(states[(lastUnused + 2)...].allSatisfy { $0 == .learning })
+    }
+
+    func testCreditsFallFromTheReadThatReachesTheLimitWhileTheWeekStandsStill() throws {
+        let quotas = try replay(creditsSwitch)
+        let firstDrop = try XCTUnwrap(firstCreditsDrop(in: quotas))
+        let fiveHourBefore = try XCTUnwrap(number(OpenAICodexProvider.primaryWindowLineId, in: quotas[firstDrop - 1]))
+
+        XCTAssertLessThan(fiveHourBefore, 100)
+        XCTAssertEqual(number(OpenAICodexProvider.primaryWindowLineId, in: quotas[firstDrop]), 100)
+        let weekly = Set(quotas[firstDrop...].compactMap { number(OpenAICodexProvider.secondaryWindowLineId, in: $0) })
+        XCTAssertEqual(weekly, [66])
+    }
+
+    func testTheCreditsForecastCountsOnlyTheSpendingAfterTheSwitch() throws {
+        let quotas = try replay(creditsSwitch)
+        let states = states(of: OpenAICodexProvider.creditsLineId, in: quotas)
+        let firstDrop = try XCTUnwrap(firstCreditsDrop(in: quotas))
+        let segmentStart = quotas[firstDrop - 1].lastUpdated
+        let lastDrop = try XCTUnwrap(quotas.indices.last { index in
+            index > 0 && number(OpenAICodexProvider.creditsLineId, in: quotas[index])
+                != number(OpenAICodexProvider.creditsLineId, in: quotas[index - 1])
+        })
+
+        XCTAssertTrue(states[..<firstDrop].allSatisfy { $0 == .insufficient })
+        for index in firstDrop ... lastDrop where quotas[index].lastUpdated.timeIntervalSince(segmentStart) < 10 * 60 {
+            XCTAssertEqual(states[index], .learning, "read \(index)")
+        }
+        guard case let .estimated(depletesAt)? = states[lastDrop] else {
+            return XCTFail("Expected an estimate at the last drop, got \(String(describing: states[lastDrop]))")
+        }
+        XCTAssertEqual(depletesAt.timeIntervalSince(quotas[lastDrop].lastUpdated), 198.6 * 60, accuracy: 60)
+    }
+
+    private func firstCreditsDrop(in quotas: [ProviderQuota]) -> Int? {
+        quotas.indices.dropFirst().first { index in
+            guard let balance = number(OpenAICodexProvider.creditsLineId, in: quotas[index]),
+                  let previous = number(OpenAICodexProvider.creditsLineId, in: quotas[index - 1])
+            else {
+                return false
+            }
+            return balance < previous
+        }
+    }
+
+    private func number(_ id: String, in quota: ProviderQuota) -> Decimal? {
+        guard case let .number(value)? = metric(id, in: quota)?.value else { return nil }
+        return value
     }
 
     private func replay(_ fixture: String) throws -> [ProviderQuota] {
