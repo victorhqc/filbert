@@ -13,6 +13,8 @@ public struct ProviderQuota: Sendable {
     /// multipliers (e.g. z.ai's GLM Coding Plan) populate this so the view
     /// can render a peak/off-peak block without any provider-specific code.
     public let peakHoursConfig: PeakHoursConfig?
+    /// Without it, the app never replaces `headline`.
+    public let headlineUsageLineId: String?
 
     public init(
         providerId: String,
@@ -23,7 +25,8 @@ public struct ProviderQuota: Sendable {
         error: String? = nil,
         isStale: Bool = false,
         activityObservation: ProviderActivityObservation? = nil,
-        peakHoursConfig: PeakHoursConfig? = nil
+        peakHoursConfig: PeakHoursConfig? = nil,
+        headlineUsageLineId: String? = nil
     ) {
         self.providerId = providerId
         self.providerName = providerName
@@ -34,6 +37,7 @@ public struct ProviderQuota: Sendable {
         self.isStale = isStale
         self.activityObservation = activityObservation
         self.peakHoursConfig = peakHoursConfig
+        self.headlineUsageLineId = headlineUsageLineId
     }
 }
 
@@ -76,11 +80,36 @@ public struct ProviderActivityMetric: Equatable, Sendable {
     public let id: String
     public let kind: Kind
     public let value: Value
+    /// Omit for unlimited, unknown, or rolling-window values.
+    public let forecastDescriptor: AllowanceForecastDescriptor?
 
-    public init(id: String, kind: Kind, value: Value) {
+    public init(
+        id: String,
+        kind: Kind,
+        value: Value,
+        forecastDescriptor: AllowanceForecastDescriptor? = nil
+    ) {
         self.id = id
         self.kind = kind
         self.value = value
+        self.forecastDescriptor = forecastDescriptor
+    }
+}
+
+extension ProviderActivityMetric {
+    func measuresSameValue(as other: Self) -> Bool {
+        guard kind == other.kind, value == other.value else { return false }
+        switch (forecastDescriptor, other.forecastDescriptor) {
+        case (.none, .none):
+            return true
+        case let (.some(descriptor), .some(otherDescriptor)):
+            return descriptor.describesSameAllowance(
+                as: otherDescriptor,
+                resetTolerance: AllowanceForecastPolicy.standard.resetTolerance
+            )
+        case (.some, .none), (.none, .some):
+            return false
+        }
     }
 }
 
@@ -107,6 +136,10 @@ public struct UsageLine: Sendable {
     public let resetDate: Date?
     public let windowDuration: TimeInterval?
     public let details: [UsageDetail]?
+    public let id: String?
+    /// Lines in one group cap the same usage, so whichever runs out first
+    /// blocks it.
+    public let limitGroup: String?
 
     public init(
         label: String,
@@ -116,7 +149,9 @@ public struct UsageLine: Sendable {
         unit: String? = nil,
         resetDate: Date? = nil,
         windowDuration: TimeInterval? = nil,
-        details: [UsageDetail]? = nil
+        details: [UsageDetail]? = nil,
+        id: String? = nil,
+        limitGroup: String? = nil
     ) {
         self.label = label
         self.used = used
@@ -126,6 +161,8 @@ public struct UsageLine: Sendable {
         self.resetDate = resetDate
         self.windowDuration = windowDuration
         self.details = details
+        self.id = id
+        self.limitGroup = limitGroup
     }
 }
 

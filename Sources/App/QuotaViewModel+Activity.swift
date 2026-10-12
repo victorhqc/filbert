@@ -53,9 +53,11 @@ extension QuotaViewModel {
 
     func handleActivityWillSleep() {
         cancelActivityExpiration()
+        interruptAllowanceForecasts()
     }
 
     func handleActivityDidWake() {
+        interruptAllowanceForecasts()
         refreshActivitySelection(at: activityRuntime.now())
     }
 

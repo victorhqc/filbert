@@ -4,12 +4,13 @@ import SwiftUI
 
 struct UsageLineRow: View {
     let line: UsageLine
+    var forecast: AllowanceForecastLineSource?
 
     var body: some View {
         if shouldUseBudgetPacing {
-            PacedUsageLineRow(line: line)
+            PacedUsageLineRow(line: line, forecast: forecast)
         } else {
-            StandardUsageLineRow(line: line)
+            StandardUsageLineRow(line: line, forecast: forecast)
         }
     }
 
@@ -20,6 +21,7 @@ struct UsageLineRow: View {
 
 private struct StandardUsageLineRow: View {
     let line: UsageLine
+    let forecast: AllowanceForecastLineSource?
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -44,6 +46,14 @@ private struct StandardUsageLineRow: View {
                 UsageBar(percentage: percentage, color: percentageColor(percentage))
             }
 
+            if let forecast {
+                AllowanceForecastTimeline { date in
+                    if let line = forecast(date) {
+                        ForecastRowLine(line: line)
+                    }
+                }
+            }
+
             if let resetDate = line.resetDate {
                 Text(QuotaFormatting.countdown(to: resetDate))
                     .font(.caption)
@@ -63,38 +73,47 @@ private struct StandardUsageLineRow: View {
 
 private struct PacedUsageLineRow: View {
     let line: UsageLine
+    let forecast: AllowanceForecastLineSource?
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
             if let pace = BudgetPace(line: line, now: context.date) {
-                paceContent(pace)
+                paceContent(pace, forecast: forecast?(context.date))
             } else {
-                StandardUsageLineRow(line: line)
+                StandardUsageLineRow(line: line, forecast: forecast)
             }
         }
     }
 
-    private func paceContent(_ pace: BudgetPace) -> some View {
+    private func paceContent(
+        _ pace: BudgetPace,
+        forecast: AllowanceForecastPresentation.Line?
+    ) -> some View {
         let color = ProviderVisualStyle.tierColor(pace.tier, scheme: colorScheme)
+        let text = PacedUsageLineText(pace: pace, forecast: forecast)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
                 Text(line.label)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
-                Text(usedPercentageText(pace.usedPercentage))
+                Text(text.used)
                     .font(.subheadline.monospacedDigit())
                     .foregroundColor(color)
             }
 
             BudgetPaceBar(pace: pace, color: color)
 
+            if let forecast {
+                ForecastRowLine(line: forecast)
+            }
+
             HStack(spacing: 8) {
-                Text(remainingTimeText(pace.remainingTime))
+                Text(text.remainingTime)
                 Spacer(minLength: 4)
-                Text(remainingAllowanceText(pace.allowance))
+                Text(text.allowance)
                     .multilineTextAlignment(.trailing)
             }
             .font(.caption.monospacedDigit())
@@ -105,70 +124,7 @@ private struct PacedUsageLineRow: View {
         .padding(.vertical, 2)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(line.label)
-        .accessibilityValue(paceAccessibilityValue(pace))
-    }
-
-    private func usedPercentageText(_ percentage: Double) -> String {
-        let formatted = percentage.formatted(.number.precision(.fractionLength(0)))
-        return String.localizedStringWithFormat(String(localized: "%@%% used"), formatted)
-    }
-
-    private func remainingTimeText(_ remainingTime: TimeInterval) -> String {
-        let formatter = DateComponentsFormatter()
-        // DateComponentsFormatter throws NSInternalInconsistencyException for
-        // .weekOfYear; .weekOfMonth is the only supported week unit.
-        formatter.allowedUnits = remainingTime >= 7 * 24 * 60 * 60
-            ? [.weekOfMonth, .day]
-            : remainingTime >= 24 * 60 * 60 ? [.day, .hour] : [.hour, .minute]
-        formatter.maximumUnitCount = 2
-        formatter.unitsStyle = .abbreviated
-        formatter.zeroFormattingBehavior = .dropAll
-        let formatted = formatter.string(from: remainingTime) ?? ""
-        return String.localizedStringWithFormat(String(localized: "%@ left"), formatted)
-    }
-
-    private func remainingAllowanceText(_ allowance: BudgetPace.Allowance) -> String {
-        switch allowance {
-        case let .perUnit(percentage, unit):
-            let format = switch unit {
-            case .day: String(localized: "About %@%%/day available")
-            case .week: String(localized: "About %@%%/week available")
-            }
-            return String.localizedStringWithFormat(
-                format,
-                percentage.formatted(.number.precision(.fractionLength(1)))
-            )
-        case let .untilReset(percentage):
-            let formatted = percentage.formatted(.number.precision(.fractionLength(0)))
-            return String.localizedStringWithFormat(
-                String(localized: "%@%% available until reset"),
-                formatted
-            )
-        }
-    }
-
-    private func paceAccessibilityValue(_ pace: BudgetPace) -> String {
-        let paceStatus = switch pace.tier {
-        case .good:
-            String(localized: "Within current allowance")
-        case .warn, .critical:
-            String(localized: "Over current allowance")
-        }
-        let value = String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            usedPercentageText(pace.usedPercentage),
-            remainingTimeText(pace.remainingTime)
-        )
-        let allowance = String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            paceStatus,
-            remainingAllowanceText(pace.allowance)
-        )
-        return String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format"),
-            value,
-            allowance
-        )
+        .accessibilityValue(text.accessibilityValue)
     }
 }
 

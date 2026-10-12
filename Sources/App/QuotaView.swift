@@ -82,23 +82,16 @@ struct QuotaView: View {
 
     // MARK: - Quota content
 
-    private func quotaContent(_ quota: ProviderQuota) -> some View {
+    private func quotaContent(_ quota: ProviderQuota, providerId: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 4) {
-                Text(quota.headline)
-                    .font(.headline)
-                if let color = headlineBalanceColor(for: quota) {
-                    Circle()
-                        .fill(color)
-                        .frame(width: 8, height: 8)
-                }
-            }
-            .padding(.bottom, 2)
-
-            // balance-only lines with non-positive or duplicate totals are filtered out before ForEach.
-            ForEach(renderedLines(quota.lines), id: \.label) { line in
-                usageLineRow(line)
-            }
+            // balance-only lines with non-positive or duplicate totals are filtered out before the rows render.
+            QuotaHeadlineAndRows(
+                viewModel: viewModel,
+                providerId: providerId,
+                quota: quota,
+                lines: renderedLines(quota.lines),
+                headlineColor: headlineBalanceColor(for: quota)
+            )
 
             if let peakConfig = quota.peakHoursConfig {
                 PeakHoursBlock(config: peakConfig)
@@ -182,10 +175,6 @@ struct QuotaView: View {
             headerLabel,
             fastRefreshStatus
         )
-    }
-
-    private func usageLineRow(_ line: UsageLine) -> some View {
-        UsageLineRow(line: line)
     }
 
     private func errorContent(_ message: String, providerId: String) -> some View {
@@ -391,7 +380,7 @@ private extension QuotaView {
         case .loading:
             loadingContent
         case let .loaded(quota):
-            quotaContent(quota)
+            quotaContent(quota, providerId: providerId)
         case let .error(message):
             errorContent(message, providerId: providerId)
         }

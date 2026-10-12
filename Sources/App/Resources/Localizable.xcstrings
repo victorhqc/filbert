@@ -2716,6 +2716,186 @@
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } }
       }
+    },
+    "Forecast headline format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } }
+      }
+    },
+    "Forecast labeled value format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } }
+      }
+    },
+    "About %@ of use remaining" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Etwa %@ Nutzung verbleibend" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@ of use remaining" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %@ de uso" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %@ de uso" } }
+      }
+    },
+    "Based on the last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Based on the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Según %@ de historial" } }
+      }
+    },
+    "Not expected to run out" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich aus" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not expected to run out" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote" } }
+      }
+    },
+    "before reset at recent pace" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "bis zum Zurücksetzen beim aktuellen Tempo" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "before reset at recent pace" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "antes del reinicio al ritmo reciente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "antes del reinicio al ritmo reciente" } }
+      }
+    },
+    "About %1$@ of use remaining · last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Etwa %1$@ Nutzung verbleibend · %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About %1$@ of use remaining · last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } }
+      }
+    },
+    "Not expected to run out before reset · last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen · %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not expected to run out before reset · last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote antes del reinicio · %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote antes del reinicio · %@ de historial" } }
+      }
+    },
+    "Learning your usage rate…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nutzungstempo wird ermittelt…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Learning your usage rate…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Aprendiendo tu ritmo de uso…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aprendiendo tu ritmo de uso…" } }
+      }
+    },
+    "No recent consumption detected" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Kein aktueller Verbrauch erkannt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "No recent consumption detected" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se detectó consumo reciente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se detectó consumo reciente" } }
+      }
+    },
+    "Updates too far apart to estimate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungen zu selten für eine Schätzung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Updates too far apart to estimate" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones demasiado espaciadas para estimar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones demasiado espaciadas para estimar" } }
+      }
+    },
+    "Forecast paused until fresh data arrives" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Prognose pausiert, bis neue Daten eintreffen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast paused until fresh data arrives" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Pronóstico en pausa hasta recibir datos nuevos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Pronóstico en pausa hasta recibir datos nuevos" } }
+      }
+    },
+    "About %1$@ of use remaining at recent pace, based on the last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim aktuellen Tempo etwa %1$@ Nutzung verbleibend, basierend auf %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About %1$@ of use remaining at recent pace, based on the last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } }
+      }
+    },
+    "Not expected to run out before reset at recent pace, based on the last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim aktuellen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not expected to run out before reset at recent pace, based on the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente no se espera que se agote antes del reinicio, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente no se espera que se agote antes del reinicio, según %@ de historial" } }
+      }
+    },
+    "Timing is approximate" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeitangabe ist ungefähr" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Timing is approximate" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } }
+      }
+    },
+    "Limit reached" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Limit erreicht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado" } }
+      }
+    },
+    "Limit reached, no more use available until reset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Limit erreicht, bis zum Zurücksetzen keine weitere Nutzung verfügbar" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached, no more use available until reset" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el reinicio" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el reinicio" } }
+      }
+    },
+    "More than %@ of use remaining" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mehr als %@ Nutzung verbleibend" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "More than %@ of use remaining" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %@ de uso" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %@ de uso" } }
+      }
+    },
+    "More than %1$@ of use remaining · last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mehr als %1$@ Nutzung verbleibend · %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "More than %1$@ of use remaining · last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %1$@ de uso · %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %1$@ de uso · %2$@ de historial" } }
+      }
+    },
+    "More than %1$@ of use remaining at recent pace, based on the last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim aktuellen Tempo mehr als %1$@ Nutzung verbleibend, basierend auf %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "More than %1$@ of use remaining at recent pace, based on the last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan más de %1$@ de uso, según %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan más de %1$@ de uso, según %2$@ de historial" } }
+      }
     }
   },
   "version" : "1.0"
