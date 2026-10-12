@@ -103,10 +103,7 @@ extension ProviderActivityMetric {
         case (.none, .none):
             return true
         case let (.some(descriptor), .some(otherDescriptor)):
-            return descriptor.describesSameAllowance(
-                as: otherDescriptor,
-                resetTolerance: AllowanceForecastPolicy.standard.resetTolerance
-            )
+            return descriptor.describesSameAllowance(as: otherDescriptor, policy: .standard)
         case (.some, .none), (.none, .some):
             return false
         }

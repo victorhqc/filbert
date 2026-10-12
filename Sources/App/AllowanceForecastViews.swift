@@ -19,6 +19,7 @@ struct ForecastHeadline: View {
         VStack(alignment: .leading, spacing: 1) {
             Text(headline.text)
                 .font(.headline)
+                .fixedSize(horizontal: false, vertical: true)
             if let detail = headline.detail {
                 Text(detail)
                     .font(.caption)
@@ -38,6 +39,7 @@ struct ForecastRowLine: View {
         Text(line.text)
             .font(.caption)
             .foregroundStyle(.secondary)
+            .fixedSize(horizontal: false, vertical: true)
             .accessibilityLabel(line.accessibilityLabel)
             .help(line.accessibilityLabel)
     }

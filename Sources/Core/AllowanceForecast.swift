@@ -12,6 +12,12 @@ public struct AllowanceForecast: Equatable, Sendable {
         case insufficient
     }
 
+    public enum Pace: Equatable, Sendable {
+        case recent
+        /// Includes breaks, so a projection from it is calendar time, not continuous use.
+        case periodAverage
+    }
+
     public let usageLineId: String
     public let state: State
     public let observedAt: Date
@@ -20,6 +26,7 @@ public struct AllowanceForecast: Equatable, Sendable {
     /// Paused after the projected depletion time, or without an estimate and
     /// closer to the limit than the engine can measure a rate.
     public let isUncertainNearLimit: Bool
+    public let pace: Pace
 
     public init(
         usageLineId: String,
@@ -27,7 +34,8 @@ public struct AllowanceForecast: Equatable, Sendable {
         observedAt: Date,
         evidenceSpan: TimeInterval? = nil,
         isApproximate: Bool = false,
-        isUncertainNearLimit: Bool = false
+        isUncertainNearLimit: Bool = false,
+        pace: Pace = .recent
     ) {
         self.usageLineId = usageLineId
         self.state = state
@@ -35,6 +43,7 @@ public struct AllowanceForecast: Equatable, Sendable {
         self.evidenceSpan = evidenceSpan
         self.isApproximate = isApproximate
         self.isUncertainNearLimit = isUncertainNearLimit
+        self.pace = pace
     }
 
     func observationAge(at now: Date) -> TimeInterval {

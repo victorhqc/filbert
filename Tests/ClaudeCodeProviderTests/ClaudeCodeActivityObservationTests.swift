@@ -13,7 +13,7 @@ final class ClaudeCodeActivityObservationTests: XCTestCase {
 
         XCTAssertNil(quota.activityObservation?.availability)
         XCTAssertEqual(quota.activityObservation?.freshness, .fresh)
-        XCTAssertEqual(quota.activityObservation?.metrics, [
+        XCTAssertEqual(metricsWithoutDescriptors(quota), [
             ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(42)),
             ProviderActivityMetric(id: "weekly-usage", kind: .usage, value: .number(60)),
         ])
@@ -28,7 +28,7 @@ final class ClaudeCodeActivityObservationTests: XCTestCase {
             sevenDay: nil
         )
 
-        XCTAssertEqual(quota.activityObservation?.metrics, [
+        XCTAssertEqual(metricsWithoutDescriptors(quota), [
             ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(Decimal(42.5))),
         ])
     }
@@ -38,7 +38,7 @@ final class ClaudeCodeActivityObservationTests: XCTestCase {
         let quota = try await fetchQuota(writtenAt: writtenAt, fiveHour: 42, sevenDay: nil)
 
         XCTAssertEqual(quota.activityObservation?.freshness, .stale)
-        XCTAssertEqual(quota.activityObservation?.metrics, [
+        XCTAssertEqual(metricsWithoutDescriptors(quota), [
             ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(42)),
         ])
     }
@@ -55,7 +55,7 @@ final class ClaudeCodeActivityObservationTests: XCTestCase {
         ))
 
         XCTAssertEqual(quota.activityObservation?.freshness, .fresh)
-        XCTAssertEqual(quota.activityObservation?.metrics, [
+        XCTAssertEqual(metricsWithoutDescriptors(quota), [
             ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(42)),
         ])
     }
@@ -97,6 +97,10 @@ final class ClaudeCodeActivityObservationTests: XCTestCase {
         XCTAssertLessThanOrEqual(fiveHourWrittenAt, after)
         XCTAssertEqual(cache.rateLimits?.sevenDay?.usedPercentage, 20)
         XCTAssertEqual(cache.rateLimits?.sevenDay?.writtenAt, staleWrite)
+    }
+
+    private func metricsWithoutDescriptors(_ quota: ProviderQuota) -> [ProviderActivityMetric]? {
+        quota.activityObservation?.metrics.map { ProviderActivityMetric(id: $0.id, kind: $0.kind, value: $0.value) }
     }
 
     private func fetchQuota(

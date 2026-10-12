@@ -10,7 +10,7 @@ final class SmartRefreshPolicyDescriptorTests: SmartRefreshPolicyTestCase {
     }
 
     func testResetJitterInsideTheToleranceRemainsUnchanged() {
-        let jittered = descriptorQuota(resetsAt: defaultReset.addingTimeInterval(0.4))
+        let jittered = descriptorQuota(resetsAt: defaultReset.addingTimeInterval(60))
 
         XCTAssertEqual(classify(after: jittered), .unchanged)
     }
@@ -52,7 +52,11 @@ final class SmartRefreshPolicyDescriptorTests: SmartRefreshPolicyTestCase {
     ) -> ProviderQuota {
         let writtenAt = writtenAt ?? origin
         let descriptor = AllowanceForecastDescriptor(
-            accounting: .fixedPeriod(limit: limit, resetsAt: resetsAt ?? defaultReset),
+            accounting: .fixedPeriod(
+                limit: limit,
+                resetsAt: resetsAt ?? defaultReset,
+                length: UsageWindowDuration.fiveHours
+            ),
             unit: .percentagePoints,
             resolution: 1,
             timing: .source(writtenAt),

@@ -25,8 +25,12 @@ extension AllowanceSample {
             return nil
         }
         switch descriptor.accounting {
-        case let .fixedPeriod(limit, resetsAt):
-            guard limit.isFinite, limit > 0, value >= 0, resetsAt > descriptor.timing.date else { return nil }
+        case let .fixedPeriod(limit, resetsAt, length):
+            guard limit.isFinite, limit > 0, value >= 0, length.isFinite, length > 0,
+                  resetsAt > descriptor.timing.date
+            else {
+                return nil
+            }
         case .balance:
             break
         }
@@ -127,7 +131,8 @@ struct AllowanceHistory: Sendable {
     }
 
     func forecast(at now: Date, policy: AllowanceForecastPolicy) -> AllowanceForecast {
-        let estimate = rateEstimate(policy: policy)
+        let isLongPeriod = isLongPeriod(policy: policy)
+        let estimate = isLongPeriod ? periodAverageEstimate(policy: policy) : rateEstimate(policy: policy)
         let state = state(at: now, estimate: estimate, policy: policy)
         let usesEstimate = switch state {
         case .estimated, .beyondReset: true
@@ -139,7 +144,8 @@ struct AllowanceHistory: Sendable {
             observedAt: latest.time,
             evidenceSpan: usesEstimate ? estimate?.span : nil,
             isApproximate: usesEstimate ? estimate?.isApproximate ?? false : latest.isApproximate,
-            isUncertainNearLimit: isUncertainNearLimit(in: state, at: now, estimate: estimate, policy: policy)
+            isUncertainNearLimit: isUncertainNearLimit(in: state, at: now, estimate: estimate, policy: policy),
+            pace: isLongPeriod ? .periodAverage : .recent
         )
     }
 
@@ -213,6 +219,9 @@ private extension AllowanceHistory {
         if interruptedAt != nil || isPaused {
             return .paused
         }
+        if isLongPeriod(policy: policy) {
+            return longPeriodState(at: now, estimate: estimate, remaining: remaining, policy: policy)
+        }
         if consecutiveLongIntervals >= policy.tooFarApartIntervalCount {
             let age = now.timeIntervalSince(latest.time)
             return age < lastLongInterval + policy.maximumGap ? .tooFarApart : .paused
@@ -226,12 +235,7 @@ private extension AllowanceHistory {
         guard let estimate, let depletesAt = projectedDepletion(of: remaining, at: estimate) else {
             return now.timeIntervalSince(baselineAt) < policy.maximumHorizon ? .learning : .insufficient
         }
-
-        if let resetsAt = descriptor.accounting.resetsAt, depletesAt >= resetsAt {
-            return .beyondReset(resetsAt: resetsAt)
-        }
-        // Only a provider measurement can report exhaustion.
-        return now >= depletesAt ? .paused : .estimated(depletesAt: depletesAt)
+        return projectedState(depletesAt: depletesAt, at: now)
     }
 
     func isUncertainNearLimit(
@@ -262,12 +266,6 @@ private extension AllowanceHistory {
         return now >= depletesAt
     }
 
-    func projectedDepletion(of remaining: Decimal, at estimate: AllowanceRateEstimate) -> Date? {
-        let duration = (remaining / estimate.ratePerSecond).doubleValue
-        guard duration.isFinite else { return nil }
-        return latest.time.addingTimeInterval(duration)
-    }
-
     func isEvidenceStale(at now: Date, policy: AllowanceForecastPolicy) -> Bool {
         let age = now.timeIntervalSince(latest.time)
         return age > policy.maximumObservationAge || age < -policy.futureTimestampTolerance
@@ -296,11 +294,12 @@ private extension AllowanceHistory {
         switch (descriptor.accounting, newDescriptor.accounting) {
         case (.balance, .balance):
             return true
-        case let (.fixedPeriod(oldLimit, oldResetsAt), .fixedPeriod(newLimit, newResetsAt)):
+        case let (.fixedPeriod(oldLimit, oldResetsAt, oldLength), .fixedPeriod(newLimit, newResetsAt, newLength)):
             guard let periodResetsAt else { return false }
             return oldLimit == newLimit
+                && oldLength == newLength
                 && oldResetsAt > time
-                && abs(newResetsAt.timeIntervalSince(periodResetsAt)) <= policy.resetTolerance
+                && policy.isSamePeriod(resetsAt: newResetsAt, periodResetsAt: periodResetsAt)
         case (.balance, .fixedPeriod), (.fixedPeriod, .balance):
             return false
         }
@@ -321,7 +320,7 @@ private extension AllowanceHistory {
 
     func remaining(at sample: AllowanceSample) -> Decimal {
         switch descriptor.accounting {
-        case let .fixedPeriod(limit, _):
+        case let .fixedPeriod(limit, _, _):
             limit - sample.value
         case .balance:
             sample.value
@@ -357,12 +356,5 @@ private extension AllowanceHistory {
         if samples.count > policy.maximumRetainedObservations {
             samples.removeFirst(samples.count - policy.maximumRetainedObservations)
         }
-    }
-}
-
-private extension AllowanceForecastDescriptor.Accounting {
-    var resetsAt: Date? {
-        guard case let .fixedPeriod(_, resetsAt) = self else { return nil }
-        return resetsAt
     }
 }

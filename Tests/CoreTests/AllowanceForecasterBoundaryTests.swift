@@ -20,7 +20,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
     }
 
     func testResetJitterInsideTheToleranceKeepsThePeriod() throws {
-        let jitter: [TimeInterval] = [0, 0.4, -0.3, 30, 59]
+        let jitter: [TimeInterval] = [0, 0.4, 60, -60, 299]
         for (point, offset) in zip(linearTrace, jitter) {
             record(fixedPeriodMetric(
                 consumed: point.consumed,
@@ -39,7 +39,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
             record(fixedPeriodMetric(
                 consumed: point.consumed,
                 at: minute(point.minute),
-                resetsAt: defaultReset.addingTimeInterval(Double(index) * 20)
+                resetsAt: defaultReset.addingTimeInterval(Double(index) * 100)
             ))
             if index == 3 {
                 XCTAssertNotNil(depletion(at: minute(point.minute)))
@@ -53,7 +53,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
     func testResetMovingBeyondTheToleranceStartsANewPeriod() {
         recordTrace(linearTrace)
 
-        record(fixedPeriodMetric(consumed: 31, at: minute(25), resetsAt: defaultReset.addingTimeInterval(120)))
+        record(fixedPeriodMetric(consumed: 31, at: minute(25), resetsAt: defaultReset.addingTimeInterval(301)))
 
         XCTAssertEqual(state(at: minute(25)), .learning)
     }

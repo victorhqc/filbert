@@ -2753,22 +2753,22 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Según %@ de historial" } }
       }
     },
-    "Not expected to run out" : {
+    "Should last until reset" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich aus" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not expected to run out" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio" } }
       }
     },
-    "before reset at recent pace" : {
+    "At your pace over the last %@" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "bis zum Zurücksetzen beim aktuellen Tempo" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "before reset at recent pace" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "antes del reinicio al ritmo reciente" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "antes del reinicio al ritmo reciente" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim aktuellen Tempo, basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "At your pace over the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo, según %@ de historial" } }
       }
     },
     "About %1$@ of use remaining · last %2$@" : {
@@ -2780,13 +2780,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } }
       }
     },
-    "Not expected to run out before reset · last %@" : {
+    "Should last until reset · last %@" : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen · %@ Verlauf" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not expected to run out before reset · last %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote antes del reinicio · %@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se espera que se agote antes del reinicio · %@ de historial" } }
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset · last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio · %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio · %@ de historial" } }
       }
     },
     "Learning your usage rate…" : {
@@ -2834,13 +2834,58 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } }
       }
     },
-    "Not expected to run out before reset at recent pace, based on the last %@" : {
+    "Should last until reset at your pace over the last %@" : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim aktuellen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not expected to run out before reset at recent pace, based on the last %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente no se espera que se agote antes del reinicio, según %@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente no se espera que se agote antes del reinicio, según %@ de historial" } }
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your pace over the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el reinicio, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el reinicio, según %@ de historial" } }
+      }
+    },
+    "Runs out in about %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aufgebraucht in etwa %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } }
+      }
+    },
+    "At your average pace over the last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo, basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "At your average pace over the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } }
+      }
+    },
+    "Runs out in about %1$@ · last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aufgebraucht in etwa %1$@ · %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ · last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } }
+      }
+    },
+    "Runs out in about %1$@ at your average pace over the last %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo in etwa %1$@ aufgebraucht, basierend auf %2$@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ at your average pace over the last %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } }
+      }
+    },
+    "Should last until reset at your average pace over the last %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim durchschnittlichen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your average pace over the last %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } }
       }
     },
     "Timing is approximate" : {

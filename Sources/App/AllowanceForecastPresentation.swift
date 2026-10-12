@@ -20,12 +20,20 @@ struct AllowanceForecastPresentation: Equatable {
         }
 
         var text: String {
-            String.localizedStringWithFormat(String(localized: "Forecast headline format"), subject, status)
+            String.localizedStringWithFormat(
+                String(localized: "Forecast headline format", bundle: .module),
+                subject,
+                status
+            )
         }
 
         static func subject(label: String?, value: String) -> String {
             guard let label else { return value }
-            return String.localizedStringWithFormat(String(localized: "Forecast labeled value format"), label, value)
+            return String.localizedStringWithFormat(
+                String(localized: "Forecast labeled value format", bundle: .module),
+                label,
+                value
+            )
         }
     }
 
@@ -38,7 +46,11 @@ struct AllowanceForecastPresentation: Equatable {
 
     static func joinedSentences(_ sentences: [String]) -> String {
         sentences.dropFirst().reduce(sentences.first ?? "") { joined, sentence in
-            String.localizedStringWithFormat(String(localized: "Accessibility sentence format"), joined, sentence)
+            String.localizedStringWithFormat(
+                String(localized: "Accessibility sentence format", bundle: .module),
+                joined,
+                sentence
+            )
         }
     }
 
@@ -108,10 +120,7 @@ private extension AllowanceForecastPresentation {
             return binding(earliest.line, .forecast(earliest.forecast))
         }
 
-        guard let headlineForecast = forecasts[headlineId],
-              headlineForecast.isBeyondReset,
-              groupForecasts.allSatisfy(\.forecast.isBeyondReset)
-        else {
+        guard let headlineForecast = forecasts[headlineId], headlineForecast.isBeyondReset else {
             return nil
         }
         return binding(headlineLine, .forecast(headlineForecast))
@@ -142,10 +151,14 @@ private extension AllowanceForecastPresentation {
             switch forecast.state {
             case .estimated:
                 status = RemainingUse(forecast, now: now).headlineStatus
-                detail = String.localizedStringWithFormat(String(localized: "Based on the last %@"), span)
+                detail = forecast.pace == .periodAverage
+                    ? String.localizedStringWithFormat(String(localized: "At your average pace over the last %@"), span)
+                    : String.localizedStringWithFormat(String(localized: "Based on the last %@"), span)
             case .beyondReset:
-                status = String(localized: "Not expected to run out")
-                detail = String(localized: "before reset at recent pace")
+                status = String(localized: "Should last until reset")
+                detail = forecast.pace == .periodAverage
+                    ? String.localizedStringWithFormat(String(localized: "At your average pace over the last %@"), span)
+                    : String.localizedStringWithFormat(String(localized: "At your pace over the last %@"), span)
             case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
                 return nil
             }
@@ -172,7 +185,7 @@ private extension AllowanceForecastPresentation {
             text = RemainingUse(forecast, now: now).rowText(span: span)
         case .beyondReset:
             text = String.localizedStringWithFormat(
-                String(localized: "Not expected to run out before reset · last %@"),
+                String(localized: "Should last until reset · last %@"),
                 span
             )
         case .learning:
@@ -197,10 +210,10 @@ private extension AllowanceForecastPresentation {
         case .estimated:
             sentence = RemainingUse(forecast, now: now).accessibilitySentence(span: span)
         case .beyondReset:
-            sentence = String.localizedStringWithFormat(
-                String(localized: "Not expected to run out before reset at recent pace, based on the last %@"),
-                span
-            )
+            let format = forecast.pace == .periodAverage
+                ? String(localized: "Should last until reset at your average pace over the last %@")
+                : String(localized: "Should last until reset at your pace over the last %@")
+            sentence = String.localizedStringWithFormat(format, span)
         case .learning, .quiet, .tooFarApart, .paused, .exhausted, .insufficient:
             return nil
         }
@@ -212,32 +225,48 @@ private extension AllowanceForecastPresentation {
 private struct RemainingUse {
     let duration: TimeInterval
     let exceedsLongestDisplayedEstimate: Bool
+    /// From the average pace, which includes breaks, so the duration is calendar time.
+    let isCalendarTime: Bool
 
     init(_ forecast: AllowanceForecast, now: Date) {
         let remaining = max(forecast.remainingUse(at: now) ?? 0, 60)
         let longest = AllowanceForecastPresentation.longestDisplayedEstimate
-        duration = min(remaining, longest)
-        exceedsLongestDisplayedEstimate = remaining > longest
+        isCalendarTime = forecast.pace == .periodAverage
+        // A calendar-time estimate ends before its reset, so it needs no cap.
+        duration = isCalendarTime ? remaining : min(remaining, longest)
+        exceedsLongestDisplayedEstimate = !isCalendarTime && remaining > longest
     }
 
     var headlineStatus: String {
-        let format = exceedsLongestDisplayedEstimate
-            ? String(localized: "More than %@ of use remaining")
-            : String(localized: "About %@ of use remaining")
+        let format = if isCalendarTime {
+            String(localized: "Runs out in about %@")
+        } else if exceedsLongestDisplayedEstimate {
+            String(localized: "More than %@ of use remaining")
+        } else {
+            String(localized: "About %@ of use remaining")
+        }
         return String.localizedStringWithFormat(format, CoarseDurationFormatting.string(from: duration))
     }
 
     func rowText(span: String) -> String {
-        let format = exceedsLongestDisplayedEstimate
-            ? String(localized: "More than %1$@ of use remaining · last %2$@")
-            : String(localized: "About %1$@ of use remaining · last %2$@")
+        let format = if isCalendarTime {
+            String(localized: "Runs out in about %1$@ · last %2$@")
+        } else if exceedsLongestDisplayedEstimate {
+            String(localized: "More than %1$@ of use remaining · last %2$@")
+        } else {
+            String(localized: "About %1$@ of use remaining · last %2$@")
+        }
         return String.localizedStringWithFormat(format, CoarseDurationFormatting.string(from: duration), span)
     }
 
     func accessibilitySentence(span: String) -> String {
-        let format = exceedsLongestDisplayedEstimate
-            ? String(localized: "More than %1$@ of use remaining at recent pace, based on the last %2$@")
-            : String(localized: "About %1$@ of use remaining at recent pace, based on the last %2$@")
+        let format = if isCalendarTime {
+            String(localized: "Runs out in about %1$@ at your average pace over the last %2$@")
+        } else if exceedsLongestDisplayedEstimate {
+            String(localized: "More than %1$@ of use remaining at recent pace, based on the last %2$@")
+        } else {
+            String(localized: "About %1$@ of use remaining at recent pace, based on the last %2$@")
+        }
         return String.localizedStringWithFormat(
             format,
             CoarseDurationFormatting.string(from: duration, unitsStyle: .full),

@@ -112,7 +112,8 @@ let package = Package(
         .testTarget(
             name: "ClaudeCodeProviderTests",
             dependencies: ["ClaudeCodeProvider", "ClaudeCodeStatuslineHelper"],
-            path: "Tests/ClaudeCodeProviderTests"
+            path: "Tests/ClaudeCodeProviderTests",
+            resources: [.process("Fixtures")]
         ),
         .testTarget(
             name: "DeepSeekProviderTests",

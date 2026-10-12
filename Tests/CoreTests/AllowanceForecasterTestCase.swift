@@ -25,6 +25,7 @@ class AllowanceForecasterTestCase: XCTestCase {
         consumed: Decimal,
         at time: Date,
         resetsAt: Date? = nil,
+        length: TimeInterval = UsageWindowDuration.fiveHours,
         limit: Decimal = 100,
         resolution: Decimal = 1,
         unit: AllowanceForecastDescriptor.Unit = .percentagePoints,
@@ -35,7 +36,7 @@ class AllowanceForecasterTestCase: XCTestCase {
             kind: .usage,
             value: .number(consumed),
             forecastDescriptor: AllowanceForecastDescriptor(
-                accounting: .fixedPeriod(limit: limit, resetsAt: resetsAt ?? defaultReset),
+                accounting: .fixedPeriod(limit: limit, resetsAt: resetsAt ?? defaultReset, length: length),
                 unit: unit,
                 resolution: resolution,
                 timing: approximate ? .receipt(time) : .source(time),

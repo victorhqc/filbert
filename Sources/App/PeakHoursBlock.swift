@@ -88,7 +88,7 @@ struct PeakHoursBlock: View {
                 return times
             }
             return String.localizedStringWithFormat(
-                String(localized: "Peak hours day and time format"),
+                String(localized: "Peak hours day and time format", bundle: .module),
                 days,
                 times
             )

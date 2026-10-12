@@ -65,6 +65,10 @@ public struct ClaudeCodeProvider: AIProvider {
     )
 
     static let freshnessThreshold: TimeInterval = 3600
+    static let fiveHourLineId = "five-hour-usage"
+    static let weeklyLineId = "weekly-usage"
+    /// Either window blocks the same subscription when it runs out.
+    static let subscriptionLimitGroup = "subscription"
 
     // MARK: - Dependencies
 
@@ -73,6 +77,7 @@ public struct ClaudeCodeProvider: AIProvider {
     private let installer: StatuslineHelperInstaller
     private let refresher: ClaudeCodeRefresher
     private let errorLog: ErrorLog
+    private let windowPeaks = ClaudeCodeWindowPeaks()
 
     public init(
         locator: ClaudeCodeLocator = ClaudeCodeLocator(),
@@ -183,13 +188,15 @@ public struct ClaudeCodeProvider: AIProvider {
 
     // MARK: - Mapping
 
-    private func map(cache: StatuslineCache) -> ProviderQuota {
+    private func map(cache read: StatuslineCache) -> ProviderQuota {
+        let cache = StatuslineCache(writtenAt: read.writtenAt, rateLimits: windowPeaks.peaked(read.rateLimits))
         var lines: [UsageLine] = []
         let fiveHour = cache.rateLimits?.fiveHour?.populated
         let sevenDay = cache.rateLimits?.sevenDay?.populated
 
         if let fiveHour {
             lines.append(usageLine(
+                id: Self.fiveHourLineId,
                 label: String(localized: "5-hour window"),
                 window: fiveHour,
                 windowDuration: UsageWindowDuration.fiveHours
@@ -198,6 +205,7 @@ public struct ClaudeCodeProvider: AIProvider {
 
         if let sevenDay {
             lines.append(usageLine(
+                id: Self.weeklyLineId,
                 label: String(localized: "Weekly"),
                 window: sevenDay,
                 windowDuration: UsageWindowDuration.week
@@ -222,55 +230,13 @@ public struct ClaudeCodeProvider: AIProvider {
             lastUpdated: lastUpdated,
             error: lines.isEmpty ? String(localized: "Open Claude Code to populate usage data") : nil,
             isStale: isStale,
-            activityObservation: activityObservation(from: cache)
-        )
-    }
-
-    private func activityObservation(from cache: StatuslineCache) -> ProviderActivityObservation {
-        let now = Date().timeIntervalSince1970
-        let entries = activityMetricEntries(from: cache.rateLimits)
-
-        let freshMetrics = entries.compactMap { entry in
-            isFresh(entry.window, cacheWrittenAt: cache.writtenAt, now: now)
-                ? metric(id: entry.id, window: entry.window)
-                : nil
-        }
-        if !freshMetrics.isEmpty {
-            return ProviderActivityObservation(metrics: freshMetrics, freshness: .fresh)
-        }
-
-        // Every known window is stale: keep the figures for the UI-visible
-        // last-known data while marking the observation stale so Core discards
-        // it as evidence.
-        let allMetrics = entries.compactMap { metric(id: $0.id, window: $0.window) }
-        return ProviderActivityObservation(
-            metrics: allMetrics,
-            freshness: allMetrics.isEmpty ? .unknown : .stale
-        )
-    }
-
-    private func activityMetricEntries(from rateLimits: RateLimits?) -> [(id: String, window: Window)] {
-        [
-            ("five-hour-usage", rateLimits?.fiveHour),
-            ("weekly-usage", rateLimits?.sevenDay),
-        ].compactMap { id, window in window.map { (id, $0) } }
-    }
-
-    private func isFresh(_ window: Window, cacheWrittenAt: TimeInterval, now: TimeInterval) -> Bool {
-        let writtenAt = window.writtenAt ?? cacheWrittenAt
-        return now - writtenAt <= Self.freshnessThreshold
-    }
-
-    private func metric(id: String, window: Window) -> ProviderActivityMetric? {
-        guard let percentage = window.usedPercentage else { return nil }
-        return ProviderActivityMetric(
-            id: id,
-            kind: .usage,
-            value: .number(Decimal(percentage))
+            activityObservation: activityObservation(from: cache),
+            headlineUsageLineId: lines.first?.id
         )
     }
 
     private func usageLine(
+        id: String,
         label: String,
         window: Window,
         windowDuration: TimeInterval
@@ -279,7 +245,9 @@ public struct ClaudeCodeProvider: AIProvider {
             label: label,
             percentage: window.usedPercentage,
             resetDate: window.resetsAt.map { Date(timeIntervalSince1970: $0) },
-            windowDuration: windowDuration
+            windowDuration: windowDuration,
+            id: id,
+            limitGroup: Self.subscriptionLimitGroup
         )
     }
 

@@ -27,7 +27,8 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 
 - **Given** a verified window with a usable percentage and `resets_at`
 - **When** the provider maps the cache
-- **Then** the metric carries a fixed-period descriptor with limit 100, the window's reset timestamp, unit percentage points, and resolution 1
+- **Then** the metric carries a fixed-period descriptor with limit 100, the window's reset timestamp, a period length of 5 hours or 7 days, unit percentage points, and resolution 1
+- **And** the weekly window is a long period, so it uses the average pace since its period started (core 12 AC13)
 - **And** the timing is the window's `written_at`, or the cache `written_at` when the window has none, never `Date()`
 - **And** the `UsageLine` ID equals the metric ID
 - **And** the headline line is the five-hour window, or the weekly window when the five-hour window is absent, matching today's headline
@@ -41,6 +42,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 - **Then** the provider reports the highest percentage it saw for that window in the current period
 - **And** the provider keeps that value in memory per window, with the first `resets_at` of the period
 - **And** a `resets_at` within the reset tolerance of (core 12) belongs to the same period; a larger difference, or a window without `resets_at`, starts a new period with the current value
+- **And** a write without the window, e.g. the statusline write without windows, or a window without a percentage, leaves the memory unchanged
 - **And** the provider reads the tolerance from Core; it does not repeat the number
 - **And** the displayed percentage, the activity metric, and the forecast use the same value (core 12 AC1)
 - **And** the displayed percentage no longer alternates between the two writers
@@ -84,10 +86,11 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 ## Plan
 
 1. [x] Capture statusline and `/usage` cache samples across one five-hour period and one weekly reset. Record whether `resets_at` is stable and whether `used_percentage` carries fractions.
-2. [ ] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
-3. [ ] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
-4. [ ] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
-5. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data.
+2. [x] Add the per-window highest-value memory from (AC3) to the provider. Keep it in the Claude Code module. `AllowanceForecastPolicy` is internal to Core, so Core adds one public, generic question: "are these two reset timestamps in the same period?", with its reset tolerance. No provider ID or Claude Code concept goes into Core.
+3. [x] Add descriptors, line IDs, the limit group, and the headline line ID in the provider mapping. Keep all Claude Code interpretation inside the module.
+4. [x] Convert the captures into fixture traces with only timestamps, percentages, and reset times. Add the fixtures and tests from (AC6).
+5. [x] Pass the period length of each window (AC2), once (core 12) Plan step 10 adds it.
+6. [ ] Manually inspect the popover and VoiceOver for the states in (core 12) Plan step 9 with real Claude Code data. The first check on 2026-10-12 led to (core 12 AC13).
 
 ### Evidence
 
@@ -108,8 +111,13 @@ Two captures copied each change of `~/.cache/filbert/claude-code.json` on 2026-1
 - 294 statusline writes (median 2.8 seconds apart), 37 `/usage` writes, and 1 write without windows.
 - The statusline had whole percentages and a steady `resets_at` of 19:40:00 and 13:00:00 on all writes.
 - The statusline percentage was 1 point less than the `/usage` percentage for the same window. Examples: 3 and 4, and 6 and 7, within seconds. The weekly window showed 2 on the statusline and 3 on `/usage` from 15:14 to 16:12.
-- Each switch from `/usage` to the statusline was a decrease: 21 decreases in 75 minutes (10 five-hour, 11 weekly). Without (AC3), each decrease is a correction under (core 12 AC3). The history would then restart every 3 minutes, and no estimate could form.
+- Each switch from `/usage` to the statusline was a decrease: 21 decreases in 75 minutes (10 five-hour, 11 weekly). Without (AC3), each decrease is a correction under (core 12 AC3), and the history restarts.
 - The write without windows was `{"written_at":…}` at 14:58:20, before the first API response of the session.
+
+**Replay of capture 2 through the provider and Core (fixture `claude-code-cache-terminal.json`):**
+
+- With (AC3), the five-hour line formed a rate after 16 minutes. It stayed beyond reset until use stopped, then turned quiet. It never returned to learning.
+- Without (AC3), the five-hour line had a rate on one read out of 332, and was learning again on the next read.
 
 ## Risks
 
