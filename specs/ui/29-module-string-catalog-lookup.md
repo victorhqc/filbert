@@ -8,7 +8,8 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - (ui 01 AC7) requires all UI chrome in the active language. Today that does not hold.
 - `Package.swift` processes each module's `Resources/Localizable.xcstrings` into that module's resource bundle. Only `Bundle.module` reads it.
 - `String(localized:)` without `bundle:` reads `Bundle.main`. `Bundle.main` has no catalog, so the lookup returns the key. A key that is the English text looks correct. A name-style key shows raw.
-- `scripts/build-dmg.sh` compiles each catalog inside its module bundle under `Contents/Resources/`. The packaged app has the same gap.
+- `scripts/build-dmg.sh` builds with the native build system and compiles each catalog inside its module bundle under `Contents/Resources/`. The packaged app has the same gap.
+- The native build system copies `Localizable.xcstrings` raw into the module bundle, so even `bundle: .module` returns the key. Swift Build compiles it into `.lproj` folders. Swift 6.4 uses Swift Build by default; CI ran Swift 6.3.3 with the native build system, and the headline test failed there on 2026-10-12. CI now builds and tests with `--build-system swiftbuild`.
 - Calls without `bundle:` on 2026-10-12:
   - `Sources/App` — about 200; 13 calls pass `bundle: .module`.
   - `Sources/Core` — 4.
@@ -70,7 +71,8 @@ Resolve every user-facing string against its own module's String Catalog, so the
 3. [ ] Add `bundle: .module` module by module: App, Core, then each provider. Fix the two `Automatic selection` keys with the App (AC2).
 4. [ ] Add catalogs for Claude Code and Codex, with translations (AC4).
 5. [ ] If step 1 requires it, declare the four languages in `packaging/Info.plist` (AC5).
-6. [ ] Run the validation gate. Then manually check the popover, every settings tab, and each provider's states in German, Spanish, and English, at normal width and with VoiceOver.
+6. [x] Build and test CI with `--build-system swiftbuild`, so tests read compiled catalogs (AC6).
+7. [ ] Run the validation gate. Then manually check the popover, every settings tab, and each provider's states in German, Spanish, and English, at normal width and with VoiceOver.
 
 ## Risks
 

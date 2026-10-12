@@ -59,14 +59,16 @@ jobs:
       - name: SwiftLint
         run: swiftlint
 
+      # Swift Build compiles string catalogs. The native build system copies
+      # them raw, so localized lookups return their keys in tests.
       - name: Build (debug)
-        run: swift build
+        run: swift build --build-system swiftbuild
 
       - name: Build (release)
-        run: swift build -c release
+        run: swift build --build-system swiftbuild -c release
 
       - name: Test
-        run: swift test
+        run: swift test --build-system swiftbuild
 
       - name: Workflow tests
         run: python3 scripts/test-automatic-updates.py
