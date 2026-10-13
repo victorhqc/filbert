@@ -25,12 +25,8 @@ enum ProviderVisualStyle {
         }
     }
 
-    static func balanceTierColor(_ total: Double, scheme: ColorScheme) -> Color {
-        let status = QuotaStatusResolver.Status.balance(
-            used: nil,
-            total: total,
-            formattedAmount: ""
-        )
+    static func balanceTierColor(_ amount: Double, scheme: ColorScheme) -> Color {
+        let status = QuotaStatusResolver.Status.balance(amount: amount, formattedAmount: "")
         guard let tier = QuotaStatusResolver.tier(for: status) else { return .secondary }
         return tierColor(tier, scheme: scheme)
     }

@@ -3,9 +3,9 @@ import Foundation
 
 // MARK: - Validate
 
-/// `--output-format json` normally prints one result object. A verbose view
-/// mode that `--settings` cannot override, such as a managed setting, prints
-/// an array of every session message instead (providers 16).
+/// `--output-format json` normally prints one result object. A verbose view mode
+/// that `--settings` cannot override, e.g. a managed setting, prints an array of
+/// every session message instead.
 extension ClaudeCodeRefresher {
     struct UsageOutputValidation {
         let windows: [ParsedWindow]
@@ -130,7 +130,6 @@ extension ClaudeCodeRefresher {
     }
 }
 
-/// The last window recorded for each slot.
 private struct WindowSlots {
     private var fiveHour: Window?
     private var sevenDay: Window?
@@ -182,11 +181,10 @@ private enum UsageRoot: Decodable {
     }
 }
 
-/// Folds each array element into fixed state as it is decoded, so no
-/// collection of complete messages is kept. `result` and `is_error` count only
-/// on `type: "result"` elements; a `usage_report` counts on any element but
-/// ranks below everything a result element supplies, because the `init`
-/// message is emitted before `/usage` runs.
+/// Folds elements as they decode, so complete messages are never kept.
+/// `result` and `is_error` count only on `type: "result"`. A `usage_report`
+/// counts on any element but ranks below a result element, because the `init`
+/// message comes before `/usage` runs.
 private struct MessageArraySummary: Decodable {
     private(set) var elementCount = 0
     private(set) var containsNonObject = false
@@ -271,8 +269,7 @@ private enum MessageElement: Decodable {
     }
 }
 
-/// A result object, or one element of a message array. Only the root must be
-/// an object; every field decodes leniently and other fields are ignored.
+/// A result object or one message-array element. Only the root must be an object.
 private struct UsageEnvelope: Decodable {
     enum ResultState {
         case missing
@@ -341,8 +338,7 @@ private struct UsageRow: Decodable {
     }
 }
 
-/// Decodes each element independently so one malformed row does not drop the
-/// rest of the array.
+/// One malformed element does not drop the rest of the array.
 private struct Lossy<Wrapped: Decodable>: Decodable {
     let value: Wrapped?
 

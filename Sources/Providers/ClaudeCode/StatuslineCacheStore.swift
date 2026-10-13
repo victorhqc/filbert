@@ -33,16 +33,13 @@ struct RateLimits: Codable {
     }
 }
 
-/// Both fields are optional so a partial parse (e.g. a percentage whose reset
-/// phrase couldn't be parsed) still surfaces what it has rather than dropping
-/// the whole window.
+/// Every field is optional, so a percentage survives an unparseable reset.
 struct Window: Codable {
     let usedPercentage: Double?
-    /// Unix epoch **seconds** when this window resets.
+    /// Unix seconds, not milliseconds.
     let resetsAt: TimeInterval?
-    /// Unix epoch **seconds** when this window's figures were last written. A
-    /// window carried over from an earlier merge keeps its original time so it
-    /// is not promoted to fresh by a later write.
+    /// Unix seconds. A carried-over window keeps its time, so a later write
+    /// cannot make it fresh.
     let writtenAt: TimeInterval?
 
     enum CodingKeys: String, CodingKey {
@@ -65,8 +62,7 @@ struct Window: Codable {
         Window(usedPercentage: usedPercentage, resetsAt: resetsAt, writtenAt: time)
     }
 
-    /// Adopts the cache's write time only when this window carries none, so a
-    /// helper-written window still ages from the cache it came in.
+    /// A helper-written window has no time of its own, so it ages with its cache.
     func aged(fromCacheWrittenAt time: TimeInterval?) -> Window {
         guard writtenAt == nil, let time else { return self }
         return Window(usedPercentage: usedPercentage, resetsAt: resetsAt, writtenAt: time)

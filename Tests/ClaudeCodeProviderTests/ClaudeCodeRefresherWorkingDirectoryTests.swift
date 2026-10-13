@@ -29,8 +29,7 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
     // MARK: - child runs in the injected working directory
 
     func testRefresh_spawnsInInjectedWorkingDirectory() async throws {
-        // Dedicated temp dir for the child's CWD — distinct from the test
-        // runner's CWD so we can prove the spawn did not inherit the parent.
+        // Distinct from the runner's working directory, to prove the child did not inherit it.
         let injectedCWD = tmpDir.appendingPathComponent("injected-cwd")
         try FileManager.default.createDirectory(
             at: injectedCWD,
@@ -38,8 +37,7 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
         )
         let pwdLogURL = tmpDir.appendingPathComponent("spawn-pwd.log")
 
-        // The fake binary records `$PWD` — what the child actually sees as its
-        // working directory — not the test runner's CWD.
+        // Records `$PWD`, the working directory the child sees.
         let fakeBinary = try writeFakeBinary(
             name: "fake-claude-pwd",
             body: """
@@ -68,9 +66,7 @@ final class ClaudeCodeRefresherWorkingDirectoryTests: XCTestCase {
 
         let recordedPWD = try String(contentsOf: pwdLogURL, encoding: .utf8)
             .trimmingCharacters(in: .whitespacesAndNewlines)
-        // Compare via resolvingSymlinksInPath: `/var` is a symlink to
-        // `/private/var` on macOS, so `$PWD` and the injected URL stringify
-        // differently even when they denote the same directory.
+        // `/var` links to `/private/var`, so compare resolved paths.
         XCTAssertEqual(
             URL(fileURLWithPath: recordedPWD).resolvingSymlinksInPath(),
             injectedCWD.resolvingSymlinksInPath(),

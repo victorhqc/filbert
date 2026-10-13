@@ -94,106 +94,90 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     // MARK: - balance-based provider → balance mode
 
-    func testResolve_noPercentageButPositiveTotal_returnsBalanceMode() {
-        let quota = ProviderQuota(
-            providerId: "deepseek",
-            providerName: "DeepSeek",
-            headline: "$12.34",
-            lines: [
-                UsageLine(label: "Total balance", total: 12.34, unit: "USD"),
-            ],
-            lastUpdated: Date()
-        )
+    func testResolve_currencyBalance_returnsBalanceMode() {
+        let status = QuotaStatusResolver.resolve(for: quota([
+            UsageLine(label: "Total balance", balance: usdBalance("12.34")),
+        ]))
 
-        let status = QuotaStatusResolver.resolve(for: quota)
-        guard case let .balance(used, total, amount) = status else {
+        guard case let .balance(amount, formattedAmount) = status else {
             return XCTFail("Expected .balance, got \(status)")
         }
-        XCTAssertNil(used)
-        XCTAssertEqual(total, 12.34, accuracy: 0.001)
-        XCTAssertFalse(amount.isEmpty, "amount text must be formatted")
+        XCTAssertEqual(amount, 12.34, accuracy: 0.001)
+        XCTAssertTrue(formattedAmount.contains("12"), "amount text must be formatted: \(formattedAmount)")
     }
 
-    func testResolve_multipleBalanceLines_picksFirstPositiveTotal() {
-        let quota = ProviderQuota(
-            providerId: "deepseek",
-            providerName: "DeepSeek",
-            headline: "",
-            lines: [
-                UsageLine(label: "Total balance", total: 12.34, unit: "USD"),
-                UsageLine(label: "Gift balance", total: 1.00, unit: "USD"),
-            ],
-            lastUpdated: Date()
-        )
+    func testResolve_multipleBalanceLines_picksFirstPositiveCurrencyBalance() {
+        let status = QuotaStatusResolver.resolve(for: quota([
+            UsageLine(label: "Empty balance", balance: usdBalance("0")),
+            UsageLine(label: "Total balance", balance: usdBalance("12.34")),
+            UsageLine(label: "Gift balance", balance: usdBalance("1.00")),
+        ]))
 
-        let status = QuotaStatusResolver.resolve(for: quota)
-        guard case let .balance(_, total, _) = status else {
+        guard case let .balance(amount, _) = status else {
             return XCTFail("Expected .balance, got \(status)")
         }
-        XCTAssertEqual(total, 12.34, accuracy: 0.001)
+        XCTAssertEqual(amount, 12.34, accuracy: 0.001)
+    }
+
+    func testResolve_creditsUnlimitedAndSpentAmounts_neverGiveAStatus() {
+        let status = QuotaStatusResolver.resolve(for: quota([
+            UsageLine(label: "Credits", balance: UsageBalance(amount: .finite(811.77), unit: .credits)),
+            UsageLine(label: "Unlimited", balance: UsageBalance(amount: .unlimited, unit: .currency("USD"))),
+            UsageLine(label: "Bonus credits", used: 20, unit: "USD"),
+        ]))
+
+        XCTAssertEqual(status, .fallback)
     }
 
     // MARK: - fallback when no usable data
 
     func testResolve_noLines_returnsFallback() {
-        let quota = ProviderQuota(
-            providerId: "zai",
-            providerName: "Z.AI",
-            headline: "",
-            lines: [],
-            lastUpdated: Date()
-        )
-
-        XCTAssertEqual(QuotaStatusResolver.resolve(for: quota), .fallback)
+        XCTAssertEqual(QuotaStatusResolver.resolve(for: quota([])), .fallback)
     }
 
-    func testResolve_zeroTotalBalance_returnsFallback() {
-        let quota = ProviderQuota(
-            providerId: "deepseek",
-            providerName: "DeepSeek",
-            headline: "",
-            lines: [
-                UsageLine(label: "Total balance", used: 0, total: 0, unit: "USD"),
-            ],
-            lastUpdated: Date()
-        )
+    func testResolve_zeroCurrencyBalance_returnsFallback() {
+        let status = QuotaStatusResolver.resolve(for: quota([
+            UsageLine(label: "Total balance", balance: usdBalance("0")),
+        ]))
 
-        XCTAssertEqual(QuotaStatusResolver.resolve(for: quota), .fallback)
+        XCTAssertEqual(status, .fallback)
     }
 
     func testResolve_percentageWinsOverBalance_whenBothPresent() {
-        let quota = ProviderQuota(
-            providerId: "capped",
-            providerName: "Capped",
-            headline: "",
-            lines: [
-                UsageLine(label: "Window", percentage: 30),
-                UsageLine(label: "Balance", total: 100, unit: "USD"),
-            ],
-            lastUpdated: Date()
-        )
+        let status = QuotaStatusResolver.resolve(for: quota([
+            UsageLine(label: "Window", percentage: 30),
+            UsageLine(label: "Balance", balance: usdBalance("100")),
+        ]))
 
-        XCTAssertEqual(QuotaStatusResolver.resolve(for: quota), .window(percentage: 30))
+        XCTAssertEqual(status, .window(percentage: 30))
     }
 
-    // MARK: - balance ring fraction
+    // MARK: - headline dot
 
-    func testResolve_balanceWithNilUsed_drivesFullRingAtRender() {
-        let quota = ProviderQuota(
-            providerId: "deepseek",
-            providerName: "DeepSeek",
+    func testFirstCurrencyBalance_skipsCreditsAndSpentAmounts() {
+        let lines = [
+            UsageLine(label: "Window", percentage: 30),
+            UsageLine(label: "Credits", balance: UsageBalance(amount: .finite(811.77), unit: .credits)),
+            UsageLine(label: "Bonus credits", used: 20, unit: "USD"),
+            UsageLine(label: "Total balance", balance: usdBalance("0")),
+        ]
+
+        XCTAssertEqual(QuotaStatusResolver.firstCurrencyBalance(in: lines), 0)
+        XCTAssertNil(QuotaStatusResolver.firstCurrencyBalance(in: Array(lines.prefix(3))))
+    }
+
+    private func quota(_ lines: [UsageLine]) -> ProviderQuota {
+        ProviderQuota(
+            providerId: "test",
+            providerName: "Test",
             headline: "",
-            lines: [
-                UsageLine(label: "Total balance", used: nil, total: 12.34, unit: "USD"),
-            ],
+            lines: lines,
             lastUpdated: Date()
         )
+    }
 
-        guard case let .balance(used, total, _) = QuotaStatusResolver.resolve(for: quota) else {
-            return XCTFail("Expected .balance")
-        }
-        XCTAssertNil(used)
-        XCTAssertEqual(total, 12.34, accuracy: 0.001)
+    private func usdBalance(_ amount: String) -> UsageBalance {
+        UsageBalance(amount: .finite(Decimal(string: amount)!), unit: .currency("USD"))
     }
 
     // MARK: - clamping
@@ -251,15 +235,15 @@ final class MenuBarStatusIconTests: XCTestCase {
         BalanceThresholds.set(low: 5, ok: 20)
 
         XCTAssertEqual(
-            QuotaStatusResolver.tier(for: .balance(used: nil, total: 4.99, formattedAmount: "$4.99")),
+            QuotaStatusResolver.tier(for: .balance(amount: 4.99, formattedAmount: "$4.99")),
             .critical
         )
         XCTAssertEqual(
-            QuotaStatusResolver.tier(for: .balance(used: nil, total: 5, formattedAmount: "$5.00")),
+            QuotaStatusResolver.tier(for: .balance(amount: 5, formattedAmount: "$5.00")),
             .warn
         )
         XCTAssertEqual(
-            QuotaStatusResolver.tier(for: .balance(used: 500, total: 20, formattedAmount: "$20.00")),
+            QuotaStatusResolver.tier(for: .balance(amount: 20, formattedAmount: "$20.00")),
             .good
         )
     }

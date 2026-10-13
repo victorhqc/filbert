@@ -159,33 +159,8 @@ public struct DeepSeekProvider: AIProvider {
     /// Always emits the balance lines so the user can see what's left even
     /// when the account is marked unavailable.
     private func map(_ response: DeepSeekBalanceResponse) -> ProviderQuota {
-        let lines = response.balanceInfos.flatMap { info -> [UsageLine] in
-            // Currency formatting (symbol, decimals) is the UI's job, so
-            // `used` is not derived here.
-            let currency = info.currency
-            return [
-                UsageLine(
-                    label: String(localized: "Total balance"),
-                    used: nil,
-                    total: Double(info.totalBalance),
-                    unit: currency
-                ),
-                UsageLine(
-                    label: String(localized: "Granted credits"),
-                    used: nil,
-                    total: Double(info.grantedBalance),
-                    unit: currency
-                ),
-                UsageLine(
-                    label: String(localized: "Topped up"),
-                    used: nil,
-                    total: Double(info.toppedUpBalance),
-                    unit: currency
-                ),
-            ]
-        }
-
-        let headline = computeHeadline(response: response, lines: lines)
+        let lines = response.balanceInfos.flatMap(balanceLines(for:))
+        let headline = computeHeadline(response: response)
 
         return ProviderQuota(
             providerId: Self.providerId,
@@ -217,30 +192,70 @@ public struct DeepSeekProvider: AIProvider {
     }
 
     private func activityMetric(id: String, value: String) -> ProviderActivityMetric? {
-        guard let value = Decimal(string: value, locale: Locale(identifier: "en_US_POSIX")) else {
+        guard let value = Self.decimal(from: value) else {
             return nil
         }
         return ProviderActivityMetric(id: id, kind: .credits, value: .number(value))
     }
 
-    private func computeHeadline(
-        response: DeepSeekBalanceResponse,
-        lines: [UsageLine]
-    ) -> String {
+    private enum BalanceComponent: CaseIterable {
+        case total
+        case granted
+        case toppedUp
+
+        var label: String {
+            switch self {
+            case .total: String(localized: "Total balance")
+            case .granted: String(localized: "Granted credits")
+            case .toppedUp: String(localized: "Topped up")
+            }
+        }
+
+        func rawAmount(in info: DeepSeekBalanceInfo) -> String {
+            switch self {
+            case .total: info.totalBalance
+            case .granted: info.grantedBalance
+            case .toppedUp: info.toppedUpBalance
+            }
+        }
+    }
+
+    /// Two equal amounts repeat each other, so only the total stays.
+    private func balanceLines(for info: DeepSeekBalanceInfo) -> [UsageLine] {
+        let amounts = BalanceComponent.allCases.compactMap { component in
+            Self.decimal(from: component.rawAmount(in: info)).flatMap { amount in
+                amount > 0 ? (component: component, amount: amount) : nil
+            }
+        }
+        let hasEqualAmounts = Set(amounts.map(\.amount)).count < amounts.count
+        let shown = hasEqualAmounts ? amounts.filter { $0.component == .total } : amounts
+
+        return shown.map { component, amount in
+            UsageLine(
+                label: component.label,
+                balance: UsageBalance(amount: .finite(amount), unit: .currency(info.currency))
+            )
+        }
+    }
+
+    private func computeHeadline(response: DeepSeekBalanceResponse) -> String {
         if !response.isAvailable {
             return String(localized: "No balance available")
         }
 
-        let totalBalanceLabel = String(localized: "Total balance")
-        guard let firstTotalLine = lines.first(where: { $0.label == totalBalanceLabel }),
-              let total = firstTotalLine.total,
-              let currency = firstTotalLine.unit
+        guard let info = response.balanceInfos.first,
+              let total = Self.decimal(from: info.totalBalance)
         else {
             return String(localized: "No data")
         }
 
-        let amount = Self.currencyFormatter(currencyCode: currency).string(from: NSNumber(value: total)) ?? "\(total)"
+        let amount = Self.currencyFormatter(currencyCode: info.currency)
+            .string(from: NSDecimalNumber(decimal: total)) ?? "\(total)"
         return String(localized: "\(amount) left")
+    }
+
+    private static func decimal(from value: String) -> Decimal? {
+        Decimal(string: value, locale: Locale(identifier: "en_US_POSIX"))
     }
 
     private static func currencyFormatter(currencyCode: String) -> NumberFormatter {

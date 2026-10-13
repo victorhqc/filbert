@@ -3,12 +3,10 @@ import Foundation
 extension ClaudeCodeRefresher {
     // MARK: - Working directory
 
-    /// `temporaryDirectory` is per-user but lives outside TCC-protected
-    /// locations, so a child spawned here cannot reach home, Documents,
-    /// Desktop, Downloads, etc. through CWD/parent-walk discovery at startup.
-    /// Returns `nil` if creation fails; the caller then aborts the spawn and
-    /// leaves the cache untouched — never fall back to inheriting the
-    /// parent's CWD.
+    /// `temporaryDirectory` is per-user and outside TCC-protected locations, so
+    /// the child cannot reach home, Documents, Desktop, or Downloads through
+    /// working-directory discovery. `nil` aborts the spawn; the child never
+    /// inherits the parent's working directory.
     static func makeDefaultWorkingDirectory() -> URL? {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent("filbert-claude-code-spawn", isDirectory: true)

@@ -127,9 +127,12 @@ public enum UsageWindowDuration {
 public struct UsageLine: Sendable {
     public let label: String
     public let used: Double?
+    /// The limit of `used`, never a balance.
     public let total: Double?
     public let percentage: Double?
+    /// The currency code of `used` and `total`.
     public let unit: String?
+    public let balance: UsageBalance?
     public let resetDate: Date?
     public let windowDuration: TimeInterval?
     public let details: [UsageDetail]?
@@ -137,6 +140,8 @@ public struct UsageLine: Sendable {
     /// Lines in one group cap the same usage, so whichever runs out first
     /// blocks it.
     public let limitGroup: String?
+    /// The limit group this pool can back once the group runs out.
+    public let fallbackForLimitGroup: String?
 
     public init(
         label: String,
@@ -144,22 +149,30 @@ public struct UsageLine: Sendable {
         total: Double? = nil,
         percentage: Double? = nil,
         unit: String? = nil,
+        balance: UsageBalance? = nil,
         resetDate: Date? = nil,
         windowDuration: TimeInterval? = nil,
         details: [UsageDetail]? = nil,
         id: String? = nil,
-        limitGroup: String? = nil
+        limitGroup: String? = nil,
+        fallbackForLimitGroup: String? = nil
     ) {
+        assert(
+            balance == nil || (used == nil && total == nil && percentage == nil),
+            "A usage line measures either consumption or a balance"
+        )
         self.label = label
         self.used = used
         self.total = total
         self.percentage = percentage
         self.unit = unit
+        self.balance = balance
         self.resetDate = resetDate
         self.windowDuration = windowDuration
         self.details = details
         self.id = id
         self.limitGroup = limitGroup
+        self.fallbackForLimitGroup = fallbackForLimitGroup
     }
 }
 

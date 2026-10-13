@@ -72,7 +72,7 @@ final class AllowanceForecasterLongPeriodTests: AllowanceForecasterTestCase {
 
         let forecast = try XCTUnwrap(forecast(at: origin))
 
-        XCTAssertEqual(forecast.state, .learning)
+        XCTAssertEqual(forecast.state, .insufficient)
         XCTAssertEqual(forecast.pace, .recent)
     }
 

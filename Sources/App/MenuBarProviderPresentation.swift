@@ -41,11 +41,10 @@ enum MenuBarProviderPresentation {
             status = String(
                 localized: "\(resolved.providerName): \(Int(percentage.rounded()))% used"
             )
-        case let .balance(_, total, _):
-            let amount = QuotaStatusResolver.amountText(
-                for: UsageLine(label: "", total: total, unit: nil)
-            ) ?? String(format: "%.2f", total)
-            status = String(localized: "\(resolved.providerName): \(amount) remaining")
+        case let .balance(_, formattedAmount):
+            status = String(localized: "\(resolved.providerName): \(formattedAmount) remaining")
+        case let .credits(formattedAmount):
+            status = String(localized: "\(resolved.providerName): \(formattedAmount) credits remaining")
         case .fallback:
             return String(localized: "Filbert")
         }

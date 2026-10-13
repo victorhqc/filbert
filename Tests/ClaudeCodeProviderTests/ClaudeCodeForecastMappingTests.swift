@@ -55,7 +55,7 @@ final class ClaudeCodeForecastMappingTests: XCTestCase {
 
         XCTAssertEqual(forecasts["weekly-usage"]?.state, .beyondReset(resetsAt: weeklyResetsAt))
         XCTAssertEqual(forecasts["weekly-usage"]?.pace, .periodAverage)
-        XCTAssertEqual(forecasts["five-hour-usage"]?.state, .learning)
+        XCTAssertEqual(forecasts["five-hour-usage"]?.state, .insufficient)
         XCTAssertEqual(forecasts["five-hour-usage"]?.pace, .recent)
     }
 

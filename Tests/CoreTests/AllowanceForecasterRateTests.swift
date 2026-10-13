@@ -54,10 +54,10 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
     }
 
     func testWindowGrowsInRecentHorizonStepsUntilTheMinimumConsumption() throws {
-        for value in stride(from: -30.0, through: 0, by: 5) {
+        for value in stride(from: -30.0, through: -15, by: 5) {
             record(fixedPeriodMetric(consumed: 0, at: minute(value)))
         }
-        for value in stride(from: 5.0, through: 40, by: 5) {
+        for value in stride(from: -10.0, through: 40, by: 5) {
             record(fixedPeriodMetric(consumed: 1, at: minute(value)))
         }
         record(fixedPeriodMetric(consumed: 2, at: minute(45)))
@@ -107,15 +107,33 @@ final class AllowanceForecasterRateTests: AllowanceForecasterTestCase {
         XCTAssertEqual(depletion(at: minute(10)), minute(1500))
     }
 
-    func testWeeklyStyleTraceShowsLearningForTwoHoursThenNoForecastText() {
+    func testSlowTraceShowsNoTextUntilItsFirstPointThenLearnsForTwoHours() {
         let resetsAt = minute(3 * 24 * 60)
-        for value in stride(from: 0.0, through: 180, by: 5) {
+        for value in stride(from: 0.0, through: 200, by: 5) {
             let consumed: Decimal = value < 60 ? 7 : 8
             record(fixedPeriodMetric(id: "weekly", consumed: consumed, at: minute(value), resetsAt: resetsAt))
 
-            let expected: AllowanceForecast.State = value < 120 ? .learning : .insufficient
+            let learns = value >= 60 && value < 180
+            let expected: AllowanceForecast.State = learns ? .learning : .insufficient
             XCTAssertEqual(state(at: minute(value), lineId: "weekly"), expected, "minute \(value)")
         }
+    }
+
+    func testAFlatStretchBeforeTheFirstConsumptionIsNotEvidence() throws {
+        for value in stride(from: 0.0, through: 30, by: 5) {
+            record(balanceMetric(remaining: 80, at: minute(value)))
+        }
+        for value in stride(from: 31.0, through: 40, by: 1) {
+            record(balanceMetric(remaining: 80 - 2 * Decimal(value - 30), at: minute(value)))
+            if value < 40 {
+                XCTAssertEqual(state(at: minute(value), lineId: "balance"), .learning, "minute \(value)")
+            }
+        }
+
+        let forecast = try XCTUnwrap(forecast(at: minute(40), lineId: "balance"))
+
+        XCTAssertEqual(forecast.state, .estimated(depletesAt: minute(70)))
+        XCTAssertEqual(forecast.evidenceSpan, 10 * 60)
     }
 
     func testRateThatIsNotFiniteProducesNoEstimate() {

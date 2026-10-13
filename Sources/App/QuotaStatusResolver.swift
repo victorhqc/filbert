@@ -14,25 +14,55 @@ enum QuotaStatusResolver {
 
     enum Status: Equatable {
         case window(percentage: Double)
-        case balance(used: Double?, total: Double, formattedAmount: String)
+        case balance(amount: Double, formattedAmount: String)
+        case credits(formattedAmount: String)
         case fallback
     }
 
     static func resolve(for quota: ProviderQuota) -> Status {
+        if let status = FallbackPoolLayout(lines: quota.lines).flatMap({ poolStatus(of: $0.pool) }) {
+            return status
+        }
+
         if let percentageLine = firstPercentageLine(in: quota.lines) {
             if let pct = percentage(for: percentageLine) {
                 return .window(percentage: pct)
             }
         }
 
-        if let balanceLine = firstPositiveBalanceLine(in: quota.lines) {
-            if let total = balanceLine.total, total > 0 {
-                let amount = amountText(for: balanceLine) ?? ""
-                return .balance(used: balanceLine.used, total: total, formattedAmount: amount)
-            }
+        for line in quota.lines {
+            guard let amount = currencyAmount(of: line), amount > 0 else { continue }
+            return .balance(amount: amount, formattedAmount: amountText(for: line) ?? "")
         }
 
         return .fallback
+    }
+
+    static func isAtLimit(_ line: UsageLine) -> Bool {
+        percentage(for: line).map { $0 >= 100 } ?? false
+    }
+
+    private static func poolStatus(of pool: UsageLine) -> Status? {
+        guard let text = amountText(for: pool) else { return nil }
+        if let amount = currencyAmount(of: pool) {
+            return .balance(amount: amount, formattedAmount: text)
+        }
+        return .credits(formattedAmount: text)
+    }
+
+    static func firstCurrencyBalance(in lines: [UsageLine]) -> Double? {
+        lines.lazy.compactMap(currencyAmount(of:)).first
+    }
+
+    /// `BalanceThresholds` are in currency, so credits never rank a provider.
+    private static func currencyAmount(of line: UsageLine) -> Double? {
+        guard let balance = line.balance,
+              case let .finite(amount) = balance.amount,
+              case .currency = balance.unit
+        else {
+            return nil
+        }
+        return NSDecimalNumber(decimal: amount).doubleValue
     }
 
     static func tier(for status: Status) -> Tier? {
@@ -43,13 +73,13 @@ enum QuotaStatusResolver {
             case 50 ..< 80: .warn
             default: .critical
             }
-        case let .balance(_, total, _):
-            switch total {
+        case let .balance(amount, _):
+            switch amount {
             case ..<BalanceThresholds.low: .critical
             case BalanceThresholds.low ..< BalanceThresholds.ok: .warn
             default: .good
             }
-        case .fallback:
+        case .credits, .fallback:
             nil
         }
     }
@@ -69,10 +99,6 @@ enum QuotaStatusResolver {
         lines.first { percentage(for: $0) != nil }
     }
 
-    private static func firstPositiveBalanceLine(in lines: [UsageLine]) -> UsageLine? {
-        lines.first { percentage(for: $0) == nil && ($0.total ?? 0) > 0 }
-    }
-
     static func percentage(for line: UsageLine) -> Double? {
         if let pct = line.percentage {
             return pct
@@ -84,13 +110,16 @@ enum QuotaStatusResolver {
     }
 
     static func amountText(for line: UsageLine) -> String? {
-        guard let total = line.total, total > 0 else { return nil }
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .currency
-        if let currency = line.unit, !currency.isEmpty {
-            formatter.currencyCode = currency
+        if let balance = line.balance {
+            return UsageAmountFormatting.string(for: balance)
         }
-        return formatter.string(from: NSNumber(value: total))
+        guard percentage(for: line) == nil,
+              let used = line.used,
+              let currency = line.unit, !currency.isEmpty
+        else {
+            return nil
+        }
+        return UsageAmountFormatting.currency(NSNumber(value: used), code: currency)
     }
 
     static func clampedFraction(_ fraction: Double) -> Double {

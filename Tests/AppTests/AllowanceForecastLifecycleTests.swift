@@ -6,7 +6,6 @@ import XCTest
 
 final class AllowanceForecastLifecycleTests: AllowanceForecastViewModelTestCase {
     private let paused = "Forecast paused until fresh data arrives"
-    private let learning = "Learning your usage rate…"
 
     func testSleepPausesTheForecast() async throws {
         let harness = try makeHarness()
@@ -35,7 +34,7 @@ final class AllowanceForecastLifecycleTests: AllowanceForecastViewModelTestCase 
         harness.viewModel.manualRefresh(for: providerId)
         await waitForFetch(harness, count: 6)
 
-        XCTAssertEqual(rowText(harness, at: minute(25)), learning)
+        try assertStartsANewHistory(harness, at: minute(25))
     }
 
     func testSystemClockObserverPausesTheForecast() async throws {
@@ -69,8 +68,7 @@ final class AllowanceForecastLifecycleTests: AllowanceForecastViewModelTestCase 
         try harness.viewModel.saveOverrideURL(URL(string: "https://proxy.example.com"), for: providerId)
         await waitForFetch(harness, count: 6)
 
-        XCTAssertNil(try presentation(harness, at: minute(22)).headline)
-        XCTAssertEqual(rowText(harness, at: minute(22)), learning)
+        try assertStartsANewHistory(harness, at: minute(22))
     }
 
     func testImportingCredentialsStartsANewHistory() async throws {
@@ -82,8 +80,7 @@ final class AllowanceForecastLifecycleTests: AllowanceForecastViewModelTestCase 
         await harness.viewModel.importCredentials(for: providerId)
         await waitForFetch(harness, count: 6)
 
-        XCTAssertNil(try presentation(harness, at: minute(22)).headline)
-        XCTAssertEqual(rowText(harness, at: minute(22)), learning)
+        try assertStartsANewHistory(harness, at: minute(22))
     }
 
     func testDeletingTheKeyClearsTheHistory() async throws {
@@ -100,6 +97,18 @@ final class AllowanceForecastLifecycleTests: AllowanceForecastViewModelTestCase 
 private extension AllowanceForecastLifecycleTests {
     func rowText(_ harness: ForecastHarness, at date: Date) -> String? {
         try? presentation(harness, at: date).rowLines["window"]?.text
+    }
+
+    /// A new baseline shows no text until it sees consumption.
+    func assertStartsANewHistory(
+        _ harness: ForecastHarness,
+        at date: Date,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        XCTAssertTrue(harness.viewModel.hasAllowanceForecasts(for: providerId), file: file, line: line)
+        XCTAssertNil(try presentation(harness, at: date).headline, file: file, line: line)
+        XCTAssertNil(rowText(harness, at: date), file: file, line: line)
     }
 
     /// Notification observers hop to the main actor in a new task.

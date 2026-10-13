@@ -2726,15 +2726,6 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } }
       }
     },
-    "Forecast labeled value format" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ %2$@" } }
-      }
-    },
     "About %@ of use remaining" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2895,6 +2886,69 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Timing is approximate" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } }
+      }
+    },
+    "Unlimited" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Unbegrenzt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlimited" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } }
+      }
+    },
+    "Promoted pool value format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } }
+      }
+    },
+    "Using %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "In Verwendung: %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Using %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "En uso: %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "En uso: %@" } }
+      }
+    },
+    "%@ limit reached" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@: Limit erreicht" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ limit reached" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@: límite alcanzado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@: límite alcanzado" } }
+      }
+    },
+    "%1$@ limit reached, %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: Limit erreicht, %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ limit reached, %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: límite alcanzado, %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: límite alcanzado, %2$@" } }
+      }
+    },
+    "Limit reached · %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Limit erreicht · %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached · %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado · %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado · %@" } }
+      }
+    },
+    "%@: %@ credits remaining" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: noch %2$@ Credits" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ credits remaining" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: quedan %2$@ créditos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: quedan %2$@ créditos" } }
       }
     },
     "Limit reached" : {

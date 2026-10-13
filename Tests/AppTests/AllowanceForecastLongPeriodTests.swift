@@ -7,13 +7,12 @@ final class AllowanceForecastLongPeriodTests: AllowanceForecastPresentationTestC
 
     func testALongPeriodEstimateInTheHeadlineReadsAsCalendarTime() throws {
         let presentation = present(
-            fiveHour: beyondReset("five-hour"),
-            weekly: averagePace("weekly", .estimated(depletesAt: now.addingTimeInterval(2 * day)))
+            weekly: averagePace("weekly", .estimated(depletesAt: now.addingTimeInterval(2 * day))),
+            headlineUsageLineId: "weekly"
         )
 
         let headline = try XCTUnwrap(presentation.headline)
         let remaining = CoarseDurationFormatting.string(from: 2 * day, unitsStyle: .full)
-        XCTAssertEqual(headline.label, "Weekly")
         XCTAssertEqual(headline.status, "Runs out in about \(abbreviated(2 * day))")
         XCTAssertEqual(headline.detail, "At your average pace over the last \(span(3 * day))")
         XCTAssertEqual(

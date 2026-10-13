@@ -3,16 +3,21 @@ import Foundation
 
 struct AllowanceForecastPresentation: Equatable {
     struct Headline: Equatable {
-        /// Set when the binding line is not the line the headline names.
+        /// Names a pool that stands in for the headline line.
         let label: String?
         let value: String
-        let status: String
+        let status: String?
         let detail: String?
         /// Read after the subject, in order.
         let accessibilitySentences: [String]
 
         var subject: String {
-            Self.subject(label: label, value: value)
+            guard let label else { return value }
+            return String.localizedStringWithFormat(
+                String(localized: "Promoted pool value format", bundle: .module),
+                label,
+                value
+            )
         }
 
         var accessibilityLabel: String {
@@ -20,19 +25,11 @@ struct AllowanceForecastPresentation: Equatable {
         }
 
         var text: String {
-            String.localizedStringWithFormat(
+            guard let status else { return subject }
+            return String.localizedStringWithFormat(
                 String(localized: "Forecast headline format", bundle: .module),
                 subject,
                 status
-            )
-        }
-
-        static func subject(label: String?, value: String) -> String {
-            guard let label else { return value }
-            return String.localizedStringWithFormat(
-                String(localized: "Forecast labeled value format", bundle: .module),
-                label,
-                value
             )
         }
     }
@@ -59,20 +56,29 @@ struct AllowanceForecastPresentation: Equatable {
     let rowLines: [String: Line]
 
     init(quota: ProviderQuota, forecasts: [String: AllowanceForecast], now: Date) {
-        let binding = Self.headlineBinding(quota: quota, forecasts: forecasts)
-        let headline = binding.flatMap { Self.headline(for: $0, now: now) }
+        let fallbackPool = FallbackPoolLayout(lines: quota.lines)
+        let headlineLine = fallbackPool?.pool
+            ?? quota.headlineUsageLineId.flatMap { id in quota.lines.first { $0.id == id } }
+        let headline = if let fallbackPool {
+            Self.poolHeadline(for: fallbackPool, forecasts: forecasts, now: now)
+        } else {
+            headlineLine.flatMap { line in
+                Self.headlineReason(for: line, forecasts: forecasts).flatMap { reason in
+                    Self.headline(for: line, reason: reason, now: now)
+                }
+            }
+        }
         self.headline = headline
 
+        let headlineShowsItsForecast = fallbackPool == nil ? headline != nil : headline?.status != nil
         var rowLines: [String: Line] = [:]
         for line in quota.lines {
-            guard let id = line.id,
-                  headline == nil || id != binding?.line.id,
-                  let forecast = forecasts[id],
-                  let rowLine = Self.rowLine(for: forecast, now: now)
-            else {
-                continue
+            guard let id = line.id, !headlineShowsItsForecast || id != headlineLine?.id else { continue }
+            if let headlineLine, Self.isOtherGroupLineAtLimit(line, headlineLine: headlineLine) {
+                rowLines[id] = Self.limitReachedRowLine
+            } else if let forecast = forecasts[id], let rowLine = Self.rowLine(for: forecast, now: now) {
+                rowLines[id] = rowLine
             }
-            rowLines[id] = rowLine
         }
         self.rowLines = rowLines
     }
@@ -84,66 +90,40 @@ private extension AllowanceForecastPresentation {
         case forecast(AllowanceForecast)
     }
 
-    struct HeadlineBinding {
-        let line: UsageLine
-        let reason: HeadlineReason
-        let showsLabel: Bool
-    }
-
-    static func headlineBinding(quota: ProviderQuota, forecasts: [String: AllowanceForecast]) -> HeadlineBinding? {
-        guard let headlineId = quota.headlineUsageLineId,
-              let headlineLine = quota.lines.first(where: { $0.id == headlineId })
-        else {
+    static func headlineReason(for line: UsageLine, forecasts: [String: AllowanceForecast]) -> HeadlineReason? {
+        if QuotaStatusResolver.isAtLimit(line) {
+            return .limitReached
+        }
+        guard let forecast = line.id.flatMap({ forecasts[$0] }), !forecast.isUncertainNearLimit else {
             return nil
         }
-        let groupLines = headlineLine.limitGroup.map { group in
-            quota.lines.filter { $0.limitGroup == group }
-        } ?? [headlineLine]
-        func binding(_ line: UsageLine, _ reason: HeadlineReason) -> HeadlineBinding {
-            HeadlineBinding(line: line, reason: reason, showsLabel: line.id != headlineId)
-        }
-
-        if let blockedLine = limitReachedLine(in: groupLines) {
-            return binding(blockedLine, .limitReached)
-        }
-
-        let groupForecasts = groupLines.compactMap { line in
-            line.id.flatMap { forecasts[$0] }.map { (line: line, forecast: $0) }
-        }
-        guard !groupForecasts.contains(where: \.forecast.isUncertainNearLimit) else { return nil }
-
-        let earliest = groupForecasts
-            .compactMap { entry in entry.forecast.depletesAt.map { (entry: entry, depletesAt: $0) } }
-            .min { $0.depletesAt < $1.depletesAt }?
-            .entry
-        if let earliest {
-            return binding(earliest.line, .forecast(earliest.forecast))
-        }
-
-        guard let headlineForecast = forecasts[headlineId], headlineForecast.isBeyondReset else {
-            return nil
-        }
-        return binding(headlineLine, .forecast(headlineForecast))
+        return .forecast(forecast)
     }
 
-    /// The line that resets last blocks usage longest.
-    static func limitReachedLine(in lines: [UsageLine]) -> UsageLine? {
-        lines
-            .filter { line in QuotaStatusResolver.percentage(for: line).map { $0 >= 100 } ?? false }
-            .max { ($0.resetDate ?? .distantFuture) < ($1.resetDate ?? .distantFuture) }
+    static func isOtherGroupLineAtLimit(_ line: UsageLine, headlineLine: UsageLine) -> Bool {
+        line.id != headlineLine.id
+            && line.limitGroup != nil
+            && line.limitGroup == headlineLine.limitGroup
+            && QuotaStatusResolver.isAtLimit(line)
     }
 
-    static func headline(for binding: HeadlineBinding, now: Date) -> Headline? {
-        guard let value = valueText(for: binding.line) else { return nil }
-        let label = binding.showsLabel ? binding.line.label : nil
+    static var limitReachedRowLine: Line {
+        Line(
+            text: String(localized: "Limit reached"),
+            accessibilityLabel: String(localized: "Limit reached, no more use available until reset")
+        )
+    }
+
+    static func headline(for line: UsageLine, reason: HeadlineReason, now: Date) -> Headline? {
+        guard let value = valueText(for: line) else { return nil }
 
         let status: String
         let detail: String?
         let sentences: [String]
-        switch binding.reason {
+        switch reason {
         case .limitReached:
             status = String(localized: "Limit reached")
-            detail = binding.line.resetDate.map(QuotaFormatting.countdown(to:))
+            detail = line.resetDate.map(QuotaFormatting.countdown(to:))
             sentences = [String(localized: "Limit reached, no more use available until reset"), detail]
                 .compactMap(\.self)
         case let .forecast(forecast):
@@ -165,7 +145,39 @@ private extension AllowanceForecastPresentation {
             sentences = accessibilitySentences(for: forecast, now: now) ?? [status]
         }
 
-        return Headline(label: label, value: value, status: status, detail: detail, accessibilitySentences: sentences)
+        return Headline(label: nil, value: value, status: status, detail: detail, accessibilitySentences: sentences)
+    }
+
+    static func poolHeadline(
+        for layout: FallbackPoolLayout,
+        forecasts: [String: AllowanceForecast],
+        now: Date
+    ) -> Headline? {
+        guard let value = valueText(for: layout.pool) else { return nil }
+        let forecastHeadline = headlineReason(for: layout.pool, forecasts: forecasts).flatMap { reason in
+            headline(for: layout.pool, reason: reason, now: now)
+        }
+        let inUse = String.localizedStringWithFormat(String(localized: "Using %@"), layout.pool.label)
+        return Headline(
+            label: layout.pool.label,
+            value: value,
+            status: forecastHeadline?.status,
+            detail: forecastHeadline?.detail,
+            accessibilitySentences: [inUse]
+                + layout.exhaustedLines.map(limitReachedSentence(for:))
+                + (forecastHeadline?.accessibilitySentences ?? [])
+        )
+    }
+
+    static func limitReachedSentence(for line: UsageLine) -> String {
+        guard let resetDate = line.resetDate else {
+            return String.localizedStringWithFormat(String(localized: "%@ limit reached"), line.label)
+        }
+        return String.localizedStringWithFormat(
+            String(localized: "%1$@ limit reached, %2$@"),
+            line.label,
+            QuotaFormatting.countdown(to: resetDate)
+        )
     }
 
     static func valueText(for line: UsageLine) -> String? {
@@ -272,17 +284,5 @@ private struct RemainingUse {
             CoarseDurationFormatting.string(from: duration, unitsStyle: .full),
             span
         )
-    }
-}
-
-private extension AllowanceForecast {
-    var depletesAt: Date? {
-        guard case let .estimated(depletesAt) = state else { return nil }
-        return depletesAt
-    }
-
-    var isBeyondReset: Bool {
-        guard case .beyondReset = state else { return false }
-        return true
     }
 }

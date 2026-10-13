@@ -14,8 +14,7 @@ enum SyntheticClaudeMessages {
         return lines.joined(separator: "\n")
     }
 
-    /// The trimmed report a user supplied (providers 16), with every field
-    /// they kept.
+    /// The trimmed report a user supplied, with every field they kept.
     static func suppliedReport() -> [String: Any] {
         [
             "session": [

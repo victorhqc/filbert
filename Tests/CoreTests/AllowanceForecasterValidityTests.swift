@@ -57,10 +57,10 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
         XCTAssertNotNil(depletion(at: minute(135)))
     }
 
-    func testNoConsumptionWithoutAPriorRateIsLearningNotQuiet() {
+    func testNoConsumptionWithoutAPriorRateShowsNoTextNotQuiet() {
         for value in stride(from: 0.0, through: 60, by: 5) {
             record(fixedPeriodMetric(consumed: 5, at: minute(value)))
-            XCTAssertEqual(state(at: minute(value)), .learning)
+            XCTAssertEqual(state(at: minute(value)), .insufficient)
         }
     }
 
@@ -136,7 +136,7 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
 
     func testTwoConsecutiveLongIntervalsReportUpdatesTooFarApart() {
         recordTrace([(0, 0), (35, 2)])
-        XCTAssertEqual(state(at: minute(35)), .learning)
+        XCTAssertEqual(state(at: minute(35)), .insufficient)
 
         recordTrace([(70, 4)])
         XCTAssertEqual(state(at: minute(70)), .tooFarApart)
@@ -167,7 +167,7 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
         XCTAssertEqual(state(at: minute(200)), .paused)
 
         recordTrace([(200, 31)])
-        XCTAssertEqual(state(at: minute(200)), .learning)
+        XCTAssertEqual(state(at: minute(200)), .insufficient)
         XCTAssertEqual(forecast(at: minute(200))?.observedAt, minute(200))
     }
 
@@ -180,7 +180,7 @@ final class AllowanceForecasterValidityTests: AllowanceForecasterTestCase {
         XCTAssertEqual(forecast(at: minute(23))?.observedAt, minute(20))
 
         recordTrace([(25, 33)])
-        XCTAssertEqual(state(at: minute(25)), .learning)
+        XCTAssertEqual(state(at: minute(25)), .insufficient)
         XCTAssertEqual(forecast(at: minute(25))?.observedAt, minute(25))
     }
 

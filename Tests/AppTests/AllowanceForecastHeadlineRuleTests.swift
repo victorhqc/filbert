@@ -3,40 +3,38 @@ import Core
 import XCTest
 
 final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTestCase {
-    func testLimitReachedOnALineWithoutADescriptorReplacesTheHeadline() throws {
+    private let limitReached = "Limit reached"
+
+    func testAnotherGroupLineAtItsLimitReadsLimitReachedInItsRow() throws {
         let reset = now.addingTimeInterval(2 * 24 * 60 * 60 + 4 * 60 * 60)
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: estimated("weekly", in: 30 * 60, span: 40 * 60),
-            extraLines: [UsageLine(label: "Monthly", percentage: 100, resetDate: reset, limitGroup: "claude")]
+            extraLines: [
+                UsageLine(label: "Monthly", percentage: 100, resetDate: reset, id: "monthly", limitGroup: "claude"),
+            ]
         )
 
         let headline = try XCTUnwrap(presentation.headline)
-        let countdown = QuotaFormatting.countdown(to: reset)
-        XCTAssertEqual(headline.label, "Monthly")
-        XCTAssertEqual(headline.value, "100%")
-        XCTAssertEqual(headline.status, "Limit reached")
-        XCTAssertEqual(headline.detail, countdown)
+        XCTAssertEqual(headline.value, "3%")
+        XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
+        XCTAssertEqual(presentation.rowLines["monthly"]?.text, limitReached)
         XCTAssertEqual(
-            headline.accessibilitySentences,
-            ["Limit reached, no more use available until reset", countdown]
+            presentation.rowLines["monthly"]?.accessibilityLabel,
+            "Limit reached, no more use available until reset"
         )
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
         XCTAssertNotNil(presentation.rowLines["weekly"])
+        XCTAssertNil(presentation.rowLines["five-hour"])
     }
 
-    func testLimitReachedNeedsNoForecast() throws {
+    func testAGroupLineAtItsLimitNeedsNoForecastForItsRowNotice() {
         let presentation = present(weeklyPercentage: 100)
 
-        let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertEqual(headline.label, "Weekly")
-        XCTAssertEqual(headline.value, "100%")
-        XCTAssertEqual(headline.status, "Limit reached")
-        XCTAssertNil(headline.detail)
-        XCTAssertEqual(headline.accessibilitySentences, ["Limit reached, no more use available until reset"])
+        XCTAssertNil(presentation.headline)
+        XCTAssertEqual(presentation.rowLines["weekly"]?.text, limitReached)
     }
 
-    func testLimitReachedOnTheHeadlineLineShowsNoLabel() throws {
+    func testLimitReachedOnTheHeadlineLineReplacesTheHeadline() throws {
         let quota = makeQuota(lines: [UsageLine(label: "5-hour window", percentage: 100, id: "five-hour")])
 
         let presentation = AllowanceForecastPresentation(
@@ -46,26 +44,26 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         )
 
         let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertNil(headline.label)
-        XCTAssertEqual(headline.subject, "100%")
-        XCTAssertEqual(headline.status, "Limit reached")
+        XCTAssertEqual(headline.value, "100%")
+        XCTAssertEqual(headline.status, limitReached)
+        XCTAssertNil(headline.detail)
+        XCTAssertEqual(headline.accessibilitySentences, ["Limit reached, no more use available until reset"])
         XCTAssertTrue(presentation.rowLines.isEmpty)
     }
 
-    func testTheLineThatResetsLastWinsWhenSeveralLinesReachedTheLimit() throws {
-        let daily = now.addingTimeInterval(60 * 60)
-        let monthly = now.addingTimeInterval(9 * 24 * 60 * 60)
-        let presentation = present(
-            extraLines: [
-                UsageLine(label: "Daily", percentage: 100, resetDate: daily, limitGroup: "claude"),
-                UsageLine(label: "Monthly", percentage: 100, resetDate: monthly, limitGroup: "claude"),
-            ]
-        )
+    func testEachLineAtItsLimitSaysSoInItsOwnPlace() throws {
+        let reset = now.addingTimeInterval(2 * 60 * 60)
+        let presentation = present(weeklyPercentage: 100, fiveHourPercentage: 100, fiveHourReset: reset)
 
-        XCTAssertEqual(try XCTUnwrap(presentation.headline).label, "Monthly")
+        let headline = try XCTUnwrap(presentation.headline)
+        XCTAssertEqual(headline.value, "100%")
+        XCTAssertEqual(headline.status, limitReached)
+        XCTAssertEqual(headline.detail, QuotaFormatting.countdown(to: reset))
+        XCTAssertNil(presentation.rowLines["five-hour"])
+        XCTAssertEqual(presentation.rowLines["weekly"]?.text, limitReached)
     }
 
-    func testLimitReachedOutsideTheLimitGroupLeavesTheHeadlineToTheGroup() throws {
+    func testALineOutsideTheLimitGroupAtItsLimitGetsNoRowNotice() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weeklyGroup: nil,
@@ -73,9 +71,10 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         )
 
         XCTAssertEqual(try XCTUnwrap(presentation.headline).status, "About \(abbreviated(80 * 60)) of use remaining")
+        XCTAssertNil(presentation.rowLines["weekly"])
     }
 
-    func testAGroupLinePausedAfterItsProjectedDepletionKeepsTheProviderHeadline() {
+    func testTheHeadlineLinePausedAfterItsProjectedDepletionKeepsTheProviderHeadline() {
         let presentation = present(
             fiveHour: forecast("five-hour", .paused, uncertainNearLimit: true),
             weekly: estimated("weekly", in: 8 * 60 * 60, span: 40 * 60)
@@ -86,24 +85,24 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertNotNil(presentation.rowLines["weekly"])
     }
 
-    func testAGroupLineWithoutAnEstimateNearItsLimitKeepsTheProviderHeadline() {
+    func testAnotherLineNearItsLimitLeavesTheHeadlineToTheHeadlineLine() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: forecast("weekly", .learning, uncertainNearLimit: true)
         )
 
-        XCTAssertNil(presentation.headline)
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
+        XCTAssertEqual(try XCTUnwrap(presentation.headline).status, "About \(abbreviated(80 * 60)) of use remaining")
+        XCTAssertEqual(presentation.rowLines["weekly"]?.text, "Learning your usage rate…")
     }
 
-    func testAnExhaustedGroupLineBelowTheDisplayedLimitKeepsTheProviderHeadline() {
+    func testAnExhaustedLineBelowTheDisplayedLimitLeavesTheHeadlineAlone() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: forecast("weekly", .exhausted, uncertainNearLimit: true)
         )
 
-        XCTAssertNil(presentation.headline)
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
+        XCTAssertEqual(try XCTUnwrap(presentation.headline).status, "About \(abbreviated(80 * 60)) of use remaining")
+        XCTAssertNil(presentation.rowLines["weekly"])
     }
 
     func testTheComposedHeadlineReadsAsTextAndSentences() throws {
@@ -112,40 +111,38 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
             weekly: estimated("weekly", in: 30 * 60, span: 40 * 60)
         ).headline)
 
-        let remaining = CoarseDurationFormatting.string(from: 30 * 60, unitsStyle: .full)
-        XCTAssertEqual(headline.text, "Weekly 95% · About \(abbreviated(30 * 60)) of use remaining")
+        let remaining = CoarseDurationFormatting.string(from: 80 * 60, unitsStyle: .full)
+        XCTAssertEqual(headline.text, "3% · About \(abbreviated(80 * 60)) of use remaining")
         XCTAssertEqual(
             headline.accessibilityLabel,
-            "Weekly 95%. About \(remaining) of use remaining at recent pace, based on the last \(span(40 * 60))"
+            "3%. About \(remaining) of use remaining at recent pace, based on the last \(span(20 * 60))"
         )
     }
 
-    func testEarliestEstimateInTheLimitGroupBindsAndAddsItsLabel() throws {
+    func testAnotherLineThatRunsOutFirstStaysInItsRow() throws {
         let presentation = present(
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: estimated("weekly", in: 30 * 60, span: 40 * 60)
         )
 
         let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertEqual(headline.label, "Weekly")
-        XCTAssertEqual(headline.value, "95%")
-        XCTAssertEqual(headline.status, "About \(abbreviated(30 * 60)) of use remaining")
-        XCTAssertEqual(headline.detail, "Based on the last \(span(40 * 60))")
-        XCTAssertNil(presentation.rowLines["weekly"])
+        XCTAssertEqual(headline.value, "3%")
+        XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
+        XCTAssertEqual(headline.detail, "Based on the last \(span(20 * 60))")
+        XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(
-            presentation.rowLines["five-hour"]?.text,
-            "About \(abbreviated(80 * 60)) of use remaining · last \(span(20 * 60))"
+            presentation.rowLines["weekly"]?.text,
+            "About \(abbreviated(30 * 60)) of use remaining · last \(span(40 * 60))"
         )
     }
 
-    func testEveryGroupLineBeyondResetComposesTheBeyondResetHeadline() throws {
+    func testBeyondResetComposesTheBeyondResetHeadline() throws {
         let presentation = present(
             fiveHour: beyondReset("five-hour"),
             weekly: beyondReset("weekly")
         )
 
         let headline = try XCTUnwrap(presentation.headline)
-        XCTAssertNil(headline.label)
         XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(headline.status, "Should last until reset")
         XCTAssertEqual(headline.detail, "At your pace over the last \(span(60 * 60))")
@@ -159,7 +156,7 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
     func testBeyondResetHeadlineReadsTheFullSentence() throws {
         let headline = try XCTUnwrap(present(fiveHour: beyondReset("five-hour", approximate: true)).headline)
 
-        XCTAssertEqual(headline.subject, "3%")
+        XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(
             headline.accessibilitySentences,
             [
@@ -176,7 +173,7 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertNotNil(presentation.rowLines["weekly"])
     }
 
-    func testBeyondResetIgnoresGroupLinesWithoutARate() throws {
+    func testBeyondResetIgnoresOtherLinesWithoutARate() throws {
         let withoutRate: [AllowanceForecast.State] = [.learning, .quiet, .tooFarApart, .paused, .insufficient]
         for state in withoutRate {
             let presentation = present(
@@ -190,14 +187,14 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         }
     }
 
-    func testBeyondResetWithAGroupLineUncertainNearItsLimitKeepsTheProviderHeadline() {
+    func testBeyondResetIgnoresAnotherLineNearItsLimit() throws {
         let presentation = present(
             fiveHour: beyondReset("five-hour"),
             weekly: forecast("weekly", .learning, uncertainNearLimit: true)
         )
 
-        XCTAssertNil(presentation.headline)
-        XCTAssertNotNil(presentation.rowLines["five-hour"])
+        XCTAssertEqual(try XCTUnwrap(presentation.headline).status, "Should last until reset")
+        XCTAssertNil(presentation.rowLines["five-hour"])
     }
 
     func testHeadlineNeverChangesWithoutANamedHeadlineLine() {
@@ -209,5 +206,6 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
 
         XCTAssertNil(presentation.headline)
         XCTAssertNotNil(presentation.rowLines["five-hour"])
+        XCTAssertNil(presentation.rowLines["weekly"])
     }
 }

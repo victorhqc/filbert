@@ -37,6 +37,33 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         XCTAssertFalse(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast refresh active"))
     }
 
+    func testBalanceAccessibilityLabelKeepsTheBalanceCurrency() throws {
+        let amount = try XCTUnwrap(Decimal(string: "2.97"))
+        let quota = ProviderQuota(
+            providerId: "deepseek",
+            providerName: "DeepSeek",
+            headline: "",
+            lines: [
+                UsageLine(
+                    label: "Total balance",
+                    balance: UsageBalance(amount: .finite(amount), unit: .currency("CNY"))
+                ),
+            ],
+            lastUpdated: .distantPast
+        )
+        let resolved = try XCTUnwrap(
+            MenuBarProviderPresentation.resolve(
+                providerInfo: providerInfo(id: "deepseek", glyph: .sfSymbol("dollarsign")),
+                providerState: .loaded(quota),
+                isFastRefreshActive: false
+            )
+        )
+
+        let label = MenuBarProviderPresentation.accessibilityLabel(for: resolved)
+
+        XCTAssertTrue(label.contains("CN¥"), label)
+    }
+
     func testChangingSelectedProviderChangesTheGlyphWithTheStatus() throws {
         let first = try XCTUnwrap(
             MenuBarProviderPresentation.resolve(
@@ -211,7 +238,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         let lines: [UsageLine] = if !isDisplayable {
             []
         } else if isBalance {
-            [UsageLine(label: "Balance", total: 12.34, unit: "USD")]
+            [UsageLine(label: "Balance", balance: UsageBalance(amount: .finite(12.34), unit: .currency("USD")))]
         } else {
             [UsageLine(label: "Window", percentage: 20)]
         }

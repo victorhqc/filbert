@@ -15,7 +15,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
 
         record(fixedPeriodMetric(consumed: 1, at: minute(25), resetsAt: minute(322)))
 
-        XCTAssertEqual(state(at: minute(25)), .learning)
+        XCTAssertEqual(state(at: minute(25)), .insufficient)
         XCTAssertEqual(forecast(at: minute(25))?.observedAt, minute(25))
     }
 
@@ -46,7 +46,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
             }
         }
 
-        XCTAssertEqual(state(at: minute(20)), .learning)
+        XCTAssertEqual(state(at: minute(20)), .insufficient)
         XCTAssertEqual(forecast(at: minute(20))?.observedAt, minute(20))
     }
 
@@ -55,7 +55,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
 
         record(fixedPeriodMetric(consumed: 31, at: minute(25), resetsAt: defaultReset.addingTimeInterval(301)))
 
-        XCTAssertEqual(state(at: minute(25)), .learning)
+        XCTAssertEqual(state(at: minute(25)), .insufficient)
     }
 
     func testConsumptionDecreaseWithoutAResetIsACorrection() {
@@ -75,8 +75,22 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
         }
 
         record(balanceMetric(remaining: 20, at: minute(25)))
+        XCTAssertEqual(state(at: minute(25), lineId: "balance"), .insufficient)
 
-        XCTAssertEqual(state(at: minute(25), lineId: "balance"), .learning)
+        record(balanceMetric(remaining: 19, at: minute(30)))
+        XCTAssertEqual(state(at: minute(30), lineId: "balance"), .learning)
+    }
+
+    func testAFlatBalanceShowsNoForecastTextUntilItFirstDecreases() {
+        for value in stride(from: 0.0, through: 180, by: 5) {
+            record(balanceMetric(remaining: 80, at: minute(value)))
+            XCTAssertEqual(state(at: minute(value), lineId: "balance"), .insufficient, "minute \(value)")
+        }
+
+        // One resolution step is too little for a rate.
+        record(balanceMetric(remaining: Decimal(7999) / 100, at: minute(185)))
+
+        XCTAssertEqual(state(at: minute(185), lineId: "balance"), .learning)
     }
 
     func testLimitOrUnitChangesClearHistory() {
@@ -86,8 +100,8 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
         record(fixedPeriodMetric(consumed: 31, at: minute(25), limit: 200), providerId: "limit")
         record(fixedPeriodMetric(consumed: 31, at: minute(25), unit: .credits), providerId: "unit")
 
-        XCTAssertEqual(state(at: minute(25), providerId: "limit"), .learning)
-        XCTAssertEqual(state(at: minute(25), providerId: "unit"), .learning)
+        XCTAssertEqual(state(at: minute(25), providerId: "limit"), .insufficient)
+        XCTAssertEqual(state(at: minute(25), providerId: "unit"), .insufficient)
     }
 
     func testMetricArrivingWithoutItsDescriptorClearsHistory() {
@@ -112,7 +126,7 @@ final class AllowanceForecasterBoundaryTests: AllowanceForecasterTestCase {
             fixedPeriodMetric(id: "weekly", consumed: 48, at: minute(25), resetsAt: weeklyReset)
         )
 
-        XCTAssertEqual(state(at: minute(25)), .learning)
+        XCTAssertEqual(state(at: minute(25)), .insufficient)
         XCTAssertNotNil(depletion(at: minute(25), lineId: "weekly"))
         XCTAssertEqual(forecast(at: minute(25), lineId: "weekly")?.evidenceSpan, 25 * 60)
     }

@@ -21,7 +21,7 @@ enum MenuBarStatusVisual {
             }
             let clamped = QuotaStatusResolver.clampedFraction(percentage / 100)
             return .ring(bucket: (clamped * 10).rounded() / 10)
-        case .balance:
+        case .balance, .credits:
             guard isVintageMacEnabled, let tier = QuotaStatusResolver.tier(for: status) else {
                 return nil
             }

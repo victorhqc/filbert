@@ -9,12 +9,8 @@ struct CollectedSubprocessOutput {
     let stdoutTruncated: Bool
 }
 
-/// Drains a child's stdout and stderr while it runs so a full pipe cannot stall
-/// the child. Retention is bounded; stderr is counted and never kept.
-///
-/// One reader thread owns both streams, and `finish` returns a snapshot only
-/// after that thread reports completion. A reader that does not stop in time
-/// yields `nil` rather than a partial snapshot.
+/// Drains stdout and stderr while the child runs, because a full pipe stalls it.
+/// Retention is bounded; stderr is counted, never kept.
 final class SubprocessOutputCollector: @unchecked Sendable {
     static let captureLimit = 20 * 1024 * 1024
 
@@ -58,8 +54,7 @@ final class SubprocessOutputCollector: @unchecked Sendable {
         thread.start()
     }
 
-    /// Returns `nil` when the reader did not stop within the join bound, so no
-    /// snapshot is safe to use.
+    /// `nil` when the reader misses the join bound, because a partial snapshot is unsafe.
     func finish() -> CollectedSubprocessOutput? {
         stop()
         guard waitForReader() else { return nil }
@@ -153,8 +148,8 @@ final class SubprocessOutputCollector: @unchecked Sendable {
         }
     }
 
-    /// Drains only bytes already buffered. Both streams share one deadline, so a
-    /// descendant that keeps the write end open cannot extend finalization.
+    /// Both streams share one deadline, so a descendant holding the write end
+    /// cannot extend finalization.
     private func drainBuffered(deadline: Date, stdoutBuffer: inout [UInt8], stderrBuffer: inout [UInt8]) {
         let stdoutFlags = makeNonBlocking(descriptor: stdoutHandle.fileDescriptor)
         let stderrFlags = makeNonBlocking(descriptor: stderrHandle.fileDescriptor)

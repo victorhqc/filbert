@@ -4,7 +4,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The branch merges only after steps 9–11.
+- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The manual check with Codex (providers 18) added steps 12 (AC14), 13 (AC15), and 14 (AC16). The branch merges only after steps 9–11.
 - This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
 - Periods of one day or less assume continued recent consumption (AC5). Longer periods use the average pace since the period started, which already includes nights, weekends, and breaks (AC13). Neither models a schedule or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
@@ -14,7 +14,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - `Sources/Core/AutoRefreshPreferences.swift` — the slow interval ranges from 1 to 60 minutes. Smart refresh polls faster during detected activity (core 08, core 11).
 - `Sources/App/BudgetPace.swift` — sustainable daily and weekly allowances remain distinct from depletion forecasts (ui 18, ui 19, ui 22).
 - `Sources/App/QuotaView.swift` — renders the provider's headline (`ProviderQuota.headline`) above the rows. An estimate, a beyond-reset forecast, or a reached limit replaces its reset countdown (AC9).
-- Related: (ui 28) promotes a fallback credit or money pool once its limit group runs out and the pool starts to decrease. It reuses this spec's line IDs, limit groups, and forecasts.
+- Related: (ui 28) promotes a fallback credit or money pool while its limit group is exhausted and the pool has a balance above 0. It reuses this spec's line IDs, limit groups, and forecasts.
 - `Sources/App/UsageLineRow.swift` — renders one small forecast line inside its matching row without replacing usage, reset, or pace information.
 - `Sources/App/Resources/Localizable.xcstrings` — forecast text and accessibility descriptions.
 - `Tests/CoreTests/`, `Tests/AppTests/` — engine, lifecycle, and presentation tests.
@@ -141,29 +141,28 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 - **Given** a provider names the usage line its headline summarizes
 - **When** the expanded card renders
-- **Then** the App takes that line's limit group, or only that line when it has no group, and applies the first rule that matches:
-  1. **Limit reached.** A line in the group shows 100% in its current `UsageLine`, with or without a descriptor. The headline reads like "Weekly 100% · Limit reached", with the line's reset countdown below it. When several lines are at 100%, the line with the latest reset wins, because it blocks usage longest.
-  2. **Uncertain near the limit.** A group line is paused after its projected depletion time, or a group line without an estimate has less than two resolution steps left. The headline stays as the provider wrote it.
-  3. **Earliest estimate.** A group line has an estimated forecast. The estimate that runs out first wins. The headline reads like "3% · About 1h 20m of use remaining", with a smaller line below it like "Based on the last 20 minutes".
-  4. **Beyond reset.** The headline line has a beyond-reset forecast. Other group lines without a rate do not block it: learning, quiet, too far apart, insufficient, and paused away from the limit. Rules 1–3 have already excluded a line at 100%, a line uncertain near the limit, and any estimate. The headline reads like "3% · Should last until reset", with a smaller line like "At your pace over the last 20 minutes". The row line reads like "Should last until reset · last 20 minutes".
+- **Then** the App looks only at that line (AC15) and applies the first rule that matches:
+  1. **Limit reached.** The line shows 100% in its current `UsageLine`, with or without a descriptor. The headline reads like "100% · Limit reached", with the line's reset countdown below it.
+  2. **Uncertain near the limit.** The line is paused after its projected depletion time, or it has no estimate and less than two resolution steps left. The headline stays as the provider wrote it.
+  3. **Estimate.** The line has an estimated forecast. The headline reads like "3% · About 1h 20m of use remaining", with a smaller line below it like "Based on the last 20 minutes".
+  4. **Beyond reset.** The line has a beyond-reset forecast. The headline reads like "3% · Should last until reset", with a smaller line like "At your pace over the last 20 minutes". The row line reads like "Should last until reset · last 20 minutes".
 - **And** when no rule matches, the headline stays as the provider wrote it
-- **And** the winning line is the binding line; the headline shows the binding line's current value
-- **And** when the binding line is not the named headline line, the headline adds its label, e.g. "Weekly 95% · About 30m of use remaining"
+- **And** the headline shows the headline line's current value
 - **And** the countdown stays visible in the row's existing reset text below the bar
-- **And** the App composes the headline from the binding line's current value and its forecast; it never parses or edits the provider's headline string
+- **And** the App composes the headline from the headline line's current value and its forecast; it never parses or edits the provider's headline string
 - **Given** a row with a forecast descriptor is learning, quiet, too far apart, or paused
 - **When** the row renders
 - **Then** one small secondary line appears just above the row's reset text
-- **And** learning reads like "Learning your usage rate…", and shows only until the maximum horizon has passed since the last baseline; a new segment after quiet does not restart this limit
+- **And** learning reads like "Learning your usage rate…", and shows only from the first consumption after the last baseline until the maximum horizon has passed (AC14); a new segment after quiet does not restart this limit
 - **And** once the maximum horizon passes without enough evidence for a rate, the row shows no forecast text; it never shows an estimate built from insufficient data
 - **And** quiet reads like "No recent consumption detected"
 - **And** two consecutive accepted intervals longer than the maximum gap read like "Updates too far apart to estimate", in place of a learning state that cannot complete
 - **And** "Updates too far apart to estimate" lasts while the latest observation is younger than the last long interval plus the maximum gap; after that, the row shows the paused text
 - **And** stale or interrupted evidence reads like "Forecast paused until fresh data arrives", without hiding the last-known usage and timestamp
-- **Given** a row that is not the binding line has an estimated or beyond-reset forecast
+- **Given** a row that is not the headline line has an estimated or beyond-reset forecast
 - **When** the row renders
 - **Then** it shows the estimate as the same kind of small secondary line above its reset text, e.g. "About 1d 4h of use remaining · last 2 hours"
-- **And** the binding line's row shows no forecast line, because the headline already shows its forecast
+- **And** the headline line's row shows no forecast line while the headline shows its forecast
 - **And** in every state, the headline gains at most one secondary line and each row gains at most one forecast line
 - **And** an exhausted allowance shows no forecast text in its row; the existing row already shows it
 - **And** unsupported or unlimited measurements show no forecast UI
@@ -191,7 +190,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **Given** forecasting is enabled
 - **When** Core retains measurements
 - **Then** it stores only bounded in-memory numeric history and the needed metric metadata
-- **And** app relaunch starts learning again
+- **And** app relaunch starts a new baseline, so learning starts again with the next consumption (AC14)
 - **And** disabling or removing a provider, saving, deleting, or importing its credentials, or changing its endpoint clears that provider's history
 - **And** these are the only account changes that Core knows; the contract has no field for a provider to report an account change
 - **And** logs contain no raw history, account identifiers, credentials, or provider payloads
@@ -206,9 +205,12 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **And** traces that differ only in extra observations without a new value produce the same rate, including bursty traces and repeated manual refreshes
 - **And** a 10-second fast interval keeps two hours of evidence
 - **And** 15-minute and 29-minute slow intervals produce an estimate, and a 31-minute slow interval shows "Updates too far apart to estimate"
-- **And** a weekly-style trace that gains one point in two hours shows learning for two hours and then no forecast text, never quiet and never an estimate
+- **And** a slow trace that gains one point after one hour shows no forecast text until that point, learning for two hours after it, and then no forecast text, never quiet and never an estimate (AC14)
+- **And** a flat balance shows no forecast text after a baseline, a wake, or a purchase, and a first decrease of one resolution step starts learning (AC14)
+- **And** tests (AC16): a flat stretch followed by steady consumption shows learning until the minimum evidence span has passed since the first consumption, then the rate of that consumption only
+- **And** tests (AC15): other lines' estimates, uncertainty, and limits never change the headline; their estimates show in their rows, also when they run out first; a group line at 100% reads "Limit reached" in its row
 - **And** local renders do not move the depletion timestamp or turn projected exhaustion into reported exhaustion
-- **And** UI tests cover row association by ID, each headline rule (AC9), the label of a binding line that is not the headline line, an unchanged headline when no rule matches, at most one forecast line per row, every localized and accessible state, long-duration formatting, and preservation of budget pace and compact status with forecasts present
+- **And** UI tests cover row association by ID, each headline rule (AC9), an unchanged headline when no rule matches, at most one forecast line per row, every localized and accessible state, long-duration formatting, and preservation of budget pace and compact status with forecasts present
 - **And** App tests cover history clearing on every lifecycle event in (AC11), and the sleep, wake, and clock-change observers
 - **And** long-period tests (AC13): a weekly window 3 days into the period at 7% is beyond reset, projecting about 16% at reset; at 60% it runs out in about 2 days; during the first day it shows no forecast text; one observation after a relaunch is enough; a five-hour window keeps the recent pace
 - **And** a test provider using only the generic contract obtains forecasts without Core or App changes.
@@ -229,6 +231,37 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - **And** an estimate reads like "Runs out in about 2d" with "At your average pace over the last 3 days"; the row reads like "Runs out in about 2d · last 3 days"
 - **And** beyond reset reads like "Should last until reset" with "At your average pace over the last 3 days"
 - **And** periods of one day or less keep the recent pace of (AC5), because continuous use within a few hours is realistic and is the risk to warn about.
+
+### AC14: Learning starts with observed consumption
+
+- **Given** an allowance with a recent-pace forecast (AC5), i.e. a balance or a period of one day or less, has a baseline and no rate
+- **When** no accepted sample since the baseline shows consumption
+- **Then** the state is insufficient, so the row shows no forecast text
+- **And** consumption is a fixed-period increase or a balance decrease between two accepted samples after the baseline; the baseline value itself is not consumption (AC3)
+- **And** learning starts with the first consumption after the baseline and lasts at most the maximum horizon from it; a new segment after quiet does not restart this limit
+- **And** a flat balance, e.g. credits used only after another pool runs out (providers 18), never shows "Learning your usage rate…" after a launch, wake, gap, or purchase
+- **And** a balance increase re-baselines (AC3), so a purchase alone never starts learning
+- **And** the quiet, too-far-apart, paused, exhausted, and estimated states are unchanged, and long periods keep (AC13).
+
+### AC15: Each line's notice stays with its line
+
+- **Given** a provider names its headline line, and other lines carry forecasts or reach their limits
+- **When** the expanded card renders
+- **Then** the headline speaks only for the headline line (AC9); no other line's limit, uncertainty, or forecast changes it, and the headline never shows another line's label
+- **And** every other line shows its own forecast in its row, also when it runs out before the headline line resets
+- **And** another line of the headline line's limit group at 100% reads "Limit reached" in its row, above its reset text
+- **And** e.g., a five-hour window at 65% that should last until its reset keeps the headline "65% · Should last until reset", while the weekly row reads "Runs out in about 1d 10h · last 32 hours"
+- **And** a weekly window that runs out in about 1h, next to a five-hour window that resets in 3 hours, shows "Runs out in about 1h · last 6 days" in its row; the headline still speaks for the five-hour window
+- **And** a weekly window at 100% reads "Limit reached" in its row, while the headline speaks for the five-hour window.
+
+### AC16: The first rate starts at the first consumption
+
+- **Given** an allowance with a recent-pace forecast (AC5) has seen no consumption since its baseline
+- **When** its first consumption arrives
+- **Then** the rate's evidence starts at the last sample before that consumption, as after a quiet period (AC6); the flat stretch before it is not evidence
+- **And** the minimum observation count and evidence span (AC5) apply from that sample, so the row shows learning until they are met
+- **And** e.g., credits that stayed flat and then fell 0.94, 2.52, and 4.57 credits a minute show learning for about 10 minutes and then a rate near 210 credits an hour, not about 1.9 credits an hour from a 30-minute window that was mostly flat (providers 18)
+- **And** long periods keep (AC13).
 
 ## Plan
 
@@ -311,6 +344,17 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [ ] Codex windows and credits row (providers 18)
     - [ ] DeepSeek total balance (providers 19)
     - [ ] OpenCode Go weekly and monthly windows (providers 20)
+12. [x] Learning starts with consumption (AC14), from the manual check of 2026-10-12 with Codex credits (providers 18). A flat credits row showed "Learning your usage rate…" with nothing to learn.
+    - [x] Record the time of the first consumption after each baseline in `AllowanceHistory`. Without it and without a rate, the state is insufficient. With it, learning lasts the maximum horizon from that time.
+    - [x] Update the Core tests that expect learning right after a flat baseline, and add the tests from (AC12).
+    - [x] Update the Codex replay (providers 18): its baseline read and its flat credits now show no forecast text.
+13. [x] Each line's notice stays with its line (AC15), from the manual check of 2026-10-12 with Codex (providers 18). A weekly estimate days away replaced the headline of a five-hour window that reset in 14 minutes.
+    - [x] Bind the headline to the named headline line only. Remove the headline label and its catalog key.
+    - [x] Show "Limit reached" in the row of another group line at 100%.
+    - [x] Update the headline tests and add the tests from (AC12).
+14. [x] The first rate starts at the first consumption (AC16), from the Codex capture of 2026-10-12 (providers 18). The first credits estimate after the switch read "About 2W 4d" while credits fell about 210 an hour.
+    - [x] Start a new segment at the previous sample when the first consumption after a baseline arrives.
+    - [x] Update the tests that expect an estimate right after a flat stretch, and add the tests from (AC12).
 
 ### Card layout
 
@@ -318,11 +362,11 @@ The panel is small, so forecasts add as little text as possible:
 
 - Only the headline rules in (AC9) change the headline. They replace the headline's reset countdown, which the row still shows below its bar. A smaller line under the headline gives the evidence, the condition, or the reset. A long headline wraps; it is never truncated.
 - Every other state is one small gray line inside its row, just above the reset text. It never touches the headline. A long text wraps to a second line; it is never truncated.
-- A row that is not the binding line shows its estimate as the same small line.
+- A row that is not the headline line shows its estimate, or "Limit reached", as the same small line (AC15).
 - Approximate timing lives in the tooltip and VoiceOver only.
 
 ```
-Estimated (headline line binds)       Weaker states (headline unchanged)
+Estimated                             Weaker states (headline unchanged)
 3% · About 1h 20m of use remaining    3% · resets in 5 hours
 Based on the last 20 minutes          5-hour window                 3%
 5-hour window                 3%      ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
@@ -333,16 +377,22 @@ Weekly                   6% used
 About 1d 4h of use remaining · last 2 hours
 1d 2h left  About 83,8%/day available
 
-Beyond reset                          Another group line binds
-3% · Should last until reset          Weekly 95% · About 30m of use remaining
-At your pace over the last 20 minutes Based on the last 40 minutes
+Beyond reset                          Another line runs out first (AC15)
+3% · Should last until reset          3% · Should last until reset
+At your pace over the last 20 minutes At your pace over the last 20 minutes
+                                      Weekly                  95% used
+                                      ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+                                      About 30m of use remaining · last 40 minutes
 
-Limit reached
-Weekly 100% · Limit reached
-resets in 2d 4h
+Limit reached                         Another line reached its limit (AC15)
+100% · Limit reached                  3% · resets in 5 hours
+resets in 2h 10m                      Weekly                 100% used
+                                      ▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬
+                                      Limit reached
+                                      resets in 2d 4h
 ```
 
-The other weak-state lines take the learning line's place: "No recent consumption detected", "Updates too far apart to estimate", and "Forecast paused until fresh data arrives". When a limit group runs out and usage continues from a fallback pool, (ui 28) replaces the "Limit reached" headline with that pool.
+The other weak-state lines take the learning line's place: "No recent consumption detected", "Updates too far apart to estimate", and "Forecast paused until fresh data arrives". When a limit group runs out and its fallback pool has a balance, (ui 28) shows that pool on top; the pool is then the headline line (AC15).
 
 ### Policy values
 
@@ -354,7 +404,7 @@ The other weak-state lines take the learning line's place: "No recent consumptio
 | Minimum evidence span | 10 minutes |
 | Minimum consumption | 2 resolution steps |
 | Quiet threshold | 2 × resolution ÷ last usable rate, clamped to 15 minutes – 2 hours; requires a prior usable rate |
-| Learning display limit | The maximum horizon after the last baseline, then no forecast text |
+| Learning display limit | The maximum horizon after the first consumption since the last baseline; no forecast text before that consumption or after the limit (AC14) |
 | Maximum observation gap | 30 minutes between the source timestamps of accepted samples |
 | Maximum observation age | 30 minutes |
 | "Too far apart" trigger | 2 consecutive accepted intervals above the maximum gap |
@@ -387,7 +437,7 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - Catalog keys need identifier characters for string symbol generation. The headline formats use semantic keys, like the existing "Accessibility sentence format".
 - Evidence spans show one unit, rounded to the nearest hour from one hour up, e.g. "last 2 hours".
 - Commit `4fd967f` implements steps 1–6 with Core and App tests. The review of 2026-10-08 reopened steps 3 and 4 and added steps 7 and 8.
-- `learningDisplayLimit` is removed. Learning lasts the maximum horizon from the last baseline.
+- `learningDisplayLimit` is removed. Learning lasted the maximum horizon from the last baseline until (AC14) moved its start to the first consumption.
 - The maximum observation age is a separate policy field from the maximum gap. Both are 30 minutes.
 - The window grows only to reach the minimum consumption. The observation count covers the observations from the sample at or before the window start to the latest one, including removed repeated samples. Without that start sample, a 29-minute interval has only two observations in a 30-minute window.
 - History keeps the last sample at or before the maximum-horizon cutoff, so the 2-hour window can interpolate its start.
@@ -408,13 +458,17 @@ A provider refreshed every 30 minutes or less often, and never sped up by Smart 
 - The headline and each forecast row line have their own `TimelineView`. Each one evaluates the forecasts at its own tick, so at a state change they can disagree for up to one minute.
 - The texts of a budget-pace row live in `PacedUsageLineText`. Thus a test can compare the row with and without a forecast. Compact status reads only the quota, so a forecast cannot change it.
 - The App forecast tests use an `.apiKey` test provider, because `saveOverrideURL` ignores providers without an API key.
+- With (AC14), `AllowanceHistory` no longer needs the baseline time; the learning limit counts from the first consumption. Tests that showed a new baseline by its learning state now expect insufficient, and the App lifecycle tests check for an existing history with no row text.
+- With (AC15), the headline label, its "Forecast labeled value format" key, and the choice of the latest reset among lines at 100% are gone. The limit group now decides only which other lines read "Limit reached" in their rows.
+- Before (AC16), one decrease of many resolution steps after a flat stretch gave an estimate at once, because the flat samples supplied the observation count and the evidence span (AC5). (AC16) starts the segment at the sample before the first consumption, so the flat stretch no longer counts.
+- With (AC16), the Claude Code replay forms a faster rate, turns quiet after 15 minutes without a rise, and learns again on the next rise (providers 17). The window-growth test now starts its consumption early enough to need the 60-minute window.
 
 ## Risks
 
 - Consumption is bursty, and models or workloads can change the rate at once. Conditional wording and short-lived evidence cannot remove this uncertainty.
 - The interpolated window is still sensitive to a burst at either end. A single delayed publication can inflate the rate until the burst leaves the window.
 - At whole-point resolution, weekly and monthly windows forecast only under sustained heavy use: two points within two hours. Most of the time they show learning and then no forecast text.
-- A group line that is still learning does not stop the headline estimate (AC9 rule 3) or the beyond-reset headline (AC9 rule 4). Example: Weekly at 97% in learning, next to a five-hour estimate of 3 hours. Weekly can run out first. A stricter rule would hide these headlines almost always, because weekly windows are usually in learning.
+- With (AC15), the headline can read "Should last until reset" for the five-hour window while the weekly row says the week runs out first, or reads "Limit reached". Each notice speaks for its own window, so the headline alone does not say whether usage is blocked.
 - Rounded percentages and delayed publication can hide ongoing work. Quiet means no observed progress, not verified inactivity.
 - A balance endpoint cannot reveal consumption offset by a top-up within one interval. Net-depletion forecasts must not be labeled spend.
 - A local CLI can switch accounts without exposing a scope change. Core clears history only on the account changes in (AC11). A rate can span two accounts until a reset or correction re-baselines.

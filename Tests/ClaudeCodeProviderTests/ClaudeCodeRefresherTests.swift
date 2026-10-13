@@ -82,8 +82,6 @@ final class ClaudeCodeRefresherTests: XCTestCase {
     // MARK: - stream-json output is parsed into the cache
 
     func testRefresh_parsesUsageOutputIntoCache() async throws {
-        // The fake binary emits what `claude -p "/usage" --output-format json`
-        // emits: a JSON object whose `result` holds the usage text.
         let fakeBinary = try writeFakeBinary(
             name: "fake-claude-usage",
             body: usageFakeBinaryBody(session: 77, week: 37)
@@ -182,10 +180,7 @@ final class ClaudeCodeRefresherTests: XCTestCase {
             """
         )
 
-        // Tighten the timeout so the test doesn't take 30s. The spawn
-        // itself is a fake `sleep 60`, simulating a process that never
-        // exits. The refresher must terminate it within the configured
-        // window plus the SIGKILL grace period.
+        // A fake `sleep 60` never exits. A short timeout keeps the test fast.
         let refresher = makeRefresher(
             binaryPath: fakeBinary.path,
             spawnTimeout: 1,
@@ -242,11 +237,8 @@ final class ClaudeCodeRefresherTests: XCTestCase {
     // MARK: - in-flight callers share one OS process
 
     func testRefresh_concurrentCallersShareOneProcess() async throws {
-        // The fake binary sleeps briefly so the two concurrent callers
-        // actually overlap — without the sleep, the first spawn could
-        // finish before the second call enters the actor, and the test
-        // would pass for the wrong reason (both calls saw no in-flight task
-        // because the first had already completed).
+        // The sleep makes the two calls overlap. Without it, the first spawn could
+        // finish first and the test would pass for the wrong reason.
         let fakeBinary = try writeFakeBinary(
             name: "fake-claude-overlap",
             body: """
@@ -257,8 +249,6 @@ final class ClaudeCodeRefresherTests: XCTestCase {
         )
         let refresher = makeRefresher(binaryPath: fakeBinary.path)
 
-        // Fire both refreshes concurrently; both should await the same
-        // in-flight task and only one `claude` process should run.
         async let first: Void = refresher.refresh()
         async let second: Void = refresher.refresh()
         do {
@@ -350,9 +340,8 @@ extension ClaudeCodeRefresherTests {
         }
     }
 
-    /// Shell body for a fake `claude` that echoes a `/usage --output-format
-    /// json` payload: a single JSON object whose `result` holds the usage text
-    /// (newlines encoded as `\n`, matching what `claude` actually emits).
+    /// Matches `claude -p "/usage" --output-format json`: one object whose `result`
+    /// holds the usage text, with newlines as `\n`.
     private func usageFakeBinaryBody(session: Int, week: Int) -> String {
         let line1 = "Current session: \(session)% used · resets Jul 21 at 12:59am (Europe/Berlin)"
         let line2 = "Current week (all models): \(week)% used · resets Jul 24 at 5:59am (Europe/Berlin)"
