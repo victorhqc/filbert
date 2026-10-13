@@ -4,7 +4,7 @@ When a provider's limit group runs out while its credit or money pool still has 
 
 ## Context
 
-- Status: partially implemented on `ferat/allowance-depletion-codex`, together with (providers 18). Plan steps 1–6 and 8 are implemented; the manual check in step 7 is open. Updated on 2026-10-12 with the Codex capture (providers 18). Later on 2026-10-12 the user changed the promotion rule (AC2): a balance above 0 promotes the pool without waiting for a decrease. The user approved the change on 2026-10-13, and Plan step 8 implements it.
+- Status: partially implemented on `ferat/allowance-depletion-codex`, together with (providers 18). Plan steps 1–6 and 8 are implemented. The manual check in step 7 passed for the cards and the menu-bar amount; the tooltip and the menu-bar ring are open (Implementation findings). Updated on 2026-10-12 with the Codex capture (providers 18). Later on 2026-10-12 the user changed the promotion rule (AC2): a balance above 0 promotes the pool without waiting for a decrease. The user approved the change on 2026-10-13, and Plan step 8 implements it.
 - Builds on the line IDs, limit groups, and forecasts of (core 12). Codex is the first provider to use it (providers 18).
 - (core 12 AC15) keeps each line's notice with its line: the headline speaks for one line, and a group line at 100% reads "Limit reached" in its row. While a pool is promoted, the pool is that line (AC3). (core 12 AC15) also removed the headline label, which the promoted headline needs again.
 - Codex shows its credits in their own row after the windows (providers 18 AC4). When the windows reach 100%, the card still leads with "100% · Limit reached" while work continues on credits.
@@ -136,6 +136,11 @@ Credits                   1,159.57
 - The presentation treats the pool as the headline line (core 12 AC15). Its headline always names the pool, adds the pool's estimate when there is one, and reads "Using Credits" and each reached limit to VoiceOver first. The name-style key "Promoted pool value format" passes `bundle: .module`.
 - The card, the forecast headline, the collapsed card, and the menu bar each build the layout from the same displayed quota, so they cannot disagree.
 - A scripted fake `codex` on 2026-10-12 showed the promoted card with credits learning, the menu-bar amount "794,65", and the normal card at 0% after the reset. At the popover's 280 pt width, "Limit reached · resets in 4 Minuten" did not fit beside "5-hour window" and was cut before the reset time. A detail line now moves its value under its label when the two do not fit on one line; details that fit keep one line.
+- The fake `codex` on 2026-10-13 checked the balance rule (Plan step 8):
+  - A first read at 100% with 799 credits put credits on top at once. The collapsed card and the menu bar showed "796,01".
+  - With 3 credits, the card went from 98% to "Credits: 1,09" on top, and the menu bar showed "1,09". At 0,00 the card showed "100% · Limit reached" with the reset countdown, and credits went back to their own row.
+  - After the reset time passed, the detail line read "Limit reached · resetting…" until the next read. That read showed 0% and the normal card.
+  - Still to check: the headline tooltip, which carries the VoiceOver text, and the menu-bar ring after the reset and after credits reach 0.
 - A rebuild on 2026-10-12 after the Codex session had ended showed the normal layout with "100% · Limit reached" and credits at 744,30. The first read after a launch only sets the baseline (AC2), and the credits no longer fell, so the pool stayed in its row. Under the balance rule (AC2), this case promotes the pool.
 
 ## Risks
