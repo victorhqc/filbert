@@ -4,7 +4,7 @@ Opt OpenCode Go's weekly and monthly windows into allowance forecasting (core 12
 
 ## Context
 
-- Status: implemented, without live data. On 2026-10-13 the user chose the upstream source, public reports, and synthetic fixtures instead (Evidence). Depends on (core 12), which is on `main`.
+- Status: implemented and on `main` (#81), without live data. On 2026-10-13 the user chose the upstream source, public reports, and synthetic fixtures instead (Evidence). Depends on (core 12), which is on `main`.
 - `Sources/Providers/OpenCodeGo/OpenCodeGoProvider.swift` — maps the `rolling-window-usage`, `weekly-window-usage`, and `monthly-window-usage` metrics from a live HTTPS request. Freshness is `.unknown` today. Lines have no IDs and no limit group.
 - Since 2026-10-11, `/zen/go/v1/usage` forwards to a separate inference service whose code is not public (anomalyco/opencode#54563). Migrated accounts used that service from 2026-09-09 (#48123). The window rules in Evidence come from the last version that computed them in the open repository.
 - Live evidence (providers 10):

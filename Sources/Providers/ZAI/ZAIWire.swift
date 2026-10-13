@@ -27,6 +27,10 @@ struct ZAILimit: Decodable {
     let remaining: Double?
     let nextResetTime: Int64?
     let usageDetails: [ZAIUsageDetail]?
+
+    var resetDate: Date? {
+        nextResetTime.map { Date(timeIntervalSince1970: Double($0) / 1000) }
+    }
 }
 
 struct ZAIUsageDetail: Decodable {
