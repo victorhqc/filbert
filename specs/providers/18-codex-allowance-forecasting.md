@@ -4,7 +4,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 
 ## Context
 
-- Status: in progress. Plan steps 3–4 are implemented, but the window descriptors stay open until Plan step 2 confirms (AC2). The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12 and runs past the weekly reset on 2026-10-18. Depends on (core 12), which is on `main` with (providers 17). The credits row depends on (core 13). (ui 28) is implemented on the same branch and declares the credits row as the fallback for the window group.
+- Status: in progress. Plan steps 3–4 are on `main` (#78), but the window descriptors stay open until Plan step 2 confirms (AC2). The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12 and runs past the weekly reset on 2026-10-18. Depends on (core 12). The credits row depends on (core 13). (ui 28) landed with it and declares the credits row as the fallback for the window group.
 - `Sources/Providers/OpenAICodex/OpenAICodexProvider.swift` — maps the `primary-window-usage`, `secondary-window-usage`, and `credits` metrics with `.unknown` freshness. Sets `lastUpdated` to `Date()` on each mapping. Attaches credits as a detail of the first window row (providers 05 AC7).
 - `Sources/Providers/OpenAICodex/CodexAppServerClient.swift` — starts a new `codex app-server` for each read (providers 05 AC3). Decodes `usedPercent`, `resetsAt`, `windowDurationMins`, and `credits { balance, unlimited }`. It does not decode `hasCredits`.
 - `account/rateLimits/read` sends a live backend request on each call. The response has no measurement timestamp. `usedPercent` is a whole number. `resetsAt` is the absolute reset time from the server (Evidence).

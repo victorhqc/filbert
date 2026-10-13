@@ -4,8 +4,8 @@ Estimate how long each supported allowance would last at the user's recent pace,
 
 ## Context
 
-- Status: steps 1–8 are implemented. The manual check in step 9 is in progress with Claude Code (providers 17). It added step 10 (AC13), which is implemented. The manual check with Codex (providers 18) added steps 12 (AC14), 13 (AC15), and 14 (AC16). The branch merges only after steps 9–11.
-- This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). No provider is ready yet, so this spec merges only together with all four opt-ins. A test provider covers the generic contract.
+- Status: implemented and on `main` (#75). Steps 1–8, 10, and 12–14 are done. The manual check in step 9 is still open, and step 11 tracks the provider opt-ins. The manual checks with Claude Code (providers 17) added step 10 (AC13); those with Codex (providers 18) added steps 12 (AC14), 13 (AC15), and 14 (AC16).
+- This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). Each opt-in lands on its own. A test provider covers the generic contract.
 - Periods of one day or less assume continued recent consumption (AC5). Longer periods use the average pace since the period started, which already includes nights, weekends, and breaks (AC13). Neither models a schedule or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
 - `Sources/Core/SmartRefreshPolicy.swift` — discards only `.stale` observations. `.unknown` and `.fresh` count equally as activity evidence.
@@ -339,10 +339,10 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [x] Add the long-period wording to the catalog in all four languages.
     - [x] Let the composed headline wrap instead of truncating.
     - [x] Add the tests from (AC12).
-11. [ ] Land the provider opt-ins. Mark each one here as it lands. The branch merges only after all four:
-    - [ ] Claude Code five-hour and weekly windows (providers 17)
-    - [ ] Codex windows and credits row (providers 18)
-    - [ ] DeepSeek total balance (providers 19)
+11. [ ] Land the provider opt-ins, each on its own. Mark each one here as it lands:
+    - [x] Claude Code five-hour and weekly windows (providers 17), #76
+    - [x] Codex windows and credits row (providers 18), #78. The window descriptors stay open in (providers 18) until the weekly evidence confirms them.
+    - [x] DeepSeek total balance (providers 19), #79
     - [ ] OpenCode Go weekly and monthly windows (providers 20)
 12. [x] Learning starts with consumption (AC14), from the manual check of 2026-10-12 with Codex credits (providers 18). A flat credits row showed "Learning your usage rate…" with nothing to learn.
     - [x] Record the time of the first consumption after each baseline in `AllowanceHistory`. Without it and without a rate, the state is insufficient. With it, learning lasts the maximum horizon from that time.

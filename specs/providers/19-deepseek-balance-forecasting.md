@@ -4,7 +4,7 @@ Opt DeepSeek's per-currency total balance into balance forecasting (core 12).
 
 ## Context
 
-- Status: implemented on `feat/allowance-depletion-deepseek` (Evidence below). Depends on (core 12) and (core 13), both on `main`.
+- Status: implemented and on `main` (#79) (Evidence below). Depends on (core 12) and (core 13).
 - `Sources/Providers/DeepSeek/DeepSeekProvider.swift` — emits `total-balance-<currency>` metrics plus typed balance lines (core 13). Zero, negative, and repeated amounts get no line. Before this spec, lines had no IDs and the quota named no headline line, so the app never replaced the provider's headline.
 - Charges deduct granted credits first, then topped-up credits. Only `total_balance` reflects net consumption (providers 04).
 - Each refresh is a live HTTPS request with no source timestamp. Before this spec, freshness was `.unknown`.
