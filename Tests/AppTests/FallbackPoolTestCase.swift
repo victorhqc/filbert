@@ -14,10 +14,19 @@ class FallbackPoolTestCase: XCTestCase {
         weekly: Double = 66,
         credits: Decimal?,
         declaresFallback: Bool = true,
-        freshness: ProviderActivityFreshness = .fresh,
         isStale: Bool = false
     ) -> ProviderQuota {
-        var lines = [
+        let balance = credits.map { UsageBalance(amount: .finite($0), unit: .credits) }
+        return quota(
+            fiveHour: fiveHour,
+            weekly: weekly,
+            creditsLine: balance.map { creditsLine(balance: $0, declaresFallback: declaresFallback) },
+            isStale: isStale
+        )
+    }
+
+    func quota(fiveHour: Double, weekly: Double = 66, creditsLine: UsageLine?, isStale: Bool = false) -> ProviderQuota {
+        let lines = [
             UsageLine(
                 label: "5-hour window",
                 percentage: fiveHour,
@@ -26,15 +35,7 @@ class FallbackPoolTestCase: XCTestCase {
                 limitGroup: "subscription"
             ),
             UsageLine(label: "Weekly", percentage: weekly, id: "weekly", limitGroup: "subscription"),
-        ]
-        if let credits {
-            lines.append(UsageLine(
-                label: "Credits",
-                balance: UsageBalance(amount: .finite(credits), unit: .credits),
-                id: "credits",
-                fallbackForLimitGroup: declaresFallback ? "subscription" : nil
-            ))
-        }
+        ] + [creditsLine].compactMap(\.self)
         return ProviderQuota(
             providerId: providerId,
             providerName: "OpenAI Codex",
@@ -42,8 +43,21 @@ class FallbackPoolTestCase: XCTestCase {
             lines: lines,
             lastUpdated: now,
             isStale: isStale,
-            activityObservation: ProviderActivityObservation(freshness: freshness),
             headlineUsageLineId: "five-hour"
+        )
+    }
+
+    func creditsLine(
+        balance: UsageBalance?,
+        details: [UsageDetail]? = nil,
+        declaresFallback: Bool = true
+    ) -> UsageLine {
+        UsageLine(
+            label: "Credits",
+            balance: balance,
+            details: details,
+            id: "credits",
+            fallbackForLimitGroup: declaresFallback ? "subscription" : nil
         )
     }
 

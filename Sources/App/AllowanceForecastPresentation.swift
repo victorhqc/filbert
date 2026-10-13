@@ -55,12 +55,8 @@ struct AllowanceForecastPresentation: Equatable {
     /// Keyed by usage line ID.
     let rowLines: [String: Line]
 
-    init(
-        quota: ProviderQuota,
-        forecasts: [String: AllowanceForecast],
-        now: Date,
-        fallbackPool: FallbackPoolLayout? = nil
-    ) {
+    init(quota: ProviderQuota, forecasts: [String: AllowanceForecast], now: Date) {
+        let fallbackPool = FallbackPoolLayout(lines: quota.lines)
         let headlineLine = fallbackPool?.pool
             ?? quota.headlineUsageLineId.flatMap { id in quota.lines.first { $0.id == id } }
         let headline = if let fallbackPool {

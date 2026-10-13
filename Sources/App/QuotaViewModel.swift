@@ -82,7 +82,6 @@ final class QuotaViewModel {
     // MARK: - Allowance forecasting
 
     var allowanceForecaster = AllowanceForecaster()
-    var fallbackPoolTracker = FallbackPoolTracker()
 
     var systemClockObserverToken: NSObjectProtocol?
 

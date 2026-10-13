@@ -14,7 +14,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
 - `Sources/Core/AutoRefreshPreferences.swift` — the slow interval ranges from 1 to 60 minutes. Smart refresh polls faster during detected activity (core 08, core 11).
 - `Sources/App/BudgetPace.swift` — sustainable daily and weekly allowances remain distinct from depletion forecasts (ui 18, ui 19, ui 22).
 - `Sources/App/QuotaView.swift` — renders the provider's headline (`ProviderQuota.headline`) above the rows. An estimate, a beyond-reset forecast, or a reached limit replaces its reset countdown (AC9).
-- Related: (ui 28) promotes a fallback credit or money pool once its limit group runs out and the pool starts to decrease. It reuses this spec's line IDs, limit groups, and forecasts.
+- Related: (ui 28) promotes a fallback credit or money pool while its limit group is exhausted and the pool has a balance above 0. It reuses this spec's line IDs, limit groups, and forecasts.
 - `Sources/App/UsageLineRow.swift` — renders one small forecast line inside its matching row without replacing usage, reset, or pace information.
 - `Sources/App/Resources/Localizable.xcstrings` — forecast text and accessibility descriptions.
 - `Tests/CoreTests/`, `Tests/AppTests/` — engine, lifecycle, and presentation tests.
@@ -392,7 +392,7 @@ resets in 2h 10m                      Weekly                 100% used
                                       resets in 2d 4h
 ```
 
-The other weak-state lines take the learning line's place: "No recent consumption detected", "Updates too far apart to estimate", and "Forecast paused until fresh data arrives". When a limit group runs out and usage continues from a fallback pool, (ui 28) proposes to show that pool; it predates (AC15) and needs review against it.
+The other weak-state lines take the learning line's place: "No recent consumption detected", "Updates too far apart to estimate", and "Forecast paused until fresh data arrives". When a limit group runs out and its fallback pool has a balance, (ui 28) shows that pool on top; the pool is then the headline line (AC15).
 
 ### Policy values
 

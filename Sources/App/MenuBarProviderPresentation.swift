@@ -12,8 +12,7 @@ enum MenuBarProviderPresentation {
     static func resolve(
         providerInfo: ProviderInfo?,
         providerState: ProviderState?,
-        isFastRefreshActive: Bool,
-        promotedPoolIds: Set<String> = []
+        isFastRefreshActive: Bool
     ) -> Resolved? {
         guard let providerInfo,
               case let .loaded(quota) = providerState
@@ -21,7 +20,7 @@ enum MenuBarProviderPresentation {
             return nil
         }
 
-        let status = QuotaStatusResolver.resolve(for: quota, promotedPoolIds: promotedPoolIds)
+        let status = QuotaStatusResolver.resolve(for: quota)
         guard status != .fallback else { return nil }
 
         return Resolved(

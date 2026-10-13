@@ -3,7 +3,6 @@ import SwiftUI
 
 struct CompactProviderStatus: View {
     let quota: ProviderQuota
-    var promotedPoolIds: Set<String> = []
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 
@@ -15,8 +14,8 @@ struct CompactProviderStatus: View {
 
     @ViewBuilder
     private func compactStatus(at now: Date) -> some View {
-        let status = QuotaStatusResolver.resolve(for: quota, promotedPoolIds: promotedPoolIds)
-        let tier = QuotaStatusResolver.compactTier(for: quota, promotedPoolIds: promotedPoolIds, at: now)
+        let status = QuotaStatusResolver.resolve(for: quota)
+        let tier = QuotaStatusResolver.compactTier(for: quota, at: now)
         switch status {
         case let .window(percentage):
             if let tier {

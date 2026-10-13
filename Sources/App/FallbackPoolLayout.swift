@@ -7,10 +7,9 @@ struct FallbackPoolLayout {
     let exhaustedLines: [UsageLine]
     let otherLines: [UsageLine]
 
-    init?(lines: [UsageLine], promotedPoolIds: Set<String>) {
-        guard let pool = lines.first(where: { $0.id.map(promotedPoolIds.contains) ?? false }),
-              let group = pool.fallbackForLimitGroup,
-              Self.isExhausted(group, in: lines)
+    init?(lines: [UsageLine]) {
+        guard let pool = lines.first(where: { Self.canBack($0, in: lines) }),
+              let group = pool.fallbackForLimitGroup
         else {
             return nil
         }
@@ -19,8 +18,17 @@ struct FallbackPoolLayout {
         otherLines = lines.filter { $0.id != pool.id && !Self.isAtLimit($0, in: group) }
     }
 
-    static func isExhausted(_ group: String, in lines: [UsageLine]) -> Bool {
-        lines.contains { isAtLimit($0, in: group) }
+    private static func canBack(_ pool: UsageLine, in lines: [UsageLine]) -> Bool {
+        guard let group = pool.fallbackForLimitGroup, hasBalance(pool) else { return false }
+        return lines.contains { isAtLimit($0, in: group) }
+    }
+
+    private static func hasBalance(_ pool: UsageLine) -> Bool {
+        switch pool.balance?.amount {
+        case let .finite(amount)?: amount > 0
+        case .unlimited?: true
+        case nil: false
+        }
     }
 
     /// The pool row, with one small line per exhausted limit.

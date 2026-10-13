@@ -56,8 +56,7 @@ struct MenuBarStatusIcon: View {
         return MenuBarProviderPresentation.resolve(
             providerInfo: viewModel.providerInfo(for: providerId),
             providerState: viewModel.providerStates[providerId],
-            isFastRefreshActive: viewModel.isFastAutomaticRefreshActive(for: providerId),
-            promotedPoolIds: viewModel.promotedFallbackPoolIds(for: providerId)
+            isFastRefreshActive: viewModel.isFastAutomaticRefreshActive(for: providerId)
         )
     }
 

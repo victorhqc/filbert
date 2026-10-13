@@ -19,9 +19,8 @@ enum QuotaStatusResolver {
         case fallback
     }
 
-    static func resolve(for quota: ProviderQuota, promotedPoolIds: Set<String> = []) -> Status {
-        let layout = FallbackPoolLayout(lines: quota.lines, promotedPoolIds: promotedPoolIds)
-        if let status = layout.flatMap({ poolStatus(of: $0.pool) }) {
+    static func resolve(for quota: ProviderQuota) -> Status {
+        if let status = FallbackPoolLayout(lines: quota.lines).flatMap({ poolStatus(of: $0.pool) }) {
             return status
         }
 
@@ -85,8 +84,8 @@ enum QuotaStatusResolver {
         }
     }
 
-    static func compactTier(for quota: ProviderQuota, promotedPoolIds: Set<String> = [], at now: Date) -> Tier? {
-        let status = resolve(for: quota, promotedPoolIds: promotedPoolIds)
+    static func compactTier(for quota: ProviderQuota, at now: Date) -> Tier? {
+        let status = resolve(for: quota)
         guard case .window = status,
               let line = firstPercentageLine(in: quota.lines),
               let pace = BudgetPace(line: line, now: now)

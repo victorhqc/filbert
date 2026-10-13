@@ -88,7 +88,7 @@ struct QuotaView: View {
                 viewModel: viewModel,
                 providerId: providerId,
                 quota: quota,
-                lines: rowLines(for: quota, providerId: providerId),
+                lines: rowLines(for: quota),
                 headlineColor: headlineBalanceColor(for: quota)
             )
 
@@ -156,8 +156,7 @@ struct QuotaView: View {
             return headerAccessibilityLabel(headerLabel, fastRefreshStatus: fastRefreshStatus)
         }
 
-        let promotedPoolIds = viewModel.promotedFallbackPoolIds(for: info.id)
-        switch QuotaStatusResolver.resolve(for: quota, promotedPoolIds: promotedPoolIds) {
+        switch QuotaStatusResolver.resolve(for: quota) {
         case let .window(percentage):
             headerLabel = String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
         case let .balance(_, formattedAmount):
@@ -231,8 +230,8 @@ struct QuotaView: View {
 
     // MARK: - Helpers
 
-    private func rowLines(for quota: ProviderQuota, providerId: String) -> [UsageLine] {
-        guard let layout = viewModel.fallbackPoolLayout(for: quota, providerId: providerId) else {
+    private func rowLines(for quota: ProviderQuota) -> [UsageLine] {
+        guard let layout = FallbackPoolLayout(lines: quota.lines) else {
             return visibleUsageLines(quota.lines)
         }
         return [layout.poolLine()] + visibleUsageLines(layout.otherLines)
@@ -356,7 +355,7 @@ private extension QuotaView {
             Spacer(minLength: 4)
 
             if collapsed, case let .loaded(quota) = state {
-                CompactProviderStatus(quota: quota, promotedPoolIds: viewModel.promotedFallbackPoolIds(for: info.id))
+                CompactProviderStatus(quota: quota)
             }
 
             Image(systemName: "chevron.right")
