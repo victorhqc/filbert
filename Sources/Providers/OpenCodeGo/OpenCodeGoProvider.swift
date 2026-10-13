@@ -56,17 +56,17 @@ extension OpenCodeGoError: LocalizedError {
     }
 }
 
-private struct OpenCodeGoUsageResponse: Decodable {
+struct OpenCodeGoUsageResponse: Decodable {
     let usage: OpenCodeGoUsage
 }
 
-private struct OpenCodeGoUsage: Decodable {
+struct OpenCodeGoUsage: Decodable {
     let rolling: OpenCodeGoUsageWindow
     let weekly: OpenCodeGoUsageWindow
     let monthly: OpenCodeGoUsageWindow
 }
 
-private struct OpenCodeGoUsageWindow: Decodable {
+struct OpenCodeGoUsageWindow: Decodable {
     let status: String
     let percent: Double
     let resetsAt: Date
@@ -153,72 +153,7 @@ public struct OpenCodeGoProvider: AIProvider {
         let (data, response) = try await response(for: request)
         try await validate(response)
         let usage = try decode(data)
-        return map(usage)
-    }
-
-    private func map(_ response: OpenCodeGoUsageResponse) -> ProviderQuota {
-        let windows = [
-            (
-                id: "rolling-window-usage",
-                label: String(localized: "5-hour window"),
-                duration: UsageWindowDuration.fiveHours,
-                usage: response.usage.rolling
-            ),
-            (
-                id: "weekly-window-usage",
-                label: String(localized: "Weekly"),
-                duration: UsageWindowDuration.week,
-                usage: response.usage.weekly
-            ),
-            (
-                id: "monthly-window-usage",
-                label: String(localized: "Monthly"),
-                duration: UsageWindowDuration.month,
-                usage: response.usage.monthly
-            ),
-        ]
-
-        return ProviderQuota(
-            providerId: Self.providerId,
-            providerName: Self.providerName,
-            headline: String(localized: "OpenCode Go usage"),
-            lines: windows.map { window in
-                UsageLine(
-                    label: window.label,
-                    percentage: window.usage.percent,
-                    resetDate: window.usage.resetsAt,
-                    windowDuration: window.duration,
-                    details: details(for: window.usage.status)
-                )
-            },
-            lastUpdated: Date(),
-            activityObservation: ProviderActivityObservation(
-                metrics: windows.map { window in
-                    ProviderActivityMetric(
-                        id: window.id,
-                        kind: .usage,
-                        value: .number(Decimal(window.usage.percent))
-                    )
-                }
-            )
-        )
-    }
-
-    private func details(for status: String) -> [UsageDetail]? {
-        switch status {
-        case "ok":
-            nil
-        case "rate-limited":
-            [UsageDetail(
-                label: String(localized: "Status"),
-                value: String(localized: "Rate limited")
-            )]
-        default:
-            [UsageDetail(
-                label: String(localized: "Status"),
-                value: String(localized: "Unknown status")
-            )]
-        }
+        return map(usage, receivedAt: Date())
     }
 
     private func apiKey(from auth: ProviderAuth) throws -> String {
@@ -299,7 +234,7 @@ public struct OpenCodeGoProvider: AIProvider {
         }
     }
 
-    private static var decoder: JSONDecoder {
+    static var decoder: JSONDecoder {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .custom { decoder in
             let container = try decoder.singleValueContainer()

@@ -66,11 +66,10 @@ final class OpenCodeGoProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
         XCTAssertEqual(quota.lines[2].windowDuration, UsageWindowDuration.month)
         XCTAssertTrue(quota.lines.allSatisfy { $0.used == nil && $0.total == nil && $0.unit == nil })
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "rolling-window-usage", kind: .usage, value: .number(2)),
-            ProviderActivityMetric(id: "weekly-window-usage", kind: .usage, value: .number(1)),
-            ProviderActivityMetric(id: "monthly-window-usage", kind: .usage, value: .number(0)),
-        ])
+        let metrics = try XCTUnwrap(quota.activityObservation?.metrics)
+        XCTAssertEqual(metrics.map(\.id), ["rolling-window-usage", "weekly-window-usage", "monthly-window-usage"])
+        XCTAssertEqual(metrics.map(\.kind), [.usage, .usage, .usage])
+        XCTAssertEqual(metrics.map(\.value), [.number(2), .number(1), .number(0)])
     }
 
     func testFetchQuota_surfacesRateLimitedWindowStatus() async throws {
