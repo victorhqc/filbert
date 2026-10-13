@@ -9,17 +9,20 @@ final class CursorObservationTests: XCTestCase {
         let baseline = provider.activityObservation(
             plan: Self.plan(includedSpendCents: 1000),
             onDemand: nil,
-            spendLimitUsage: nil
+            spendLimitUsage: nil,
+            includedUsageForecast: nil
         )
         let advanced = provider.activityObservation(
             plan: Self.plan(includedSpendCents: 1001),
             onDemand: nil,
-            spendLimitUsage: nil
+            spendLimitUsage: nil,
+            includedUsageForecast: nil
         )
 
         XCTAssertNotEqual(baseline, advanced)
         XCTAssertEqual(advanced.metrics, [
             ProviderActivityMetric(id: "included-usage", kind: .usage, value: .number(Decimal(1001) / 100)),
+            ProviderActivityMetric(id: "included-usage-percent", kind: .usage, value: .number(Decimal(0.1))),
         ])
     }
 

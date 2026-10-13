@@ -4,7 +4,7 @@ Opt z.ai's weekly window into allowance forecasting (core 12), and leave the fiv
 
 ## Context
 
-- Status: implemented ahead of the live evidence. Plan step 1 stays open until a capture confirms the weekly window. Depends on (core 12), which is on `main`.
+- Status: implemented and on `main` (#82), ahead of the live evidence. Plan step 1 stays open until a capture confirms the weekly window. Depends on (core 12), which is on `main`.
 - `Sources/Providers/ZAI/ZAIProvider.swift` — maps the five-hour, weekly, and monthly web-tool limits (providers 01, providers 11).
   - Metrics `five-hour-usage`, `weekly-usage`, and `monthly-web-tool-usage` carry the percentage.
   - `<id>-absolute` carries `currentValue` when the response sends it.

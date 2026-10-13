@@ -52,13 +52,17 @@ final class CursorProviderTests: XCTestCase {
     func testFetchQuota_mapsSemanticUsageAndCreditsIntoActivityObservation() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
+        let metrics = try XCTUnwrap(quota.activityObservation?.metrics)
         XCTAssertNil(quota.activityObservation?.availability)
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "included-usage", kind: .usage, value: .number(50)),
-            ProviderActivityMetric(id: "on-demand-spend", kind: .usage, value: .number(15)),
-            ProviderActivityMetric(id: "spend-limit-usage", kind: .usage, value: .number(5)),
-            ProviderActivityMetric(id: "bonus-credits", kind: .credits, value: .number(20)),
+        XCTAssertEqual(metrics.map(\.id), [
+            "included-usage",
+            "included-usage-percent",
+            "on-demand-spend",
+            "spend-limit-usage",
+            "bonus-credits",
         ])
+        XCTAssertEqual(metrics.map(\.kind), [.usage, .usage, .usage, .usage, .credits])
+        XCTAssertEqual(metrics.map(\.value), [.number(50), .number(42.5), .number(15), .number(5), .number(20)])
     }
 
     func testFetchQuota_addsBonusCreditsLineWhenPresent() async throws {
@@ -322,5 +326,14 @@ extension CursorProviderTests {
             XCTAssertFalse(Task.isCancelled)
         }
         XCTAssertNil(errorLog.availableFileURL)
+    }
+
+    func testFetchQuota_usesOneReceiptTimeForTheQuotaAndTheForecast() async throws {
+        let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
+
+        let metric = quota.activityObservation?.metrics.first { $0.id == CursorProvider.includedUsagePercentMetricId }
+        let descriptor = try XCTUnwrap(metric?.forecastDescriptor)
+        XCTAssertEqual(descriptor.timing, .receipt(quota.lastUpdated))
+        XCTAssertEqual(quota.activityObservation?.freshness, .fresh)
     }
 }

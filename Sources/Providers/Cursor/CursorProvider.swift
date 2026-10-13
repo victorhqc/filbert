@@ -110,6 +110,7 @@ public struct CursorProvider: AIProvider {
         request.httpBody = Data("{}".utf8)
 
         let (data, response) = try await response(for: request)
+        let receivedAt = Date()
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw CursorError.network(URLError(.badServerResponse))
@@ -132,7 +133,7 @@ public struct CursorProvider: AIProvider {
             throw CursorError.decoding(error)
         }
 
-        return map(usageResponse)
+        return map(usageResponse, receivedAt: receivedAt)
     }
 
     private func loadCredentialsForRequest() throws -> CursorTokenPair {
@@ -162,7 +163,7 @@ public struct CursorProvider: AIProvider {
 
     // MARK: - Mapping
 
-    func map(_ response: CursorUsageResponse) -> ProviderQuota {
+    func map(_ response: CursorUsageResponse, receivedAt: Date) -> ProviderQuota {
         let resetDate = Self.dateFromMsString(response.billingCycleEnd)
         let plan = normalizedPlan(from: response)
         let onDemand = normalizedOnDemand(from: response)
@@ -194,11 +195,12 @@ public struct CursorProvider: AIProvider {
             providerName: Self.providerName,
             headline: headline,
             lines: lines,
-            lastUpdated: Date(),
+            lastUpdated: receivedAt,
             activityObservation: activityObservation(
                 plan: plan,
                 onDemand: onDemand,
-                spendLimitUsage: response.spendLimitUsage
+                spendLimitUsage: response.spendLimitUsage,
+                includedUsageForecast: includedUsageForecast(for: response, receivedAt: receivedAt)
             )
         )
     }
@@ -229,7 +231,8 @@ public struct CursorProvider: AIProvider {
             percentage: plan.totalPercentUsed,
             unit: "USD",
             resetDate: resetDate,
-            details: details.isEmpty ? nil : details
+            details: details.isEmpty ? nil : details,
+            id: Self.includedUsageLineId
         ))
 
         if let bonus = plan.bonusSpend, bonus > 0 {
@@ -300,8 +303,8 @@ public struct CursorProvider: AIProvider {
 
 // MARK: - Helpers
 
-private extension CursorProvider {
-    static func currencyFormatter() -> NumberFormatter {
+extension CursorProvider {
+    private static func currencyFormatter() -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
         formatter.currencyCode = "USD"
