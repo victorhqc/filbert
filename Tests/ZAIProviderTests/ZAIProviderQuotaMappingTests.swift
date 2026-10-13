@@ -57,12 +57,15 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
 
         let quota = try await fetchQuota()
 
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "five-hour-usage", kind: .usage, value: .number(13)),
-            ProviderActivityMetric(id: "weekly-usage", kind: .usage, value: .number(16)),
-            ProviderActivityMetric(id: "monthly-web-tool-usage", kind: .usage, value: .number(0)),
-            ProviderActivityMetric(id: "monthly-web-tool-usage-absolute", kind: .usage, value: .number(0)),
+        let metrics = try XCTUnwrap(quota.activityObservation?.metrics)
+        XCTAssertEqual(metrics.map(\.id), [
+            "five-hour-usage",
+            "weekly-usage",
+            "monthly-web-tool-usage",
+            "monthly-web-tool-usage-absolute",
         ])
+        XCTAssertEqual(metrics.map(\.kind), [.usage, .usage, .usage, .usage])
+        XCTAssertEqual(metrics.map(\.value), [.number(13), .number(16), .number(0), .number(0)])
     }
 
     // MARK: - Credits fixture

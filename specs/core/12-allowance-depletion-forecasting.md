@@ -5,7 +5,8 @@ Estimate how long each supported allowance would last at the user's recent pace,
 ## Context
 
 - Status: implemented and on `main` (#75). Steps 1–8, 10, and 12–14 are done. The manual check in step 9 is still open, and step 11 tracks the provider opt-ins. The manual checks with Claude Code (providers 17) added step 10 (AC13); those with Codex (providers 18) added steps 12 (AC14), 13 (AC15), and 14 (AC16).
-- This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20). Each opt-in lands on its own. A test provider covers the generic contract.
+- This spec owns the contract, the engine, the app wiring, and the UI. Each provider opts in through its own spec: (providers 17, providers 18, providers 19, providers 20, providers 21, providers 22). Each opt-in lands on its own. A test provider covers the generic contract.
+- Gemini CLI does not opt in. Its quota buckets are daily per model, but public sources do not show whether a day is a fixed block or slides (AC2). A bucket that has not been used reports a reset 24 hours after each read, so the reset moves with every refresh. Google also enforces limits that the buckets do not report. Since 2026-06-18, Google serves Gemini CLI only to Standard and Enterprise accounts. Revisit only with captured evidence of a fixed period.
 - Periods of one day or less assume continued recent consumption (AC5). Longer periods use the average pace since the period started, which already includes nights, weekends, and breaks (AC13). Neither models a schedule or idle time.
 - `Sources/Core/ProviderProtocol.swift` — `ProviderActivityMetric` carries numeric values for activity detection (core 09, core 11), but no period, limit, resolution, or per-metric timing. `UsageLine` has no stable ID.
 - `Sources/Core/SmartRefreshPolicy.swift` — discards only `.stale` observations. `.unknown` and `.fresh` count equally as activity evidence.
@@ -343,7 +344,9 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [x] Claude Code five-hour and weekly windows (providers 17), #76
     - [x] Codex windows and credits row (providers 18), #78. The window descriptors stay open in (providers 18) until the weekly evidence confirms them.
     - [x] DeepSeek total balance (providers 19), #79
-    - [ ] OpenCode Go weekly and monthly windows (providers 20)
+    - [x] OpenCode Go weekly and monthly windows (providers 20), #81
+    - [ ] z.ai weekly window (providers 21)
+    - [ ] Cursor included usage (providers 22)
 12. [x] Learning starts with consumption (AC14), from the manual check of 2026-10-12 with Codex credits (providers 18). A flat credits row showed "Learning your usage rate…" with nothing to learn.
     - [x] Record the time of the first consumption after each baseline in `AllowanceHistory`. Without it and without a rate, the state is insufficient. With it, learning lasts the maximum horizon from that time.
     - [x] Update the Core tests that expect learning right after a flat baseline, and add the tests from (AC12).
