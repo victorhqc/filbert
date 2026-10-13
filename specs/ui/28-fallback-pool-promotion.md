@@ -4,7 +4,7 @@ When a provider's limit group runs out while its credit or money pool still has 
 
 ## Context
 
-- Status: partially implemented on `ferat/allowance-depletion-codex`, together with (providers 18). Plan steps 1–6 and 8 are implemented. The manual check in step 7 passed for the cards and the menu-bar amount; the tooltip and the menu-bar ring are open (Implementation findings). Updated on 2026-10-12 with the Codex capture (providers 18). Later on 2026-10-12 the user changed the promotion rule (AC2): a balance above 0 promotes the pool without waiting for a decrease. The user approved the change on 2026-10-13, and Plan step 8 implements it.
+- Status: implemented on `ferat/allowance-depletion-codex`, together with (providers 18). All Plan steps are done; the manual check in step 7 passed on 2026-10-13 with a scripted fake `codex` (Implementation findings). Updated on 2026-10-12 with the Codex capture (providers 18). Later on 2026-10-12 the user changed the promotion rule (AC2): a balance above 0 promotes the pool without waiting for a decrease. The user approved the change on 2026-10-13, and Plan step 8 implements it.
 - Builds on the line IDs, limit groups, and forecasts of (core 12). Codex is the first provider to use it (providers 18).
 - (core 12 AC15) keeps each line's notice with its line: the headline speaks for one line, and a group line at 100% reads "Limit reached" in its row. While a pool is promoted, the pool is that line (AC3). (core 12 AC15) also removed the headline label, which the promoted headline needs again.
 - Codex shows its credits in their own row after the windows (providers 18 AC4). When the windows reach 100%, the card still leads with "100% · Limit reached" while work continues on credits.
@@ -114,7 +114,7 @@ When a provider's limit group runs out while its credit or money pool still has 
 4. [x] Make `QuotaStatusResolver.resolve(for:)` use that resolver, so the collapsed card and the menu bar follow the promoted pool.
 5. [x] Render the promoted layout in `QuotaView` and `UsageLineRow`. Reuse the small detail-line style for exhausted windows. Name the pool in the headline with a labeled value format in all four languages; (core 12 AC15) removed the earlier one.
 6. [x] Declare Codex credits as the candidate fallback for its window group in the Codex provider. (providers 18) adds the credits row with no limit group. This step adds only the declaration, so (providers 18) does not depend on this spec.
-7. [ ] Run the focused tests and the repository validation gate. Manually check the promoted card at normal width, the collapsed card, the menu bar, and VoiceOver.
+7. [x] Run the focused tests and the repository validation gate. Manually check the promoted card at normal width, the collapsed card, the menu bar, and VoiceOver.
 8. [x] Apply the balance rule (AC2, AC5). `FallbackPoolLayout` decides promotion from the displayed lines alone: a declared pool with a balance above 0, or unlimited, while a line of its group is at 100%. Remove `FallbackPoolTracker` and the promoted pool IDs that the view model passes to the status resolver, the collapsed card, and the menu bar. Update the tests for AC2, AC5, and AC8, then repeat the manual check in step 7.
 
 ```
@@ -140,7 +140,8 @@ Credits                   1,159.57
   - A first read at 100% with 799 credits put credits on top at once. The collapsed card and the menu bar showed "796,01".
   - With 3 credits, the card went from 98% to "Credits: 1,09" on top, and the menu bar showed "1,09". At 0,00 the card showed "100% · Limit reached" with the reset countdown, and credits went back to their own row.
   - After the reset time passed, the detail line read "Limit reached · resetting…" until the next read. That read showed 0% and the normal card.
-  - Still to check: the headline tooltip, which carries the VoiceOver text, and the menu-bar ring after the reset and after credits reach 0.
+  - The headline tooltip, which carries the VoiceOver text, read "Credits: 799,00. Using Credits. 5-hour window limit reached, resets in 1 Minute" (AC7).
+  - When credits reached 0, and again after the reset, the menu bar turned from the provider glyph and amount back into the ring (AC5).
 - A rebuild on 2026-10-12 after the Codex session had ended showed the normal layout with "100% · Limit reached" and credits at 744,30. The first read after a launch only sets the baseline (AC2), and the credits no longer fell, so the pool stayed in its row. Under the balance rule (AC2), this case promotes the pool.
 
 ## Risks

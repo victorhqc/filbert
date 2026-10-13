@@ -4,7 +4,7 @@ Opt Codex usage windows and finite credits into allowance forecasting (core 12),
 
 ## Context
 
-- Status: in progress. Plan steps 3–4 are implemented, but the window descriptors stay open until Plan step 2 confirms (AC2). The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12 and runs past the weekly reset on 2026-10-18. Depends on (core 12), which is on `main` with (providers 17). The credits row depends on (core 13). (ui 28) is partially implemented on the same branch and declares the credits row as the fallback for the window group.
+- Status: in progress. Plan steps 3–4 are implemented, but the window descriptors stay open until Plan step 2 confirms (AC2). The upstream source review is recorded (Evidence below). The capture in Plan step 1 started on 2026-10-12 and runs past the weekly reset on 2026-10-18. Depends on (core 12), which is on `main` with (providers 17). The credits row depends on (core 13). (ui 28) is implemented on the same branch and declares the credits row as the fallback for the window group.
 - `Sources/Providers/OpenAICodex/OpenAICodexProvider.swift` — maps the `primary-window-usage`, `secondary-window-usage`, and `credits` metrics with `.unknown` freshness. Sets `lastUpdated` to `Date()` on each mapping. Attaches credits as a detail of the first window row (providers 05 AC7).
 - `Sources/Providers/OpenAICodex/CodexAppServerClient.swift` — starts a new `codex app-server` for each read (providers 05 AC3). Decodes `usedPercent`, `resetsAt`, `windowDurationMins`, and `credits { balance, unlimited }`. It does not decode `hasCredits`.
 - `account/rateLimits/read` sends a live backend request on each call. The response has no measurement timestamp. `usedPercent` is a whole number. `resetsAt` is the absolute reset time from the server (Evidence).
@@ -178,6 +178,6 @@ The capture runs the provider's exchange from a local script and keeps the raw r
 - `codex login` can switch accounts. CLI 0.145.0 sends no `accountId`, and Core has no field for an account change (core 12 AC11). The forecast can span two accounts until a reset re-baselines.
 - A reset credit resets both windows before `resetsAt`. The windows drop to 0% and lose their descriptors (AC3), so their histories restart. This is correct, not a defect.
 - A plan change can change how much one percentage point is worth. A rate can span the change until the next reset.
-- Until (ui 28) lands, a window at 100% shows "Limit reached" in the headline for the five-hour window, or in its row for the weekly window (core 12 AC15), even when work continues on credits.
+- While credits remain, (ui 28) puts them on top when a window reaches 100%. With no credits left, a window at 100% shows "Limit reached" in the headline for the five-hour window, or in its row for the weekly window (core 12 AC15).
 - Credits can stay flat for days. The row then shows no forecast text (core 12 AC14). Learning and an estimate appear only after the windows run out and credits start to move.
 - `codex app-server` is experimental (providers 05). Field names can change between CLI releases.
