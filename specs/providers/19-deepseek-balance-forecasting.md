@@ -4,10 +4,10 @@ Opt DeepSeek's per-currency total balance into balance forecasting (core 12).
 
 ## Context
 
-- Status: draft for review. Depends on (core 12).
-- `Sources/Providers/DeepSeek/DeepSeekProvider.swift` — emits `total-balance-<currency>` metrics plus granted and topped-up lines. The headline finds its line by matching the localized label.
+- Status: implemented on `feat/allowance-depletion-deepseek` (Evidence below). Depends on (core 12) and (core 13), both on `main`.
+- `Sources/Providers/DeepSeek/DeepSeekProvider.swift` — emits `total-balance-<currency>` metrics plus typed balance lines (core 13). Zero, negative, and repeated amounts get no line. Before this spec, lines had no IDs and the quota named no headline line, so the app never replaced the provider's headline.
 - Charges deduct granted credits first, then topped-up credits. Only `total_balance` reflects net consumption (providers 04).
-- Each refresh is a live HTTPS request with no source timestamp. Freshness is `.unknown` today.
+- Each refresh is a live HTTPS request with no source timestamp. Before this spec, freshness was `.unknown`.
 - Peak-hours pricing changes the cost per token (providers 08), so the rate can shift at peak boundaries.
 - `Tests/DeepSeekProviderTests/` — mapping and fixture tests.
 
@@ -53,13 +53,21 @@ Opt DeepSeek's per-currency total balance into balance forecasting (core 12).
 
 ## Plan
 
-1. Record how quickly a known charge appears in `total_balance` and confirm each currency's minor unit.
-2. Add line IDs and switch the headline lookup to IDs.
-3. Add balance descriptors to total-balance metrics only.
-4. Add the fixtures and tests from AC5.
+1. [x] Record how quickly a known charge appears in `total_balance` and confirm each currency's minor unit. The API reference shows two decimals in its example but states no precision or update delay. A local script outside the repository polls `/user/balance` every 30 seconds and keeps only status codes and balance strings. Its `charge` command sends one chat completion and records only its token usage and timing. It reads the key from a dedicated Keychain item on every request. Done on 2026-10-13: a charge appears about three minutes after its request, in one step, and USD balances always have two decimals. CNY relies on the reference example, because the account has no CNY balance.
+2. [x] Add line IDs and switch the headline lookup to IDs. Lines are `total-balance-<currency>`, `granted-balance-<currency>`, and `topped-up-balance-<currency>`, and the headline line is the first currency's total.
+3. [x] Add balance descriptors to total-balance metrics only. Each total carries a balance descriptor in its currency, with resolution 0.01 and receipt timing, and the observation is `.fresh`. An unavailable account, or a currency that appears twice, carries no descriptor.
+4. [x] Add the fixtures and tests from AC5. Mapping tests cover the descriptor, multiple currencies, unavailable accounts, unparseable totals, a repeated currency, steady depletion, top-ups, grants, and the ID-based headline lookup. `deepseek-capture-single-charge.json` replays the captured charge. It shows two decimals throughout and the drop about three minutes after the request. The balance shows nothing while it is flat, "learning" from the drop, an estimate from 10 minutes after the read before the drop, and quiet 15 minutes after the drop (core 12).
+
+### Evidence
+
+**Capture through the user's proxy, one read every 30 seconds, from 2026-10-13 09:08 UTC:**
+
+- The account has one balance, in USD. Every read sends all three amounts with exactly two decimals, `0.00` included.
+- The `charge` command sent one `deepseek-v4-pro` request with 60,097 uncached input tokens and 16 output tokens. It finished at 09:10:05. The total read 12.93 through 09:13:01 and 12.85 from 09:13:31. The charge appeared between 2 min 56 s and 3 min 26 s after the request finished, as one step of 0.08.
 
 ## Risks
 
 - Granted credits that expire reduce the total exactly like spend. The forecast cannot tell them apart.
 - A peak-hours boundary changes the rate immediately. The recent segment needs time to reflect it.
 - A top-up and spend within one interval can cancel out and hide consumption.
+- A charge reaches the balance about three minutes after its request. Receipt timing places it at the read that shows it, so the forecast trails real use by about three minutes. That is within the few minutes (AC2) allows.

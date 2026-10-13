@@ -118,7 +118,8 @@ let package = Package(
         .testTarget(
             name: "DeepSeekProviderTests",
             dependencies: ["DeepSeekProvider"],
-            path: "Tests/DeepSeekProviderTests"
+            path: "Tests/DeepSeekProviderTests",
+            resources: [.process("Fixtures")]
         ),
         .testTarget(
             name: "OpenAICodexProviderTests",

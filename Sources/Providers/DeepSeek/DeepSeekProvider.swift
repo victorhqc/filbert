@@ -43,7 +43,7 @@ extension DeepSeekError: LocalizedError {
 
 // MARK: - Wire types (private to this module)
 
-private struct DeepSeekBalanceResponse: Decodable {
+struct DeepSeekBalanceResponse: Decodable {
     let isAvailable: Bool
     let balanceInfos: [DeepSeekBalanceInfo]
 
@@ -55,7 +55,7 @@ private struct DeepSeekBalanceResponse: Decodable {
 
 /// Wire shape is strings; the model wants numbers, so conversion happens in
 /// the mapping step.
-private struct DeepSeekBalanceInfo: Decodable {
+struct DeepSeekBalanceInfo: Decodable {
     let currency: String
     let totalBalance: String
     let grantedBalance: String
@@ -89,6 +89,8 @@ public struct DeepSeekProvider: AIProvider {
     public static let providerDescription = String(localized: "Monitor prepaid balance")
     /// Host root for DeepSeek requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.deepseek.com")!
+    /// `/user/balance` sends every amount with two decimals.
+    static let balanceResolution = Decimal(sign: .plus, exponent: -2, significand: 1)
     public static let peakHoursConfig = PeakHoursConfig(
         timeZone: DeepSeekPeakHours.timeZone,
         windows: DeepSeekPeakHours.windows,
@@ -151,14 +153,14 @@ public struct DeepSeekProvider: AIProvider {
             throw DeepSeekError.decoding(error)
         }
 
-        return map(balanceResponse)
+        return map(balanceResponse, receivedAt: Date())
     }
 
     // MARK: - Mapping
 
     /// Always emits the balance lines so the user can see what's left even
     /// when the account is marked unavailable.
-    private func map(_ response: DeepSeekBalanceResponse) -> ProviderQuota {
+    func map(_ response: DeepSeekBalanceResponse, receivedAt: Date) -> ProviderQuota {
         let lines = response.balanceInfos.flatMap(balanceLines(for:))
         let headline = computeHeadline(response: response)
 
@@ -167,9 +169,10 @@ public struct DeepSeekProvider: AIProvider {
             providerName: Self.providerName,
             headline: headline,
             lines: lines,
-            lastUpdated: Date(),
-            activityObservation: activityObservation(from: response),
-            peakHoursConfig: Self.peakHoursConfig
+            lastUpdated: receivedAt,
+            activityObservation: activityObservation(from: response, receivedAt: receivedAt),
+            peakHoursConfig: Self.peakHoursConfig,
+            headlineUsageLineId: response.balanceInfos.first.map { BalanceComponent.total.lineId(for: $0) }
         )
     }
 
@@ -177,25 +180,49 @@ public struct DeepSeekProvider: AIProvider {
     /// balances are component allocations: a grant, top-up, or expiry moves
     /// them without any inference usage, so they never count as activity.
     private func activityObservation(
-        from response: DeepSeekBalanceResponse
+        from response: DeepSeekBalanceResponse,
+        receivedAt: Date
     ) -> ProviderActivityObservation {
-        let metrics = response.balanceInfos.compactMap { balanceInfo in
-            activityMetric(
-                id: "total-balance-\(balanceInfo.currency.lowercased())",
-                value: balanceInfo.totalBalance
+        let totalIds = response.balanceInfos.map { BalanceComponent.total.lineId(for: $0) }
+        let metrics = zip(response.balanceInfos, totalIds).compactMap { info, id in
+            totalBalanceMetric(
+                id: id,
+                info: info,
+                // Core rejects two descriptors for one line.
+                isForecast: response.isAvailable && totalIds.filter { $0 == id }.count == 1,
+                receivedAt: receivedAt
             )
         }
+        // Every request reads the live balance. A charge reaches it about three minutes later.
         return ProviderActivityObservation(
             metrics: metrics,
-            availability: response.isAvailable ? .available : .unavailable
+            availability: response.isAvailable ? .available : .unavailable,
+            freshness: .fresh
         )
     }
 
-    private func activityMetric(id: String, value: String) -> ProviderActivityMetric? {
-        guard let value = Self.decimal(from: value) else {
+    private func totalBalanceMetric(
+        id: String,
+        info: DeepSeekBalanceInfo,
+        isForecast: Bool,
+        receivedAt: Date
+    ) -> ProviderActivityMetric? {
+        guard let value = Self.decimal(from: info.totalBalance) else {
             return nil
         }
-        return ProviderActivityMetric(id: id, kind: .credits, value: .number(value))
+        let descriptor = AllowanceForecastDescriptor(
+            accounting: .balance,
+            unit: .currency(info.currency),
+            resolution: Self.balanceResolution,
+            timing: .receipt(receivedAt),
+            usageLineId: id
+        )
+        return ProviderActivityMetric(
+            id: id,
+            kind: .credits,
+            value: .number(value),
+            forecastDescriptor: isForecast ? descriptor : nil
+        )
     }
 
     private enum BalanceComponent: CaseIterable {
@@ -218,6 +245,15 @@ public struct DeepSeekProvider: AIProvider {
             case .toppedUp: info.toppedUpBalance
             }
         }
+
+        func lineId(for info: DeepSeekBalanceInfo) -> String {
+            let component = switch self {
+            case .total: "total-balance"
+            case .granted: "granted-balance"
+            case .toppedUp: "topped-up-balance"
+            }
+            return "\(component)-\(info.currency.lowercased())"
+        }
     }
 
     /// Two equal amounts repeat each other, so only the total stays.
@@ -233,7 +269,8 @@ public struct DeepSeekProvider: AIProvider {
         return shown.map { component, amount in
             UsageLine(
                 label: component.label,
-                balance: UsageBalance(amount: .finite(amount), unit: .currency(info.currency))
+                balance: UsageBalance(amount: .finite(amount), unit: .currency(info.currency)),
+                id: component.lineId(for: info)
             )
         }
     }

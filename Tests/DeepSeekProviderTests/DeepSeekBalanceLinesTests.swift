@@ -39,6 +39,33 @@ final class DeepSeekBalanceLinesTests: XCTestCase {
         ])
     }
 
+    func testEachLineHasAnIdPerCurrencyAndComponent() async throws {
+        let quota = try await fetchQuota([
+            BalanceInfo(currency: "CNY", total: "10.00", granted: "4.00", toppedUp: "6.00"),
+            BalanceInfo(currency: "USD", total: "3.00", granted: "0.00", toppedUp: "3.00"),
+        ])
+
+        XCTAssertEqual(quota.lines.map(\.id), [
+            "total-balance-cny", "granted-balance-cny", "topped-up-balance-cny", "total-balance-usd",
+        ])
+    }
+
+    func testTheHeadlineLineIsTheFirstCurrencysTotal() async throws {
+        let quota = try await fetchQuota([
+            BalanceInfo(currency: "CNY", total: "2.97", granted: "1.00", toppedUp: "1.97"),
+            BalanceInfo(currency: "USD", total: "3.00", granted: "0.00", toppedUp: "3.00"),
+        ])
+
+        let headlineLine = quota.lines.first { $0.id == quota.headlineUsageLineId }
+        XCTAssertEqual(headlineLine?.balance, UsageBalance(amount: .finite(Decimal(297) / 100), unit: .currency("CNY")))
+    }
+
+    func testThereIsNoHeadlineLineWithoutBalances() async throws {
+        let quota = try await fetchQuota([])
+
+        XCTAssertNil(quota.headlineUsageLineId)
+    }
+
     func testTheHeadlineShowsAZeroTotalWithoutLines() async throws {
         let quota = try await fetchQuota([
             BalanceInfo(currency: "USD", total: "0.00", granted: "0.00", toppedUp: "0.00"),

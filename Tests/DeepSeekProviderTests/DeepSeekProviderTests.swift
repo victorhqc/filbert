@@ -83,10 +83,11 @@ final class DeepSeekProviderTests: XCTestCase {
     func testFetchQuota_tracksOnlyTotalBalanceAsActivity() async throws {
         let quota = try await fetchWithMock(validResponseJSON())
 
+        let metrics = try XCTUnwrap(quota.activityObservation?.metrics)
         XCTAssertEqual(quota.activityObservation?.availability, .available)
-        XCTAssertEqual(quota.activityObservation?.metrics, [
-            ProviderActivityMetric(id: "total-balance-cny", kind: .credits, value: .number(110)),
-        ])
+        XCTAssertEqual(metrics.map(\.id), ["total-balance-cny"])
+        XCTAssertEqual(metrics.map(\.kind), [.credits])
+        XCTAssertEqual(metrics.map(\.value), [.number(110)])
     }
 
     func testFetchQuota_reallocationKeepsTheSameActivityMetrics() async throws {
@@ -107,7 +108,15 @@ final class DeepSeekProviderTests: XCTestCase {
         """.utf8)
         let afterReallocation = try await fetchWithMock(reallocated)
 
-        XCTAssertEqual(original.activityObservation?.metrics, afterReallocation.activityObservation?.metrics)
+        var policy = SmartRefreshPolicy()
+        policy.recordSuccess(original, for: DeepSeekProvider.providerId, at: 0, quietWindow: 300)
+        let decision = policy.recordSuccess(
+            afterReallocation,
+            for: DeepSeekProvider.providerId,
+            at: 30,
+            quietWindow: 300
+        )
+        XCTAssertEqual(decision.classification, .unchanged)
     }
 
     func testFetchQuota_supportsUSDCurrency() async throws {
