@@ -345,7 +345,7 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [x] Codex windows and credits row (providers 18), #78. The window descriptors stay open in (providers 18) until the weekly evidence confirms them.
     - [x] DeepSeek total balance (providers 19), #79
     - [x] OpenCode Go weekly and monthly windows (providers 20), #81
-    - [ ] z.ai weekly window (providers 21)
+    - [x] z.ai weekly window (providers 21), #82. The live capture stays open in (providers 21).
     - [ ] Cursor included usage (providers 22)
 12. [x] Learning starts with consumption (AC14), from the manual check of 2026-10-12 with Codex credits (providers 18). A flat credits row showed "Learning your usage rate…" with nothing to learn.
     - [x] Record the time of the first consumption after each baseline in `AllowanceHistory`. Without it and without a rate, the state is insufficient. With it, learning lasts the maximum horizon from that time.
