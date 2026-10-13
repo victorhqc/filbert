@@ -4,7 +4,7 @@ Give `UsageLine` a typed balance, so the App formats, shows, and ranks a balance
 
 ## Context
 
-- Status: draft for review. (providers 18) needs it for the Codex credits row. (providers 19) and (ui 28) build on it.
+- Status: implemented and on `main` (#78). The manual check in Plan step 6 is still open. (providers 18) uses it for the Codex credits row. (providers 19) and (ui 28) build on it.
 - `Sources/Core/ProviderProtocol.swift` — `UsageLine` has `used`, `total`, `percentage`, and `unit`. The App reads a line without a percentage as a currency balance: `total` is the amount and `unit` is a currency code (core 01, ui 08). No other shape can show a plain number.
 - `Sources/App/FilteredBalanceLines.swift` — hides each line without a percentage unless `total > 0`. When two such amounts are equal, it keeps only the first line (ui 08 AC1). It compares amounts across currencies. A line with only details, e.g. Codex credits without windows, never renders.
 - `Sources/App/QuotaStatusResolver.swift` — `amountText(for:)` formats `total` as currency. `resolve(for:)` reads the first positive `total` without a percentage as the balance status. The collapsed card, the menu bar, and VoiceOver read this status.

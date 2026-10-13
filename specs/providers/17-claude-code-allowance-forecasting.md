@@ -4,7 +4,7 @@ Opt Claude Code's five-hour and weekly windows into allowance forecasting (core 
 
 ## Context
 
-- Status: draft for review. The evidence in Plan step 1 is recorded. Depends on (core 12). (core 12) merges only together with this spec and (providers 18, providers 19, providers 20).
+- Status: implemented and on `main` (#76). The manual check in Plan step 6 is still open. Depends on (core 12).
 - `Sources/Providers/ClaudeCode/ClaudeCodeProvider.swift` — maps the `five-hour-usage` and `weekly-usage` metrics. A window's `written_at` falls back to the cache `written_at`. Freshness expires after one hour (providers 02, providers 06).
 - `Sources/Providers/ClaudeCode/StatuslineCacheStore.swift` — has two writers: the statusline helper during Claude Code sessions (providers 02) and the proactive `/usage` refresh (providers 03, providers 15, providers 16).
 - `Sources/ClaudeCodeStatuslineHelper/main.swift` — replaces the whole cache file on each statusline render. It does not merge with the `/usage` values. Only the `/usage` writer stamps a `written_at` on each window.
