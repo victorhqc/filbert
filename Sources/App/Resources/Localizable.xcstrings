@@ -2717,6 +2717,60 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } }
       }
     },
+    "Downloading Filbert %@…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ wird geladen…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Downloading Filbert %@…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Descargando Filbert %@…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Descargando Filbert %@…" } }
+      }
+    },
+    "Preparing Filbert %@…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ wird vorbereitet…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Preparing Filbert %@…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Preparando Filbert %@…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Preparando Filbert %@…" } }
+      }
+    },
+    "Filbert %@ is ready to install" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ ist bereit zur Installation" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ is ready to install" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } }
+      }
+    },
+    "Installing Filbert %@…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ wird installiert…" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Installing Filbert %@…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Instalando Filbert %@…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Instalando Filbert %@…" } }
+      }
+    },
+    "Restart to Update" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Neu starten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restart to Update" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar" } }
+      }
+    },
+    "Restart and update Filbert to version %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert neu starten und auf Version %@ aktualisieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restart and update Filbert to version %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar y actualizar Filbert a la versión %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar y actualizar Filbert a la versión %@" } }
+      }
+    },
     "Forecast headline format" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -56,23 +56,41 @@ final class UpdateCoordinatorTests: XCTestCase {
 
         coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
 
-        XCTAssertEqual(
-            coordinator.popoverUpdate,
-            PopoverUpdate(availableVersion: "0.14.0", canStartUpdate: false)
-        )
+        XCTAssertEqual(coordinator.popoverUpdate?.phase, .available(version: "0.14.0"))
     }
 
-    func testPopoverUpdateEnablesActionWhenUpdaterCanCheck() {
-        guard let update = PopoverUpdate(availableVersion: "0.14.0", canStartUpdate: true) else {
-            return XCTFail("Expected an available update")
+    func testAvailableUpdateOffersActionOnlyWhenUpdaterCanCheck() {
+        let ready = PopoverUpdate(phase: .available(version: "0.14.0"), canCheckForUpdates: true)
+        let busy = PopoverUpdate(phase: .available(version: "0.14.0"), canCheckForUpdates: false)
+
+        XCTAssertEqual(ready?.action, .update)
+        XCTAssertEqual(ready?.showsProgress, false)
+        XCTAssertNil(busy?.action)
+        XCTAssertEqual(busy?.showsProgress, true)
+    }
+
+    func testBackgroundWorkShowsProgressWithoutAction() {
+        for phase in [
+            UpdatePhase.downloading(version: "0.14.0"),
+            .preparing(version: "0.14.0"),
+            .installing(version: "0.14.0"),
+        ] {
+            let update = PopoverUpdate(phase: phase, canCheckForUpdates: true)
+
+            XCTAssertNil(update?.action, "\(phase)")
+            XCTAssertEqual(update?.showsProgress, true, "\(phase)")
         }
-
-        XCTAssertEqual(update.availableVersion, "0.14.0")
-        XCTAssertTrue(update.canStartUpdate)
     }
 
-    func testPopoverUpdateIsAbsentWithoutAvailableVersion() {
-        XCTAssertNil(PopoverUpdate(availableVersion: nil, canStartUpdate: true))
+    func testReadyUpdateOffersRestartEvenWhileSessionIsHeld() {
+        let update = PopoverUpdate(phase: .readyToInstall(version: "0.14.0"), canCheckForUpdates: false)
+
+        XCTAssertEqual(update?.action, .restartToUpdate)
+        XCTAssertEqual(update?.showsProgress, false)
+    }
+
+    func testPopoverUpdateIsAbsentWithoutPhase() {
+        XCTAssertNil(PopoverUpdate(phase: nil, canCheckForUpdates: true))
     }
 
     func testNoUpdateClearsPopoverAvailability() {
@@ -90,10 +108,85 @@ final class UpdateCoordinatorTests: XCTestCase {
 
         coordinator.recordUpdateCheckResult(.failed)
 
-        XCTAssertEqual(
-            coordinator.popoverUpdate,
-            PopoverUpdate(availableVersion: "0.14.0", canStartUpdate: false)
-        )
+        XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
+    }
+
+    func testSilentDownloadAdvancesThroughPhases() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+
+        coordinator.recordUpdateProgress(.downloadStarted)
+        XCTAssertEqual(coordinator.updatePhase, .downloading(version: "0.14.0"))
+
+        coordinator.recordUpdateProgress(.preparationStarted)
+        XCTAssertEqual(coordinator.updatePhase, .preparing(version: "0.14.0"))
+
+        coordinator.recordReadyToInstall(version: "0.14.0") {}
+        XCTAssertEqual(coordinator.updatePhase, .readyToInstall(version: "0.14.0"))
+    }
+
+    func testProgressWithoutKnownUpdateIsIgnored() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+
+        coordinator.recordUpdateProgress(.downloadStarted)
+
+        XCTAssertNil(coordinator.updatePhase)
+    }
+
+    func testInterruptedDownloadFallsBackToAvailable() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordUpdateProgress(.downloadStarted)
+
+        coordinator.recordUpdateProgress(.interrupted)
+
+        XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
+    }
+
+    func testFailureDuringPreparationFallsBackToAvailable() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordUpdateProgress(.preparationStarted)
+
+        coordinator.recordUpdateCheckResult(.failed)
+
+        XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
+    }
+
+    func testInstallNowInvokesHandlerOnce() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        var installCount = 0
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordReadyToInstall(version: "0.14.0") { installCount += 1 }
+
+        coordinator.installNow()
+        coordinator.installNow()
+
+        XCTAssertEqual(installCount, 1)
+        XCTAssertEqual(coordinator.updatePhase, .installing(version: "0.14.0"))
+    }
+
+    func testInstallNowDoesNothingBeforeUpdateIsReady() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordUpdateProgress(.downloadStarted)
+
+        coordinator.installNow()
+
+        XCTAssertEqual(coordinator.updatePhase, .downloading(version: "0.14.0"))
+    }
+
+    func testInterruptionDiscardsPendingInstallHandler() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        var installCount = 0
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordReadyToInstall(version: "0.14.0") { installCount += 1 }
+
+        coordinator.recordUpdateProgress(.interrupted)
+        coordinator.installNow()
+
+        XCTAssertEqual(installCount, 0)
+        XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
     }
 
     func testConfigurationUsesCanonicalFeedAndFourHourInterval() {
