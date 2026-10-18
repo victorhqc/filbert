@@ -199,7 +199,7 @@ public struct OpenAICodexProvider: AIProvider {
         let usedPercent = shortestWindow?.usedPercent
         let resetsAt = shortestWindow?.resetsAt
         return DisplayText {
-            let percentage = usedPercent.map { String(format: "%.0f%%", $0) }
+            let percentage = usedPercent.map(QuotaFormatting.percentage)
             let countdown = resetsAt.map {
                 QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
             }

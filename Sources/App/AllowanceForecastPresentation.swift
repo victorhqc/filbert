@@ -206,7 +206,7 @@ private extension AllowanceForecastPresentation {
 
     static func valueText(for line: UsageLine) -> String? {
         if let percentage = QuotaStatusResolver.percentage(for: line), percentage.isFinite {
-            return String(format: "%.0f%%", percentage)
+            return QuotaFormatting.percentage(percentage)
         }
         return QuotaStatusResolver.amountText(for: line)
     }

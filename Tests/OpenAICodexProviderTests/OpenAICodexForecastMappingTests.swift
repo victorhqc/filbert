@@ -4,6 +4,18 @@ import Foundation
 import XCTest
 
 final class OpenAICodexForecastMappingTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     private let receivedAt = Date(timeIntervalSince1970: 1_791_823_058)
     private var fiveHour: CodexRateLimitWindow {
         window(usedPercent: 12, minutes: 300)

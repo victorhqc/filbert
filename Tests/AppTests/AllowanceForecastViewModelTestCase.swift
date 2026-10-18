@@ -97,6 +97,7 @@ class AllowanceForecastViewModelTestCase: XCTestCase {
     override func setUpWithError() throws {
         try super.setUpWithError()
         DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defaults.removePersistentDomain(forName: suiteName)
         ProviderEnablement.setUserDefaults(defaults)
@@ -111,6 +112,7 @@ class AllowanceForecastViewModelTestCase: XCTestCase {
         ProviderOverrides.setUserDefaults(.standard)
         defaults = nil
         DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         super.tearDown()
     }
 

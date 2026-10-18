@@ -272,7 +272,7 @@ public struct ClaudeCodeProvider: AIProvider {
             }
 
             if let usedPercentage = primary.usedPercentage, usedPercentage.isFinite {
-                let pctString = String(format: "%.0f%%", usedPercentage)
+                let pctString = QuotaFormatting.percentage(usedPercentage)
                 if let countdown {
                     return "\(pctString) · \(countdown)"
                 }

@@ -16,6 +16,10 @@ public enum DisplayLanguage {
         state.setSystemPreferences(preferences)
     }
 
+    public static func setCurrentLocale(_ current: @escaping @Sendable () -> Locale) {
+        state.setCurrentLocale(current)
+    }
+
     static func resolve(
         selectedLanguageCode: String?,
         preferences: [String],
@@ -42,6 +46,7 @@ private final class DisplayLanguageState: @unchecked Sendable {
     private let lock = NSLock()
     private var storedLanguageCode: String?
     private var systemPreferences: @Sendable () -> [String] = { Locale.preferredLanguages }
+    private var currentLocale: @Sendable () -> Locale = { Locale.current }
     private var cache: (key: DisplayLanguageCacheKey, locale: Locale)?
 
     var selectedLanguageCode: String? {
@@ -56,9 +61,16 @@ private final class DisplayLanguageState: @unchecked Sendable {
         }
     }
 
+    func setCurrentLocale(_ current: @escaping @Sendable () -> Locale) {
+        lock.withLock {
+            currentLocale = current
+            cache = nil
+        }
+    }
+
     func locale() -> Locale {
         lock.withLock {
-            let current = Locale.current
+            let current = currentLocale()
             let key = DisplayLanguageCacheKey(
                 selectedLanguageCode: storedLanguageCode,
                 preferences: systemPreferences(),

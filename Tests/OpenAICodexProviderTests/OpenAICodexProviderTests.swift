@@ -8,6 +8,7 @@ final class OpenAICodexProviderTests: XCTestCase {
 
     override func setUpWithError() throws {
         DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         temporaryDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
@@ -15,6 +16,7 @@ final class OpenAICodexProviderTests: XCTestCase {
 
     override func tearDownWithError() throws {
         DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         try FileManager.default.removeItem(at: temporaryDirectory)
     }
 

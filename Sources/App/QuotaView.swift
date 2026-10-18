@@ -190,7 +190,7 @@ struct QuotaView: View {
 
     @ViewBuilder
     private func lastUpdatedLabel(_ quota: ProviderQuota) -> some View {
-        let relative = quota.lastUpdated.formatted(.relative(presentation: .named))
+        let relative = quota.lastUpdated.formatted(.relative(presentation: .named).locale(DisplayLanguage.locale))
         Text(String(displayLocalized: "Last updated: \(relative)", bundle: .module))
             .font(.caption)
             .foregroundColor(.secondary)
@@ -200,7 +200,7 @@ struct QuotaView: View {
 
     @ViewBuilder
     private func staleCacheHint(_ quota: ProviderQuota) -> some View {
-        let relative = quota.lastUpdated.formatted(.relative(presentation: .named))
+        let relative = quota.lastUpdated.formatted(.relative(presentation: .named).locale(DisplayLanguage.locale))
         VStack(alignment: .leading, spacing: 2) {
             Text(String(displayLocalized: "Last updated by \(quota.providerName): \(relative)", bundle: .module))
                 .font(.caption2)

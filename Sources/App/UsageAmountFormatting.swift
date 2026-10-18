@@ -2,7 +2,7 @@ import Core
 import Foundation
 
 enum UsageAmountFormatting {
-    static func string(for balance: UsageBalance, locale: Locale = .current) -> String {
+    static func string(for balance: UsageBalance, locale: Locale = DisplayLanguage.locale) -> String {
         switch (balance.amount, balance.unit) {
         case (.unlimited, _):
             String(displayLocalized: "Unlimited", bundle: .module)
@@ -13,7 +13,7 @@ enum UsageAmountFormatting {
         }
     }
 
-    static func currency(_ amount: NSNumber, code: String, locale: Locale = .current) -> String {
+    static func currency(_ amount: NSNumber, code: String, locale: Locale = DisplayLanguage.locale) -> String {
         let formatter = NumberFormatter()
         formatter.locale = locale
         formatter.numberStyle = .currency

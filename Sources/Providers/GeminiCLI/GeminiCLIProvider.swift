@@ -221,19 +221,19 @@ public struct GeminiCLIProvider: AIProvider {
     }
 
     private func headline(for bucket: GeminiMappedBucket) -> DisplayText {
-        let percentage = String(format: "%.0f%%", (1 - bucket.remainingFraction) * 100)
+        let usedPercentage = (1 - bucket.remainingFraction) * 100
         guard let resetDate = bucket.resetDate else {
             return DisplayText {
                 String.localizedStringWithFormat(
                     String(displayLocalized: "%@ used", bundle: .module),
-                    percentage
+                    QuotaFormatting.percentage(usedPercentage)
                 )
             }
         }
         return DisplayText {
             String.localizedStringWithFormat(
                 String(displayLocalized: "%@ used · %@", bundle: .module),
-                percentage,
+                QuotaFormatting.percentage(usedPercentage),
                 QuotaFormatting.countdown(to: resetDate)
             )
         }

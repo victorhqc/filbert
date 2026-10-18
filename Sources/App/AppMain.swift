@@ -41,6 +41,7 @@ struct AppMain: App {
                 updateCoordinator: updateCoordinator
             )
             .frame(width: 280)
+            .environment(\.locale, DisplayLanguage.locale)
         } label: {
             MenuBarStatusIcon(viewModel: viewModel, sleepPrevention: sleepPrevention)
         }
@@ -53,6 +54,7 @@ struct AppMain: App {
                 sleepPrevention: sleepPrevention,
                 launchAtLogin: launchAtLogin
             )
+            .environment(\.locale, DisplayLanguage.locale)
         }
         .defaultSize(width: 620, height: 520)
         .windowResizability(.contentMinSize)

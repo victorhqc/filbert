@@ -61,8 +61,7 @@ struct MenuBarStatusIcon: View {
     }
 
     private func percentageText(_ percentage: Double) -> String {
-        let rounded = Int(percentage.rounded())
-        return rounded.formatted(.percent.locale(DisplayLanguage.locale))
+        QuotaFormatting.percentage(percentage)
     }
 
     private func statusRow(

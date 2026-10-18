@@ -7,10 +7,12 @@ final class PeakHoursPresentationTests: XCTestCase {
     override func setUp() {
         super.setUp()
         DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
     }
 
     override func tearDown() {
         DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         super.tearDown()
     }
 
@@ -48,10 +50,6 @@ final class PeakHoursPresentationTests: XCTestCase {
     }
 
     func testWeekdayRangeText_disjointDaysAreListed() {
-        let symbols = Calendar(identifier: .gregorian).shortWeekdaySymbols
-        XCTAssertEqual(
-            PeakHoursPresentation.weekdayRangeText(for: [1, 7]),
-            ListFormatter.localizedString(byJoining: [symbols[0], symbols[6]])
-        )
+        XCTAssertEqual(PeakHoursPresentation.weekdayRangeText(for: [1, 7]), "Sun and Sat")
     }
 }

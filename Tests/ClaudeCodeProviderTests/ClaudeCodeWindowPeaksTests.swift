@@ -4,6 +4,18 @@ import Foundation
 import XCTest
 
 final class ClaudeCodeWindowPeaksTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     private let fiveHourReset: TimeInterval = 1_800_000_000
     private let weeklyReset: TimeInterval = 1_800_400_000
 

@@ -9,6 +9,7 @@ final class OpenCodeGoProviderTests: XCTestCase {
     override func setUp() {
         super.setUp()
         DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
         session = URLSession(configuration: configuration)
@@ -17,6 +18,7 @@ final class OpenCodeGoProviderTests: XCTestCase {
 
     override func tearDown() {
         DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         MockURLProtocol.responseData = Data()
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseError = nil

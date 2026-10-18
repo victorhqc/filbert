@@ -75,7 +75,7 @@ struct PeakHoursBlock: View {
 
     private var localWindowLabel: String {
         let formatter = DateFormatter()
-        formatter.locale = .current
+        formatter.locale = DisplayLanguage.locale
         formatter.timeZone = .current
         formatter.dateStyle = .none
         formatter.timeStyle = .short
@@ -93,7 +93,7 @@ struct PeakHoursBlock: View {
                 times
             )
         }
-        let localizedWindows = ListFormatter.localizedString(byJoining: windows)
+        let localizedWindows = windows.formatted(.list(type: .and).locale(DisplayLanguage.locale))
         return String.localizedStringWithFormat(
             String(displayLocalized: "%@ (your time)", bundle: .module),
             localizedWindows
@@ -102,7 +102,7 @@ struct PeakHoursBlock: View {
 
     private func effectiveDateLabel(_ effectiveDate: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = .current
+        formatter.locale = DisplayLanguage.locale
         formatter.timeZone = .current
         formatter.dateStyle = .medium
         formatter.timeStyle = .short

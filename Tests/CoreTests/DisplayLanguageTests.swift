@@ -6,6 +6,7 @@ final class DisplayLanguageTests: XCTestCase {
 
     override func tearDown() {
         DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         DisplayLanguage.setSystemPreferences { Locale.preferredLanguages }
         super.tearDown()
     }
@@ -46,6 +47,8 @@ final class DisplayLanguageTests: XCTestCase {
         XCTAssertEqual(QuotaFormatting.countdown(to: .distantPast), "wird zurückgesetzt…")
 
         DisplayLanguage.selectedLanguageCode = "en"
+
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         XCTAssertEqual(QuotaFormatting.countdown(to: .distantPast), "resetting…")
     }
 

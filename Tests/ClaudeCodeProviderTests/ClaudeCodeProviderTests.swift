@@ -9,6 +9,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
     override func setUp() {
         super.setUp()
         DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         tmpDir = FileManager.default.temporaryDirectory
             .appendingPathComponent("filbert-provider-tests-\(UUID().uuidString)")
         try? FileManager.default.createDirectory(
@@ -25,6 +26,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
         tmpDir = nil
         cacheURL = nil
         DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         super.tearDown()
     }
 

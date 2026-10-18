@@ -24,7 +24,7 @@ struct CompactProviderStatus: View {
                         percentage: percentage,
                         color: ProviderVisualStyle.tierColor(tier, scheme: colorScheme)
                     )
-                    Text(String(format: "%.0f%%", percentage))
+                    Text(QuotaFormatting.percentage(percentage))
                         .font(.caption.monospacedDigit())
                         .foregroundStyle(ProviderVisualStyle.tierColor(tier, scheme: colorScheme))
                 }

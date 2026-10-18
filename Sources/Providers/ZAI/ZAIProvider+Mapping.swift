@@ -164,11 +164,13 @@ extension ZAIProvider {
         let details = limit.usageDetails.map { details in
             details.map { detail in
                 let value = if let usage = detail.usage {
-                    String(format: "%.0f", usage)
+                    DisplayText {
+                        usage.formatted(.number.precision(.fractionLength(0)).locale(DisplayLanguage.locale))
+                    }
                 } else {
-                    "—"
+                    DisplayText(verbatim: "—")
                 }
-                return UsageDetail(label: DisplayText(verbatim: detail.modelCode), value: DisplayText(verbatim: value))
+                return UsageDetail(label: DisplayText(verbatim: detail.modelCode), value: value)
             }
         }
 
@@ -193,11 +195,12 @@ extension ZAIProvider {
         let primary = fiveHourLimit ?? weeklyLimit
 
         if let primary, let pct = primary.percentage {
-            let pctString = String(format: "%.0f%%", pct)
             if let resetDate = primary.resetDate {
-                return DisplayText { "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))" }
+                return DisplayText {
+                    "\(QuotaFormatting.percentage(pct)) · \(QuotaFormatting.countdown(to: resetDate))"
+                }
             }
-            return DisplayText(verbatim: pctString)
+            return DisplayText { QuotaFormatting.percentage(pct) }
         }
 
         return DisplayText { String(displayLocalized: "No data", bundle: .module) }

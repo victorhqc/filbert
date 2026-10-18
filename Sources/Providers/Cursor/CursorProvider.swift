@@ -228,13 +228,13 @@ public struct CursorProvider: AIProvider {
         if let autoPercent = plan.autoPercentUsed {
             details.append(UsageDetail(
                 label: DisplayText { String(displayLocalized: "Auto", bundle: .module) },
-                value: DisplayText(verbatim: String(format: "%.0f%%", autoPercent))
+                value: DisplayText { QuotaFormatting.percentage(autoPercent) }
             ))
         }
         if let apiPercent = plan.apiPercentUsed {
             details.append(UsageDetail(
                 label: DisplayText { String(displayLocalized: "API", bundle: .module) },
-                value: DisplayText(verbatim: String(format: "%.0f%%", apiPercent))
+                value: DisplayText { QuotaFormatting.percentage(apiPercent) }
             ))
         }
 
