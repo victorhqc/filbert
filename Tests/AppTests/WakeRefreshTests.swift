@@ -125,9 +125,7 @@ final class WakeRefreshTests: XCTestCase {
         await wakeSleeper.releaseNext()
         await waitForPendingSleeps(on: wakeSleeper, count: 1)
         await wakeSleeper.releaseNext()
-        for _ in 0 ..< 100 where viewModel.isAwaitingNetworkAfterWake {
-            await Task.yield()
-        }
+        await waitUntil { !viewModel.isAwaitingNetworkAfterWake }
 
         XCTAssertFalse(viewModel.isAwaitingNetworkAfterWake)
         XCTAssertEqual(provider.fetchCallCount, 1)
@@ -152,9 +150,7 @@ final class WakeRefreshTests: XCTestCase {
         viewModel.handleWakeForRefresh()
         await waitForPendingSleeps(on: wakeSleeper, count: 1)
         await wakeSleeper.releaseNext()
-        for _ in 0 ..< 100 where viewModel.isAwaitingNetworkAfterWake {
-            await Task.yield()
-        }
+        await waitUntil { !viewModel.isAwaitingNetworkAfterWake }
         await yieldSeveralTimes()
 
         XCTAssertFalse(viewModel.isAwaitingNetworkAfterWake)

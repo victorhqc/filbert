@@ -239,34 +239,38 @@ actor ControlledSleeper {
     }
 }
 
+@MainActor
 func waitForPendingSleeps(on sleeper: ControlledSleeper, count: Int) async {
-    for _ in 0 ..< 1000 where await sleeper.pendingCount() < count {
-        await Task.yield()
-    }
+    await waitUntil { await sleeper.pendingCount() >= count }
     let pending = await sleeper.pendingCount()
     XCTAssertGreaterThanOrEqual(pending, count)
 }
 
+/// Bounded by time, not by a yield count, so a slow scheduler cannot end the
+/// wait before the awaited work has had a chance to run.
 @MainActor
-func waitForFetches(on provider: RefreshSpyProvider, count: Int) async {
-    for _ in 0 ..< 100 where provider.fetchCallCount < count {
+func waitUntil(timeout: Duration = .seconds(5), _ condition: () async -> Bool) async {
+    let deadline = ContinuousClock.now + timeout
+    while await !condition(), ContinuousClock.now < deadline {
         await Task.yield()
     }
+}
+
+@MainActor
+func waitForFetches(on provider: RefreshSpyProvider, count: Int) async {
+    await waitUntil { provider.fetchCallCount >= count }
     XCTAssertGreaterThanOrEqual(provider.fetchCallCount, count)
 }
 
 @MainActor
 func waitForFetchCompletion(on viewModel: QuotaViewModel, providerId: String) async {
-    for _ in 0 ..< 100 where viewModel.fetchTasks[providerId] != nil {
-        await Task.yield()
-    }
+    await waitUntil { viewModel.fetchTasks[providerId] == nil }
     XCTAssertNil(viewModel.fetchTasks[providerId])
 }
 
+@MainActor
 func waitForIntervals(on recorder: IntervalRecorder, count: Int) async {
-    for _ in 0 ..< 1000 where await recorder.intervals().count < count {
-        await Task.yield()
-    }
+    await waitUntil { await recorder.intervals().count >= count }
     let intervals = await recorder.intervals()
     XCTAssertGreaterThanOrEqual(intervals.count, count)
 }

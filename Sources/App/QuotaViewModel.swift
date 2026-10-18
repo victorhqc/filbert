@@ -26,7 +26,7 @@ final class SatisfiedNetworkPath: NetworkPathObserving {
     let status = NetworkPathStatus.satisfied
 
     func statusChanges() -> AsyncStream<NetworkPathStatus> {
-        AsyncStream { _ in }
+        AsyncStream { $0.finish() }
     }
 }
 

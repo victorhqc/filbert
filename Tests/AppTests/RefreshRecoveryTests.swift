@@ -121,9 +121,7 @@ final class RefreshRecoveryTests: XCTestCase {
         let revision = viewModel.retryGateRevision
         clock.advance(by: 120)
         await expirySleeper.releaseNext()
-        for _ in 0 ..< 100 where viewModel.retryGateRevision == revision {
-            await Task.yield()
-        }
+        await waitUntil { viewModel.retryGateRevision != revision }
         XCTAssertGreaterThan(viewModel.retryGateRevision, revision)
         XCTAssertNil(viewModel.manualRefreshWaitRemaining(for: providerId))
 
