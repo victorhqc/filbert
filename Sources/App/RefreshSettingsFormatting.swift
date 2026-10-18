@@ -7,9 +7,5 @@ func refreshDurationText(_ interval: TimeInterval) -> String {
         return String(displayLocalized: "\(seconds) seconds", bundle: .module)
     }
 
-    let minutes = seconds / 60
-    if minutes == 1 {
-        return String(displayLocalized: "1 minute", bundle: .module)
-    }
-    return String(displayLocalized: "\(minutes) minutes", bundle: .module)
+    return String(displayLocalized: "\(seconds / 60) minutes", bundle: .module)
 }

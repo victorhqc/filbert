@@ -29,7 +29,8 @@ Record new terms here with the source. **⚠︎** marks a term that no source ha
 - The " · " separator stays as is in every language.
 - Chinese uses full-width punctuation (，。：！？（）) and puts a half-width space between Chinese and Latin letters or digits: "API 密钥", "5 分钟".
 - Never hand-write units such as "min" or "h". Durations, dates, and numbers come from the system formatters in the display language.
-- Counted strings use plural variations, not "(s)" or a fixed form.
+- Counted strings use plural variations, not "(s)" or a fixed form. Russian needs `one`, `few`, `many`, and `other` (1 минута, 2 минуты, 5 минут, 21 минута). Chinese needs only `other`. The catalog test checks the forms.
+- A count that arrives as formatted text (`%@`), such as "%@ credits remaining", can't use plural variations. Phrase it so the noun doesn't agree with the number, for example "Осталось кредитов: %@".
 
 ## Spanish: Mexico vs. Spain
 

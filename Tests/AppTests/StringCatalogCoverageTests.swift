@@ -106,6 +106,30 @@ final class StringCatalogCoverageTests: XCTestCase {
         XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
     }
 
+    /// The CLDR plural categories that integer counts reach in each language.
+    private let pluralForms: [String: Set<String>] = [
+        "ru": ["one", "few", "many", "other"],
+        "zh-Hans": ["other"],
+    ]
+
+    func testEveryPluralHasTheFormsItsLanguageNeeds() throws {
+        var failures: [String] = []
+        for module in modules {
+            let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
+            for (key, entry) in catalog.strings.sorted(by: { $0.key < $1.key }) {
+                for (language, localization) in entry.localizations ?? [:] {
+                    guard let plural = localization.variations?.plural else { continue }
+                    let needed = pluralForms[language] ?? ["one", "other"]
+                    let missing = needed.subtracting(plural.keys).sorted()
+                    if !missing.isEmpty {
+                        failures.append("\(module.catalog) \"\(key)\" in \(language) lacks \(missing)")
+                    }
+                }
+            }
+        }
+        XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
+    }
+
     func testEveryCatalogLanguageIsSupported() throws {
         var failures: [String] = []
         for module in modules {

@@ -23,6 +23,20 @@ final class DisplayLocaleFormattingTests: XCTestCase {
         XCTAssertEqual(refreshDurationText(5 * 60), "5 Minuten")
     }
 
+    func testCountedStringsAgreeWithTheCount() {
+        let expected = [
+            "en": ["1 second", "2 seconds", "1 minute", "2 minutes", "21 minutes"],
+            "de-DE": ["1 Sekunde", "2 Sekunden", "1 Minute", "2 Minuten", "21 Minuten"],
+            "es-MX": ["1 segundo", "2 segundos", "1 minuto", "2 minutos", "21 minutos"],
+            "es-ES": ["1 segundo", "2 segundos", "1 minuto", "2 minutos", "21 minutos"],
+        ]
+        for (language, texts) in expected {
+            DisplayLanguage.selectedLanguageCode = language
+            let shown = [1, 2, 60, 120, 21 * 60].map { refreshDurationText(TimeInterval($0)) }
+            XCTAssertEqual(shown, texts, language)
+        }
+    }
+
     func testNumbersUseTheDisplayLanguage() throws {
         XCTAssertEqual(QuotaFormatting.percentage(42), "42\u{00A0}%")
         XCTAssertEqual(PeakHoursPresentation.rateText(for: .multiplier(2)), "2× Multiplikator")

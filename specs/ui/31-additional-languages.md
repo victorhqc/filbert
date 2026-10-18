@@ -92,7 +92,12 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - GeminiCLI's `es-ES` was a copy of Latin American text, so 11 of its 29 strings changed.
    - 274 of 357 `es-ES` values still equal `es-MX`. Each was read. They use wording that is correct in both countries, and none uses a past tense.
    - "Reiniciar" stays for restarting Filbert. Only a quota reset uses "restablecer".
-4. [ ] Plural variations. Convert every counted key to plural variations in all languages (AC4). Prefer one format key over strings that join parts.
+4. [x] Plural variations. Convert every counted key to plural variations in all languages (AC4). Prefer one format key over strings that join parts. (2026-10-18)
+   - App: `%lld seconds` and `%lld minutes` have `one` and `other` forms in every language. The separate "1 minute" key is gone. `refreshDurationText` uses one key for every count.
+   - ZAI: `%lld-hour window` has plural forms in Spanish ("Ventana de 1 hora"). The English and German compounds don't change with the count ("1-hour window", "1-Stunden-Fenster"), so they keep one value. Codex's `%lld-minute window` already had Spanish forms.
+   - Not counted nouns, so not plural: `%lld× multiplier`, `under %lld`, `%lld and up`, percentages, and the exit code. The sleep durations ("5 minutes", "1 hour", "2 hours") are fixed keys, one per menu item.
+   - `testEveryPluralHasTheFormsItsLanguageNeeds` checks the CLDR forms for each language: `one` and `other` by default, four for `ru`, and only `other` for `zh-Hans`. Step 5 must add plural variations for `ru` wherever the noun changes with the count.
+   - Credits arrive as formatted text with two decimals ("1.00 credits"), so they can't use plural variations. The glossary says how to phrase them.
 5. [ ] New languages, one module at a time: App, Core, then each provider (AC3). Extend the catalog test's language list.
 6. [ ] Declare `CFBundleLocalizations` in `packaging/Info.plist` (AC6).
 7. [ ] Run the validation gate. Then manually check AC5 and AC7 in each language: the popover, every settings tab, the error states, and VoiceOver.
