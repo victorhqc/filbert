@@ -92,6 +92,7 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | balance | Guthaben | saldo | saldo | saldo | saldo | баланс | 余额 |
 | credits | Credits | créditos | créditos | créditos | créditos | кредиты | promotional or bonus: 赠金; purchased: ⚠︎ use the provider's own Chinese UI |
 | peak hours | Spitzenzeiten | horas pico | horas punta | horário de pico | horas de ponta | часы пик | 高峰时段 |
+| average (pace) | durchschnittlich | promedio | medio | médio ⚠︎ | médio ⚠︎ | средний ⚠︎ | 平均 ⚠︎ |
 | the Mac (article) | der Mac | la Mac | el Mac | o Mac ⚠︎ | o Mac ⚠︎ | Mac | Mac |
 | Keep Awake | Wach halten | Mantener activo | Mantener activo | Manter ativo | Manter ativo | Не засыпать | 保持唤醒 |
 | System Default (language) | Systemstandard | Predeterminado del sistema | Predeterminado del sistema | Padrão do sistema | Predefinição do sistema | Системный | 跟随系统 |

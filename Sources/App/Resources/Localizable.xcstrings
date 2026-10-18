@@ -69,7 +69,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "macOS konnte Filberts Anmeldeobjekt nicht finden. Aktiviere „Bei der Anmeldung starten“, um es zu registrieren." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "macOS could not find Filbert's login item. Enable Launch at login to register it." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el ítem de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "macOS no ha podido encontrar el ítem de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el elemento de inicio de Filbert. Activa “Abrir al iniciar sesión” para registrarlo." } }
       }
     },
@@ -96,7 +96,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Der Start bei der Anmeldung konnte nicht aktiviert werden. Versuche es erneut." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not enable launch at login. Try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo activar la apertura al iniciar sesión. Inténtalo de nuevo." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido activar la apertura al iniciar sesión. Inténtalo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo activar la apertura al iniciar sesión. Inténtalo de nuevo." } }
       }
     },
@@ -105,7 +105,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Der Start bei der Anmeldung konnte nicht deaktiviert werden. Versuche es erneut." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not disable launch at login. Try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } }
       }
     },
@@ -2533,7 +2533,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, wie lange Filbert deinen Mac wach hält" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose how long Filbert keeps your Mac awake" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene despierto tu Mac" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene activo tu Mac" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene activa tu Mac" } }
       }
     },
@@ -2569,7 +2569,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ aktiv" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake active" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«No dormir» activo" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«Mantener activo» activado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "“Mantener activo” activado" } }
       }
     },
@@ -2596,7 +2596,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wach halten" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No dormir" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } }
       }
     },
@@ -2614,7 +2614,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ anzeigen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Keep Awake" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «No dormir»" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Mantener activo»" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Mantener activo”" } }
       }
     },
@@ -2623,7 +2623,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ konnte nicht starten. Versuche es erneut." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake couldn't start. Try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar «No dormir». Inténtalo de nuevo." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido iniciar «Mantener activo». Inténtalo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar “Mantener activo”. Inténtalo de nuevo." } }
       }
     },
@@ -2632,7 +2632,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer für „Wach halten“" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake duration" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «No dormir»" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «Mantener activo»" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de “Mantener activo”" } }
       }
     },
@@ -2796,7 +2796,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento" } }
       }
     },
@@ -2823,7 +2823,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen · %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset · last %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio · %@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento · %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento · %@ de historial" } }
       }
     },
@@ -2841,7 +2841,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Kein aktueller Verbrauch erkannt" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "No recent consumption detected" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se detectó consumo reciente" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha detectado consumo reciente" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se detectó consumo reciente" } }
       }
     },
@@ -2877,7 +2877,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim aktuellen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your pace over the last %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el reinicio, según %@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el restablecimiento, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el restablecimiento, según %@ de historial" } }
       }
     },
@@ -2895,7 +2895,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo, basierend auf %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "At your average pace over the last %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } }
       }
     },
@@ -2913,7 +2913,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo in etwa %1$@ aufgebraucht, basierend auf %2$@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ at your average pace over the last %2$@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio se agota en aprox. %1$@, según %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } }
       }
     },
@@ -2922,7 +2922,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim durchschnittlichen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your average pace over the last %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio debería durar hasta el restablecimiento, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el restablecimiento, según %@ de historial" } }
       }
     },
@@ -3041,7 +3041,7 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Limit erreicht, bis zum Zurücksetzen keine weitere Nutzung verfügbar" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached, no more use available until reset" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el reinicio" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el restablecimiento" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el restablecimiento" } }
       }
     },

@@ -105,7 +105,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permitir que Filbert lea el elemento del llavero de Gemini CLI"
+            "value": "Permite que Filbert lea el elemento del llavero de Gemini CLI"
           }
         },
         "es-MX": {
@@ -163,7 +163,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Filbert no pudo leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
+            "value": "Filbert no ha podido leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
           }
         },
         "es-MX": {
@@ -221,7 +221,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "La autenticación de Gemini CLI falló. Vuelve a iniciar sesión."
+            "value": "La autenticación de Gemini CLI ha fallado. Vuelve a iniciar sesión."
           }
         },
         "es-MX": {
@@ -308,7 +308,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI está desconectado. Abre Gemini CLI e inicia sesión con Google."
+            "value": "Se ha cerrado la sesión de Gemini CLI. Abre Gemini CLI e inicia sesión con Google."
           }
         },
         "es-MX": {
@@ -337,7 +337,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI devolvió una respuesta de uso inesperada."
+            "value": "Gemini CLI ha devuelto una respuesta de uso inesperada."
           }
         },
         "es-MX": {
@@ -366,7 +366,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
+            "value": "Gemini CLI ha devuelto datos que Filbert no ha podido leer. Actualiza Filbert y vuelve a intentarlo."
           }
         },
         "es-MX": {
@@ -395,7 +395,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+            "value": "Se ha agotado el tiempo de espera de la solicitud de uso de Gemini CLI. Vuelve a intentarlo más tarde."
           }
         },
         "es-MX": {
@@ -424,7 +424,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
+            "value": "El servicio de uso de Gemini CLI ha devuelto un error inesperado. Vuelve a intentarlo más tarde."
           }
         },
         "es-MX": {
@@ -540,7 +540,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se informaron límites de uso"
+            "value": "No se han informado límites de uso"
           }
         },
         "es-MX": {
@@ -569,7 +569,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supervisar las cuotas de modelos de Gemini CLI"
+            "value": "Supervisa las cuotas de modelos de Gemini CLI"
           }
         },
         "es-MX": {
@@ -598,7 +598,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
+            "value": "No se ha podido conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
           }
         },
         "es-MX": {

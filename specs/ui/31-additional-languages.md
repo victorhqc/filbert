@@ -87,7 +87,11 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - All 358 strings in 9 catalogs were read. 42 values were fixed: "Configuración" for Settings, "clave de API", "Actualizar", "Reintentar", "Mantener activo", "restablecimiento" for a quota reset, "barra de menús", "Revisa", "costo", "íconos", "la Mac", “…” quotes, "solicitudes", and "Supervisa" in every provider description. Cursor's "Sign in to Cursor" link uses the infinitive, as a button does.
    - `testEachSpanishVariantAvoidsTheOtherVariantsTerms` in `StringCatalogCoverageTests` enforces both deny lists. On the committed catalogs it failed on 14 `es-MX` strings. It passes now. `es-ES` had no hits, so step 3 must still read every `es-ES` string.
    - Left for step 3: `es-ES` still says "No dormir", "reinicio", and Latin American past tenses. Left for step 4: `%lld-hour window` and the other counted strings.
-3. [ ] Spain Spanish pass. Rewrite `es-ES` in peninsular Spanish, without copying `es-MX` (AC2).
+3. [x] Spain Spanish pass. Rewrite `es-ES` in peninsular Spanish, without copying `es-MX` (AC2). (2026-10-18)
+   - 40 values were fixed in App, Core, DeepSeek, OpenCodeGo, ZAI, and GeminiCLI. Changes: present perfect for recent events ("No se ha podido", "ha fallado", "ha devuelto", "Se ha agotado"), "Comprueba", "Mantener activo", "restablecimiento" and "se restablece" for a quota reset, "ritmo medio", "solicitudes", "Se ha cerrado la sesión", and "Supervisa" in every provider description.
+   - GeminiCLI's `es-ES` was a copy of Latin American text, so 11 of its 29 strings changed.
+   - 274 of 357 `es-ES` values still equal `es-MX`. Each was read. They use wording that is correct in both countries, and none uses a past tense.
+   - "Reiniciar" stays for restarting Filbert. Only a quota reset uses "restablecer".
 4. [ ] Plural variations. Convert every counted key to plural variations in all languages (AC4). Prefer one format key over strings that join parts.
 5. [ ] New languages, one module at a time: App, Core, then each provider (AC3). Extend the catalog test's language list.
 6. [ ] Declare `CFBundleLocalizations` in `packaging/Info.plist` (AC6).

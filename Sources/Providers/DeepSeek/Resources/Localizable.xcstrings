@@ -251,7 +251,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido iniciar sesión. Revisa tu clave de API."
+            "value" : "No se ha podido iniciar sesión. Comprueba tu clave de API."
           }
         },
         "es-MX" : {
@@ -280,7 +280,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Has hecho demasiadas peticiones. Inténtalo más tarde."
+            "value" : "Has hecho demasiadas solicitudes. Inténtalo más tarde."
           }
         },
         "es-MX" : {
@@ -309,7 +309,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error de red. Revisa tu conexión."
+            "value" : "Error de red. Comprueba tu conexión."
           }
         },
         "es-MX" : {

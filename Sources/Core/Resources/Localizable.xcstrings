@@ -42,7 +42,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "se reinicia %@"
+            "value" : "se restablece %@"
           }
         },
         "es-MX" : {
@@ -71,7 +71,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "reiniciando…"
+            "value" : "restableciendo…"
           }
         },
         "es-MX" : {
