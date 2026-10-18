@@ -3,6 +3,16 @@ import Core
 import XCTest
 
 class AllowanceForecastPresentationTestCase: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        super.tearDown()
+    }
+
     let now = Date(timeIntervalSince1970: 1_800_000_000)
 
     func present(

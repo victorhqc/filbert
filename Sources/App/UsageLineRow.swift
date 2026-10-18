@@ -181,7 +181,7 @@ private struct UsageBar: View {
         .frame(height: 4)
         .accessibilityElement()
         .accessibilityLabel(
-            String(localized: "Usage: \(Int(clampedFraction * 100))%")
+            String(displayLocalized: "Usage: \(Int(clampedFraction * 100))%", bundle: .module)
         )
     }
 

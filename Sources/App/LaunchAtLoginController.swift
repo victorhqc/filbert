@@ -1,4 +1,5 @@
 import AppKit
+import Core
 import Observation
 
 @MainActor
@@ -52,8 +53,8 @@ final class LaunchAtLoginController: NSObject {
         } catch {
             refreshStatus()
             errorMessage = registered
-                ? String(localized: "Could not enable launch at login. Try again.", bundle: .module)
-                : String(localized: "Could not disable launch at login. Try again.", bundle: .module)
+                ? String(displayLocalized: "Could not enable launch at login. Try again.", bundle: .module)
+                : String(displayLocalized: "Could not disable launch at login. Try again.", bundle: .module)
         }
     }
 

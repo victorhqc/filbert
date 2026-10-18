@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 @MainActor
@@ -7,14 +8,14 @@ struct GeneralSettingsView: View {
     var body: some View {
         SettingsScrollColumn {
             SettingsCard(
-                heading: String(localized: "Startup", bundle: .module),
+                heading: String(displayLocalized: "Startup", bundle: .module),
                 description: String(
-                    localized: "Start Filbert in the menu bar after you sign in to your Mac.",
+                    displayLocalized: "Start Filbert in the menu bar after you sign in to your Mac.",
                     bundle: .module
                 )
             ) {
                 Toggle(
-                    String(localized: "Launch at login", bundle: .module),
+                    String(displayLocalized: "Launch at login", bundle: .module),
                     isOn: Binding(
                         get: { launchAtLogin.isRegistered },
                         set: { launchAtLogin.setRegistered($0) }
@@ -29,7 +30,7 @@ struct GeneralSettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 if launchAtLogin.status == .requiresApproval {
-                    Button(String(localized: "Open Login Items Settings", bundle: .module)) {
+                    Button(String(displayLocalized: "Open Login Items Settings", bundle: .module)) {
                         launchAtLogin.openLoginItemsSettings()
                     }
                 }
@@ -43,7 +44,7 @@ struct GeneralSettingsView: View {
                 }
             }
         }
-        .navigationTitle(String(localized: "General", bundle: .module))
+        .navigationTitle(String(displayLocalized: "General", bundle: .module))
         .onAppear {
             launchAtLogin.refreshStatus()
         }
@@ -52,21 +53,21 @@ struct GeneralSettingsView: View {
     private var statusDescription: String {
         switch launchAtLogin.status {
         case .notRegistered:
-            String(localized: "Filbert will not start at login.", bundle: .module)
+            String(displayLocalized: "Filbert will not start at login.", bundle: .module)
         case .enabled:
-            String(localized: "Filbert will start at login.", bundle: .module)
+            String(displayLocalized: "Filbert will start at login.", bundle: .module)
         case .requiresApproval:
             String(
-                localized: "Filbert is registered, but macOS approval is required before it can start at login.",
+                displayLocalized: "Filbert is registered, but macOS approval is required before it can start at login.",
                 bundle: .module
             )
         case .notFound:
             String(
-                localized: "macOS could not find Filbert's login item. Enable Launch at login to register it.",
+                displayLocalized: "macOS could not find Filbert's login item. Enable Launch at login to register it.",
                 bundle: .module
             )
         case .unavailable:
-            String(localized: "Launch at login requires an installed Filbert app.", bundle: .module)
+            String(displayLocalized: "Launch at login requires an installed Filbert app.", bundle: .module)
         }
     }
 }

@@ -13,27 +13,27 @@ struct SettingsView: View {
         TabView {
             GeneralSettingsView(launchAtLogin: launchAtLogin)
                 .tabItem {
-                    Label(String(localized: "General", bundle: .module), systemImage: "gearshape")
+                    Label(String(displayLocalized: "General", bundle: .module), systemImage: "gearshape")
                 }
 
             providersTab
                 .tabItem {
-                    Label(String(localized: "Providers"), systemImage: "key.fill")
+                    Label(String(displayLocalized: "Providers", bundle: .module), systemImage: "key.fill")
                 }
 
             AppearanceTab(viewModel: viewModel, sleepPrevention: sleepPrevention)
                 .tabItem {
-                    Label(String(localized: "Appearance"), systemImage: "list.bullet.indent")
+                    Label(String(displayLocalized: "Appearance", bundle: .module), systemImage: "list.bullet.indent")
                 }
 
             RefreshSettingsView(viewModel: viewModel)
                 .tabItem {
-                    Label(String(localized: "Refresh Settings"), systemImage: "arrow.clockwise")
+                    Label(String(displayLocalized: "Refresh Settings", bundle: .module), systemImage: "arrow.clockwise")
                 }
 
             AboutSettingsView(updateCoordinator: updateCoordinator)
                 .tabItem {
-                    Label(String(localized: "About"), systemImage: "info.circle")
+                    Label(String(displayLocalized: "About", bundle: .module), systemImage: "info.circle")
                 }
         }
         .frame(
@@ -55,7 +55,7 @@ struct SettingsView: View {
                 providerCard(for: provider)
             }
         }
-        .navigationTitle(String(localized: "Providers"))
+        .navigationTitle(String(displayLocalized: "Providers", bundle: .module))
     }
 
     @ViewBuilder
@@ -178,7 +178,7 @@ private struct ProviderSettingsRow: View {
                 status: isEnabled ? ProviderStatusPresentation.apiKey(state) : .disabled,
                 isEnabled: isEnabled,
                 onEnabledChange: onEnabledChange,
-                supplementaryLabel: overrideURL == nil ? nil : String(localized: "custom URL")
+                supplementaryLabel: overrideURL == nil ? nil : String(displayLocalized: "custom URL", bundle: .module)
             )
             Divider()
             if isEnabled, isConfigured {
@@ -206,12 +206,12 @@ private struct ProviderSettingsRow: View {
             HStack(spacing: 6) {
                 ProgressView()
                     .controlSize(.small)
-                Text(String(localized: "Working…"))
+                Text(String(displayLocalized: "Working…", bundle: .module))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
         }
-        Button(String(localized: "Clear Key"), role: .destructive) {
+        Button(String(displayLocalized: "Clear Key", bundle: .module), role: .destructive) {
             clearKey()
         }
         .controlSize(.small)
@@ -226,10 +226,10 @@ private struct ProviderSettingsRow: View {
     private var keyEntry: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
-                SecureField(String(localized: "API Key"), text: apiKeyBinding)
+                SecureField(String(displayLocalized: "API Key", bundle: .module), text: apiKeyBinding)
                     .textFieldStyle(.roundedBorder)
                     .onSubmit { saveKeyIfValid() }
-                Button(String(localized: "Save")) {
+                Button(String(displayLocalized: "Save", bundle: .module)) {
                     saveKeyIfValid()
                 }
                 .buttonStyle(.borderedProminent)
@@ -263,7 +263,7 @@ private struct ProviderSettingsRow: View {
                 }
             } label: {
                 HStack(spacing: 4) {
-                    Text(String(localized: "Advanced"))
+                    Text(String(displayLocalized: "Advanced", bundle: .module))
                     Image(systemName: advancedExpanded ? "chevron.down" : "chevron.right")
                         .font(.caption2)
                 }
@@ -281,7 +281,7 @@ private struct ProviderSettingsRow: View {
     private var overrideEditor: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 4) {
-                Text(String(localized: "Default:"))
+                Text(String(displayLocalized: "Default:", bundle: .module))
                     .font(.caption)
                     .foregroundColor(.secondary)
                 Text(provider.defaultBaseURL.absoluteString)
@@ -291,7 +291,7 @@ private struct ProviderSettingsRow: View {
             }
             HStack(spacing: 6) {
                 TextField(
-                    String(localized: "Custom base URL (proxy)"),
+                    String(displayLocalized: "Custom base URL (proxy)", bundle: .module),
                     text: $overrideInput
                 )
                 .textFieldStyle(.roundedBorder)
@@ -299,11 +299,11 @@ private struct ProviderSettingsRow: View {
                 .onChange(of: overrideInput) { _, _ in
                     overrideErrorMessage = nil
                 }
-                Button(String(localized: "Save")) {
+                Button(String(displayLocalized: "Save", bundle: .module)) {
                     saveOverride()
                 }
                 .buttonStyle(.borderedProminent)
-                Button(String(localized: "Reset")) {
+                Button(String(displayLocalized: "Reset", bundle: .module)) {
                     resetOverride()
                 }
                 .disabled(overrideURL == nil)
@@ -347,7 +347,7 @@ private struct ProviderSettingsRow: View {
                 code: "invalid-url",
                 providerID: provider.id
             )
-            overrideErrorMessage = String(localized: "Only https URLs are allowed.")
+            overrideErrorMessage = String(displayLocalized: "Only https URLs are allowed.", bundle: .module)
             return
         }
 
@@ -355,7 +355,7 @@ private struct ProviderSettingsRow: View {
             try onSaveOverride(resolved)
             overrideErrorMessage = nil
         } catch {
-            overrideErrorMessage = String(localized: "Only https URLs are allowed.")
+            overrideErrorMessage = String(displayLocalized: "Only https URLs are allowed.", bundle: .module)
         }
     }
 
@@ -365,7 +365,7 @@ private struct ProviderSettingsRow: View {
             overrideInput = ""
             overrideErrorMessage = nil
         } catch {
-            overrideErrorMessage = String(localized: "Only https URLs are allowed.")
+            overrideErrorMessage = String(displayLocalized: "Only https URLs are allowed.", bundle: .module)
         }
     }
 

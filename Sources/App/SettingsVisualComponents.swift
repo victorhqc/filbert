@@ -124,7 +124,7 @@ struct SettingsCardHeader: View {
                     VStack(alignment: .trailing, spacing: 4) {
                         ProviderStatusPill(status: status)
                         Toggle(
-                            String(localized: "Enabled"),
+                            String(displayLocalized: "Enabled", bundle: .module),
                             isOn: Binding(
                                 get: { isEnabled },
                                 set: { enabled in
@@ -138,14 +138,14 @@ struct SettingsCardHeader: View {
                         .foregroundStyle(.secondary)
                         .accessibilityLabel(
                             String.localizedStringWithFormat(
-                                String(localized: "Enable %@"),
+                                String(displayLocalized: "Enable %@", bundle: .module),
                                 provider.displayName
                             )
                         )
                         .accessibilityValue(
                             isEnabled
-                                ? String(localized: "Enabled")
-                                : String(localized: "Disabled")
+                                ? String(displayLocalized: "Enabled", bundle: .module)
+                                : String(displayLocalized: "Disabled", bundle: .module)
                         )
                         if let supplementaryLabel {
                             Text(supplementaryLabel)
@@ -221,7 +221,7 @@ struct ProviderStatusPresentation {
         switch state {
         case .loaded:
             Self(
-                label: String(localized: "Configured"),
+                label: String(displayLocalized: "Configured", bundle: .module),
                 symbolName: "checkmark.circle.fill",
                 role: .good
             )
@@ -238,7 +238,7 @@ struct ProviderStatusPresentation {
         switch state {
         case .loaded:
             Self(
-                label: String(localized: "Ready"),
+                label: String(displayLocalized: "Ready", bundle: .module),
                 symbolName: "checkmark.circle.fill",
                 role: .good
             )
@@ -248,7 +248,7 @@ struct ProviderStatusPresentation {
             working
         case .setup:
             Self(
-                label: String(localized: "Setup needed"),
+                label: String(displayLocalized: "Setup needed", bundle: .module),
                 symbolName: "wrench.and.screwdriver.fill",
                 role: .neutral
             )
@@ -258,25 +258,25 @@ struct ProviderStatusPresentation {
     }
 
     static let disabled = Self(
-        label: String(localized: "Disabled"),
+        label: String(displayLocalized: "Disabled", bundle: .module),
         symbolName: "pause.circle.fill",
         role: .neutral
     )
 
     private static let error = Self(
-        label: String(localized: "Error"),
+        label: String(displayLocalized: "Error", bundle: .module),
         symbolName: "exclamationmark.triangle.fill",
         role: .critical
     )
 
     private static let working = Self(
-        label: String(localized: "Working…"),
+        label: String(displayLocalized: "Working…", bundle: .module),
         symbolName: "clock.arrow.circlepath",
         role: .neutral
     )
 
     private static let unconfigured = Self(
-        label: String(localized: "Unconfigured"),
+        label: String(displayLocalized: "Unconfigured", bundle: .module),
         symbolName: "circle.dashed",
         role: .neutral
     )

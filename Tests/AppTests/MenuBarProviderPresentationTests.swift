@@ -5,6 +5,16 @@ import Foundation
 import XCTest
 
 final class MenuBarProviderPresentationTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        super.tearDown()
+    }
+
     func testWindowPresentationUsesSelectedProviderGlyphAndFastStatus() throws {
         let resolved = try XCTUnwrap(
             MenuBarProviderPresentation.resolve(

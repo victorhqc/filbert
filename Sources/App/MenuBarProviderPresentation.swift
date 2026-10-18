@@ -39,22 +39,26 @@ enum MenuBarProviderPresentation {
         switch resolved.status {
         case let .window(percentage):
             status = String(
-                localized: "\(resolved.providerName): \(Int(percentage.rounded()))% used"
+                displayLocalized: "\(resolved.providerName): \(Int(percentage.rounded()))% used",
+                bundle: .module
             )
         case let .balance(_, formattedAmount):
-            status = String(localized: "\(resolved.providerName): \(formattedAmount) remaining")
+            status = String(displayLocalized: "\(resolved.providerName): \(formattedAmount) remaining", bundle: .module)
         case let .credits(formattedAmount):
-            status = String(localized: "\(resolved.providerName): \(formattedAmount) credits remaining")
+            status = String(
+                displayLocalized: "\(resolved.providerName): \(formattedAmount) credits remaining",
+                bundle: .module
+            )
         case .fallback:
-            return String(localized: "Filbert")
+            return String(displayLocalized: "Filbert", bundle: .module)
         }
 
         var values = [status]
         if resolved.isFastRefreshActive {
-            values.append(String(localized: "Fast refresh active"))
+            values.append(String(displayLocalized: "Fast refresh active", bundle: .module))
         }
         if isSleepPreventionActive {
-            values.append(String(localized: "Keep Awake active"))
+            values.append(String(displayLocalized: "Keep Awake active", bundle: .module))
         }
         return values.joined(separator: ", ")
     }

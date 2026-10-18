@@ -109,6 +109,35 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } }
       }
     },
+    "Unable to clear the API key. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der API-Schlüssel konnte nicht entfernt werden. Prüfe den Zugriff auf den Schlüsselbund und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to clear the API key. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido borrar la clave de API. Comprueba el acceso al llavero y vuelve a intentarlo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo borrar la clave de API. Revisa el acceso al llavero y vuelve a intentarlo."
+          }
+        }
+      }
+    },
     "Unable to read credentials. Check Keychain access and try again." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -208,7 +237,7 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% usado" } }
       }
     },
-    "%1$@: %2$@ remaining" : {
+    "%@: %@ remaining" : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
@@ -237,7 +266,7 @@
         }
       }
     },
-    "%1$@: %2$lld%% used" : {
+    "%@: %lld%% used" : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
@@ -956,6 +985,35 @@
         }
       }
     },
+    "Last updated by %@: %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zuletzt aktualisiert von %1$@: %2$@"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Last updated by %@: %@"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizado por última vez por %1$@: %2$@"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actualizado por última vez por %1$@: %2$@"
+          }
+        }
+      }
+    },
     "Last updated: %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1014,6 +1072,35 @@
         }
       }
     },
+    "Configure a provider on the Providers tab to start reordering." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Richte im Tab „Anbieter“ einen Anbieter ein, um die Reihenfolge zu ändern."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configure a provider on the Providers tab to start reordering."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura un proveedor en la pestaña «Proveedores» para empezar a reordenar."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Configura un proveedor en la pestaña “Proveedores” para empezar a reordenar."
+          }
+        }
+      }
+    },
     "Configured" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1043,6 +1130,35 @@
         }
       }
     },
+    "Unable to save the API key. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der API-Schlüssel konnte nicht gespeichert werden. Prüfe den Zugriff auf den Schlüsselbund und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to save the API key. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido guardar la clave de API. Comprueba el acceso al llavero y vuelve a intentarlo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo guardar la clave de API. Revisa el acceso al llavero y vuelve a intentarlo."
+          }
+        }
+      }
+    },
     "Unconfigured" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1068,6 +1184,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Nicht eingerichtet"
+          }
+        }
+      }
+    },
+    "No data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No data"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
           }
         }
       }
@@ -1213,6 +1358,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Spitzenzeiten"
+          }
+        }
+      }
+    },
+    "Helper installed and active." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfsskript installiert und aktiv."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helper installed and active."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Script auxiliar instalado y activo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Script auxiliar instalado y activo."
           }
         }
       }
@@ -1652,6 +1826,35 @@
         }
       }
     },
+    "Remove Helper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfsskript entfernen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Remove Helper"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar script auxiliar"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitar script auxiliar"
+          }
+        }
+      }
+    },
     "Reset" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1833,6 +2036,64 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es de código abierto bajo la MIT License." } }
       }
     },
+    "Only https URLs are allowed." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nur https-URLs sind erlaubt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Only https URLs are allowed."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo se permiten URL https."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Solo se permiten URL https."
+          }
+        }
+      }
+    },
+    "Open %@ to refresh" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne %@, um zu aktualisieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open %@ to refresh"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre %@ para actualizar"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre %@ para actualizar"
+          }
+        }
+      }
+    },
     "Open Filbert on GitHub" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1903,6 +2164,35 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "filbert development" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "filbert en desarrollo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "filbert en desarrollo" } }
+      }
+    },
+    "Filbert reads your Claude Code usage by hooking into its status line." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert liest deine Claude-Code-Nutzung aus, indem es sich in die Statuszeile einklinkt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert reads your Claude Code usage by hooking into its status line."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert lee tu uso de Claude Code conectándose a su línea de estado."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert lee tu uso de Claude Code conectándose a su línea de estado."
+          }
+        }
       }
     },
     "filbert v%@" : {
@@ -2773,6 +3063,35 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } }
       }
     },
+    "Install Helper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfsskript installieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install Helper"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar script auxiliar"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar script auxiliar"
+          }
+        }
+      }
+    },
     "Installing Filbert %@…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2960,6 +3279,35 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your average pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } }
+      }
+    },
+    "This adds a small helper script to ~/.claude/." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dabei wird ein kleines Hilfsskript in ~/.claude/ abgelegt."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This adds a small helper script to ~/.claude/."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto añade un pequeño script auxiliar a ~/.claude/."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esto agrega un pequeño script auxiliar a ~/.claude/."
+          }
+        }
       }
     },
     "Timing is approximate" : {

@@ -4,6 +4,16 @@ import Foundation
 import XCTest
 
 final class PeakHoursPresentationTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        super.tearDown()
+    }
+
     func testRateText_multiplierUsesMultiplierFormat() {
         XCTAssertEqual(
             PeakHoursPresentation.rateText(for: .multiplier(3)),

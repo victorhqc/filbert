@@ -10,14 +10,14 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - `String(localized:)` without `bundle:` reads `Bundle.main`. `Bundle.main` has no catalog, so the lookup returns the key. A key that is the English text looks correct. A name-style key shows raw.
 - `scripts/build-dmg.sh` builds with the native build system and compiles each catalog inside its module bundle under `Contents/Resources/`. The packaged app has the same gap.
 - The native build system copies `Localizable.xcstrings` raw into the module bundle, so even `bundle: .module` returns the key. Swift Build compiles it into `.lproj` folders. Swift 6.4 uses Swift Build by default; CI ran Swift 6.3.3 with the native build system, and the headline test failed there on 2026-10-12. Swift Build on Swift 6.3.3 does not copy the Sparkle framework next to the test bundles, so CI keeps the native build system and compiles the catalogs before `swift test --skip-build`, as `scripts/build-dmg.sh` does.
-- Calls without `bundle:` on 2026-10-12:
+- Calls without `bundle:` on 2026-10-12 (re-counted on 2026-10-18: App 224, Core 4, Providers 136; unchanged in effect):
   - `Sources/App` — about 200; 13 calls pass `bundle: .module`.
   - `Sources/Core` — 4.
   - `Sources/Providers` — 138; none pass `bundle:`.
 - `Sources/Providers/ClaudeCode` and `Sources/Providers/OpenAICodex` have no catalog.
 - Name-style keys that still show raw: `Automatic selection description` and `Automatic selection accessibility hint` in `Sources/App/AppearanceSettingsView.swift`. The four format keys (`Forecast headline format`, `Forecast labeled value format`, `Accessibility sentence format`, `Peak hours day and time format`) already pass `bundle: .module`, fixed together with (providers 17).
 - `packaging/Info.plist` sets `CFBundleDevelopmentRegion` to `en` and declares no `CFBundleLocalizations`.
-- Catalog languages: `de-DE`, `en`, `es-ES`, `es-MX`. Source language `en`.
+- Catalog languages: `de-DE`, `en`, `es-ES`, `es-MX`. Source language `en`. (ui 31) adds `pt-BR`, `pt-PT`, `ru`, and `zh-Hans`. (ui 32) adds an in-app language setting on top of this spec.
 - `Tests/AppTests/AllowanceForecastLocalizationTests.swift` checks a fixed list of forecast keys for translations and matching placeholders.
 
 ## Acceptance Criteria
@@ -26,7 +26,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 
 - **Given** any `String(localized:)` call in `Sources/App`, `Sources/Core`, or `Sources/Providers`
 - **When** the source guard test scans the code
-- **Then** the call passes `bundle: .module`, also when the call spans several lines
+- **Then** the call goes through the Core lookup (ui 32 AC9) and passes `bundle: .module`, also when the call spans several lines
 - **And** a new call without it fails the test.
 
 ### AC2: No raw key reaches the screen
@@ -40,7 +40,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - **Given** a key used in a module's source
 - **When** the catalog test runs
 - **Then** the key exists in that module's catalog
-- **And** it is translated in `de-DE`, `en`, `es-ES`, and `es-MX`
+- **And** it is translated in every supported language (ui 31)
 - **And** each translation has the same placeholders as English
 - **And** the test finds keys in the source, not from a fixed list.
 
@@ -48,7 +48,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 
 - **Given** Claude Code and Codex use `String(localized:)`
 - **When** the modules build
-- **Then** each has a `Resources/Localizable.xcstrings` with the four languages
+- **Then** each has a `Resources/Localizable.xcstrings` with every supported language (ui 31)
 - **And** `Package.swift` processes it like the other providers.
 
 ### AC5: The packaged app shows the user's language
@@ -67,8 +67,12 @@ Resolve every user-facing string against its own module's String Catalog, so the
 ## Plan
 
 1. [ ] Evidence. On a German system, open Settings in the packaged release. Check the "General" tab label, which already passes `bundle: .module`. "Allgemein" means module bundles pick the user's language. "General" means `packaging/Info.plist` needs `CFBundleLocalizations`, and step 5 is required.
-2. [ ] Add the source guard test (AC1) and the generated catalog test (AC3). Both fail at first. Replace the fixed key list in `AllowanceForecastLocalizationTests` with the generated test.
-3. [ ] Add `bundle: .module` module by module: App, Core, then each provider. Fix the two `Automatic selection` keys with the App (AC2).
+2. [x] Add the source guard test (AC1) and the generated catalog test (AC3) in `Tests/AppTests/StringCatalogCoverageTests.swift`, with the key scanner in `Tests/AppTests/LocalizedSourceScanner.swift`. `AllowanceForecastLocalizationTests` is removed. The tests cover the swept modules; add each provider to `modules` as it is swept.
+   - Swift builds an interpolated key with one plain specifier per value (`"\(name): \(count)% used"` → `%@: %lld%% used`). A positional catalog key such as `%1$@: %2$lld%% used` never matches; this was verified with a compiled catalog. Two App keys had this form, so the menu bar and card header accessibility labels were never translated. They are re-keyed. Translations can still use positional placeholders.
+   - Swift Build generates a symbol for each `manual` catalog key and fails on a key with no letters, such as `%lld%%`. Format such values in code instead: percentages use `.percent.locale(DisplayLanguage.locale)`, and a number range is not localized.
+3. [ ] Build the Core lookup first (ui 32, Plan step 1) [x]. Then move each call to it with `bundle: .module`, module by module: Core [x], App [x] (2026-10-18), then each provider together with (ui 32, Plan step 2). The two `Automatic selection` keys resolve from the App catalog (AC2).
+   - App sweep, 2026-10-18: 259 calls moved. 14 keys used in App were missing from the App catalog, and they are added in `de-DE`, `es-ES`, and `es-MX` per `docs/localization-glossary.md`. 14 App catalog keys are unused, mostly provider text that belongs in provider catalogs. Leave them for the provider sweep.
+   - Tests that compare English text pin `DisplayLanguage.selectedLanguageCode = "en"`, in 7 test classes or their base classes.
 4. [ ] Add catalogs for Claude Code and Codex, with translations (AC4).
 5. [ ] If step 1 requires it, declare the four languages in `packaging/Info.plist` (AC5).
 6. [x] Compile the catalogs in CI before running the tests, so tests read compiled catalogs (AC6). Drop the step once CI uses Swift Build by default.
@@ -81,3 +85,4 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - System formatters already follow the user's locale. Until this lands, a German system shows mixed text, e.g. "resets in 2 Stunden". After it lands, the remaining mixed text points at a missed call.
 - Test results can depend on the test runner's language. Tests that compare rendered text must use keys whose text is the same in every language, or set the locale explicitly.
 - A string the code builds by joining parts can read wrong in another language. Prefer one format key over joining.
+- Found on 2026-10-18, when Core moved to the Core lookup: Core text followed the German test machine, but App text was still English. `FallbackPoolPresentationTests` and `ClaudeCodeProviderTests` failed. Before, Core read `Bundle.main`, which has no catalog, and always returned English. A test that compares English text sets `DisplayLanguage.selectedLanguageCode = "en"` in `setUp` and clears it in `tearDown`.

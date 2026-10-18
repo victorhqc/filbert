@@ -9,6 +9,16 @@ class FallbackPoolTestCase: XCTestCase {
         now.addingTimeInterval(2 * 60 * 60)
     }
 
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        super.tearDown()
+    }
+
     func quota(
         fiveHour: Double,
         weekly: Double = 66,

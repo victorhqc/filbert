@@ -3,6 +3,16 @@ import Core
 import XCTest
 
 final class UsageAmountFormattingTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        super.tearDown()
+    }
+
     private let english = Locale(identifier: "en_US")
     private let german = Locale(identifier: "de_DE")
 

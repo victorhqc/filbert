@@ -369,9 +369,12 @@ extension ProviderSetupError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .notSupported:
-            String(localized: "This provider does not support this action.")
+            String(displayLocalized: "This provider does not support this action.", bundle: .module)
         case .missingCredentials:
-            String(localized: "No credentials found. Sign in to this provider and try again.")
+            String(
+                displayLocalized: "No credentials found. Sign in to this provider and try again.",
+                bundle: .module
+            )
         }
     }
 }

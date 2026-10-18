@@ -5,7 +5,7 @@ enum UsageAmountFormatting {
     static func string(for balance: UsageBalance, locale: Locale = .current) -> String {
         switch (balance.amount, balance.unit) {
         case (.unlimited, _):
-            String(localized: "Unlimited")
+            String(displayLocalized: "Unlimited", bundle: .module)
         case let (.finite(amount), .currency(code)):
             currency(NSDecimalNumber(decimal: amount), code: code, locale: locale)
         case let (.finite(amount), .credits):

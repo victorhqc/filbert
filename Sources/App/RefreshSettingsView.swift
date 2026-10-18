@@ -8,19 +8,22 @@ struct RefreshSettingsView: View {
     var body: some View {
         SettingsScrollColumn {
             SettingsCard(
-                heading: String(localized: "Automatic refresh"),
+                heading: String(displayLocalized: "Automatic refresh", bundle: .module),
                 description: String(
-                    localized: "Choose which providers refresh automatically. Mode and intervals control how often."
+                    displayLocalized: """
+                    Choose which providers refresh automatically. Mode and intervals control how often.
+                    """,
+                    bundle: .module
                 )
             ) {
-                Picker(String(localized: "Refresh mode"), selection: modeBinding) {
-                    Text(String(localized: "Regular")).tag(AutoRefreshMode.regular)
-                    Text(String(localized: "Smart")).tag(AutoRefreshMode.smart)
+                Picker(String(displayLocalized: "Refresh mode", bundle: .module), selection: modeBinding) {
+                    Text(String(displayLocalized: "Regular", bundle: .module)).tag(AutoRefreshMode.regular)
+                    Text(String(displayLocalized: "Smart", bundle: .module)).tag(AutoRefreshMode.smart)
                 }
                 .pickerStyle(.segmented)
-                .accessibilityLabel(String(localized: "Refresh mode"))
+                .accessibilityLabel(String(displayLocalized: "Refresh mode", bundle: .module))
                 .accessibilityValue(modeDescription)
-                .help(String(localized: "Choose a shared cadence for opted-in providers."))
+                .help(String(displayLocalized: "Choose a shared cadence for opted-in providers.", bundle: .module))
 
                 Text(modeDescription)
                     .font(.caption)
@@ -28,7 +31,7 @@ struct RefreshSettingsView: View {
                     .fixedSize(horizontal: false, vertical: true)
 
                 intervalControl(
-                    title: String(localized: "Slow interval"),
+                    title: String(displayLocalized: "Slow interval", bundle: .module),
                     values: AutoRefreshPreferences.slowIntervalOptions,
                     selectedValue: viewModel.autoRefreshSlowInterval,
                     setValue: viewModel.setAutoRefreshSlowInterval
@@ -36,14 +39,14 @@ struct RefreshSettingsView: View {
 
                 if viewModel.autoRefreshMode == .smart {
                     intervalControl(
-                        title: String(localized: "Fast interval"),
+                        title: String(displayLocalized: "Fast interval", bundle: .module),
                         values: AutoRefreshPreferences.fastIntervalOptions,
                         selectedValue: viewModel.autoRefreshFastInterval,
                         setValue: viewModel.setAutoRefreshFastInterval
                     )
 
                     intervalControl(
-                        title: String(localized: "Quiet window"),
+                        title: String(displayLocalized: "Quiet window", bundle: .module),
                         values: AutoRefreshPreferences.quietWindowOptions,
                         selectedValue: viewModel.autoRefreshQuietWindow,
                         setValue: viewModel.setAutoRefreshQuietWindow
@@ -52,9 +55,10 @@ struct RefreshSettingsView: View {
             }
 
             SettingsCard(
-                heading: String(localized: "Providers"),
+                heading: String(displayLocalized: "Providers", bundle: .module),
                 description: String(
-                    localized: "Turn on automatic refresh for each provider you want to check."
+                    displayLocalized: "Turn on automatic refresh for each provider you want to check.",
+                    bundle: .module
                 )
             ) {
                 ForEach(viewModel.registeredProvidersOrdered) { provider in
@@ -65,7 +69,7 @@ struct RefreshSettingsView: View {
                 }
             }
         }
-        .navigationTitle(String(localized: "Refresh Settings"))
+        .navigationTitle(String(displayLocalized: "Refresh Settings", bundle: .module))
     }
 
     private var modeBinding: Binding<AutoRefreshMode> {
@@ -79,16 +83,17 @@ struct RefreshSettingsView: View {
         switch viewModel.autoRefreshMode {
         case .regular:
             String.localizedStringWithFormat(
-                String(localized: "Regular refresh checks opted-in providers every %@."),
+                String(displayLocalized: "Regular refresh checks opted-in providers every %@.", bundle: .module),
                 refreshDurationText(viewModel.autoRefreshSlowInterval)
             )
         case .smart:
             String.localizedStringWithFormat(
                 String(
-                    localized: """
+                    displayLocalized: """
                     Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ \
                     for %3$@, then every %4$@ once more before returning to the slow interval.
-                    """
+                    """,
+                    bundle: .module
                 ),
                 refreshDurationText(viewModel.autoRefreshSlowInterval),
                 refreshDurationText(viewModel.autoRefreshFastInterval),
@@ -131,7 +136,7 @@ struct RefreshSettingsView: View {
             .accessibilityValue(refreshDurationText(selectedValue))
             .help(
                 String.localizedStringWithFormat(
-                    String(localized: "Selected interval: %@"),
+                    String(displayLocalized: "Selected interval: %@", bundle: .module),
                     refreshDurationText(selectedValue)
                 )
             )

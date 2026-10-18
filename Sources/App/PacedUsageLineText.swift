@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 struct PacedUsageLineText: Equatable {
@@ -9,19 +10,19 @@ struct PacedUsageLineText: Equatable {
 
     init(pace: BudgetPace, forecast: AllowanceForecastPresentation.Line?) {
         used = String.localizedStringWithFormat(
-            String(localized: "%@%% used"),
+            String(displayLocalized: "%@%% used", bundle: .module),
             pace.usedPercentage.formatted(.number.precision(.fractionLength(0)))
         )
         remainingTime = String.localizedStringWithFormat(
-            String(localized: "%@ left"),
+            String(displayLocalized: "%@ left", bundle: .module),
             CoarseDurationFormatting.string(from: pace.remainingTime)
         )
         allowance = Self.allowanceText(pace.allowance)
         let paceStatus = switch pace.tier {
         case .good:
-            String(localized: "Within current allowance")
+            String(displayLocalized: "Within current allowance", bundle: .module)
         case .warn, .critical:
-            String(localized: "Over current allowance")
+            String(displayLocalized: "Over current allowance", bundle: .module)
         }
         accessibilitySentences = [used, remainingTime, paceStatus, allowance, forecast?.accessibilityLabel]
             .compactMap(\.self)
@@ -35,8 +36,8 @@ struct PacedUsageLineText: Equatable {
         switch allowance {
         case let .perUnit(percentage, unit):
             let format = switch unit {
-            case .day: String(localized: "About %@%%/day available")
-            case .week: String(localized: "About %@%%/week available")
+            case .day: String(displayLocalized: "About %@%%/day available", bundle: .module)
+            case .week: String(displayLocalized: "About %@%%/week available", bundle: .module)
             }
             return String.localizedStringWithFormat(
                 format,
@@ -44,7 +45,7 @@ struct PacedUsageLineText: Equatable {
             )
         case let .untilReset(percentage):
             return String.localizedStringWithFormat(
-                String(localized: "%@%% available until reset"),
+                String(displayLocalized: "%@%% available until reset", bundle: .module),
                 percentage.formatted(.number.precision(.fractionLength(0)))
             )
         }

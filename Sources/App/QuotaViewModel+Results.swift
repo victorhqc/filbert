@@ -79,10 +79,10 @@ extension QuotaViewModel {
         setState(.loaded(ProviderQuota(
             providerId: id,
             providerName: info.displayName,
-            headline: String(localized: "No data"),
+            headline: String(displayLocalized: "No data", bundle: .module),
             lines: [],
             lastUpdated: Date(),
-            error: String(localized: "Refresh cancelled. Select Refresh to try again.")
+            error: String(displayLocalized: "Refresh cancelled. Select Refresh to try again.", bundle: .module)
         )), for: id)
     }
 }

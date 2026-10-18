@@ -56,7 +56,10 @@ extension QuotaViewModel {
                 restoreStateAfterCancellation(previousState, for: providerId)
             } else if isMissingCredentialError(error) {
                 setState(
-                    .setup(String(localized: "No credentials found. Sign in to this provider and try again.")),
+                    .setup(String(
+                        displayLocalized: "No credentials found. Sign in to this provider and try again.",
+                        bundle: .module
+                    )),
                     for: providerId
                 )
             } else {

@@ -5,13 +5,19 @@ enum PeakHoursPresentation {
     static func rateText(for rate: PeakRatePresentation) -> String {
         switch rate {
         case let .multiplier(value):
-            return String.localizedStringWithFormat(String(localized: "%lld× multiplier"), value)
+            return String.localizedStringWithFormat(
+                String(displayLocalized: "%lld× multiplier", bundle: .module),
+                value
+            )
         case let .fractionOfStandardRate(fraction):
             if fraction == 1 {
-                return String(localized: "Standard credit rate")
+                return String(displayLocalized: "Standard credit rate", bundle: .module)
             }
             let percent = fraction.formatted(.percent.precision(.fractionLength(0 ... 1)))
-            return String.localizedStringWithFormat(String(localized: "%@ credit rate"), percent)
+            return String.localizedStringWithFormat(
+                String(displayLocalized: "%@ credit rate", bundle: .module),
+                percent
+            )
         }
     }
 

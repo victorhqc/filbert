@@ -1,4 +1,5 @@
 import AppKit
+import Core
 import SwiftUI
 
 enum AboutMascot {
@@ -21,7 +22,7 @@ struct AboutSettingsView: View {
             updatesCard
             openSourceCard
         }
-        .navigationTitle(String(localized: "About"))
+        .navigationTitle(String(displayLocalized: "About", bundle: .module))
     }
 
     private var identityCard: some View {
@@ -36,9 +37,9 @@ struct AboutSettingsView: View {
                 }
 
                 VStack(alignment: .leading, spacing: 6) {
-                    Text(String(localized: "Filbert"))
+                    Text(String(displayLocalized: "Filbert", bundle: .module))
                         .font(.title2.weight(.semibold))
-                    Text(String(localized: "Filbert is a native macOS AI usage tracker."))
+                    Text(String(displayLocalized: "Filbert is a native macOS AI usage tracker.", bundle: .module))
                         .foregroundStyle(.secondary)
                     Text(AppVersion.currentPresentation)
                         .font(.caption)
@@ -49,33 +50,39 @@ struct AboutSettingsView: View {
     }
 
     private var projectCard: some View {
-        SettingsCard(heading: String(localized: "Project")) {
+        SettingsCard(heading: String(displayLocalized: "Project", bundle: .module)) {
             VStack(alignment: .leading, spacing: 10) {
-                Text(String(localized: "Filbert is open source under the MIT License."))
+                Text(String(displayLocalized: "Filbert is open source under the MIT License.", bundle: .module))
                     .foregroundStyle(.secondary)
 
-                Link(String(localized: "View on GitHub"), destination: AboutAcknowledgements.projectURL)
-                    .accessibilityLabel(String(localized: "Open Filbert on GitHub"))
-                    .accessibilityHint(AboutAcknowledgements.projectURL.absoluteString)
+                Link(
+                    String(displayLocalized: "View on GitHub", bundle: .module),
+                    destination: AboutAcknowledgements.projectURL
+                )
+                .accessibilityLabel(String(displayLocalized: "Open Filbert on GitHub", bundle: .module))
+                .accessibilityHint(AboutAcknowledgements.projectURL.absoluteString)
 
-                Link(String(localized: "View the MIT License"), destination: AboutAcknowledgements.licenseURL)
-                    .accessibilityLabel(String(localized: "Open the MIT License on GitHub"))
-                    .accessibilityHint(AboutAcknowledgements.licenseURL.absoluteString)
+                Link(
+                    String(displayLocalized: "View the MIT License", bundle: .module),
+                    destination: AboutAcknowledgements.licenseURL
+                )
+                .accessibilityLabel(String(displayLocalized: "Open the MIT License on GitHub", bundle: .module))
+                .accessibilityHint(AboutAcknowledgements.licenseURL.absoluteString)
             }
         }
     }
 
     private var updatesCard: some View {
-        SettingsCard(heading: String(localized: "Updates")) {
+        SettingsCard(heading: String(displayLocalized: "Updates", bundle: .module)) {
             VStack(alignment: .leading, spacing: 10) {
-                Button(String(localized: "Check for Updates…")) {
+                Button(String(displayLocalized: "Check for Updates…", bundle: .module)) {
                     updateCoordinator.checkForUpdates()
                 }
                 .disabled(!updateCoordinator.canCheckForUpdates)
-                .accessibilityHint(String(localized: "Check for a newer Filbert release"))
+                .accessibilityHint(String(displayLocalized: "Check for a newer Filbert release", bundle: .module))
 
                 Toggle(
-                    String(localized: "Check for updates automatically"),
+                    String(displayLocalized: "Check for updates automatically", bundle: .module),
                     isOn: Binding(
                         get: { updateCoordinator.automaticallyChecksForUpdates },
                         set: { updateCoordinator.setAutomaticChecksForUpdates($0) }
@@ -84,7 +91,7 @@ struct AboutSettingsView: View {
                 .disabled(!updateCoordinator.isAvailable)
 
                 Toggle(
-                    String(localized: "Download updates automatically"),
+                    String(displayLocalized: "Download updates automatically", bundle: .module),
                     isOn: Binding(
                         get: { updateCoordinator.automaticallyDownloadsUpdates },
                         set: { updateCoordinator.setAutomaticDownloadsUpdates($0) }
@@ -93,25 +100,31 @@ struct AboutSettingsView: View {
                 .disabled(!updateCoordinator.allowsAutomaticUpdates)
 
                 if !updateCoordinator.isAvailable {
-                    Text(String(localized: "Automatic updates are available only in installed releases."))
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Text(String(
+                        displayLocalized: "Automatic updates are available only in installed releases.",
+                        bundle: .module
+                    ))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
             }
         }
     }
 
     private var openSourceCard: some View {
-        SettingsCard(heading: String(localized: "Open Source")) {
+        SettingsCard(heading: String(displayLocalized: "Open Source", bundle: .module)) {
             VStack(alignment: .leading, spacing: 10) {
                 runtimeLibraries
 
-                Text(String(localized: "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons."))
-                    .foregroundStyle(.secondary)
+                Text(String(
+                    displayLocalized: "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons.",
+                    bundle: .module
+                ))
+                .foregroundStyle(.secondary)
 
                 ForEach(AboutAcknowledgements.assetCredits, id: \.name) { credit in
                     Link(credit.name, destination: credit.url)
-                        .accessibilityLabel(String(localized: "Open Simple Icons on GitHub"))
+                        .accessibilityLabel(String(displayLocalized: "Open Simple Icons on GitHub", bundle: .module))
                         .accessibilityHint(credit.url.absoluteString)
                 }
             }
@@ -122,9 +135,9 @@ struct AboutSettingsView: View {
         ForEach(AboutAcknowledgements.runtimeLibraries, id: \.name) { library in
             HStack(spacing: 4) {
                 Link(library.name, destination: library.url)
-                Text("—")
+                Text(verbatim: "—")
                     .foregroundStyle(.secondary)
-                Link(String(localized: "MIT License"), destination: library.licenseURL)
+                Link(String(displayLocalized: "MIT License", bundle: .module), destination: library.licenseURL)
             }
         }
     }

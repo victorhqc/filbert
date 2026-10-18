@@ -1,6 +1,35 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "No credentials found. Sign in to this provider and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No credentials found. Sign in to this provider and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han encontrado credenciales. Inicia sesión en este proveedor y vuelve a intentarlo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontraron credenciales. Inicia sesión en este proveedor y vuelve a intentarlo."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Anmeldedaten gefunden. Melde dich bei diesem Anbieter an und versuche es erneut."
+          }
+        }
+      }
+    },
     "No data" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -84,6 +113,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "wird zurückgesetzt…"
+          }
+        }
+      }
+    },
+    "This provider does not support this action." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This provider does not support this action."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este proveedor no admite esta acción."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este proveedor no admite esta acción."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Anbieter unterstützt diese Aktion nicht."
           }
         }
       }

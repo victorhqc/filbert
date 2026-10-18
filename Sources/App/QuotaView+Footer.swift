@@ -1,4 +1,5 @@
 import AppKit
+import Core
 import SwiftUI
 
 extension QuotaView {
@@ -6,14 +7,14 @@ extension QuotaView {
         VStack(alignment: .leading, spacing: 6) {
             ZStack {
                 HStack {
-                    Text(String(localized: "Settings…"))
+                    Text(String(displayLocalized: "Settings…", bundle: .module))
                         .font(.caption)
                         .layoutPriority(1)
                         .openAndRaiseSettings()
 
                     Spacer()
 
-                    Button(String(localized: "Quit")) {
+                    Button(String(displayLocalized: "Quit", bundle: .module)) {
                         NSApplication.shared.terminate(nil)
                     }
                     .font(.caption)
@@ -60,20 +61,26 @@ extension QuotaView {
     private func updateActionButton(_ action: PopoverUpdate.Action, version: String) -> some View {
         switch action {
         case .update:
-            Button(String(localized: "Update")) {
+            Button(String(displayLocalized: "Update", bundle: .module)) {
                 updateCoordinator.checkForUpdates()
             }
             .controlSize(.small)
             .accessibilityLabel(
-                String.localizedStringWithFormat(String(localized: "Update Filbert to version %@"), version)
+                String.localizedStringWithFormat(
+                    String(displayLocalized: "Update Filbert to version %@", bundle: .module),
+                    version
+                )
             )
         case .restartToUpdate:
-            Button(String(localized: "Restart to Update")) {
+            Button(String(displayLocalized: "Restart to Update", bundle: .module)) {
                 updateCoordinator.installNow()
             }
             .controlSize(.small)
             .accessibilityLabel(
-                String.localizedStringWithFormat(String(localized: "Restart and update Filbert to version %@"), version)
+                String.localizedStringWithFormat(
+                    String(displayLocalized: "Restart and update Filbert to version %@", bundle: .module),
+                    version
+                )
             )
         }
     }
@@ -81,15 +88,15 @@ extension QuotaView {
     private func updateStatusText(_ phase: UpdatePhase) -> String {
         let format = switch phase {
         case .available:
-            String(localized: "Filbert %@ is available")
+            String(displayLocalized: "Filbert %@ is available", bundle: .module)
         case .downloading:
-            String(localized: "Downloading Filbert %@…")
+            String(displayLocalized: "Downloading Filbert %@…", bundle: .module)
         case .preparing:
-            String(localized: "Preparing Filbert %@…")
+            String(displayLocalized: "Preparing Filbert %@…", bundle: .module)
         case .readyToInstall:
-            String(localized: "Filbert %@ is ready to install")
+            String(displayLocalized: "Filbert %@ is ready to install", bundle: .module)
         case .installing:
-            String(localized: "Installing Filbert %@…")
+            String(displayLocalized: "Installing Filbert %@…", bundle: .module)
         }
         return String.localizedStringWithFormat(format, phase.version)
     }

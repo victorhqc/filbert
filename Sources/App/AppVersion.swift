@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 enum AppVersion {
@@ -15,10 +16,10 @@ enum AppVersion {
         guard let shortVersion,
               let version = normalizedReleaseVersion(shortVersion)
         else {
-            return String(localized: "filbert development")
+            return String(displayLocalized: "filbert development", bundle: .module)
         }
 
-        return String.localizedStringWithFormat(String(localized: "filbert v%@"), version)
+        return String.localizedStringWithFormat(String(displayLocalized: "filbert v%@", bundle: .module), version)
     }
 
     static func normalizedReleaseVersion(_ rawVersion: String) -> String? {
