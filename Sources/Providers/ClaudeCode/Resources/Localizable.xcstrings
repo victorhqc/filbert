@@ -243,7 +243,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Aktualisierung von Claude Code ist mit dem Exit-Code %d fehlgeschlagen. Öffne Claude Code und versuche es erneut."
+            "value" : "Die Claude-Code-Nutzungsdaten konnten nicht aktualisiert werden (Exit-Code %d). Öffne Claude Code und versuche es erneut."
           }
         },
         "en" : {
@@ -255,31 +255,31 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La actualización de Claude Code ha fallado con el código de salida %d. Abre Claude Code e inténtalo de nuevo."
+            "value" : "No se han podido actualizar los datos de Claude Code (código de salida %d). Abre Claude Code e inténtalo de nuevo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La actualización de Claude Code falló con el código de salida %d. Abre Claude Code e inténtalo de nuevo."
+            "value" : "No se pudieron actualizar los datos de Claude Code (código de salida %d). Abre Claude Code e inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの更新に失敗しました（終了コード%d）。Claude Codeを開いて、やり直してください。"
+            "value" : "Claude Codeの使用量データを更新できませんでした（終了コード%d）。Claude Codeを開いて、やり直してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
+            "value" : "A atualização dos dados do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
+            "value" : "A atualização dos dados do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
           }
         },
         "ru" : {
@@ -291,7 +291,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code 刷新失败，退出代码为 %d。请打开 Claude Code，然后重试。"
+            "value" : "Claude Code 用量数据刷新失败，退出代码为 %d。请打开 Claude Code，然后重试。"
           }
         }
       }
@@ -302,7 +302,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeitüberschreitung bei der Aktualisierung von Claude Code. Versuche es erneut."
+            "value" : "Zeitüberschreitung beim Aktualisieren der Claude-Code-Nutzungsdaten. Versuche es erneut."
           }
         },
         "en" : {
@@ -314,31 +314,31 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se ha agotado el tiempo de espera de la actualización de Claude Code. Intenta actualizar de nuevo."
+            "value" : "Se ha agotado el tiempo de espera al actualizar los datos de Claude Code. Vuelve a actualizar."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se agotó el tiempo de espera de la actualización de Claude Code. Intenta actualizar de nuevo."
+            "value" : "Se agotó el tiempo de espera al actualizar los datos de Claude Code. Inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの更新がタイムアウトしました。もう一度更新してください。"
+            "value" : "Claude Codeの使用量データの更新がタイムアウトしました。もう一度更新してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização do Claude Code excedeu o tempo limite. Tente atualizar novamente."
+            "value" : "A atualização dos dados do Claude Code excedeu o tempo limite. Tente atualizar novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização do Claude Code excedeu o tempo limite. Tente atualizar novamente."
+            "value" : "A atualização dos dados do Claude Code excedeu o tempo limite. Tente atualizar novamente."
           }
         },
         "ru" : {
@@ -350,7 +350,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code 刷新超时。请重新刷新。"
+            "value" : "Claude Code 用量数据刷新超时。请重新刷新。"
           }
         }
       }
@@ -538,7 +538,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Aktualisierung von Claude Code konnte nicht vorbereitet werden. Versuche es erneut."
+            "value" : "Die Aktualisierung der Claude-Code-Nutzungsdaten konnte nicht vorbereitet werden. Versuche es erneut."
           }
         },
         "en" : {
@@ -550,31 +550,31 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido preparar la actualización de Claude Code. Intenta actualizar de nuevo."
+            "value" : "No se ha podido preparar la actualización de los datos de Claude Code. Vuelve a actualizar."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo preparar la actualización de Claude Code. Intenta actualizar de nuevo."
+            "value" : "No se pudo preparar la actualización de los datos de Claude Code. Inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの更新を準備できませんでした。もう一度更新してください。"
+            "value" : "Claude Codeの使用量データの更新を準備できませんでした。もう一度更新してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível preparar a atualização do Claude Code. Tente atualizar novamente."
+            "value" : "Não foi possível preparar a atualização dos dados do Claude Code. Tente atualizar novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível preparar a atualização do Claude Code. Tente atualizar novamente."
+            "value" : "Não foi possível preparar a atualização dos dados do Claude Code. Tente atualizar novamente."
           }
         },
         "ru" : {
@@ -586,7 +586,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法准备 Claude Code 刷新。请重新刷新。"
+            "value" : "无法准备刷新 Claude Code 用量数据。请重新刷新。"
           }
         }
       }
@@ -886,61 +886,61 @@
         }
       }
     },
-    "Internal error: unexpected auth shape." : {
+    "Internal error: unexpected credential type." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interner Fehler: Unerwartete Authentifizierungsform."
+            "value" : "Interner Fehler: unerwarteter Typ der Anmeldedaten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Internal error: unexpected auth shape."
+            "value" : "Internal error: unexpected credential type."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error interno: forma de autenticación inesperada."
+            "value" : "Error interno: tipo de credencial inesperado."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error interno: forma de autenticación inesperada."
+            "value" : "Error interno: tipo de credencial inesperado."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内部エラー: 予期しない認証形式です。"
+            "value" : "内部エラー: 予期しない種類の認証情報です。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erro interno: formato de autenticação inesperado."
+            "value" : "Erro interno: tipo de credencial inesperado."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erro interno: formato de autenticação inesperado."
+            "value" : "Erro interno: tipo de credencial inesperado."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Внутренняя ошибка: неожиданный формат аутентификации."
+            "value" : "Внутренняя ошибка: неожиданный тип учётных данных."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内部错误：意外的认证格式。"
+            "value" : "内部错误：意外的凭证类型。"
           }
         }
       }
@@ -1123,6 +1123,7 @@
       }
     },
     "Weekly" : {
+      "comment" : "Usage window label: the weekly limit window. Also fills “%@ limit reached”.",
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {

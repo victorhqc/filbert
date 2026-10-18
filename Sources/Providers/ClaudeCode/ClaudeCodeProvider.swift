@@ -22,7 +22,7 @@ extension ClaudeCodeError: LocalizedError {
         case .binaryNotFound:
             String(displayLocalized: "Claude Code not found", bundle: .module)
         case .internalInconsistency:
-            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
+            String(displayLocalized: "Internal error: unexpected credential type.", bundle: .module)
         }
     }
 }

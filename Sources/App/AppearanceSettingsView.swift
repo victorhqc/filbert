@@ -251,7 +251,7 @@ private struct BalanceThresholdsSettingsRow: View {
 
     private var okStepper: some View {
         stepperRow(
-            label: String(displayLocalized: "OK above", bundle: .module),
+            label: String(displayLocalized: "OK at or above", bundle: .module),
             value: $okInput,
             range: (lowInput + 1) ... 1000
         )

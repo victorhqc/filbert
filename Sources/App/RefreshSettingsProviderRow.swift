@@ -119,7 +119,7 @@ struct RefreshSettingsProviderRow: View {
         .fixedSize()
         .accessibilityLabel(
             String.localizedStringWithFormat(
-                String(displayLocalized: "Keep checking for %@", bundle: .module),
+                String(displayLocalized: "Keep checking %@", bundle: .module),
                 provider.displayName
             )
         )
@@ -143,7 +143,7 @@ struct RefreshSettingsProviderRow: View {
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(remainingText)
             Spacer()
-            Button(String(displayLocalized: "Stop extension", bundle: .module)) {
+            Button(String(displayLocalized: "Stop fast checks", bundle: .module)) {
                 viewModel.stopSmartExtension(for: provider.id)
             }
             .buttonStyle(.borderless)
@@ -186,8 +186,8 @@ struct RefreshSettingsProviderRow: View {
         return String.localizedStringWithFormat(
             String(
                 displayLocalized: """
-                %1$@ runs %2$@ in the background. These checks may use some of your \
-                %3$@ quota. Shorter Smart intervals can increase the number of checks.
+                Filbert runs %2$@ in the background to check %1$@ usage. These checks may use \
+                some of your %3$@ quota. Shorter Smart intervals can increase the number of checks.
                 """,
                 bundle: .module
             ),

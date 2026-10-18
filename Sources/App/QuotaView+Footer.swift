@@ -5,27 +5,29 @@ import SwiftUI
 extension QuotaView {
     var footer: some View {
         VStack(alignment: .leading, spacing: 6) {
-            ZStack {
-                HStack {
-                    Text(String(displayLocalized: "Settings…", bundle: .module))
-                        .font(.caption)
-                        .layoutPriority(1)
-                        .openAndRaiseSettings()
-
-                    Spacer()
-
-                    Button(String(displayLocalized: "Quit", bundle: .module)) {
-                        NSApplication.shared.terminate(nil)
-                    }
+            HStack(spacing: 8) {
+                Text(String(displayLocalized: "Settings…", bundle: .module))
                     .font(.caption)
-                    .keyboardShortcut("q")
                     .layoutPriority(1)
-                }
+                    .openAndRaiseSettings()
+
+                Spacer(minLength: 0)
 
                 Text(AppVersion.currentPresentation)
                     .font(.caption2)
                     .foregroundStyle(.secondary)
-                    .allowsHitTesting(false)
+                    .lineLimit(1)
+                    .truncationMode(.middle)
+                    .help(AppVersion.currentPresentation)
+
+                Spacer(minLength: 0)
+
+                Button(String(displayLocalized: "Quit", bundle: .module)) {
+                    NSApplication.shared.terminate(nil)
+                }
+                .font(.caption)
+                .keyboardShortcut("q")
+                .layoutPriority(1)
             }
 
             if let update = updateCoordinator.popoverUpdate {

@@ -72,7 +72,7 @@ final class CursorProviderMetadataTests: EnglishTestCase {
         }
         XCTAssertEqual(
             message.resolved,
-            "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
+            "Cursor CLI not found. Install it and run “agent login”, or sign in to the Cursor app."
         )
     }
 

@@ -20,7 +20,7 @@ extension GeminiCLIError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .internalInconsistency:
-            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
+            String(displayLocalized: "Internal error: unexpected credential type.", bundle: .module)
         case .missingCredentials:
             String(displayLocalized: "Sign in to Gemini CLI before refreshing usage.", bundle: .module)
         case .invalidCredentials:

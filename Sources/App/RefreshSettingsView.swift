@@ -46,7 +46,7 @@ struct RefreshSettingsView: View {
                     )
 
                     intervalControl(
-                        title: String(displayLocalized: "Quiet window", bundle: .module),
+                        title: String(displayLocalized: "Fast-check duration", bundle: .module),
                         values: AutoRefreshPreferences.quietWindowOptions,
                         selectedValue: viewModel.autoRefreshQuietWindow,
                         setValue: viewModel.setAutoRefreshQuietWindow
@@ -91,7 +91,7 @@ struct RefreshSettingsView: View {
                 String(
                     displayLocalized: """
                     Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ \
-                    for %3$@, then every %4$@ once more before returning to the slow interval.
+                    for %3$@, then every %4$@ for another %3$@ before returning to the slow interval.
                     """,
                     bundle: .module
                 ),

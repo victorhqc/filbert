@@ -40,6 +40,7 @@ struct QuotaHeadlineAndRows: View {
         } else {
             Text(quota.headline.resolved)
                 .font(.headline)
+                .help(quota.headline.resolved)
         }
     }
 

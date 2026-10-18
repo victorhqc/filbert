@@ -112,9 +112,11 @@ private struct PacedUsageLineRow: View {
 
             HStack(spacing: 8) {
                 Text(text.remainingTime)
+                    .help(text.remainingTime)
                 Spacer(minLength: 4)
                 Text(text.allowance)
                     .multilineTextAlignment(.trailing)
+                    .help(text.allowance)
             }
             .font(.caption.monospacedDigit())
             .foregroundColor(.secondary)

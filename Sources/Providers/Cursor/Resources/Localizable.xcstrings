@@ -19,7 +19,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Queda %@"
+            "value" : "%@ restantes"
           }
         },
         "es-MX" : {
@@ -296,61 +296,61 @@
         }
       }
     },
-    "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app." : {
+    "Cursor CLI not found. Install it and run “agent login”, or sign in to the Cursor app." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI ist nicht installiert — führe `agent login` aus oder melde dich in der Cursor-App an."
+            "value" : "Cursor CLI wurde nicht gefunden. Installiere Cursor CLI und führe „agent login“ aus oder melde dich in der Cursor-App an."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
+            "value" : "Cursor CLI not found. Install it and run “agent login”, or sign in to the Cursor app."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI no está instalado — ejecuta `agent login` o inicia sesión en la aplicación Cursor."
+            "value" : "No se ha encontrado Cursor CLI. Instálalo y ejecuta «agent login», o inicia sesión en la app de Cursor."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI no está instalado — ejecuta `agent login` o inicia sesión en la aplicación Cursor."
+            "value" : "No se encontró Cursor CLI. Instálalo y ejecuta “agent login”, o inicia sesión en la app de Cursor."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLIがインストールされていません。`agent login`を実行するか、Cursorアプリにサインインしてください。"
+            "value" : "Cursor CLIが見つかりません。インストールして“agent login”を実行するか、Cursorアプリにサインインしてください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI não instalado — execute `agent login` ou inicie sessão no app Cursor."
+            "value" : "O Cursor CLI não foi encontrado. Instale-o e execute “agent login” ou inicie sessão no app Cursor."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI não instalado — execute `agent login` ou inicie sessão na aplicação Cursor."
+            "value" : "Cursor CLI não encontrado. Instale-o e execute «agent login» ou inicie sessão na aplicação Cursor."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursor CLI не установлен — выполните `agent login` или войдите в приложение Cursor."
+            "value" : "Cursor CLI не найден. Установите его и выполните «agent login» или войдите в приложение Cursor."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "未安装 Cursor CLI——请运行 `agent login`，或登录 Cursor App。"
+            "value" : "未找到 Cursor CLI。请安装后运行“agent login”，或登录 Cursor App。"
           }
         }
       }
@@ -462,7 +462,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отслеживает подписку и расходы по запросу"
+            "value" : "Отслеживает подписку и дополнительные расходы"
           }
         },
         "zh-Hans" : {
@@ -639,7 +639,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Расходы по запросу"
+            "value" : "Дополнительные расходы"
           }
         },
         "zh-Hans" : {
@@ -698,7 +698,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Общие расходы"
+            "value" : "Расходы общего пула"
           }
         },
         "zh-Hans" : {
@@ -739,7 +739,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レート制限されています"
+            "value" : "リクエストの上限に達しました"
           }
         },
         "pt-BR" : {
@@ -1329,7 +1329,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Cursorの認証情報を再読み込み"
+            "value" : "Cursorの認証情報をもう一度読み込む"
           }
         },
         "pt-BR" : {

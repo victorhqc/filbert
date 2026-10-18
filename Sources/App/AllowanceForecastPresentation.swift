@@ -229,7 +229,7 @@ private extension AllowanceForecastPresentation {
         case .quiet:
             text = String(displayLocalized: "No recent consumption detected", bundle: .module)
         case .tooFarApart:
-            text = String(displayLocalized: "Updates too far apart to estimate", bundle: .module)
+            text = String(displayLocalized: "Refreshes too far apart to estimate", bundle: .module)
         case .paused:
             text = String(displayLocalized: "Forecast paused until fresh data arrives", bundle: .module)
         case .exhausted, .insufficient:

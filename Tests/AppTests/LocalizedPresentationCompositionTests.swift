@@ -63,16 +63,13 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
                 let history = span(3600)
                 let status = language == "ru"
                     ? "До исчерпания: примерно \(short)"
-                    : "Voraussichtliche Restzeit: etwa \(short)"
+                    : "Reicht noch etwa \(short)"
                 let rowText = language == "ru"
                     ? "\(status) · история: \(history)"
-                    : "\(status) · jüngster Nutzungsverlauf (\(history))"
+                    : "\(status) · \(history) Verlauf"
                 let spoken = language == "ru"
                     ? "При среднем темпе до исчерпания: примерно \(full). Период наблюдения: \(history)."
-                    : """
-                    Voraussichtliche Restzeit beim durchschnittlichen Nutzungstempo: etwa \(full). \
-                    Grundlage: jüngster Nutzungsverlauf (\(history))
-                    """
+                    : "Reicht bei deinem Durchschnittstempo der letzten \(history) noch etwa \(full)"
 
                 XCTAssertEqual(headline.status, status, language)
                 XCTAssertEqual(headline.accessibilitySentences, [spoken], language)
@@ -94,11 +91,11 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
                     isFastRefreshActive: false
                 )
 
-                XCTAssertEqual(
-                    MenuBarProviderPresentation.accessibilityLabel(for: resolved),
-                    "Provider: saldo restante: \(formatted)",
-                    language
-                )
+                let expected = language == "pt-BR"
+                    ? "Provider: saldo restante: \(formatted)"
+                    : "Provider: \(formatted) de saldo restante"
+
+                XCTAssertEqual(MenuBarProviderPresentation.accessibilityLabel(for: resolved), expected, language)
             }
         }
     }
@@ -131,8 +128,13 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
         }
     }
 
-    func testGermanAndSpanishPercentageAnnouncementsSeparateTheSymbol() {
-        for language in ["de-DE", "es-MX", "es-ES"] {
+    func testPercentageAnnouncementsFollowEachLocalesSymbolSpacing() {
+        let expected = [
+            "de-DE": "Provider: 50 % verwendet",
+            "es-ES": "Provider: 50 % usado",
+            "es-MX": "Provider: 50% usado",
+        ]
+        for (language, text) in expected {
             DisplayLanguage.selectedLanguageCode = language
             let resolved = MenuBarProviderPresentation.Resolved(
                 providerName: "Provider",
@@ -140,9 +142,8 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
                 status: .window(percentage: 50),
                 isFastRefreshActive: false
             )
-            let verb = language == "de-DE" ? "verwendet" : "usado"
 
-            XCTAssertEqual(MenuBarProviderPresentation.accessibilityLabel(for: resolved), "Provider: 50 % \(verb)")
+            XCTAssertEqual(MenuBarProviderPresentation.accessibilityLabel(for: resolved), text, language)
         }
     }
 

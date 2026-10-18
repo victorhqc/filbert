@@ -14,7 +14,7 @@ enum PeakHoursPresentation {
                 .percent.precision(.fractionLength(0 ... 1)).locale(DisplayLanguage.locale)
             )
             return String.localizedStringWithFormat(
-                String(displayLocalized: "%@ credit rate", bundle: .module),
+                String(displayLocalized: "%@ of standard credit rate", bundle: .module),
                 percent
             )
         }

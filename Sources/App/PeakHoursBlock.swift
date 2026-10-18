@@ -108,7 +108,7 @@ struct PeakHoursBlock: View {
         formatter.timeStyle = .short
 
         return String.localizedStringWithFormat(
-            String(displayLocalized: "Effective %@", bundle: .module),
+            String(displayLocalized: "Starts %@", bundle: .module),
             formatter.string(from: effectiveDate)
         )
     }

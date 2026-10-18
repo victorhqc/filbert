@@ -580,61 +580,61 @@
         }
       }
     },
-    "Internal error: unexpected auth shape." : {
+    "Internal error: unexpected credential type." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interner Fehler: Unerwartete Authentifizierungsform."
+            "value" : "Interner Fehler: unerwarteter Typ der Anmeldedaten."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Internal error: unexpected auth shape."
+            "value" : "Internal error: unexpected credential type."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error interno: forma de autenticación inesperada."
+            "value" : "Error interno: tipo de credencial inesperado."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error interno: forma de autenticación inesperada."
+            "value" : "Error interno: tipo de credencial inesperado."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内部エラー: 予期しない認証形式です。"
+            "value" : "内部エラー: 予期しない種類の認証情報です。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erro interno: formato de autenticação inesperado."
+            "value" : "Erro interno: tipo de credencial inesperado."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erro interno: formato de autenticação inesperado."
+            "value" : "Erro interno: tipo de credencial inesperado."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Внутренняя ошибка: неожиданный формат аутентификации."
+            "value" : "Внутренняя ошибка: неожиданный тип учётных данных."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内部错误：意外的认证格式。"
+            "value" : "内部错误：意外的凭证类型。"
           }
         }
       }
@@ -716,7 +716,7 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se han informado límites de uso"
+            "value" : "No se han indicado límites de uso"
           }
         },
         "es-MX" : {
@@ -935,6 +935,7 @@
       }
     },
     "Weekly" : {
+      "comment" : "Usage window label: the weekly limit window. Also fills “%@ limit reached”.",
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
