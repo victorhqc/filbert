@@ -17,6 +17,15 @@ extension OpenAICodexError: LocalizedError {
     }
 }
 
+extension OpenAICodexError: DiagnosticError {
+    public var diagnosticCode: String {
+        switch self {
+        case .binaryNotFound: "binary-not-found"
+        case .internalInconsistency: "internal-inconsistency"
+        }
+    }
+}
+
 public struct OpenAICodexProvider: AIProvider {
     public static let providerId = "openai-codex"
     public static let providerName = "OpenAI Codex"

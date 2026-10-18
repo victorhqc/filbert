@@ -226,7 +226,8 @@ private actor ActivityExpirationRecorder {
     }
 
     func waitForIntervals(count: Int) async -> [TimeInterval] {
-        for _ in 0 ..< 100 where intervals.count < count {
+        let deadline = ContinuousClock.now + .seconds(5)
+        while intervals.count < count, ContinuousClock.now < deadline {
             await Task.yield()
         }
         return intervals

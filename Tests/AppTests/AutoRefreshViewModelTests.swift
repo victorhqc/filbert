@@ -114,9 +114,11 @@ final class AutoRefreshViewModelTests: XCTestCase {
         let registry = ProviderRegistry()
         registry.register(activeProvider)
         registry.register(inactiveProvider)
-        let viewModel = QuotaViewModel(registry: registry, errorLog: AppTestErrorLog.make()) { _ in
-            throw CancellationError()
-        }
+        let viewModel = QuotaViewModel(
+            registry: registry,
+            errorLog: AppTestErrorLog.make(),
+            autoRefreshSleeper: { _ in throw CancellationError() }
+        )
 
         await waitForFetches(on: activeProvider, count: 1)
         await waitForFetchCompletion(on: viewModel, providerId: RefreshSpyProvider.providerId)

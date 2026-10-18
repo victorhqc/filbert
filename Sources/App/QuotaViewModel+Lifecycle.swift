@@ -155,6 +155,7 @@ extension QuotaViewModel {
         clearSmartRetryDeadline(for: providerId)
         activityRuntime.policy.reset(for: providerId)
         clearAllowanceForecasts(for: providerId)
+        providersAwaitingNetwork.remove(providerId)
         syncFastRefreshStatus(for: providerId)
         fetchTasks[providerId]?.cancel()
         fetchTasks[providerId] = nil
@@ -227,16 +228,17 @@ extension QuotaViewModel {
         }
     }
 
-    func recordAutomaticFailure(for providerId: String) {
+    func recordAutomaticFailure(for providerId: String, isConnectivityFailure: Bool) {
         guard isEligibleForAutoRefresh(providerId) else { return }
-        recordSmartFailure(for: providerId)
+        recordSmartFailure(for: providerId, holdsAutomaticRetry: !isConnectivityFailure)
         syncFastRefreshStatus(for: providerId)
     }
 
     func updateAutomaticRefreshScheduling(
         for providerId: String,
         result: Result<ProviderQuota, Error>,
-        suppressSmartSuccess: Bool
+        suppressSmartSuccess: Bool,
+        isConnectivityFailure: Bool = false
     ) {
         guard isEligibleForAutoRefresh(providerId) else {
             syncFastRefreshStatus(for: providerId)
@@ -248,15 +250,20 @@ extension QuotaViewModel {
             switch result {
             case let .success(quota):
                 if suppressSmartSuccess {
-                    recordSmartFailure(for: providerId)
+                    recordSmartFailure(for: providerId, holdsAutomaticRetry: !isConnectivityFailure)
                 } else {
                     clearSmartRetryDeadline(for: providerId)
                     _ = recordSmartSuccess(quota, for: providerId)
                 }
             case .failure:
-                recordSmartFailure(for: providerId)
+                recordSmartFailure(for: providerId, holdsAutomaticRetry: !isConnectivityFailure)
             }
             syncFastRefreshStatus(for: providerId)
+        }
+        if isConnectivityFailure {
+            providersAwaitingNetwork.insert(providerId)
+        } else {
+            providersAwaitingNetwork.remove(providerId)
         }
         startAutoRefresh(for: providerId)
     }
@@ -327,7 +334,12 @@ extension QuotaViewModel {
         rescheduleActivityExpiration()
     }
 
-    func recordError(_ error: any Error, operation: String, providerId: String) {
+    func recordError(
+        _ error: any Error,
+        operation: String,
+        providerId: String,
+        origin: RefreshOrigin? = nil
+    ) {
         guard !isCancellationError(error), !Task.isCancelled else { return }
         guard error as? ProviderSetupError != .notSupported else { return }
         guard !isMissingCredentialError(error) else { return }
@@ -336,7 +348,10 @@ extension QuotaViewModel {
             operation: operation,
             code: "operation-failed",
             providerID: providerId,
-            error: error
+            error: error,
+            context: origin.map { origin in
+                ErrorLogContext(trigger: origin.logTrigger, networkPath: networkPath.status)
+            }
         )
     }
 }

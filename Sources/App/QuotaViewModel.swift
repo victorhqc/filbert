@@ -6,6 +6,28 @@ enum RefreshOrigin: Equatable {
     case initial
     case manual
     case automatic
+    case wake
+
+    var isAutomatic: Bool {
+        self == .automatic || self == .wake
+    }
+
+    var logTrigger: ErrorLogContext.Trigger {
+        switch self {
+        case .initial: .initial
+        case .manual: .manual
+        case .automatic: .automatic
+        case .wake: .wake
+        }
+    }
+}
+
+final class SatisfiedNetworkPath: NetworkPathObserving {
+    let status = NetworkPathStatus.satisfied
+
+    func statusChanges() -> AsyncStream<NetworkPathStatus> {
+        AsyncStream { $0.finish() }
+    }
 }
 
 @MainActor
@@ -19,6 +41,9 @@ final class QuotaViewModel {
     let autoRefreshSleeper: @Sendable (TimeInterval) async throws -> Void
     let smartRefreshElapsed: @Sendable () -> TimeInterval
     let smartRefreshBoundarySleeper: @Sendable (TimeInterval) async throws -> Void
+    let networkPath: any NetworkPathObserving
+    let wakeNetworkSleeper: @Sendable (TimeInterval) async throws -> Void
+    let retryGateExpirySleeper: @Sendable (TimeInterval) async throws -> Void
 
     // MARK: - State
 
@@ -79,6 +104,22 @@ final class QuotaViewModel {
 
     var autoRefreshSettingsRevision = 0
 
+    // MARK: - Connectivity
+
+    var networkPathTask: Task<Void, Never>?
+
+    var providersAwaitingNetwork: Set<String> = []
+
+    var isAwaitingNetworkAfterWake = false
+
+    var wakeTask: Task<Void, Never>?
+
+    var wakeRevision = 0
+
+    var retryGateExpiryTasks: [String: Task<Void, Never>] = [:]
+
+    var retryGateRevision = 0
+
     // MARK: - Allowance forecasting
 
     var allowanceForecaster = AllowanceForecaster()
@@ -104,7 +145,14 @@ final class QuotaViewModel {
         activityExpirationSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
             try await Task.sleep(for: .seconds(interval))
         },
-        activityNow: @escaping @Sendable () -> Date = { Date() }
+        activityNow: @escaping @Sendable () -> Date = { Date() },
+        networkPath: any NetworkPathObserving = SatisfiedNetworkPath(),
+        wakeNetworkSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
+            try await Task.sleep(for: .seconds(interval))
+        },
+        retryGateExpirySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { interval in
+            try await Task.sleep(for: .seconds(interval))
+        }
     ) {
         self.keychain = keychain
         self.registry = registry
@@ -112,6 +160,9 @@ final class QuotaViewModel {
         self.autoRefreshSleeper = autoRefreshSleeper
         self.smartRefreshBoundarySleeper = smartRefreshBoundarySleeper
         self.smartRefreshElapsed = smartRefreshElapsed
+        self.networkPath = networkPath
+        self.wakeNetworkSleeper = wakeNetworkSleeper
+        self.retryGateExpirySleeper = retryGateExpirySleeper
         activityRuntime = MenuBarProviderActivityRuntime(
             expirationSleeper: activityExpirationSleeper,
             now: activityNow
@@ -119,6 +170,7 @@ final class QuotaViewModel {
 
         installActivityLifecycleObservers()
         installSystemClockObserver()
+        installNetworkPathObserver()
 
         var enabledIds: Set<String> = []
         for info in registry.registeredProviders {

@@ -4,7 +4,7 @@ import Foundation
 import XCTest
 
 final class OpenAICodexProviderTests: XCTestCase {
-    private var temporaryDirectory: URL!
+    var temporaryDirectory: URL!
 
     override func setUpWithError() throws {
         temporaryDirectory = FileManager.default.temporaryDirectory
@@ -277,8 +277,8 @@ final class OpenAICodexProviderTests: XCTestCase {
             _ = try await CodexAppServerClient(timeout: timeout, errorLog: makeErrorLog())
                 .readRateLimits(at: executable.path)
             XCTFail("Expected \(expected)")
-        } catch let error as CodexAppServerError {
-            XCTAssertEqual(error, expected)
+        } catch let error as CodexAppServerFailure {
+            XCTAssertEqual(error.reason, expected)
         } catch {
             XCTFail("Unexpected error: \(error)")
         }

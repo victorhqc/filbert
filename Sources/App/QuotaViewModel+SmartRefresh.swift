@@ -75,14 +75,18 @@ extension QuotaViewModel {
         return max(0, deadline - smartRefreshElapsed())
     }
 
-    func recordSmartFailure(for providerId: String) {
+    /// A connectivity failure skips the hold: the network's return, not a
+    /// fixed delay, decides when the next attempt is useful.
+    func recordSmartFailure(for providerId: String, holdsAutomaticRetry: Bool = true) {
         guard AutoRefreshPreferences.mode == .smart else { return }
         _ = smartRefreshPolicy.recordFailure(
             for: providerId,
             at: smartRefreshElapsed(),
             quietWindow: AutoRefreshPreferences.quietWindow
         )
-        smartRefreshNotBefore[providerId] = smartRefreshElapsed() + AutoRefreshPreferences.slowInterval
+        if holdsAutomaticRetry {
+            smartRefreshNotBefore[providerId] = smartRefreshElapsed() + AutoRefreshPreferences.slowInterval
+        }
         smartExtensionRevision += 1
     }
 
@@ -97,9 +101,16 @@ extension QuotaViewModel {
     }
 
     func isWithinSmartSafetyDeadline(_ providerId: String) -> Bool {
-        if providerRetryGateRemaining(for: providerId) > 0 {
-            return true
-        }
+        isWithinProviderRetryGate(providerId) || isWithinFailureHold(providerId)
+    }
+
+    func isWithinProviderRetryGate(_ providerId: String) -> Bool {
+        providerRetryGateRemaining(for: providerId) > 0
+    }
+
+    /// The scheduler's own pause after a failure. It paces automatic work
+    /// only, so a manual refresh may replace it.
+    func isWithinFailureHold(_ providerId: String) -> Bool {
         guard let notBefore = smartRefreshNotBefore[providerId] else { return false }
         return smartRefreshElapsed() < notBefore
     }

@@ -64,27 +64,61 @@ struct CodexAppServerClient: Sendable {
         let process = Process()
         let input = Pipe()
         let output = Pipe()
+        let errorOutput = Pipe()
+        let usage = CodexProcessUsage()
 
         process.executableURL = URL(fileURLWithPath: executablePath)
         process.arguments = ["app-server", "--stdio"]
         process.standardInput = input
         process.standardOutput = output
-        process.standardError = Pipe()
+        process.standardError = errorOutput
+        process.terminationHandler = { finished in
+            usage.recordExit(finished.terminationStatus)
+        }
+        // An unread stderr pipe blocks the child once the pipe buffer fills.
+        errorOutput.fileHandleForReading.readabilityHandler = { handle in
+            let count = handle.availableData.count
+            if count == 0 {
+                handle.readabilityHandler = nil
+                usage.recordStderrClosed()
+            } else {
+                usage.addStderrBytes(count)
+            }
+        }
 
         do {
             try process.run()
         } catch {
-            throw CodexAppServerError.launchFailed
+            errorOutput.fileHandleForReading.readabilityHandler = nil
+            throw CodexAppServerFailure(reason: .launchFailed, subprocess: nil)
         }
 
         defer {
             input.fileHandleForWriting.closeFile()
             output.fileHandleForReading.closeFile()
+            errorOutput.fileHandleForReading.readabilityHandler = nil
+            errorOutput.fileHandleForReading.closeFile()
             if process.isRunning {
                 process.terminate()
             }
         }
 
+        do {
+            return try await readRateLimits(from: process, input: input, output: output, usage: usage)
+        } catch let reason as CodexAppServerError {
+            if process.isRunning {
+                process.terminate()
+            }
+            throw await CodexAppServerFailure(reason: reason, subprocess: usage.diagnostic())
+        }
+    }
+
+    private func readRateLimits(
+        from process: Process,
+        input: Pipe,
+        output: Pipe,
+        usage: CodexProcessUsage
+    ) async throws -> CodexRateLimitReadResult {
         // When the timeout fires it terminates the process, which also closes
         // stdout and lets the reader task observe EOF. Both tasks then finish
         // near-simultaneously, so `group.next()` can surface either error. The
@@ -97,7 +131,8 @@ struct CodexAppServerClient: Sendable {
                 try await readResponse(
                     input: input.fileHandleForWriting,
                     output: output.fileHandleForReading,
-                    didTimeOut: didTimeOut
+                    didTimeOut: didTimeOut,
+                    usage: usage
                 )
             }
             group.addTask {
@@ -120,7 +155,8 @@ struct CodexAppServerClient: Sendable {
     private func readResponse(
         input: FileHandle,
         output: FileHandle,
-        didTimeOut: OSAllocatedUnfairLock<Bool>
+        didTimeOut: OSAllocatedUnfairLock<Bool>,
+        usage: CodexProcessUsage
     ) async throws -> CodexRateLimitReadResult {
         try write(
             JSONRPCRequest(
@@ -136,6 +172,7 @@ struct CodexAppServerClient: Sendable {
 
         var didInitialize = false
         for try await line in output.bytes.lines {
+            usage.addStdoutBytes(line.utf8.count + 1)
             guard let message = line.data(using: .utf8),
                   let envelope = decodeEnvelope(from: message)
             else {

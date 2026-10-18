@@ -337,3 +337,13 @@ extension CursorProviderTests {
         XCTAssertEqual(quota.activityObservation?.freshness, .fresh)
     }
 }
+
+extension CursorProviderTests {
+    func testNetworkAndDecodingErrorsExposeTheirCause() {
+        XCTAssertTrue(isConnectivityError(CursorError.network(URLError(.notConnectedToInternet))))
+        XCTAssertFalse(isConnectivityError(CursorError.network(URLError(.badServerResponse))))
+        XCTAssertFalse(isConnectivityError(CursorError.http(500)))
+        XCTAssertNotNil(CursorError.decoding(URLError(.cannotDecodeContentData)).underlyingError)
+        XCTAssertNil(CursorError.http(429).underlyingError)
+    }
+}

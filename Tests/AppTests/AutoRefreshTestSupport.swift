@@ -160,41 +160,117 @@ func makeAutoRefreshViewModel(
     boundarySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
         throw CancellationError()
     },
-    activityNow: @escaping @Sendable () -> Date = { Date() }
+    activityNow: @escaping @Sendable () -> Date = { Date() },
+    errorLog: ErrorLog = AppTestErrorLog.make(),
+    networkPath: any NetworkPathObserving = TestNetworkPath(),
+    wakeNetworkSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
+        throw CancellationError()
+    },
+    retryGateExpirySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
+        throw CancellationError()
+    }
 ) -> QuotaViewModel {
     ProviderEnablement.setEnabled(true, for: RefreshSpyProvider.providerId)
     let registry = ProviderRegistry()
     registry.register(provider)
     return QuotaViewModel(
         registry: registry,
-        errorLog: AppTestErrorLog.make(),
+        errorLog: errorLog,
         autoRefreshSleeper: sleeper,
         smartRefreshBoundarySleeper: boundarySleeper,
         smartRefreshElapsed: elapsed,
-        activityNow: activityNow
+        activityNow: activityNow,
+        networkPath: networkPath,
+        wakeNetworkSleeper: wakeNetworkSleeper,
+        retryGateExpirySleeper: retryGateExpirySleeper
     )
+}
+
+final class TestNetworkPath: NetworkPathObserving, @unchecked Sendable {
+    private let lock = NSLock()
+    private var currentStatus: NetworkPathStatus
+    private var continuation: AsyncStream<NetworkPathStatus>.Continuation?
+
+    init(_ status: NetworkPathStatus = .satisfied) {
+        currentStatus = status
+    }
+
+    var status: NetworkPathStatus {
+        lock.withLock { currentStatus }
+    }
+
+    func statusChanges() -> AsyncStream<NetworkPathStatus> {
+        let (stream, continuation) = AsyncStream<NetworkPathStatus>.makeStream()
+        lock.withLock { self.continuation = continuation }
+        return stream
+    }
+
+    func set(_ status: NetworkPathStatus) {
+        let continuation = lock.withLock {
+            currentStatus = status
+            return self.continuation
+        }
+        continuation?.yield(status)
+    }
+}
+
+actor ControlledSleeper {
+    private var waiters: [CheckedContinuation<Void, any Error>] = []
+    private var requests: [TimeInterval] = []
+
+    func sleep(_ interval: TimeInterval) async throws {
+        requests.append(interval)
+        try await withCheckedThrowingContinuation { continuation in
+            waiters.append(continuation)
+        }
+    }
+
+    func releaseNext() {
+        guard !waiters.isEmpty else { return }
+        waiters.removeFirst().resume()
+    }
+
+    func requestedIntervals() -> [TimeInterval] {
+        requests
+    }
+
+    func pendingCount() -> Int {
+        waiters.count
+    }
+}
+
+@MainActor
+func waitForPendingSleeps(on sleeper: ControlledSleeper, count: Int) async {
+    await waitUntil { await sleeper.pendingCount() >= count }
+    let pending = await sleeper.pendingCount()
+    XCTAssertGreaterThanOrEqual(pending, count)
+}
+
+/// Bounded by time, not by a yield count, so a slow scheduler cannot end the
+/// wait before the awaited work has had a chance to run.
+@MainActor
+func waitUntil(timeout: Duration = .seconds(5), _ condition: () async -> Bool) async {
+    let deadline = ContinuousClock.now + timeout
+    while await !condition(), ContinuousClock.now < deadline {
+        await Task.yield()
+    }
 }
 
 @MainActor
 func waitForFetches(on provider: RefreshSpyProvider, count: Int) async {
-    for _ in 0 ..< 100 where provider.fetchCallCount < count {
-        await Task.yield()
-    }
+    await waitUntil { provider.fetchCallCount >= count }
     XCTAssertGreaterThanOrEqual(provider.fetchCallCount, count)
 }
 
 @MainActor
 func waitForFetchCompletion(on viewModel: QuotaViewModel, providerId: String) async {
-    for _ in 0 ..< 100 where viewModel.fetchTasks[providerId] != nil {
-        await Task.yield()
-    }
+    await waitUntil { viewModel.fetchTasks[providerId] == nil }
     XCTAssertNil(viewModel.fetchTasks[providerId])
 }
 
+@MainActor
 func waitForIntervals(on recorder: IntervalRecorder, count: Int) async {
-    for _ in 0 ..< 1000 where await recorder.intervals().count < count {
-        await Task.yield()
-    }
+    await waitUntil { await recorder.intervals().count >= count }
     let intervals = await recorder.intervals()
     XCTAssertGreaterThanOrEqual(intervals.count, count)
 }

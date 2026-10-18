@@ -56,6 +56,17 @@ extension OpenCodeGoError: LocalizedError {
     }
 }
 
+extension OpenCodeGoError: UnderlyingErrorProviding {
+    public var underlyingError: (any Error)? {
+        switch self {
+        case let .network(error), let .decoding(error):
+            error
+        default:
+            nil
+        }
+    }
+}
+
 struct OpenCodeGoUsageResponse: Decodable {
     let usage: OpenCodeGoUsage
 }

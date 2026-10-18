@@ -1,3 +1,4 @@
+import Core
 import Foundation
 @testable import GeminiCLIProvider
 import XCTest
@@ -26,7 +27,7 @@ extension GeminiCLIProviderTests {
             _ = try await transport.send(request)
             XCTFail("Expected unexpected-host error")
         } catch let error as GeminiHTTPError {
-            XCTAssertEqual(error, .network)
+            XCTAssertEqual(error, .network(nil))
         }
     }
 
@@ -154,5 +155,28 @@ extension GeminiCLIProviderTests {
         XCTAssertNil(redirectedRequest)
         task.cancel()
         session.invalidateAndCancel()
+    }
+}
+
+extension GeminiCLIProviderTests {
+    func testProviderKeepsTheURLErrorCodeOfANetworkFailure() async throws {
+        GeminiHostResponseURLProtocol.responseError = URLError(.notConnectedToInternet)
+        defer { GeminiHostResponseURLProtocol.responseError = nil }
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.protocolClasses = [GeminiHostResponseURLProtocol.self]
+        let transport = URLSessionGeminiHTTPTransport(session: URLSession(configuration: configuration))
+        let provider = makeProvider(
+            credentials: validCredentials(),
+            transport: transport,
+            errorLog: Self.makeErrorLog()
+        )
+
+        do {
+            _ = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: GeminiCLIProvider.baseURL)
+            XCTFail("Expected a network failure")
+        } catch let error as GeminiCLIError {
+            XCTAssertEqual(error, .network(.notConnectedToInternet))
+            XCTAssertTrue(isConnectivityError(error))
+        }
     }
 }

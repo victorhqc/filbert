@@ -1,6 +1,23 @@
 import Darwin
 import Foundation
 
+public struct ErrorLogContext: Sendable, Equatable {
+    public enum Trigger: String, Sendable, Encodable {
+        case initial
+        case manual
+        case automatic
+        case wake
+    }
+
+    public var trigger: Trigger?
+    public var networkPath: NetworkPathStatus?
+
+    public init(trigger: Trigger? = nil, networkPath: NetworkPathStatus? = nil) {
+        self.trigger = trigger
+        self.networkPath = networkPath
+    }
+}
+
 public struct ErrorLog: Sendable {
     public static let shared = ErrorLog(
         directoryURL: FileManager.default.homeDirectoryForCurrentUser
@@ -42,7 +59,8 @@ public struct ErrorLog: Sendable {
         operation: String,
         code: String,
         providerID: String? = nil,
-        error: (any Error)? = nil
+        error: (any Error)? = nil,
+        context: ErrorLogContext? = nil
     ) -> Bool {
         do {
             let data = try recordData(
@@ -50,7 +68,8 @@ public struct ErrorLog: Sendable {
                 operation: operation,
                 code: code,
                 providerID: providerID,
-                error: error
+                error: error,
+                context: context
             )
             guard data.count <= maximumFileSize else { return false }
             try withLockedDirectory(create: true) { directory in
@@ -81,6 +100,8 @@ private extension ErrorLog {
         var cliReportedError: Bool?
         var outputFailure: OutputFailure?
         var stdoutJSONShape: JSONRootShape?
+        var trigger: ErrorLogContext.Trigger?
+        var networkPath: NetworkPathStatus?
     }
 
     enum StorageFailure: Error {
@@ -92,7 +113,8 @@ private extension ErrorLog {
         operation: String,
         code: String,
         providerID: String?,
-        error: (any Error)?
+        error: (any Error)?,
+        context: ErrorLogContext? = nil
     ) throws -> Data {
         let formatter = ISO8601DateFormatter()
         formatter.timeZone = TimeZone(secondsFromGMT: 0)
@@ -116,6 +138,8 @@ private extension ErrorLog {
             }
         }
         addSafeErrorMetadata(error, to: &record)
+        record.trigger = context?.trigger
+        record.networkPath = context?.networkPath
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys, .withoutEscapingSlashes]
         var data = try encoder.encode(record)
@@ -124,6 +148,13 @@ private extension ErrorLog {
     }
 
     func addSafeErrorMetadata(_ error: (any Error)?, to record: inout Record) {
+        guard let error else { return }
+        for link in errorChain(error) where addSafeMetadata(of: link, to: &record) {
+            return
+        }
+    }
+
+    private func addSafeMetadata(of error: any Error, to record: inout Record) -> Bool {
         if let decodingError = error as? DecodingError {
             switch decodingError {
             case .dataCorrupted: record.decodingFailure = "dataCorrupted"
@@ -132,22 +163,24 @@ private extension ErrorLog {
             case .valueNotFound: record.decodingFailure = "valueNotFound"
             @unknown default: record.decodingFailure = "unknown"
             }
-        } else if let keychainError = error as? KeychainError {
+            return true
+        }
+        if let keychainError = error as? KeychainError {
             record.errorDomain = NSOSStatusErrorDomain
             switch keychainError {
             case let .saveFailed(status), let .loadFailed(status), let .deleteFailed(status):
                 record.errorCode = Int(status)
             }
-        } else if let error {
-            let nsError = error as NSError
-            let approvedDomains = [
-                NSCocoaErrorDomain, NSURLErrorDomain, NSPOSIXErrorDomain, NSOSStatusErrorDomain,
-            ]
-            if approvedDomains.contains(nsError.domain) {
-                record.errorDomain = nsError.domain
-                record.errorCode = nsError.code
-            }
+            return true
         }
+        let nsError = error as NSError
+        let approvedDomains = [
+            NSCocoaErrorDomain, NSURLErrorDomain, NSPOSIXErrorDomain, NSOSStatusErrorDomain,
+        ]
+        guard approvedDomains.contains(nsError.domain) else { return false }
+        record.errorDomain = nsError.domain
+        record.errorCode = nsError.code
+        return true
     }
 
     func bounded(_ value: String) -> String {

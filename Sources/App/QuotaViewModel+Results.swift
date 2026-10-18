@@ -22,7 +22,9 @@ extension QuotaViewModel {
         _ results: [String: Result<ProviderQuota, Error>],
         expectedRevisions: [String: Int],
         suppressSmartSuccessFor: Set<String>,
-        proactiveRefreshErrors: [String: String] = [:]
+        proactiveRefreshErrors: [String: String] = [:],
+        proactiveConnectivityFailures: Set<String> = [],
+        origin: RefreshOrigin = .initial
     ) {
         for (id, result) in results {
             guard expectedRevisions[id, default: 0] == lifecycleRevisions[id, default: 0],
@@ -31,6 +33,7 @@ extension QuotaViewModel {
                 continue
             }
             setRefreshing(false, for: id)
+            var isConnectivityFailure = proactiveConnectivityFailures.contains(id)
 
             switch result {
             case let .success(quota):
@@ -44,19 +47,11 @@ extension QuotaViewModel {
                 )
             case let .failure(error):
                 if isCancellationError(error) {
-                    if case .loading = providerStates[id], let info = providerInfo(for: id) {
-                        setState(.loaded(ProviderQuota(
-                            providerId: id,
-                            providerName: info.displayName,
-                            headline: String(localized: "No data"),
-                            lines: [],
-                            lastUpdated: Date(),
-                            error: String(localized: "Refresh cancelled. Select Refresh to try again.")
-                        )), for: id)
-                    }
+                    applyCancelledFetch(for: id)
                     continue
                 }
-                recordError(error, operation: "fetch-quota", providerId: id)
+                recordError(error, operation: "fetch-quota", providerId: id, origin: origin)
+                isConnectivityFailure = isConnectivityRelated(error)
                 if isMissingCredentialError(error) {
                     invalidateProviderWork(for: id)
                     setRefreshError(nil, for: id)
@@ -72,9 +67,22 @@ extension QuotaViewModel {
             updateAutomaticRefreshScheduling(
                 for: id,
                 result: result,
-                suppressSmartSuccess: suppressSmartSuccessFor.contains(id)
+                suppressSmartSuccess: suppressSmartSuccessFor.contains(id),
+                isConnectivityFailure: isConnectivityFailure
             )
         }
         refreshDerived()
+    }
+
+    private func applyCancelledFetch(for id: String) {
+        guard case .loading = providerStates[id], let info = providerInfo(for: id) else { return }
+        setState(.loaded(ProviderQuota(
+            providerId: id,
+            providerName: info.displayName,
+            headline: String(localized: "No data"),
+            lines: [],
+            lastUpdated: Date(),
+            error: String(localized: "Refresh cancelled. Select Refresh to try again.")
+        )), for: id)
     }
 }

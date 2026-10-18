@@ -82,6 +82,7 @@ extension QuotaViewModel {
             ) { [weak self] _ in
                 Task { @MainActor [weak self] in
                     self?.handleActivityDidWake()
+                    self?.handleWakeForRefresh()
                 }
             }
         )

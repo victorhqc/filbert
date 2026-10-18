@@ -1,13 +1,19 @@
 import Core
 import Foundation
 
+private struct ProactiveRefreshOutcome {
+    var suppressSmartSuccess = false
+    var errorMessage: String?
+    var isConnectivityFailure = false
+}
+
 extension QuotaViewModel {
     func fetchQuota(for providerId: String) {
         performFetch(for: providerId, origin: .initial)
     }
 
     func manualRefresh(for providerId: String) {
-        guard !isWithinSmartSafetyDeadline(providerId) else { return }
+        guard !isWithinProviderRetryGate(providerId) else { return }
         recordManualActivityHint(for: providerId)
         performFetch(for: providerId, origin: .manual)
     }
@@ -24,15 +30,7 @@ extension QuotaViewModel {
             applyConfigurationError(for: providerId)
             return
         }
-        // A retry hold or provider backoff blocks every origin. Reschedule the
-        // automatic loop so a hold cannot stall it, and drop a user-driven
-        // request without starting overlapping work.
-        guard !isWithinSmartSafetyDeadline(providerId) else {
-            if isEligibleForAutoRefresh(providerId) {
-                startAutoRefresh(for: providerId)
-            }
-            return
-        }
+        guard admitsFetch(for: providerId, origin: origin) else { return }
         switch providerStates[providerId] {
         case .loaded, .error:
             setRefreshing(true, for: providerId)
@@ -57,12 +55,34 @@ extension QuotaViewModel {
                 [providerId: result],
                 expectedRevisions: [providerId: revision],
                 suppressSmartSuccessFor: refreshOutcome.suppressSmartSuccess ? [providerId] : [],
-                proactiveRefreshErrors: refreshOutcome.errorMessage.map { [providerId: $0] } ?? [:]
+                proactiveRefreshErrors: refreshOutcome.errorMessage.map { [providerId: $0] } ?? [:],
+                proactiveConnectivityFailures: refreshOutcome.isConnectivityFailure ? [providerId] : [],
+                origin: origin
             )
+            scheduleRetryGateExpiry(for: providerId)
             if lifecycleRevisions[providerId, default: 0] == revision {
                 fetchTasks[providerId] = nil
             }
         }
+    }
+
+    /// A provider retry gate blocks every origin. The failure hold blocks all
+    /// but a manual refresh. A blocked request reschedules the automatic loop
+    /// so a hold cannot stall it.
+    private func admitsFetch(for providerId: String, origin: RefreshOrigin) -> Bool {
+        guard !isWithinProviderRetryGate(providerId),
+              origin == .manual || !isWithinFailureHold(providerId)
+        else {
+            if isEligibleForAutoRefresh(providerId) {
+                startAutoRefresh(for: providerId)
+            }
+            return false
+        }
+        if origin.isAutomatic, !isNetworkAvailableForAutomaticRefresh {
+            deferAutomaticRefreshUntilNetwork(for: providerId)
+            return false
+        }
+        return true
     }
 
     private func finishUnavailableFetch(for providerId: String, expectedRevision: Int) {
@@ -92,28 +112,33 @@ extension QuotaViewModel {
         for providerId: String,
         origin: RefreshOrigin,
         expectedRevision: Int
-    ) async -> (suppressSmartSuccess: Bool, errorMessage: String?) {
-        guard origin == .automatic || origin == .manual else { return (false, nil) }
+    ) async -> ProactiveRefreshOutcome {
+        guard origin != .initial else { return ProactiveRefreshOutcome() }
 
         do {
             try await registry.proactiveRefresh(for: providerId)
-            return (false, nil)
+            return ProactiveRefreshOutcome()
         } catch ProviderSetupError.notSupported {
-            return (false, nil)
+            return ProactiveRefreshOutcome()
         } catch where isCancellationError(error) {
-            return (false, nil)
+            return ProactiveRefreshOutcome()
         } catch {
             guard !Task.isCancelled,
                   lifecycleRevisions[providerId, default: 0] == expectedRevision
             else {
-                return (false, nil)
+                return ProactiveRefreshOutcome()
             }
-            guard !isMissingCredentialError(error) else { return (false, nil) }
-            recordError(error, operation: "proactive-refresh", providerId: providerId)
-            if origin == .automatic {
-                recordAutomaticFailure(for: providerId)
+            guard !isMissingCredentialError(error) else { return ProactiveRefreshOutcome() }
+            recordError(error, operation: "proactive-refresh", providerId: providerId, origin: origin)
+            let isConnectivityFailure = isConnectivityRelated(error)
+            if origin.isAutomatic {
+                recordAutomaticFailure(for: providerId, isConnectivityFailure: isConnectivityFailure)
             }
-            return (true, error.localizedDescription)
+            return ProactiveRefreshOutcome(
+                suppressSmartSuccess: true,
+                errorMessage: error.localizedDescription,
+                isConnectivityFailure: isConnectivityFailure
+            )
         }
     }
 }

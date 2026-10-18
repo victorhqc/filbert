@@ -27,7 +27,7 @@ public enum GeminiCLIError: Error, Equatable, Sendable {
     case projectSetupRequired
     case rateLimited
     case http(Int)
-    case network
+    case network(URLError.Code?)
     case timeout
     case decoding
     case payloadDrift
@@ -65,6 +65,13 @@ extension GeminiCLIError: LocalizedError {
         case .payloadDrift:
             String(localized: "Gemini CLI returned an unexpected usage response.")
         }
+    }
+}
+
+extension GeminiCLIError: UnderlyingErrorProviding {
+    public var underlyingError: (any Error)? {
+        guard case let .network(code?) = self else { return nil }
+        return URLError(code)
     }
 }
 

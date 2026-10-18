@@ -316,3 +316,13 @@ final class DeepSeekProviderTests: XCTestCase {
         """.utf8)
     }
 }
+
+extension DeepSeekProviderTests {
+    func testNetworkAndDecodingErrorsExposeTheirCause() {
+        XCTAssertTrue(isConnectivityError(DeepSeekError.network(URLError(.notConnectedToInternet))))
+        XCTAssertFalse(isConnectivityError(DeepSeekError.network(URLError(.badServerResponse))))
+        XCTAssertFalse(isConnectivityError(DeepSeekError.http(500)))
+        XCTAssertNotNil(DeepSeekError.decoding(URLError(.cannotDecodeContentData)).underlyingError)
+        XCTAssertNil(DeepSeekError.http(429).underlyingError)
+    }
+}
