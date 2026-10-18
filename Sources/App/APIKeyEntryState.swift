@@ -24,7 +24,8 @@ struct APIKeyEntryState {
                 return
             }
             errorMessage = String(
-                localized: "Unable to save the API key. Check Keychain access and try again."
+                displayLocalized: "Unable to save the API key. Check Keychain access and try again.",
+                bundle: .module
             )
         }
     }
@@ -39,7 +40,8 @@ struct APIKeyEntryState {
                 return
             }
             errorMessage = String(
-                localized: "Unable to clear the API key. Check Keychain access and try again."
+                displayLocalized: "Unable to clear the API key. Check Keychain access and try again.",
+                bundle: .module
             )
         }
     }

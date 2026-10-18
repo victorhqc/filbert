@@ -43,14 +43,14 @@ struct QuotaView: View {
 
     private var emptyState: some View {
         VStack(spacing: 8) {
-            Text(String(localized: "No providers configured"))
+            Text(String(displayLocalized: "No providers configured", bundle: .module))
                 .font(.headline)
 
-            Text(String(localized: "Open Settings to add your first AI provider."))
+            Text(String(displayLocalized: "Open Settings to add your first AI provider.", bundle: .module))
                 .font(.subheadline)
                 .foregroundColor(.secondary)
 
-            Text(String(localized: "Open Settings"))
+            Text(String(displayLocalized: "Open Settings", bundle: .module))
                 .openAndRaiseSettings()
         }
         .padding(.vertical, 16)
@@ -74,7 +74,7 @@ struct QuotaView: View {
             ProgressView()
                 .scaleEffect(0.8)
                 .padding(.trailing, 4)
-            Text(String(localized: "Loading…"))
+            Text(String(displayLocalized: "Loading…", bundle: .module))
                 .foregroundColor(.secondary)
         }
         .padding(.vertical, 4)
@@ -102,7 +102,7 @@ struct QuotaView: View {
             }
 
             if let guidance = quota.error {
-                Text(guidance)
+                Text(guidance.resolved)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
@@ -120,7 +120,7 @@ struct QuotaView: View {
         }
         .buttonStyle(.borderless)
         .font(.caption)
-        .help(refreshHelp(for: providerId, defaultHelp: String(localized: "Refresh")))
+        .help(refreshHelp(for: providerId, defaultHelp: String(displayLocalized: "Refresh", bundle: .module)))
         .disabled(isRefreshDisabled(providerId: providerId, state: state))
     }
 
@@ -140,51 +140,20 @@ struct QuotaView: View {
         }
         let wholeMinutes = max((remaining / 60).rounded(.up), 1) * 60
         let duration = CoarseDurationFormatting.string(from: wholeMinutes, unitsStyle: .full)
-        return String(localized: "The provider asked Filbert to wait. Try again in \(duration).")
+        return String(
+            displayLocalized: "The provider asked Filbert to wait. Try again in \(duration).",
+            bundle: .module
+        )
     }
 
     private func headerErrorMessage(providerId: String, state: ProviderState) -> String? {
         if let refreshError = viewModel.refreshErrors[providerId] {
-            return refreshError
+            return refreshError.resolved
         }
         if case let .error(message) = state {
-            return message
+            return message.resolved
         }
         return nil
-    }
-
-    private func headerAccessibilityLabel(
-        info: ProviderInfo,
-        state: ProviderState,
-        collapsed: Bool,
-        fastRefreshStatus: String?
-    ) -> String {
-        let headerLabel: String
-        guard collapsed, case let .loaded(quota) = state else {
-            headerLabel = info.displayName
-            return headerAccessibilityLabel(headerLabel, fastRefreshStatus: fastRefreshStatus)
-        }
-
-        switch QuotaStatusResolver.resolve(for: quota) {
-        case let .window(percentage):
-            headerLabel = String(localized: "\(info.displayName): \(Int(percentage.rounded()))% used")
-        case let .balance(_, formattedAmount):
-            headerLabel = String(localized: "\(info.displayName): \(formattedAmount) remaining")
-        case let .credits(formattedAmount):
-            headerLabel = String(localized: "\(info.displayName): \(formattedAmount) credits remaining")
-        case .fallback:
-            headerLabel = info.displayName
-        }
-        return headerAccessibilityLabel(headerLabel, fastRefreshStatus: fastRefreshStatus)
-    }
-
-    private func headerAccessibilityLabel(_ headerLabel: String, fastRefreshStatus: String?) -> String {
-        guard let fastRefreshStatus else { return headerLabel }
-        return String.localizedStringWithFormat(
-            String(localized: "Accessibility sentence format", bundle: .module),
-            headerLabel,
-            fastRefreshStatus
-        )
     }
 
     private func errorContent(_ message: String, providerId: String) -> some View {
@@ -198,20 +167,20 @@ struct QuotaView: View {
             }
 
             if viewModel.canInstallHelper(for: providerId) {
-                Button(String(localized: "Install Helper")) {
+                Button(String(displayLocalized: "Install Helper", bundle: .module)) {
                     Task { await viewModel.installHelper(for: providerId) }
                 }
             } else if viewModel.isReadyToFetch(providerId) {
-                Button(String(localized: "Retry")) {
+                Button(String(displayLocalized: "Retry", bundle: .module)) {
                     viewModel.manualRefresh(for: providerId)
                 }
-                .help(refreshHelp(for: providerId, defaultHelp: String(localized: "Retry")))
+                .help(refreshHelp(for: providerId, defaultHelp: String(displayLocalized: "Retry", bundle: .module)))
                 .disabled(
                     viewModel.isRefreshing[providerId] == true
                         || viewModel.manualRefreshWaitRemaining(for: providerId) != nil
                 )
             } else {
-                Text(String(localized: "Open Settings"))
+                Text(String(displayLocalized: "Open Settings", bundle: .module))
                     .openAndRaiseSettings()
             }
             ErrorLogLink(errorLog: viewModel.errorLog)
@@ -221,8 +190,8 @@ struct QuotaView: View {
 
     @ViewBuilder
     private func lastUpdatedLabel(_ quota: ProviderQuota) -> some View {
-        let relative = quota.lastUpdated.formatted(.relative(presentation: .named))
-        Text(String(localized: "Last updated: \(relative)"))
+        let relative = quota.lastUpdated.formatted(.relative(presentation: .named).locale(DisplayLanguage.locale))
+        Text(String(displayLocalized: "Last updated: \(relative)", bundle: .module))
             .font(.caption)
             .foregroundColor(.secondary)
     }
@@ -231,12 +200,12 @@ struct QuotaView: View {
 
     @ViewBuilder
     private func staleCacheHint(_ quota: ProviderQuota) -> some View {
-        let relative = quota.lastUpdated.formatted(.relative(presentation: .named))
+        let relative = quota.lastUpdated.formatted(.relative(presentation: .named).locale(DisplayLanguage.locale))
         VStack(alignment: .leading, spacing: 2) {
-            Text(String(localized: "Last updated by \(quota.providerName): \(relative)"))
+            Text(String(displayLocalized: "Last updated by \(quota.providerName): \(relative)", bundle: .module))
                 .font(.caption2)
                 .foregroundColor(.secondary)
-            Text(String(localized: "Open \(quota.providerName) to refresh"))
+            Text(String(displayLocalized: "Open \(quota.providerName) to refresh", bundle: .module))
                 .font(.caption2)
                 .foregroundColor(.secondary)
         }
@@ -266,7 +235,7 @@ private extension QuotaView {
         if let info = viewModel.providerInfo(for: providerId) {
             let collapsed = viewModel.isCollapsed(providerId)
             let fastRefreshStatus = viewModel.isFastAutomaticRefreshActive(for: providerId)
-                ? String(localized: "Fast refresh active")
+                ? String(displayLocalized: "Fast refresh active", bundle: .module)
                 : nil
             VStack(alignment: .leading, spacing: 8) {
                 providerHeader(
@@ -279,11 +248,11 @@ private extension QuotaView {
                 if !collapsed {
                     providerBody(providerId: providerId, state: state)
                 } else if case let .error(message) = state {
-                    errorContent(message, providerId: providerId)
+                    errorContent(message.resolved, providerId: providerId)
                 }
 
                 if let message = viewModel.refreshErrors[providerId] {
-                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                    Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     ErrorLogLink(errorLog: viewModel.errorLog)
@@ -325,9 +294,15 @@ private extension QuotaView {
                     fastRefreshStatus: fastRefreshStatus
                 )
             )
-            .accessibilityValue(collapsed ? String(localized: "Collapsed") : String(localized: "Expanded"))
+            .accessibilityValue(
+                collapsed
+                    ? String(displayLocalized: "Collapsed", bundle: .module)
+                    : String(displayLocalized: "Expanded", bundle: .module)
+            )
             .accessibilityAction(
-                named: collapsed ? String(localized: "Expand") : String(localized: "Collapse")
+                named: collapsed
+                    ? String(displayLocalized: "Expand", bundle: .module)
+                    : String(displayLocalized: "Collapse", bundle: .module)
             ) {
                 viewModel.toggleCollapsed(info.id)
             }
@@ -387,13 +362,13 @@ private extension QuotaView {
         case .unconfigured:
             EmptyView()
         case let .setup(reason):
-            setupContent(reason, providerId: providerId)
+            setupContent(reason.resolved, providerId: providerId)
         case .loading:
             loadingContent
         case let .loaded(quota):
             quotaContent(quota, providerId: providerId)
         case let .error(message):
-            errorContent(message, providerId: providerId)
+            errorContent(message.resolved, providerId: providerId)
         }
     }
 }

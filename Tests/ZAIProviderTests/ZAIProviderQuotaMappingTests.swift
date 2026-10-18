@@ -7,7 +7,15 @@ import XCTest
 /// first-party captures (2026-08-18); `quota-credits.json` derives from the
 /// real credits-plan payload in CodexBar issue #2724 (2026-08-06).
 final class ZAIProviderQuotaMappingTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
     override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseError = nil
@@ -24,7 +32,7 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
 
         let quota = try await fetchQuota()
 
-        XCTAssertEqual(quota.lines.map(\.label), ["5-hour window", "Weekly", "Monthly web-tool calls"])
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["5-hour window", "Weekly", "Monthly web-tool calls"])
         XCTAssertEqual(quota.lines.map(\.percentage), [13, 16, 0])
         XCTAssertEqual(quota.lines.map(\.used), [nil, nil, 0])
         XCTAssertEqual(quota.lines.map(\.total), [nil, nil, 1000])
@@ -32,9 +40,9 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
         XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
         XCTAssertEqual(quota.lines[0].resetDate?.timeIntervalSince1970 ?? 0, 1_787_093_257.047, accuracy: 0.001)
         let monthlyDetails = try XCTUnwrap(quota.lines[2].details)
-        XCTAssertEqual(monthlyDetails.map(\.label), ["search-prime", "web-reader", "zread"])
-        XCTAssertTrue(quota.headline.hasPrefix("13%"))
-        XCTAssertTrue(quota.headline.contains("·"))
+        XCTAssertEqual(monthlyDetails.map(\.label.resolved), ["search-prime", "web-reader", "zread"])
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("13%"))
+        XCTAssertTrue(quota.headline.resolved.contains("·"))
     }
 
     func testFetchQuota_legacyFixture_attachesLegacyPricing() async throws {
@@ -75,13 +83,13 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
 
         let quota = try await fetchQuota()
 
-        XCTAssertEqual(quota.lines.map(\.label), ["5-hour window", "Weekly"])
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["5-hour window", "Weekly"])
         XCTAssertEqual(quota.lines.map(\.percentage), [3, 1])
         XCTAssertEqual(quota.lines.map(\.used), [71, 71])
         XCTAssertEqual(quota.lines.map(\.total), [2000, 10000])
         XCTAssertEqual(quota.lines[0].resetDate?.timeIntervalSince1970 ?? 0, 1_786_073_946.574, accuracy: 0.001)
-        XCTAssertTrue(quota.headline.hasPrefix("3%"))
-        XCTAssertTrue(quota.headline.contains("·"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("3%"))
+        XCTAssertTrue(quota.headline.resolved.contains("·"))
     }
 
     func testFetchQuota_creditsFixture_attachesCreditsPricing() async throws {
@@ -113,7 +121,7 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
         let quota = try await fetchQuota()
 
         XCTAssertEqual(quota.lines.count, 1)
-        XCTAssertEqual(quota.lines[0].label, "5-hour window")
+        XCTAssertEqual(quota.lines[0].label.resolved, "5-hour window")
         XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
     }
 
@@ -198,7 +206,7 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
         let quota = try await fetchQuota()
 
         XCTAssertNil(quota.peakHoursConfig)
-        XCTAssertEqual(quota.lines.map(\.label), ["5-hour window", "Weekly"])
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["5-hour window", "Weekly"])
     }
 
     func testFetchQuota_timeLimitMapsUsedAndTotal() async throws {
@@ -250,8 +258,8 @@ final class ZAIProviderQuotaMappingTests: XCTestCase {
         let fiveHour = quota.lines[0]
 
         XCTAssertEqual(fiveHour.details?.count, 1)
-        XCTAssertEqual(fiveHour.details?[0].label, "deepseek-v3")
-        XCTAssertEqual(fiveHour.details?[0].value, "200")
+        XCTAssertEqual(fiveHour.details?[0].label.resolved, "deepseek-v3")
+        XCTAssertEqual(fiveHour.details?[0].value.resolved, "200")
     }
 
     // MARK: - Helpers

@@ -168,7 +168,7 @@ private struct APIKeySpyProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )
@@ -185,7 +185,7 @@ private struct SecondaryAPIKeySpyProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )
@@ -213,7 +213,7 @@ private final class DelayedAPIKeyProvider: AIProvider, @unchecked Sendable {
             returning: ProviderQuota(
                 providerId: Self.providerId,
                 providerName: Self.providerName,
-                headline: "Late result",
+                headline: DisplayText(verbatim: "Late result"),
                 lines: [],
                 lastUpdated: Date()
             )
@@ -250,7 +250,7 @@ private final class APIKeyFreeSpyProvider: AIProvider, @unchecked Sendable {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )

@@ -11,8 +11,8 @@ struct AppearanceTab: View {
     var body: some View {
         SettingsScrollColumn {
             SettingsCard(
-                heading: String(localized: "Provider order"),
-                description: String(localized: "Drag providers to change their order.")
+                heading: String(displayLocalized: "Provider order", bundle: .module),
+                description: String(displayLocalized: "Drag providers to change their order.", bundle: .module)
             ) {
                 if viewModel.configuredProvidersOrdered.isEmpty {
                     providerOrderEmptyHint
@@ -28,11 +28,11 @@ struct AppearanceTab: View {
                 }
             }
 
-            SettingsCard(heading: String(localized: "Balance thresholds")) {
+            SettingsCard(heading: String(displayLocalized: "Balance thresholds", bundle: .module)) {
                 BalanceThresholdsSettingsRow()
             }
 
-            SettingsCard(heading: String(localized: "Menu bar icon")) {
+            SettingsCard(heading: String(displayLocalized: "Menu bar icon", bundle: .module)) {
                 Toggle(
                     isOn: Binding(
                         get: { viewModel.isVintageMacIconEnabled },
@@ -40,7 +40,7 @@ struct AppearanceTab: View {
                     )
                 ) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(String(localized: "Vintage Mac"))
+                        Text(String(displayLocalized: "Vintage Mac", bundle: .module))
                         Text(vintageMacSubtitle)
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -48,7 +48,7 @@ struct AppearanceTab: View {
                 }
             }
 
-            SettingsCard(heading: String(localized: "Keep Awake")) {
+            SettingsCard(heading: String(displayLocalized: "Keep Awake", bundle: .module)) {
                 Toggle(
                     isOn: Binding(
                         get: { sleepPrevention.isFeatureVisible },
@@ -56,15 +56,15 @@ struct AppearanceTab: View {
                     )
                 ) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(String(localized: "Show Keep Awake"))
-                        Text(String(localized: "Show a keep-awake timer in Filbert's panel"))
+                        Text(String(displayLocalized: "Show Keep Awake", bundle: .module))
+                        Text(String(displayLocalized: "Show a keep-awake timer in Filbert's panel", bundle: .module))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 }
             }
         }
-        .navigationTitle(String(localized: "Appearance"))
+        .navigationTitle(String(displayLocalized: "Appearance", bundle: .module))
     }
 
     private var providerOrderRows: some View {
@@ -89,7 +89,7 @@ struct AppearanceTab: View {
             )
         ) {
             VStack(alignment: .leading, spacing: 2) {
-                Text(String(localized: "Automatic"))
+                Text(String(displayLocalized: "Automatic", bundle: .module))
                 Text(automaticSelectionDescription)
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -101,9 +101,9 @@ struct AppearanceTab: View {
     private var menuBarSelectionText: String {
         guard let provider = viewModel.menuBarProviderInfo else { return "" }
         if viewModel.isAutomaticMenuBarProviderSelection {
-            return String(localized: "Menu bar automatically selects \(provider.displayName)")
+            return String(displayLocalized: "Menu bar automatically selects \(provider.displayName)", bundle: .module)
         }
-        return String(localized: "Menu bar uses the first provider: \(provider.displayName)")
+        return String(displayLocalized: "Menu bar uses the first provider: \(provider.displayName)", bundle: .module)
     }
 
     private var automaticSelectionHint: String {
@@ -111,20 +111,23 @@ struct AppearanceTab: View {
             return automaticSelectionDescription
         }
         return String.localizedStringWithFormat(
-            String(localized: "Automatic selection accessibility hint"),
+            String(displayLocalized: "Automatic selection accessibility hint", bundle: .module),
             provider.displayName
         )
     }
 
     private var automaticSelectionDescription: String {
-        String(localized: "Automatic selection description")
+        String(displayLocalized: "Automatic selection description", bundle: .module)
     }
 
     private var providerOrderEmptyHint: some View {
-        Text(String(localized: "Configure a provider on the Providers tab to start reordering."))
-            .font(.caption)
-            .foregroundColor(.secondary)
-            .frame(maxWidth: .infinity, alignment: .leading)
+        Text(String(
+            displayLocalized: "Configure a provider on the Providers tab to start reordering.",
+            bundle: .module
+        ))
+        .font(.caption)
+        .foregroundColor(.secondary)
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private func providerOrderRow(_ provider: ProviderInfo, at index: Int) -> some View {
@@ -135,7 +138,7 @@ struct AppearanceTab: View {
             Spacer()
             Image(systemName: "line.3.horizontal")
                 .foregroundStyle(.secondary)
-                .help(String(localized: "Drag to reorder providers"))
+                .help(String(displayLocalized: "Drag to reorder providers", bundle: .module))
                 .accessibilityHidden(true)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -154,10 +157,10 @@ struct AppearanceTab: View {
                 move: viewModel.moveProvider
             )
         )
-        .accessibilityAction(named: String(localized: "Move up")) {
+        .accessibilityAction(named: String(displayLocalized: "Move up", bundle: .module)) {
             moveProvider(at: index, direction: -1)
         }
-        .accessibilityAction(named: String(localized: "Move down")) {
+        .accessibilityAction(named: String(displayLocalized: "Move down", bundle: .module)) {
             moveProvider(at: index, direction: 1)
         }
     }
@@ -181,7 +184,8 @@ struct AppearanceTab: View {
 
     private var vintageMacSubtitle: String {
         String(
-            localized: "Show a classic Happy / Sad Mac face instead of the ring in the menu bar"
+            displayLocalized: "Show a classic Happy / Sad Mac face instead of the ring in the menu bar",
+            bundle: .module
         )
     }
 }
@@ -233,7 +237,7 @@ private struct BalanceThresholdsSettingsRow: View {
 
     private var lowStepper: some View {
         stepperRow(
-            label: String(localized: "Low below"),
+            label: String(displayLocalized: "Low below", bundle: .module),
             value: $lowInput,
             range: 0 ... 1000
         )
@@ -247,7 +251,7 @@ private struct BalanceThresholdsSettingsRow: View {
 
     private var okStepper: some View {
         stepperRow(
-            label: String(localized: "OK above"),
+            label: String(displayLocalized: "OK above", bundle: .module),
             value: $okInput,
             range: (lowInput + 1) ... 1000
         )
@@ -278,15 +282,15 @@ private struct BalanceThresholdsSettingsRow: View {
         return VStack(alignment: .leading, spacing: 4) {
             swatchRow(
                 color: ProviderVisualStyle.tierColor(.critical, scheme: colorScheme),
-                caption: String(localized: "under \(lowInt)")
+                caption: String(displayLocalized: "under \(lowInt)", bundle: .module)
             )
             swatchRow(
                 color: ProviderVisualStyle.tierColor(.warn, scheme: colorScheme),
-                caption: String(localized: "\(lowInt)–\(okInt)")
+                caption: "\(lowInt)–\(okInt)"
             )
             swatchRow(
                 color: ProviderVisualStyle.tierColor(.good, scheme: colorScheme),
-                caption: String(localized: "\(okInt) and up")
+                caption: String(displayLocalized: "\(okInt) and up", bundle: .module)
             )
         }
         .padding(.top, 2)
@@ -304,7 +308,7 @@ private struct BalanceThresholdsSettingsRow: View {
     }
 
     private var hint: some View {
-        Text(String(localized: "Applies to every provider currency (USD, CNY, …)."))
+        Text(String(displayLocalized: "Applies to every provider currency (USD, CNY, …).", bundle: .module))
             .font(.caption2)
             .foregroundColor(.secondary)
     }

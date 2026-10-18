@@ -4,6 +4,18 @@ import Foundation
 import XCTest
 
 final class GeminiCLIProviderTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     func testProviderReportsAPIKeyFreeSetupAndSetupHelp() async throws {
         let provider = makeProvider(credentials: nil)
 
@@ -13,7 +25,7 @@ final class GeminiCLIProviderTests: XCTestCase {
         guard case let .setup(message) = await provider.currentSetupState() else {
             return XCTFail("Expected setup state")
         }
-        XCTAssertEqual(message, "Sign in to Gemini CLI")
+        XCTAssertEqual(message.resolved, "Sign in to Gemini CLI")
 
         let setupHelp = try XCTUnwrap(GeminiCLIProvider.setupHelp)
         XCTAssertEqual(setupHelp.linkLabel, "Install Gemini CLI")
@@ -62,7 +74,7 @@ extension GeminiCLIProviderTests {
         guard case let .error(invalidMessage) = await invalid.currentSetupState() else {
             return XCTFail("Expected invalid-payload error state")
         }
-        XCTAssertEqual(invalidMessage, "Update Gemini CLI and sign in again")
+        XCTAssertEqual(invalidMessage.resolved, "Update Gemini CLI and sign in again")
 
         let denied = makeProvider(
             credentialsResult: .failure(.accessDenied(-25293))
@@ -70,7 +82,7 @@ extension GeminiCLIProviderTests {
         guard case let .error(deniedMessage) = await denied.currentSetupState() else {
             return XCTFail("Expected access-denied error state")
         }
-        XCTAssertEqual(deniedMessage, "Allow Filbert to read the Gemini CLI Keychain item")
+        XCTAssertEqual(deniedMessage.resolved, "Allow Filbert to read the Gemini CLI Keychain item")
     }
 }
 
@@ -117,15 +129,15 @@ extension GeminiCLIProviderTests {
         let quota = try provider.map(response)
 
         XCTAssertEqual(quota.lines.count, 3)
-        XCTAssertEqual(quota.lines[0].label, "gemini-2.5-flash · Requests")
+        XCTAssertEqual(quota.lines[0].label.resolved, "gemini-2.5-flash · Requests")
         XCTAssertEqual(quota.lines[0].percentage, 25)
         XCTAssertEqual(quota.lines[0].resetDate, Date(timeIntervalSince1970: 1_735_689_600.123))
-        XCTAssertEqual(quota.lines[0].details?.first?.value, "75")
-        XCTAssertEqual(quota.lines[1].label, "gemini-2.5-pro · Input tokens")
+        XCTAssertEqual(quota.lines[0].details?.first?.value.resolved, "75")
+        XCTAssertEqual(quota.lines[1].label.resolved, "gemini-2.5-pro · Input tokens")
         XCTAssertEqual(quota.lines[1].percentage, 80)
-        XCTAssertEqual(quota.lines[2].label, "gemini-2.5-pro · Output tokens")
+        XCTAssertEqual(quota.lines[2].label.resolved, "gemini-2.5-pro · Output tokens")
         XCTAssertEqual(quota.lines[2].percentage, 50)
-        XCTAssertTrue(quota.headline.hasPrefix("80% used"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("80% used"))
         XCTAssertEqual(
             quota.activityObservation?.metrics.map(\.id),
             [
@@ -151,16 +163,16 @@ extension GeminiCLIProviderTests {
         ])
         let quota = try provider.map(fractionOnly)
         XCTAssertEqual(quota.lines[0].percentage, 0)
-        XCTAssertEqual(quota.lines[0].label, "gemini-2.5-flash · Quota")
+        XCTAssertEqual(quota.lines[0].label.resolved, "gemini-2.5-flash · Quota")
         XCTAssertNil(quota.lines[0].total)
 
         let empty = try provider.map(GeminiQuotaResponse(buckets: []))
         XCTAssertTrue(empty.lines.isEmpty)
-        XCTAssertEqual(empty.headline, "No usage limits reported")
+        XCTAssertEqual(empty.headline.resolved, "No usage limits reported")
 
         let missing = try provider.map(GeminiQuotaResponse(buckets: nil))
         XCTAssertTrue(missing.lines.isEmpty)
-        XCTAssertEqual(missing.headline, "No usage limits reported")
+        XCTAssertEqual(missing.headline.resolved, "No usage limits reported")
 
         let drift = try decodeFixture(
             "payload-drift.json",

@@ -13,7 +13,7 @@ class SmartRefreshPolicyTestCase: XCTestCase {
         freshness: ProviderActivityFreshness = .unknown,
         providerName: String = "Provider",
         headline: String = "Headline",
-        lines: [UsageLine] = [UsageLine(label: "Usage", percentage: 10)],
+        lines: [UsageLine] = [UsageLine(label: DisplayText(verbatim: "Usage"), percentage: 10)],
         lastUpdated: Date = Date(),
         error: String? = nil,
         isStale: Bool = false,
@@ -29,10 +29,10 @@ class SmartRefreshPolicyTestCase: XCTestCase {
         return ProviderQuota(
             providerId: "provider",
             providerName: providerName,
-            headline: headline,
+            headline: DisplayText(verbatim: headline),
             lines: lines,
             lastUpdated: lastUpdated,
-            error: error,
+            error: error.map { DisplayText(verbatim: $0) },
             isStale: isStale,
             activityObservation: resolvedObservation,
             peakHoursConfig: peakHoursConfig
@@ -64,29 +64,29 @@ class SmartRefreshPolicyTestCase: XCTestCase {
         if isUpdated {
             return [
                 UsageLine(
-                    label: "Localized usage",
+                    label: DisplayText(verbatim: "Localized usage"),
                     used: 9,
                     total: 100,
                     percentage: 90,
                     unit: "tokens",
                     resetDate: Date(timeIntervalSince1970: 200),
                     details: [
-                        UsageDetail(label: "B", value: "2"),
-                        UsageDetail(label: "A", value: "updated"),
+                        UsageDetail(label: DisplayText(verbatim: "B"), value: DisplayText(verbatim: "2")),
+                        UsageDetail(label: DisplayText(verbatim: "A"), value: DisplayText(verbatim: "updated")),
                     ]
                 ),
-                UsageLine(label: "Additional line", percentage: 50),
+                UsageLine(label: DisplayText(verbatim: "Additional line"), percentage: 50),
             ]
         }
         return [
             UsageLine(
-                label: "Usage",
+                label: DisplayText(verbatim: "Usage"),
                 used: 1,
                 total: 10,
                 percentage: 10,
                 unit: "requests",
                 resetDate: Date(timeIntervalSince1970: 100),
-                details: [UsageDetail(label: "A", value: "1")]
+                details: [UsageDetail(label: DisplayText(verbatim: "A"), value: DisplayText(verbatim: "1"))]
             ),
         ]
     }

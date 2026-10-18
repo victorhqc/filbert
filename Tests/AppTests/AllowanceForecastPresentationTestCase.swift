@@ -3,6 +3,18 @@ import Core
 import XCTest
 
 class AllowanceForecastPresentationTestCase: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     let now = Date(timeIntervalSince1970: 1_800_000_000)
 
     func present(
@@ -17,13 +29,18 @@ class AllowanceForecastPresentationTestCase: XCTestCase {
     ) -> AllowanceForecastPresentation {
         let lines = [
             UsageLine(
-                label: "5-hour window",
+                label: DisplayText(verbatim: "5-hour window"),
                 percentage: fiveHourPercentage,
                 resetDate: fiveHourReset,
                 id: "five-hour",
                 limitGroup: "claude"
             ),
-            UsageLine(label: "Weekly", percentage: weeklyPercentage, id: "weekly", limitGroup: weeklyGroup),
+            UsageLine(
+                label: DisplayText(verbatim: "Weekly"),
+                percentage: weeklyPercentage,
+                id: "weekly",
+                limitGroup: weeklyGroup
+            ),
         ] + extraLines
         var forecasts: [String: AllowanceForecast] = [:]
         forecasts["five-hour"] = fiveHour
@@ -36,13 +53,13 @@ class AllowanceForecastPresentationTestCase: XCTestCase {
     }
 
     func makeQuota(
-        lines: [UsageLine] = [UsageLine(label: "5-hour window", percentage: 3, id: "five-hour")],
+        lines: [UsageLine] = [UsageLine(label: DisplayText(verbatim: "5-hour window"), percentage: 3, id: "five-hour")],
         headlineUsageLineId: String? = "five-hour"
     ) -> ProviderQuota {
         ProviderQuota(
             providerId: "provider",
             providerName: "Provider",
-            headline: "3% · resets in 5 hours",
+            headline: DisplayText(verbatim: "3% · resets in 5 hours"),
             lines: lines,
             lastUpdated: now,
             headlineUsageLineId: headlineUsageLineId

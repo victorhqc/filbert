@@ -20,32 +20,32 @@ public extension GeminiCLIProvider {
                   credentials.accessToken?.isEmpty == false
                   || credentials.refreshToken?.isEmpty == false
             else {
-                return .setup(String(localized: "Sign in to Gemini CLI"))
+                return .setup(DisplayText { String(displayLocalized: "Sign in to Gemini CLI", bundle: .module) })
             }
             return nil
         } catch GeminiCredentialError.itemNotFound {
-            return .setup(String(localized: "Sign in to Gemini CLI"))
+            return .setup(DisplayText { String(displayLocalized: "Sign in to Gemini CLI", bundle: .module) })
         } catch GeminiCredentialError.accessDenied(errSecUserCanceled) {
-            return .setup(
-                String(localized: "Allow Filbert to read the Gemini CLI Keychain item")
-            )
+            return .setup(DisplayText {
+                String(displayLocalized: "Allow Filbert to read the Gemini CLI Keychain item", bundle: .module)
+            })
         } catch let error as GeminiCredentialError where error == .invalidPayload {
             recordCredentialFailure(operation: "currentSetupState", error: error)
-            return .error(
-                String(localized: "Update Gemini CLI and sign in again")
-            )
+            return .error(DisplayText {
+                String(displayLocalized: "Update Gemini CLI and sign in again", bundle: .module)
+            })
         } catch let error as GeminiCredentialError {
             recordCredentialFailure(operation: "currentSetupState", error: error)
-            return .error(
-                String(localized: "Allow Filbert to read the Gemini CLI Keychain item")
-            )
+            return .error(DisplayText {
+                String(displayLocalized: "Allow Filbert to read the Gemini CLI Keychain item", bundle: .module)
+            })
         } catch is CancellationError {
-            return .setup(String(localized: "Sign in to Gemini CLI"))
+            return .setup(DisplayText { String(displayLocalized: "Sign in to Gemini CLI", bundle: .module) })
         } catch let error as URLError where error.code == .cancelled {
-            return .setup(String(localized: "Sign in to Gemini CLI"))
+            return .setup(DisplayText { String(displayLocalized: "Sign in to Gemini CLI", bundle: .module) })
         } catch {
             recordCredentialFailure(operation: "currentSetupState", error: error)
-            return .error(String(localized: "Sign in to Gemini CLI"))
+            return .error(DisplayText { String(displayLocalized: "Sign in to Gemini CLI", bundle: .module) })
         }
     }
 

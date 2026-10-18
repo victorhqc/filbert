@@ -73,8 +73,8 @@ final class RefreshSpyProvider: AIProvider, ProactiveRefreshable, @unchecked Sen
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "\(percentage)% \(presentationRevision)",
-            lines: [UsageLine(label: "Usage \(presentationRevision)", percentage: percentage)],
+            headline: DisplayText(verbatim: "\(percentage)% \(presentationRevision)"),
+            lines: [UsageLine(label: DisplayText(verbatim: "Usage \(presentationRevision)"), percentage: percentage)],
             lastUpdated: Date(),
             activityObservation: ProviderActivityObservation(metrics: [
                 ProviderActivityMetric(
@@ -109,8 +109,8 @@ final class SecondaryRefreshSpyProvider: AIProvider, @unchecked Sendable {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "10%",
-            lines: [UsageLine(label: "Usage", percentage: 10)],
+            headline: DisplayText(verbatim: "10%"),
+            lines: [UsageLine(label: DisplayText(verbatim: "Usage"), percentage: 10)],
             lastUpdated: Date(),
             activityObservation: ProviderActivityObservation(metrics: [
                 ProviderActivityMetric(id: "usage", kind: .usage, value: .number(10)),
@@ -142,8 +142,8 @@ final class ThrottledRefreshSpyProvider: AIProvider, @unchecked Sendable {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "\(percentage)%",
-            lines: [UsageLine(label: "Usage", percentage: percentage)],
+            headline: DisplayText(verbatim: "\(percentage)%"),
+            lines: [UsageLine(label: DisplayText(verbatim: "Usage"), percentage: percentage)],
             lastUpdated: Date(),
             activityObservation: ProviderActivityObservation(metrics: [
                 ProviderActivityMetric(id: "usage", kind: .usage, value: .number(Decimal(percentage))),

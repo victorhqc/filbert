@@ -11,7 +11,13 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
             fiveHour: estimated("five-hour", in: 80 * 60, span: 20 * 60),
             weekly: estimated("weekly", in: 30 * 60, span: 40 * 60),
             extraLines: [
-                UsageLine(label: "Monthly", percentage: 100, resetDate: reset, id: "monthly", limitGroup: "claude"),
+                UsageLine(
+                    label: DisplayText(verbatim: "Monthly"),
+                    percentage: 100,
+                    resetDate: reset,
+                    id: "monthly",
+                    limitGroup: "claude"
+                ),
             ]
         )
 
@@ -35,7 +41,11 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
     }
 
     func testLimitReachedOnTheHeadlineLineReplacesTheHeadline() throws {
-        let quota = makeQuota(lines: [UsageLine(label: "5-hour window", percentage: 100, id: "five-hour")])
+        let quota = makeQuota(lines: [UsageLine(
+            label: DisplayText(verbatim: "5-hour window"),
+            percentage: 100,
+            id: "five-hour"
+        )])
 
         let presentation = AllowanceForecastPresentation(
             quota: quota,

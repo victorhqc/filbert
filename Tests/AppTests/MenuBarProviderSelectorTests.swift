@@ -25,8 +25,8 @@ final class MenuBarProviderSelectorTests: XCTestCase {
             "displayable": loadedState(for: "displayable", updatedAt: 1),
             "fallback": loadedState(for: "fallback", updatedAt: 10, isDisplayable: false),
             "loading": .loading,
-            "setup": .setup("Setup needed"),
-            "error": .error("Unavailable"),
+            "setup": .setup(DisplayText(verbatim: "Setup needed")),
+            "error": .error(DisplayText(verbatim: "Unavailable")),
             "disabled": loadedState(for: "disabled", updatedAt: 100),
             "unlisted": loadedState(for: "unlisted", updatedAt: 1000),
         ]
@@ -187,12 +187,12 @@ final class MenuBarProviderSelectorTests: XCTestCase {
         updatedAt: TimeInterval = 0,
         isDisplayable: Bool = true
     ) -> ProviderState {
-        let lines = isDisplayable ? [UsageLine(label: "Window", percentage: 20)] : []
+        let lines = isDisplayable ? [UsageLine(label: DisplayText(verbatim: "Window"), percentage: 20)] : []
         return .loaded(
             ProviderQuota(
                 providerId: providerId,
                 providerName: providerId,
-                headline: "",
+                headline: DisplayText(verbatim: ""),
                 lines: lines,
                 lastUpdated: Date(timeIntervalSinceReferenceDate: updatedAt)
             )

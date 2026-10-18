@@ -1,3 +1,4 @@
+import Core
 import Foundation
 import IOKit.pwr_mgt
 import Observation
@@ -182,12 +183,12 @@ final class SleepPreventionController {
     var durationMenuTitle: String {
         switch session {
         case .none:
-            String(localized: "for…")
+            String(displayLocalized: "for…", bundle: .module)
         case .some(.untilTurnedOff):
-            String(localized: "Until turned off")
+            String(displayLocalized: "Until turned off", bundle: .module)
         case .some(.timed):
             String.localizedStringWithFormat(
-                String(localized: "for %@"),
+                String(displayLocalized: "for %@", bundle: .module),
                 Self.remainingTimeText(for: remainingSeconds)
             )
         }
@@ -196,12 +197,12 @@ final class SleepPreventionController {
     var accessibilityValue: String {
         switch session {
         case .none:
-            String(localized: "Inactive")
+            String(displayLocalized: "Inactive", bundle: .module)
         case .some(.untilTurnedOff):
-            String(localized: "Mac won't sleep until turned off")
+            String(displayLocalized: "Mac won't sleep until turned off", bundle: .module)
         case .some(.timed):
             String.localizedStringWithFormat(
-                String(localized: "Mac won't sleep for %@"),
+                String(displayLocalized: "Mac won't sleep for %@", bundle: .module),
                 Self.remainingTimeText(for: remainingSeconds)
             )
         }

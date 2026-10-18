@@ -9,6 +9,22 @@
 <dict>
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
+    <!--
+      The localizations live in the SwiftPM resource bundles, not in Contents/Resources/*.lproj.
+      This list tells macOS which languages to offer in Language & Region › Applications.
+    -->
+    <key>CFBundleLocalizations</key>
+    <array>
+        <string>en</string>
+        <string>de-DE</string>
+        <string>es-MX</string>
+        <string>es-ES</string>
+        <string>pt-BR</string>
+        <string>pt-PT</string>
+        <string>ru</string>
+        <string>zh-Hans</string>
+        <string>ja</string>
+    </array>
     <key>CFBundleDisplayName</key>
     <string>Filbert</string>
     <key>CFBundleExecutable</key>

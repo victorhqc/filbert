@@ -200,7 +200,7 @@ private final class GateSpyProvider: AIProvider, ProactiveRefreshable, @unchecke
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )

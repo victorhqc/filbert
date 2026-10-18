@@ -8,6 +8,8 @@ final class ZAIProviderTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         session = URLSession(configuration: config)
@@ -15,6 +17,8 @@ final class ZAIProviderTests: XCTestCase {
     }
 
     override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseHeaders = nil
@@ -104,8 +108,8 @@ final class ZAIProviderTests: XCTestCase {
             baseURL: ZAIProvider.baseURL
         )
 
-        XCTAssertTrue(quota.headline.hasPrefix("42%"))
-        XCTAssertTrue(quota.headline.contains("·"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("42%"))
+        XCTAssertTrue(quota.headline.resolved.contains("·"))
     }
 
     func testFetchQuota_headlineFallsBackToWeekly() async throws {
@@ -127,8 +131,8 @@ final class ZAIProviderTests: XCTestCase {
             baseURL: ZAIProvider.baseURL
         )
 
-        XCTAssertTrue(quota.headline.hasPrefix("75%"))
-        XCTAssertTrue(quota.headline.contains("·"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("75%"))
+        XCTAssertTrue(quota.headline.resolved.contains("·"))
     }
 
     func testFetchQuota_headlineNoDataWhenNoRecognizedLimits() async throws {
@@ -147,7 +151,7 @@ final class ZAIProviderTests: XCTestCase {
             auth: .apiKey("test-key"),
             baseURL: ZAIProvider.baseURL
         )
-        XCTAssertEqual(quota.headline, "No data")
+        XCTAssertEqual(quota.headline.resolved, "No data")
     }
 
     // MARK: - Failures surface as typed errors

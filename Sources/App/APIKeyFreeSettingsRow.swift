@@ -31,7 +31,7 @@ struct APIKeyFreeSettingsRow: View {
             Divider()
 
             if !isEnabled {
-                Text(String(localized: "Enable this provider to view setup options."))
+                Text(String(displayLocalized: "Enable this provider to view setup options.", bundle: .module))
                     .font(.caption)
                     .foregroundColor(.secondary)
             } else {
@@ -40,16 +40,16 @@ struct APIKeyFreeSettingsRow: View {
                     HStack(spacing: 6) {
                         ProgressView()
                             .controlSize(.small)
-                        Text(String(localized: "Working…"))
+                        Text(String(displayLocalized: "Working…", bundle: .module))
                             .font(.caption)
                             .foregroundColor(.secondary)
                     }
                 case let .setup(reason):
                     VStack(alignment: .leading, spacing: 8) {
                         if canInstall {
-                            installPromptView(reason: reason)
+                            installPromptView(reason: reason.resolved)
                         } else {
-                            setupReasonView(reason: reason)
+                            setupReasonView(reason: reason.resolved)
                         }
                         if canRemove {
                             removeButton
@@ -68,7 +68,7 @@ struct APIKeyFreeSettingsRow: View {
                     }
                 case let .error(message):
                     VStack(alignment: .leading, spacing: 8) {
-                        Label(message, systemImage: "exclamationmark.triangle.fill")
+                        Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
                             .font(.caption)
                             .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
                         ErrorLogLink(errorLog: errorLog)
@@ -81,7 +81,7 @@ struct APIKeyFreeSettingsRow: View {
                         credentialImportButton
                     }
                 case .unconfigured:
-                    Text(String(localized: "Not configured"))
+                    Text(String(displayLocalized: "Not configured", bundle: .module))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -93,10 +93,13 @@ struct APIKeyFreeSettingsRow: View {
         VStack(alignment: .leading, spacing: 8) {
             setupReasonView(reason: reason)
 
-            Text(String(localized: "Filbert reads your Claude Code usage by hooking into its status line."))
-                .font(.caption)
-                .foregroundColor(.secondary)
-            Text(String(localized: "This adds a small helper script to ~/.claude/."))
+            Text(String(
+                displayLocalized: "Filbert reads your Claude Code usage by hooking into its status line.",
+                bundle: .module
+            ))
+            .font(.caption)
+            .foregroundColor(.secondary)
+            Text(String(displayLocalized: "This adds a small helper script to ~/.claude/.", bundle: .module))
                 .font(.caption)
                 .foregroundColor(.secondary)
 
@@ -105,7 +108,7 @@ struct APIKeyFreeSettingsRow: View {
     }
 
     private var installButton: some View {
-        Button(String(localized: "Install Helper")) {
+        Button(String(displayLocalized: "Install Helper", bundle: .module)) {
             onInstall()
         }
         .buttonStyle(.borderedProminent)
@@ -144,7 +147,7 @@ struct APIKeyFreeSettingsRow: View {
 
     private var removeHelperView: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text(String(localized: "Helper installed and active."))
+            Text(String(displayLocalized: "Helper installed and active.", bundle: .module))
                 .font(.caption)
                 .foregroundColor(.secondary)
 
@@ -153,7 +156,7 @@ struct APIKeyFreeSettingsRow: View {
     }
 
     private var removeButton: some View {
-        Button(String(localized: "Remove Helper"), role: .destructive) {
+        Button(String(displayLocalized: "Remove Helper", bundle: .module), role: .destructive) {
             onRemove()
         }
     }

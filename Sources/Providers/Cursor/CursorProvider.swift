@@ -5,16 +5,27 @@ public struct CursorProvider: AIProvider {
     public static let providerId = "cursor"
     public static let providerName = "Cursor"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(localized: "Monitor subscription and on-demand spend")
-    public static let providerDisclaimer: String? = String(
-        localized: "This provider uses undocumented Cursor endpoints and may stop working if Cursor changes them."
-    )
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor subscription and on-demand spend", bundle: .module)
+    }
+
+    public static var providerDisclaimer: String? {
+        String(
+            displayLocalized: """
+            This provider uses undocumented Cursor endpoints and may stop working if Cursor changes them.
+            """,
+            bundle: .module
+        )
+    }
+
     public static let baseURL = URL(string: "https://api2.cursor.sh")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
-    public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
-        linkLabel: String(localized: "Sign in to Cursor"),
-        url: URL(string: "https://cursor.com/docs/cli/reference/authentication")!
-    )
+    public static var setupHelp: ProviderSetupHelp? {
+        ProviderSetupHelp(
+            linkLabel: String(displayLocalized: "Sign in to Cursor", bundle: .module),
+            url: URL(string: "https://cursor.com/docs/cli/reference/authentication")!
+        )
+    }
 
     private let locator: CursorLocator
     let tokenStore: CursorTokenStore
@@ -66,7 +77,7 @@ public struct CursorProvider: AIProvider {
         } catch {
             guard !isCredentialCancellation(error) else { return missingCredentialSetupState() }
             recordCredentialFailure(operation: "currentSetupState", error: error)
-            return .error(error.localizedDescription)
+            return .error(DisplayText(describing: error))
         }
 
         return missingCredentialSetupState()
@@ -74,11 +85,14 @@ public struct CursorProvider: AIProvider {
 
     private func missingCredentialSetupState() -> ProviderState {
         if locator.resolve() != nil {
-            return .setup(String(localized: "Sign in to Cursor"))
+            return .setup(DisplayText { String(displayLocalized: "Sign in to Cursor", bundle: .module) })
         }
-        return .setup(String(
-            localized: "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
-        ))
+        return .setup(DisplayText {
+            String(
+                displayLocalized: "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app.",
+                bundle: .module
+            )
+        })
     }
 
     // MARK: - Fetch
@@ -213,19 +227,19 @@ public struct CursorProvider: AIProvider {
         var details: [UsageDetail] = []
         if let autoPercent = plan.autoPercentUsed {
             details.append(UsageDetail(
-                label: String(localized: "Auto"),
-                value: String(format: "%.0f%%", autoPercent)
+                label: DisplayText { String(displayLocalized: "Auto", bundle: .module) },
+                value: DisplayText { QuotaFormatting.percentage(autoPercent) }
             ))
         }
         if let apiPercent = plan.apiPercentUsed {
             details.append(UsageDetail(
-                label: String(localized: "API"),
-                value: String(format: "%.0f%%", apiPercent)
+                label: DisplayText { String(displayLocalized: "API", bundle: .module) },
+                value: DisplayText { QuotaFormatting.percentage(apiPercent) }
             ))
         }
 
         lines.append(UsageLine(
-            label: String(localized: "Included usage"),
+            label: DisplayText { String(displayLocalized: "Included usage", bundle: .module) },
             used: plan.includedSpend.map { Double($0) / 100 },
             total: plan.limit.map { Double($0) / 100 },
             percentage: plan.totalPercentUsed,
@@ -237,7 +251,7 @@ public struct CursorProvider: AIProvider {
 
         if let bonus = plan.bonusSpend, bonus > 0 {
             lines.append(UsageLine(
-                label: String(localized: "Bonus credits"),
+                label: DisplayText { String(displayLocalized: "Bonus credits", bundle: .module) },
                 used: Double(bonus) / 100,
                 unit: "USD",
                 resetDate: resetDate
@@ -252,7 +266,7 @@ public struct CursorProvider: AIProvider {
     private func onDemandLine(_ onDemand: OnDemandData) -> UsageLine? {
         guard let limit = onDemand.limit, limit > 0 else { return nil }
         return UsageLine(
-            label: String(localized: "On-demand spend"),
+            label: DisplayText { String(displayLocalized: "On-demand spend", bundle: .module) },
             used: onDemand.used.map { Double($0) / 100 },
             total: Double(limit) / 100,
             unit: "USD"
@@ -266,38 +280,39 @@ public struct CursorProvider: AIProvider {
         let used = spend.pooledUsed ?? 0
         let remaining = spend.pooledRemaining ?? 0
         return UsageLine(
-            label: String(localized: "Pooled spend"),
+            label: DisplayText { String(displayLocalized: "Pooled spend", bundle: .module) },
             used: Double(used) / 100,
             total: Double(used + remaining) / 100,
             unit: "USD"
         )
     }
+}
 
-    // MARK: Headline
+// MARK: - Headline
 
+extension CursorProvider {
     private func computeHeadline(
         response: CursorUsageResponse,
         plan: PlanData?,
         resetDate: Date?
-    ) -> String {
+    ) -> DisplayText {
         if response.isUnlimited == true {
-            return String(localized: "Unlimited")
+            return DisplayText { String(displayLocalized: "Unlimited", bundle: .module) }
         }
 
         guard let plan, let limit = plan.limit, limit > 0 else {
-            return String(localized: "No data")
+            return DisplayText { String(displayLocalized: "No data", bundle: .module) }
         }
 
         let used = plan.includedSpend ?? 0
         let remainingDollars = Double(limit - used) / 100
-        let formatted = Self.currencyFormatter().string(from: NSNumber(value: remainingDollars))
-            ?? String(remainingDollars)
-        let amountLeft = String(localized: "\(formatted) left")
-
-        if let resetDate {
+        return DisplayText {
+            let formatted = Self.currencyFormatter().string(from: NSNumber(value: remainingDollars))
+                ?? String(remainingDollars)
+            let amountLeft = String(displayLocalized: "\(formatted) left", bundle: .module)
+            guard let resetDate else { return amountLeft }
             return "\(amountLeft) · \(QuotaFormatting.countdown(to: resetDate))"
         }
-        return amountLeft
     }
 }
 
@@ -307,6 +322,7 @@ extension CursorProvider {
     private static func currencyFormatter() -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
+        formatter.locale = DisplayLanguage.locale
         formatter.currencyCode = "USD"
         return formatter
     }

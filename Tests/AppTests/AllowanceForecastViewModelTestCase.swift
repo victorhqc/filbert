@@ -37,7 +37,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
     func currentQuota() -> ProviderQuota {
         let percentage = NSDecimalNumber(decimal: consumed).doubleValue
         let line = UsageLine(
-            label: "Window",
+            label: DisplayText(verbatim: "Window"),
             percentage: percentage,
             resetDate: resetsAt,
             windowDuration: windowDuration,
@@ -47,7 +47,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "\(Int(percentage))% · resets soon",
+            headline: DisplayText(verbatim: "\(Int(percentage))% · resets soon"),
             lines: [line],
             lastUpdated: clock.date,
             isStale: isStale,
@@ -96,6 +96,8 @@ class AllowanceForecastViewModelTestCase: XCTestCase {
 
     override func setUpWithError() throws {
         try super.setUpWithError()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
         defaults.removePersistentDomain(forName: suiteName)
         ProviderEnablement.setUserDefaults(defaults)
@@ -109,6 +111,8 @@ class AllowanceForecastViewModelTestCase: XCTestCase {
         AutoRefreshPreferences.setUserDefaults(.standard)
         ProviderOverrides.setUserDefaults(.standard)
         defaults = nil
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         super.tearDown()
     }
 

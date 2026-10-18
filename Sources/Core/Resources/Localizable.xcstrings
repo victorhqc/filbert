@@ -1,31 +1,61 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "No data" : {
+    "No credentials found. Sign in to this provider and try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No data"
+            "value" : "No credentials found. Sign in to this provider and try again."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin datos"
+            "value" : "No se han encontrado credenciales. Inicia sesión en este proveedor y vuelve a intentarlo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Sin datos"
+            "value" : "No se encontraron credenciales. Inicia sesión en este proveedor y vuelve a intentarlo."
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine Daten"
+            "value" : "Keine Anmeldedaten gefunden. Melde dich bei diesem Anbieter an und versuche es erneut."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証情報が見つかりません。このプロバイダにサインインして、やり直してください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma credencial encontrada. Inicie sessão neste provedor e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma credencial encontrada. Inicie sessão neste fornecedor e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Учётные данные не найдены. Войдите в аккаунт этого провайдера и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到凭证。请登录此提供商，然后重试。"
           }
         }
       }
@@ -42,19 +72,49 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "se reinicia %@"
+            "value" : "se restablece %@"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "se reinicia %@"
+            "value" : "se restablece %@"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "zurückgesetzt %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@にリセット"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "redefine %@"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "repõe %@"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "сброс %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@重置"
           }
         }
       }
@@ -71,19 +131,167 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "reiniciando…"
+            "value" : "restableciendo…"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "reiniciando…"
+            "value" : "restableciendo…"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "wird zurückgesetzt…"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リセット中…"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "redefinindo…"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "a repor…"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "сброс…"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在重置…"
+          }
+        }
+      }
+    },
+    "This provider does not support this action." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This provider does not support this action."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este proveedor no admite esta acción."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este proveedor no admite esta acción."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Anbieter unterstützt diese Aktion nicht."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このプロバイダはこの操作に対応していません。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este provedor não oferece suporte a esta ação."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este fornecedor não suporta esta ação."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот провайдер не поддерживает это действие."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此提供商不支持此操作。"
+          }
+        }
+      }
+    },
+    "Unable to read credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldedaten können nicht gelesen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to read credentials. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido leer las credenciales. Comprueba el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron leer las credenciales. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証情報を読み取れませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ler as credenciais. Verifique o acesso às chaves e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ler as credenciais. Verifique o acesso ao porta-chaves e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось прочитать учётные данные. Проверьте доступ к связке ключей и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取凭证。请检查钥匙串访问权限，然后重试。"
           }
         }
       }

@@ -1,3 +1,4 @@
+import Core
 import SwiftUI
 
 @MainActor
@@ -7,7 +8,7 @@ struct SleepPreventionRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
-                Text(String(localized: "Keep Awake"))
+                Text(String(displayLocalized: "Keep Awake", bundle: .module))
                     .font(.callout)
                     .lineLimit(1)
 
@@ -23,7 +24,7 @@ struct SleepPreventionRow: View {
                     if controller.isActive {
                         Divider()
 
-                        Button(String(localized: "Turn Off")) {
+                        Button(String(displayLocalized: "Turn Off", bundle: .module)) {
                             controller.stop()
                         }
                     }
@@ -37,14 +38,17 @@ struct SleepPreventionRow: View {
                     }
                     .contentShape(Rectangle())
                 }
-                .accessibilityLabel(String(localized: "Keep Awake duration"))
+                .accessibilityLabel(String(displayLocalized: "Keep Awake duration", bundle: .module))
                 .accessibilityValue(controller.accessibilityValue)
-                .accessibilityHint(String(localized: "Choose how long Filbert keeps your Mac awake"))
+                .accessibilityHint(String(
+                    displayLocalized: "Choose how long Filbert keeps your Mac awake",
+                    bundle: .module
+                ))
                 .fixedSize(horizontal: true, vertical: false)
             }
 
             if controller.didFailToActivate {
-                Text(String(localized: "Keep Awake couldn't start. Try again."))
+                Text(String(displayLocalized: "Keep Awake couldn't start. Try again.", bundle: .module))
                     .font(.caption)
                     .foregroundStyle(.red)
             }
@@ -57,19 +61,19 @@ private extension SleepPreventionDuration {
     var title: String {
         switch self {
         case .fiveMinutes:
-            String(localized: "5 minutes")
+            String(displayLocalized: "5 minutes", bundle: .module)
         case .tenMinutes:
-            String(localized: "10 minutes")
+            String(displayLocalized: "10 minutes", bundle: .module)
         case .twentyMinutes:
-            String(localized: "20 minutes")
+            String(displayLocalized: "20 minutes", bundle: .module)
         case .thirtyMinutes:
-            String(localized: "30 minutes")
+            String(displayLocalized: "30 minutes", bundle: .module)
         case .oneHour:
-            String(localized: "1 hour")
+            String(displayLocalized: "1 hour", bundle: .module)
         case .twoHours:
-            String(localized: "2 hours")
+            String(displayLocalized: "2 hours", bundle: .module)
         case .untilTurnedOff:
-            String(localized: "Until turned off")
+            String(displayLocalized: "Until turned off", bundle: .module)
         }
     }
 }

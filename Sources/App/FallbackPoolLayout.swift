@@ -51,14 +51,19 @@ struct FallbackPoolLayout {
 
     private func exhaustedDetail(for line: UsageLine) -> UsageDetail {
         guard let resetDate = line.resetDate else {
-            return UsageDetail(label: line.label, value: String(localized: "Limit reached"))
+            return UsageDetail(
+                label: line.label,
+                value: DisplayText { String(displayLocalized: "Limit reached", bundle: .module) }
+            )
         }
         return UsageDetail(
             label: line.label,
-            value: String.localizedStringWithFormat(
-                String(localized: "Limit reached · %@"),
-                QuotaFormatting.countdown(to: resetDate)
-            )
+            value: DisplayText {
+                String.localizedStringWithFormat(
+                    String(displayLocalized: "Limit reached · %@", bundle: .module),
+                    QuotaFormatting.countdown(to: resetDate)
+                )
+            }
         )
     }
 

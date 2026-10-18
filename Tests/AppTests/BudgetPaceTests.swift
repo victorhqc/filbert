@@ -71,12 +71,12 @@ final class BudgetPaceTests: XCTestCase {
 
     func testRejectsLinesWithoutCompleteSevenDayTiming() {
         XCTAssertNil(BudgetPace(
-            line: UsageLine(label: "Weekly", percentage: 30),
+            line: UsageLine(label: DisplayText(verbatim: "Weekly"), percentage: 30),
             now: now
         ))
         XCTAssertNil(BudgetPace(
             line: UsageLine(
-                label: "5-hour window",
+                label: DisplayText(verbatim: "5-hour window"),
                 percentage: 30,
                 resetDate: now.addingTimeInterval(60 * 60),
                 windowDuration: UsageWindowDuration.fiveHours
@@ -120,7 +120,7 @@ final class BudgetPaceTests: XCTestCase {
 
     private func weeklyLine(usedPercentage: Double, resetDate: Date) -> UsageLine {
         UsageLine(
-            label: "Weekly",
+            label: DisplayText(verbatim: "Weekly"),
             percentage: usedPercentage,
             resetDate: resetDate,
             windowDuration: UsageWindowDuration.week

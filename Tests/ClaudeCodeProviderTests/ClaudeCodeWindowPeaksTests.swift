@@ -4,6 +4,18 @@ import Foundation
 import XCTest
 
 final class ClaudeCodeWindowPeaksTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     private let fiveHourReset: TimeInterval = 1_800_000_000
     private let weeklyReset: TimeInterval = 1_800_400_000
 
@@ -133,7 +145,7 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
         let quota = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: ClaudeCodeProvider.baseURL)
 
         XCTAssertEqual(quota.lines.first?.percentage, 7)
-        XCTAssertTrue(quota.headline.hasPrefix("7%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("7%"))
         let metric = try XCTUnwrap(quota.activityObservation?.metrics.first)
         XCTAssertEqual(metric.value, .number(7))
         XCTAssertEqual(metric.forecastDescriptor?.timing, .source(Date(timeIntervalSince1970: now + 1)))

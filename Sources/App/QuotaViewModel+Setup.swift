@@ -55,13 +55,10 @@ extension QuotaViewModel {
             if isCancellationError(error) || error as? ProviderSetupError == .notSupported || Task.isCancelled {
                 restoreStateAfterCancellation(previousState, for: providerId)
             } else if isMissingCredentialError(error) {
-                setState(
-                    .setup(String(localized: "No credentials found. Sign in to this provider and try again.")),
-                    for: providerId
-                )
+                setState(.setup(DisplayText(describing: ProviderSetupError.missingCredentials)), for: providerId)
             } else {
                 recordError(error, operation: operation, providerId: providerId)
-                setState(.error(error.localizedDescription), for: providerId)
+                setState(.error(DisplayText(describing: error)), for: providerId)
             }
             refreshDerived()
             return

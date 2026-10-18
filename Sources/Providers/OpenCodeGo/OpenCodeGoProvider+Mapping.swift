@@ -10,7 +10,7 @@ extension OpenCodeGoProvider {
 
     private struct Window {
         let id: String
-        let label: String
+        let label: DisplayText
         let duration: TimeInterval
         let usage: OpenCodeGoUsageWindow
         /// `nil` for the rolling window, which slides with the latest usage.
@@ -22,21 +22,21 @@ extension OpenCodeGoProvider {
         let windows = [
             Window(
                 id: Self.rollingWindowLineId,
-                label: String(localized: "5-hour window"),
+                label: DisplayText { String(displayLocalized: "5-hour window", bundle: .module) },
                 duration: UsageWindowDuration.fiveHours,
                 usage: usage.rolling,
                 periodLength: nil
             ),
             Window(
                 id: Self.weeklyWindowLineId,
-                label: String(localized: "Weekly"),
+                label: DisplayText { String(displayLocalized: "Weekly", bundle: .module) },
                 duration: UsageWindowDuration.week,
                 usage: usage.weekly,
                 periodLength: UsageWindowDuration.week
             ),
             Window(
                 id: Self.monthlyWindowLineId,
-                label: String(localized: "Monthly"),
+                label: DisplayText { String(displayLocalized: "Monthly", bundle: .module) },
                 duration: UsageWindowDuration.month,
                 usage: usage.monthly,
                 periodLength: Self.monthlyPeriodLength(resetsAt: usage.monthly.resetsAt)
@@ -46,7 +46,7 @@ extension OpenCodeGoProvider {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: String(localized: "OpenCode Go usage"),
+            headline: DisplayText { String(displayLocalized: "OpenCode Go usage", bundle: .module) },
             lines: windows.map { window in
                 UsageLine(
                     label: window.label,
@@ -107,13 +107,13 @@ extension OpenCodeGoProvider {
             nil
         case "rate-limited":
             [UsageDetail(
-                label: String(localized: "Status"),
-                value: String(localized: "Rate limited")
+                label: DisplayText { String(displayLocalized: "Status", bundle: .module) },
+                value: DisplayText { String(displayLocalized: "Rate limited", bundle: .module) }
             )]
         default:
             [UsageDetail(
-                label: String(localized: "Status"),
-                value: String(localized: "Unknown status")
+                label: DisplayText { String(displayLocalized: "Status", bundle: .module) },
+                value: DisplayText { String(displayLocalized: "Unknown status", bundle: .module) }
             )]
         }
     }

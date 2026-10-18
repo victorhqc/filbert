@@ -39,7 +39,7 @@ struct RefreshSettingsProviderRow: View {
                 .font(.headline)
             Spacer()
             Toggle(
-                String(localized: "Automatic refresh"),
+                String(displayLocalized: "Automatic refresh", bundle: .module),
                 isOn: Binding(
                     get: { viewModel.isAutoRefreshEnabled(for: provider.id) },
                     set: { viewModel.setAutoRefreshEnabled($0, for: provider.id) }
@@ -48,15 +48,20 @@ struct RefreshSettingsProviderRow: View {
             .toggleStyle(.switch)
             .accessibilityLabel(
                 String.localizedStringWithFormat(
-                    String(localized: "Automatic refresh for %@"),
+                    String(displayLocalized: "Automatic refresh for %@", bundle: .module),
                     provider.displayName
                 )
             )
             .accessibilityValue(
-                isEnabled ? String(localized: "Enabled") : String(localized: "Disabled")
+                isEnabled
+                    ? String(displayLocalized: "Enabled", bundle: .module)
+                    : String(displayLocalized: "Disabled", bundle: .module)
             )
-            .accessibilityHint(disclosureText ?? String(localized: "Toggle periodic refresh for this provider."))
-            .help(String(localized: "Toggle periodic refresh for this provider."))
+            .accessibilityHint(disclosureText ?? String(
+                displayLocalized: "Toggle periodic refresh for this provider.",
+                bundle: .module
+            ))
+            .help(String(displayLocalized: "Toggle periodic refresh for this provider.", bundle: .module))
         }
     }
 
@@ -70,9 +75,10 @@ struct RefreshSettingsProviderRow: View {
                 if fastRefreshMatchesSlowInterval {
                     caption(
                         String(
-                            localized: """
+                            displayLocalized: """
                             Fast and slow checks use the same interval, so fast checks are not more frequent.
-                            """
+                            """,
+                            bundle: .module
                         )
                     )
                 }
@@ -91,12 +97,12 @@ struct RefreshSettingsProviderRow: View {
             }
         } else if viewModel.isFastAutomaticRefreshActive(for: provider.id) {
             Label(
-                String(localized: "Fast checks are on due to recent activity."),
+                String(displayLocalized: "Fast checks are on due to recent activity.", bundle: .module),
                 systemImage: "bolt.fill"
             )
             .font(.caption)
             .foregroundStyle(.secondary)
-            .accessibilityLabel(String(localized: "Fast checks are on due to recent activity."))
+            .accessibilityLabel(String(displayLocalized: "Fast checks are on due to recent activity.", bundle: .module))
         }
     }
 
@@ -108,12 +114,12 @@ struct RefreshSettingsProviderRow: View {
                 }
             }
         } label: {
-            Text(String(localized: "Keep checking"))
+            Text(String(displayLocalized: "Keep checking", bundle: .module))
         }
         .fixedSize()
         .accessibilityLabel(
             String.localizedStringWithFormat(
-                String(localized: "Keep checking for %@"),
+                String(displayLocalized: "Keep checking for %@", bundle: .module),
                 provider.displayName
             )
         )
@@ -137,7 +143,7 @@ struct RefreshSettingsProviderRow: View {
                 .foregroundStyle(.secondary)
                 .accessibilityLabel(remainingText)
             Spacer()
-            Button(String(localized: "Stop extension")) {
+            Button(String(displayLocalized: "Stop extension", bundle: .module)) {
                 viewModel.stopSmartExtension(for: provider.id)
             }
             .buttonStyle(.borderless)
@@ -158,10 +164,13 @@ struct RefreshSettingsProviderRow: View {
 
     private var providerStatus: String? {
         guard viewModel.isEnabled(provider.id) else {
-            return String(localized: "Automatic refresh is paused because this provider is disabled.")
+            return String(
+                displayLocalized: "Automatic refresh is paused because this provider is disabled.",
+                bundle: .module
+            )
         }
         guard QuotaViewModel.isConfiguredState(viewModel.providerStates[provider.id]) else {
-            return String(localized: "Automatic refresh is waiting for setup.")
+            return String(displayLocalized: "Automatic refresh is waiting for setup.", bundle: .module)
         }
         return nil
     }
@@ -176,10 +185,11 @@ struct RefreshSettingsProviderRow: View {
         }
         return String.localizedStringWithFormat(
             String(
-                localized: """
+                displayLocalized: """
                 %1$@ runs %2$@ in the background. These checks may use some of your \
                 %3$@ quota. Shorter Smart intervals can increase the number of checks.
-                """
+                """,
+                bundle: .module
             ),
             provider.displayName,
             command.command,
@@ -191,14 +201,15 @@ struct RefreshSettingsProviderRow: View {
         switch provider.refreshCharacteristics.costEvidence {
         case .possibleConsumption:
             String.localizedStringWithFormat(
-                String(localized: "These checks may use some of your %@ quota."),
+                String(displayLocalized: "These checks may use some of your %@ quota.", bundle: .module),
                 provider.displayName
             )
         case .unknown:
-            String(localized: "The quota cost of these checks is unknown.")
+            String(displayLocalized: "The quota cost of these checks is unknown.", bundle: .module)
         case .documentedNonConsumption:
             String(
-                localized: "These checks are documented as not using quota. Frequency limits may still apply."
+                displayLocalized: "These checks are documented as not using quota. Frequency limits may still apply.",
+                bundle: .module
             )
         }
     }
@@ -212,24 +223,28 @@ struct RefreshSettingsProviderRow: View {
             return nil
         }
         return String.localizedStringWithFormat(
-            String(localized: "Provider limit: checks no more often than every %@."),
+            String(displayLocalized: "Provider limit: checks no more often than every %@.", bundle: .module),
             refreshDurationText(viewModel.effectiveFastInterval(for: provider.id))
         )
     }
 
     private var keepCheckingExplanation: String {
         String.localizedStringWithFormat(
-            String(localized: "Checks every %@ for the time you choose, even when usage does not change."),
+            String(
+                displayLocalized: "Checks every %@ for the time you choose, even when usage does not change.",
+                bundle: .module
+            ),
             refreshDurationText(viewModel.effectiveFastInterval(for: provider.id))
         )
     }
 
     private var stopExplanation: String {
         String(
-            localized: """
+            displayLocalized: """
             Stopping ends the fast checks early. Automatic refresh stays on and the normal \
             Smart timing resumes.
-            """
+            """,
+            bundle: .module
         )
     }
 
@@ -242,7 +257,7 @@ struct RefreshSettingsProviderRow: View {
 
     private func extensionStatusText(_ remaining: TimeInterval) -> String {
         String.localizedStringWithFormat(
-            String(localized: "Fast checks for %@ more."),
+            String(displayLocalized: "Fast checks for %@ more.", bundle: .module),
             refreshDurationText(remaining)
         )
     }

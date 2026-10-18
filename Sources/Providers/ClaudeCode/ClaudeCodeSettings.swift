@@ -19,11 +19,14 @@ extension InstallerError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .unparseableSettings:
-            String(localized: "Could not parse ~/.claude/settings.json.")
+            String(displayLocalized: "Could not parse ~/.claude/settings.json.", bundle: .module)
         case .helperExecutableNotFound:
-            String(localized: "Helper executable not found in app bundle. Reinstall Filbert and retry.")
+            String(
+                displayLocalized: "Helper executable not found in app bundle. Reinstall Filbert and retry.",
+                bundle: .module
+            )
         case .configurationVerificationFailed:
-            String(localized: "Could not verify the helper installation.")
+            String(displayLocalized: "Could not verify the helper installation.", bundle: .module)
         }
     }
 }

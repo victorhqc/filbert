@@ -4,9 +4,9 @@ import XCTest
 final class ProviderProtocolTests: XCTestCase {
     func testProviderQuota_initializesAllFields() {
         let now = Date()
-        let detail = UsageDetail(label: "RPM", value: "42 / 500")
+        let detail = UsageDetail(label: DisplayText(verbatim: "RPM"), value: DisplayText(verbatim: "42 / 500"))
         let line = UsageLine(
-            label: "5-hour window",
+            label: DisplayText(verbatim: "5-hour window"),
             used: 420,
             total: 1000,
             percentage: 42,
@@ -18,26 +18,26 @@ final class ProviderProtocolTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "test",
             providerName: "Test Provider",
-            headline: "42% · resets in 1h",
+            headline: DisplayText(verbatim: "42% · resets in 1h"),
             lines: [line],
             lastUpdated: now
         )
 
         XCTAssertEqual(quota.providerId, "test")
         XCTAssertEqual(quota.providerName, "Test Provider")
-        XCTAssertEqual(quota.headline, "42% · resets in 1h")
+        XCTAssertEqual(quota.headline.resolved, "42% · resets in 1h")
         XCTAssertEqual(quota.lines.count, 1)
         XCTAssertEqual(quota.lines[0].percentage, 42)
         XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
-        XCTAssertEqual(quota.lines[0].details?.first?.label, "RPM")
+        XCTAssertEqual(quota.lines[0].details?.first?.label.resolved, "RPM")
         XCTAssertEqual(quota.lastUpdated, now)
         XCTAssertNil(quota.error)
     }
 
     func testUsageLine_defaultsToNilForOptionalFields() {
-        let line = UsageLine(label: "requests")
+        let line = UsageLine(label: DisplayText(verbatim: "requests"))
 
-        XCTAssertEqual(line.label, "requests")
+        XCTAssertEqual(line.label.resolved, "requests")
         XCTAssertNil(line.used)
         XCTAssertNil(line.total)
         XCTAssertNil(line.percentage)
@@ -51,11 +51,11 @@ final class ProviderProtocolTests: XCTestCase {
 
     func testForecastOptInFields_defaultToNil() {
         let metric = ProviderActivityMetric(id: "usage", kind: .usage, value: .number(1))
-        let line = UsageLine(label: "Usage", percentage: 1)
+        let line = UsageLine(label: DisplayText(verbatim: "Usage"), percentage: 1)
         let quota = ProviderQuota(
             providerId: "provider",
             providerName: "Provider",
-            headline: "1%",
+            headline: DisplayText(verbatim: "1%"),
             lines: [line],
             lastUpdated: Date()
         )
@@ -70,13 +70,13 @@ final class ProviderProtocolTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "test",
             providerName: "Test",
-            headline: "Error",
+            headline: DisplayText(verbatim: "Error"),
             lines: [],
             lastUpdated: Date(),
-            error: "401 Unauthorized"
+            error: DisplayText(verbatim: "401 Unauthorized")
         )
 
-        XCTAssertEqual(quota.error, "401 Unauthorized")
+        XCTAssertEqual(quota.error?.resolved, "401 Unauthorized")
     }
 
     func testUsageWindowDuration_definesSharedDurations() {
@@ -86,10 +86,10 @@ final class ProviderProtocolTests: XCTestCase {
     }
 
     func testUsageDetail_roundtripsLabelAndValue() {
-        let detail = UsageDetail(label: "RPM", value: "42 / 500")
+        let detail = UsageDetail(label: DisplayText(verbatim: "RPM"), value: DisplayText(verbatim: "42 / 500"))
 
-        XCTAssertEqual(detail.label, "RPM")
-        XCTAssertEqual(detail.value, "42 / 500")
+        XCTAssertEqual(detail.label.resolved, "RPM")
+        XCTAssertEqual(detail.value.resolved, "42 / 500")
     }
 
     // MARK: - ProviderInfo
@@ -302,7 +302,7 @@ private struct DisclaimerProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "No data",
+            headline: DisplayText(verbatim: "No data"),
             lines: [],
             lastUpdated: Date()
         )
@@ -323,7 +323,7 @@ private struct AutomaticRefreshDisclosureProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "No data",
+            headline: DisplayText(verbatim: "No data"),
             lines: [],
             lastUpdated: Date()
         )
@@ -358,7 +358,7 @@ private struct CredentialImportProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "No data",
+            headline: DisplayText(verbatim: "No data"),
             lines: [],
             lastUpdated: Date()
         )

@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 enum CoarseDurationFormatting {
@@ -8,7 +9,7 @@ enum CoarseDurationFormatting {
         from interval: TimeInterval,
         unitsStyle: DateComponentsFormatter.UnitsStyle = .abbreviated
     ) -> String {
-        let formatter = DateComponentsFormatter()
+        let formatter = displayFormatter()
         // `.weekOfYear` throws NSInternalInconsistencyException. Only
         // `.weekOfMonth` works.
         formatter.allowedUnits = interval >= week
@@ -25,10 +26,18 @@ enum CoarseDurationFormatting {
         let rounded = interval >= hour
             ? (interval / hour).rounded() * hour
             : max((interval / 60).rounded(), 1) * 60
-        let formatter = DateComponentsFormatter()
+        let formatter = displayFormatter()
         formatter.allowedUnits = [.hour, .minute]
         formatter.maximumUnitCount = 1
         formatter.unitsStyle = .full
         return formatter.string(from: rounded) ?? ""
+    }
+
+    private static func displayFormatter() -> DateComponentsFormatter {
+        let formatter = DateComponentsFormatter()
+        var calendar = Calendar.current
+        calendar.locale = DisplayLanguage.locale
+        formatter.calendar = calendar
+        return formatter
     }
 }

@@ -97,7 +97,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "some-future-provider",
             providerName: "Future Provider",
-            headline: "30%",
+            headline: DisplayText(verbatim: "30%"),
             lines: [line],
             lastUpdated: now
         )
@@ -108,12 +108,16 @@ final class MonthlyBudgetPaceTests: XCTestCase {
 
     func testRejectsMonthlyLinesWithMissingOrNonFiniteData() {
         XCTAssertNil(BudgetPace(
-            line: UsageLine(label: "Monthly", percentage: 30, windowDuration: UsageWindowDuration.month),
+            line: UsageLine(
+                label: DisplayText(verbatim: "Monthly"),
+                percentage: 30,
+                windowDuration: UsageWindowDuration.month
+            ),
             now: now
         ))
         XCTAssertNil(BudgetPace(
             line: UsageLine(
-                label: "Monthly",
+                label: DisplayText(verbatim: "Monthly"),
                 percentage: .nan,
                 resetDate: now.addingTimeInterval(26 * 24 * 60 * 60),
                 windowDuration: UsageWindowDuration.month
@@ -122,7 +126,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
         ))
         XCTAssertNil(BudgetPace(
             line: UsageLine(
-                label: "Monthly",
+                label: DisplayText(verbatim: "Monthly"),
                 percentage: .infinity,
                 resetDate: now.addingTimeInterval(26 * 24 * 60 * 60),
                 windowDuration: UsageWindowDuration.month
@@ -152,7 +156,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
     func testRejectsMonthlyLinesWithUnsupportedDurations() {
         XCTAssertNil(BudgetPace(
             line: UsageLine(
-                label: "Monthly",
+                label: DisplayText(verbatim: "Monthly"),
                 percentage: 30,
                 resetDate: now.addingTimeInterval(26 * 24 * 60 * 60),
                 windowDuration: 31 * 24 * 60 * 60
@@ -161,7 +165,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
         ))
         XCTAssertNil(BudgetPace(
             line: UsageLine(
-                label: "Monthly",
+                label: DisplayText(verbatim: "Monthly"),
                 percentage: 30,
                 resetDate: now.addingTimeInterval(26 * 24 * 60 * 60),
                 windowDuration: 0
@@ -170,7 +174,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
         ))
         XCTAssertNil(BudgetPace(
             line: UsageLine(
-                label: "Monthly",
+                label: DisplayText(verbatim: "Monthly"),
                 percentage: 30,
                 resetDate: now.addingTimeInterval(26 * 24 * 60 * 60),
                 windowDuration: -7 * 24 * 60 * 60
@@ -203,7 +207,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
 
     private func monthlyLine(usedPercentage: Double, resetDate: Date) -> UsageLine {
         UsageLine(
-            label: "Monthly",
+            label: DisplayText(verbatim: "Monthly"),
             percentage: usedPercentage,
             resetDate: resetDate,
             windowDuration: UsageWindowDuration.month

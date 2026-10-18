@@ -4,6 +4,18 @@ import Foundation
 import XCTest
 
 final class OpenAICodexForecastMappingTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     private let receivedAt = Date(timeIntervalSince1970: 1_791_823_058)
     private var fiveHour: CodexRateLimitWindow {
         window(usedPercent: 12, minutes: 300)
@@ -35,7 +47,7 @@ final class OpenAICodexForecastMappingTests: XCTestCase {
         let quota = map(primary: weekly, secondary: fiveHour)
 
         XCTAssertEqual(quota.headlineUsageLineId, "secondary-window-usage")
-        XCTAssertTrue(quota.headline.hasPrefix("12%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("12%"))
     }
 
     func testASingleWindowIsTheHeadlineLine() {

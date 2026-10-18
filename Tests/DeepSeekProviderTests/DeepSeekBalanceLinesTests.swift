@@ -3,7 +3,15 @@ import Core
 import XCTest
 
 final class DeepSeekBalanceLinesTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
     override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseError = nil
@@ -16,7 +24,7 @@ final class DeepSeekBalanceLinesTests: XCTestCase {
             BalanceInfo(currency: "CNY", total: "10.00", granted: "-1.00", toppedUp: "abc"),
         ])
 
-        XCTAssertEqual(quota.lines.map(\.label), ["Total balance"])
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["Total balance"])
     }
 
     func testOnlyTheTotalStaysWhenTwoAmountsMatch() async throws {
@@ -24,7 +32,7 @@ final class DeepSeekBalanceLinesTests: XCTestCase {
             BalanceInfo(currency: "CNY", total: "20.00", granted: "10.00", toppedUp: "10.00"),
         ])
 
-        XCTAssertEqual(quota.lines.map(\.label), ["Total balance"])
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["Total balance"])
     }
 
     func testAmountsAreComparedOnlyWithinOneCurrency() async throws {
@@ -33,7 +41,10 @@ final class DeepSeekBalanceLinesTests: XCTestCase {
             BalanceInfo(currency: "USD", total: "10.00", granted: "4.00", toppedUp: "6.00"),
         ])
 
-        XCTAssertEqual(quota.lines.map(\.label), ["Total balance", "Total balance", "Granted credits", "Topped up"])
+        XCTAssertEqual(
+            quota.lines.map(\.label.resolved),
+            ["Total balance", "Total balance", "Granted credits", "Topped up"]
+        )
         XCTAssertEqual(quota.lines.map(\.balance?.unit), [
             .currency("CNY"), .currency("USD"), .currency("USD"), .currency("USD"),
         ])
@@ -72,8 +83,8 @@ final class DeepSeekBalanceLinesTests: XCTestCase {
         ])
 
         XCTAssertTrue(quota.lines.isEmpty)
-        XCTAssertTrue(quota.headline.hasSuffix(" left"), "headline was: \(quota.headline)")
-        XCTAssertTrue(quota.headline.contains("0"), "headline was: \(quota.headline)")
+        XCTAssertTrue(quota.headline.resolved.hasSuffix(" left"), "headline was: \(quota.headline.resolved)")
+        XCTAssertTrue(quota.headline.resolved.contains("0"), "headline was: \(quota.headline.resolved)")
     }
 
     private struct BalanceInfo {

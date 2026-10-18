@@ -56,7 +56,7 @@ final class ErrorLoggingViewModelTests: XCTestCase {
             return XCTFail("Previous results must remain visible")
         }
         XCTAssertEqual(quota.lastUpdated, ErrorLoggingProvider.cacheDate)
-        XCTAssertEqual(quota.headline, "Cached usage")
+        XCTAssertEqual(quota.headline.resolved, "Cached usage")
     }
 
     func testProactiveFailureSurvivesSuccessfulCacheReadAndClearsOnRecovery() async throws {
@@ -126,7 +126,7 @@ final class ErrorLoggingViewModelTests: XCTestCase {
         guard case let .loaded(recoveredQuota) = viewModel.providerStates[id] else {
             return XCTFail("The user must be able to refresh after cancellation")
         }
-        XCTAssertEqual(recoveredQuota.headline, "Cached usage")
+        XCTAssertEqual(recoveredQuota.headline.resolved, "Cached usage")
         XCTAssertNil(recoveredQuota.error)
     }
 
@@ -299,7 +299,7 @@ private actor ErrorLoggingProvider: ProactiveRefreshable {
     }
 
     func currentSetupState() async -> ProviderState? {
-        helper.isInstalled ? nil : .setup("Helper not installed")
+        helper.isInstalled ? nil : .setup(DisplayText(verbatim: "Helper not installed"))
     }
 
     func failFetch() {
@@ -327,7 +327,7 @@ private actor ErrorLoggingProvider: ProactiveRefreshable {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Cached usage",
+            headline: DisplayText(verbatim: "Cached usage"),
             lines: [],
             lastUpdated: Self.cacheDate
         )

@@ -19,7 +19,10 @@ final class FallbackPoolPromotionTests: FallbackPoolTestCase {
     }
 
     func testAPoolWithAnUnreadableBalanceIsNotPromoted() {
-        let unreadable = creditsLine(balance: nil, details: [UsageDetail(label: "Balance", value: "1,159.57")])
+        let unreadable = creditsLine(
+            balance: nil,
+            details: [UsageDetail(label: DisplayText(verbatim: "Balance"), value: DisplayText(verbatim: "1,159.57"))]
+        )
 
         XCTAssertNil(promotedPool(in: quota(fiveHour: 100, creditsLine: unreadable)))
     }

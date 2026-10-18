@@ -5,13 +5,18 @@ enum PeakHoursPresentation {
     static func rateText(for rate: PeakRatePresentation) -> String {
         switch rate {
         case let .multiplier(value):
-            return String.localizedStringWithFormat(String(localized: "%lld× multiplier"), value)
+            return String(displayLocalized: "\(value)× multiplier", bundle: .module)
         case let .fractionOfStandardRate(fraction):
             if fraction == 1 {
-                return String(localized: "Standard credit rate")
+                return String(displayLocalized: "Standard credit rate", bundle: .module)
             }
-            let percent = fraction.formatted(.percent.precision(.fractionLength(0 ... 1)))
-            return String.localizedStringWithFormat(String(localized: "%@ credit rate"), percent)
+            let percent = fraction.formatted(
+                .percent.precision(.fractionLength(0 ... 1)).locale(DisplayLanguage.locale)
+            )
+            return String.localizedStringWithFormat(
+                String(displayLocalized: "%@ credit rate", bundle: .module),
+                percent
+            )
         }
     }
 
@@ -20,7 +25,9 @@ enum PeakHoursPresentation {
     static func weekdayRangeText(for weekdays: Set<Int>) -> String? {
         guard !weekdays.isEmpty, weekdays.count < 7 else { return nil }
 
-        let symbols = Calendar(identifier: .gregorian).shortWeekdaySymbols
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.locale = DisplayLanguage.locale
+        let symbols = calendar.shortWeekdaySymbols
         var runs: [[Int]] = []
         var currentRun: [Int] = []
 
@@ -43,6 +50,6 @@ enum PeakHoursPresentation {
             let firstSymbol = symbols[first - 1]
             return run.count == 1 ? firstSymbol : "\(firstSymbol)–\(symbols[last - 1])"
         }
-        return ListFormatter.localizedString(byJoining: runTexts)
+        return runTexts.formatted(.list(type: .and).locale(DisplayLanguage.locale))
     }
 }

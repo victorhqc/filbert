@@ -10,9 +10,15 @@ enum CursorExternalCredentialError: Error, Equatable, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .keychain:
-            String(localized: "Unable to access Cursor credentials. Check Keychain access and try again.")
+            String(
+                displayLocalized: "Unable to access Cursor credentials. Check Keychain access and try again.",
+                bundle: .module
+            )
         case .malformedKeychainRecord:
-            String(localized: "Cursor credentials are invalid. Sign in to Cursor, then re-import them.")
+            String(
+                displayLocalized: "Cursor credentials are invalid. Sign in to Cursor, then re-import them.",
+                bundle: .module
+            )
         }
     }
 }

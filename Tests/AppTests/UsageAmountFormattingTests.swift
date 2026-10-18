@@ -3,6 +3,18 @@ import Core
 import XCTest
 
 final class UsageAmountFormattingTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     private let english = Locale(identifier: "en_US")
     private let german = Locale(identifier: "de_DE")
 
@@ -33,10 +45,10 @@ final class UsageAmountFormattingTests: XCTestCase {
     }
 
     func testRowAmountIsTheBalanceOrAnAmountSpentWithoutALimit() {
-        let balance = UsageLine(label: "Credits", balance: credits("12.5"))
-        let spent = UsageLine(label: "Bonus credits", used: 20, unit: "USD")
-        let limited = UsageLine(label: "On-demand spend", used: 15, total: 20, unit: "USD")
-        let spentWithoutCurrency = UsageLine(label: "Requests", used: 20)
+        let balance = UsageLine(label: DisplayText(verbatim: "Credits"), balance: credits("12.5"))
+        let spent = UsageLine(label: DisplayText(verbatim: "Bonus credits"), used: 20, unit: "USD")
+        let limited = UsageLine(label: DisplayText(verbatim: "On-demand spend"), used: 15, total: 20, unit: "USD")
+        let spentWithoutCurrency = UsageLine(label: DisplayText(verbatim: "Requests"), used: 20)
 
         XCTAssertEqual(QuotaStatusResolver.amountText(for: balance), UsageAmountFormatting.string(for: credits("12.5")))
         XCTAssertEqual(

@@ -13,7 +13,7 @@ struct PeakHoursBlock: View {
 
     private func pricingContent(at date: Date) -> some View {
         VStack(alignment: .leading, spacing: 2) {
-            Text(String(localized: "Peak hours"))
+            Text(String(displayLocalized: "Peak hours", bundle: .module))
                 .font(.caption)
                 .fontWeight(.semibold)
                 .foregroundColor(.secondary)
@@ -41,8 +41,8 @@ struct PeakHoursBlock: View {
                 .fill(inPeak ? Color.orange : Color.green)
                 .frame(width: 6, height: 6)
             Text(inPeak
-                ? String(localized: "In peak")
-                : String(localized: "Off peak"))
+                ? String(displayLocalized: "In peak", bundle: .module)
+                : String(displayLocalized: "Off peak", bundle: .module))
                 .font(.caption2)
                 .fontWeight(.medium)
             Spacer()
@@ -59,7 +59,7 @@ struct PeakHoursBlock: View {
             Circle()
                 .fill(Color.secondary)
                 .frame(width: 6, height: 6)
-            Text(String(localized: "Upcoming pricing"))
+            Text(String(displayLocalized: "Upcoming pricing", bundle: .module))
                 .font(.caption2)
                 .fontWeight(.medium)
             Spacer()
@@ -75,7 +75,7 @@ struct PeakHoursBlock: View {
 
     private var localWindowLabel: String {
         let formatter = DateFormatter()
-        formatter.locale = .current
+        formatter.locale = DisplayLanguage.locale
         formatter.timeZone = .current
         formatter.dateStyle = .none
         formatter.timeStyle = .short
@@ -88,27 +88,27 @@ struct PeakHoursBlock: View {
                 return times
             }
             return String.localizedStringWithFormat(
-                String(localized: "Peak hours day and time format", bundle: .module),
+                String(displayLocalized: "Peak hours day and time format", bundle: .module),
                 days,
                 times
             )
         }
-        let localizedWindows = ListFormatter.localizedString(byJoining: windows)
+        let localizedWindows = windows.formatted(.list(type: .and).locale(DisplayLanguage.locale))
         return String.localizedStringWithFormat(
-            String(localized: "%@ (your time)"),
+            String(displayLocalized: "%@ (your time)", bundle: .module),
             localizedWindows
         )
     }
 
     private func effectiveDateLabel(_ effectiveDate: Date) -> String {
         let formatter = DateFormatter()
-        formatter.locale = .current
+        formatter.locale = DisplayLanguage.locale
         formatter.timeZone = .current
         formatter.dateStyle = .medium
         formatter.timeStyle = .short
 
         return String.localizedStringWithFormat(
-            String(localized: "Effective %@"),
+            String(displayLocalized: "Effective %@", bundle: .module),
             formatter.string(from: effectiveDate)
         )
     }

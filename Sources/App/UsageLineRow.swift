@@ -28,12 +28,12 @@ private struct StandardUsageLineRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 3) {
             HStack {
-                Text(line.label)
+                Text(line.label.resolved)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
                 if let percentage = QuotaStatusResolver.percentage(for: line) {
-                    Text(String(format: "%.0f%%", percentage))
+                    Text(QuotaFormatting.percentage(percentage))
                         .font(.subheadline.monospacedDigit())
                         .foregroundColor(percentageColor(percentage))
                 } else if let amount = QuotaStatusResolver.amountText(for: line) {
@@ -95,7 +95,7 @@ private struct PacedUsageLineRow: View {
         let text = PacedUsageLineText(pace: pace, forecast: forecast)
         return VStack(alignment: .leading, spacing: 4) {
             HStack {
-                Text(line.label)
+                Text(line.label.resolved)
                     .font(.subheadline)
                     .fontWeight(.medium)
                 Spacer()
@@ -123,7 +123,7 @@ private struct PacedUsageLineRow: View {
         }
         .padding(.vertical, 2)
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(line.label)
+        .accessibilityLabel(line.label.resolved)
         .accessibilityValue(text.accessibilityValue)
     }
 }
@@ -134,7 +134,7 @@ private struct UsageDetailsRows: View {
     var body: some View {
         if let details, !details.isEmpty {
             VStack(alignment: .leading, spacing: 1) {
-                ForEach(details, id: \.label) { detail in
+                ForEach(details, id: \.label.resolved) { detail in
                     ViewThatFits(in: .horizontal) {
                         HStack {
                             label(of: detail)
@@ -155,12 +155,12 @@ private struct UsageDetailsRows: View {
     }
 
     private func label(of detail: UsageDetail) -> some View {
-        Text(detail.label)
+        Text(detail.label.resolved)
             .font(.caption2)
     }
 
     private func value(of detail: UsageDetail) -> some View {
-        Text(detail.value)
+        Text(detail.value.resolved)
             .font(.caption2.monospacedDigit())
     }
 }
@@ -181,7 +181,7 @@ private struct UsageBar: View {
         .frame(height: 4)
         .accessibilityElement()
         .accessibilityLabel(
-            String(localized: "Usage: \(Int(clampedFraction * 100))%")
+            String(displayLocalized: "Usage: \(Int(clampedFraction * 100))%", bundle: .module)
         )
     }
 

@@ -3,7 +3,7 @@ import Core
 import Foundation
 import XCTest
 
-final class CursorProviderMetadataTests: XCTestCase {
+final class CursorProviderMetadataTests: EnglishTestCase {
     // MARK: - provider-owned glyph
 
     func testProviderGlyphLoadsFromModuleResources() {
@@ -71,7 +71,7 @@ final class CursorProviderMetadataTests: XCTestCase {
             return XCTFail("Expected setup state")
         }
         XCTAssertEqual(
-            message,
+            message.resolved,
             "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app."
         )
     }
@@ -83,7 +83,7 @@ final class CursorProviderMetadataTests: XCTestCase {
         guard case let .setup(message) = await provider.currentSetupState() else {
             return XCTFail("Expected setup state")
         }
-        XCTAssertEqual(message, "Sign in to Cursor")
+        XCTAssertEqual(message.resolved, "Sign in to Cursor")
     }
 
     func testSetupState_tokenPresent_isConfiguredWithNoSetupState() async {
@@ -182,7 +182,10 @@ final class CursorProviderMetadataTests: XCTestCase {
         guard case let .error(message) = await provider.currentSetupState() else {
             return XCTFail("Expected Keychain error state")
         }
-        XCTAssertEqual(message, "Unable to access saved Cursor credentials. Check Keychain access and try again.")
+        XCTAssertEqual(
+            message.resolved,
+            "Unable to access saved Cursor credentials. Check Keychain access and try again."
+        )
         let logURL = try XCTUnwrap(errorLog.availableFileURL)
         let records = try String(contentsOf: logURL, encoding: .utf8)
         XCTAssertEqual(records.split(whereSeparator: \.isNewline).count, 2)

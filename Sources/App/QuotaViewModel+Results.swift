@@ -8,7 +8,7 @@ extension QuotaViewModel {
         isRefreshing = copy
     }
 
-    func setRefreshError(_ message: String?, for providerId: String) {
+    func setRefreshError(_ message: DisplayText?, for providerId: String) {
         var copy = refreshErrors
         if let message {
             copy[providerId] = message
@@ -22,7 +22,7 @@ extension QuotaViewModel {
         _ results: [String: Result<ProviderQuota, Error>],
         expectedRevisions: [String: Int],
         suppressSmartSuccessFor: Set<String>,
-        proactiveRefreshErrors: [String: String] = [:],
+        proactiveRefreshErrors: [String: DisplayText] = [:],
         proactiveConnectivityFailures: Set<String> = [],
         origin: RefreshOrigin = .initial
     ) {
@@ -57,10 +57,10 @@ extension QuotaViewModel {
                     setRefreshError(nil, for: id)
                     setState(.unconfigured, for: id)
                 } else if case .loaded = providerStates[id] {
-                    setRefreshError(error.localizedDescription, for: id)
+                    setRefreshError(DisplayText(describing: error), for: id)
                 } else {
                     setRefreshError(nil, for: id)
-                    setState(.error(error.localizedDescription), for: id)
+                    setState(.error(DisplayText(describing: error)), for: id)
                 }
             }
 
@@ -79,10 +79,12 @@ extension QuotaViewModel {
         setState(.loaded(ProviderQuota(
             providerId: id,
             providerName: info.displayName,
-            headline: String(localized: "No data"),
+            headline: DisplayText { String(displayLocalized: "No data", bundle: .module) },
             lines: [],
             lastUpdated: Date(),
-            error: String(localized: "Refresh cancelled. Select Refresh to try again.")
+            error: DisplayText {
+                String(displayLocalized: "Refresh cancelled. Select Refresh to try again.", bundle: .module)
+            }
         )), for: id)
     }
 }

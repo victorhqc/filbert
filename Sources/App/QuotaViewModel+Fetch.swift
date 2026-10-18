@@ -3,7 +3,7 @@ import Foundation
 
 private struct ProactiveRefreshOutcome {
     var suppressSmartSuccess = false
-    var errorMessage: String?
+    var errorMessage: DisplayText?
     var isConnectivityFailure = false
 }
 
@@ -136,7 +136,7 @@ extension QuotaViewModel {
             }
             return ProactiveRefreshOutcome(
                 suppressSmartSuccess: true,
-                errorMessage: error.localizedDescription,
+                errorMessage: DisplayText(describing: error),
                 isConnectivityFailure: isConnectivityFailure
             )
         }

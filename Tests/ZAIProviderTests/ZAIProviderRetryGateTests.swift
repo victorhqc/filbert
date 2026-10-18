@@ -8,12 +8,16 @@ final class ZAIProviderRetryGateTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         session = URLSession(configuration: config)
     }
 
     override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseHeaders = nil
@@ -80,7 +84,7 @@ final class ZAIProviderRetryGateTests: XCTestCase {
             baseURL: ZAIProvider.baseURL
         )
 
-        XCTAssertTrue(quota.headline.hasPrefix("42%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("42%"))
         XCTAssertEqual(provider.retryGate?.remaining, 0)
     }
 

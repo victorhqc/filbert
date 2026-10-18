@@ -41,13 +41,13 @@ struct MenuBarStatusIcon: View {
                 .frame(width: image.size.width, height: image.size.height)
                 .accessibilityLabel(
                     [
-                        String(localized: "Filbert"),
-                        String(localized: "Keep Awake active"),
+                        String(displayLocalized: "Filbert", bundle: .module),
+                        String(displayLocalized: "Keep Awake active", bundle: .module),
                     ].joined(separator: ", ")
                 )
         } else {
             Image(systemName: "brain.head.profile")
-                .accessibilityLabel(String(localized: "Filbert"))
+                .accessibilityLabel(String(displayLocalized: "Filbert", bundle: .module))
         }
     }
 
@@ -61,8 +61,7 @@ struct MenuBarStatusIcon: View {
     }
 
     private func percentageText(_ percentage: Double) -> String {
-        let rounded = Int(percentage.rounded())
-        return String(localized: "\(rounded)%")
+        QuotaFormatting.percentage(percentage)
     }
 
     private func statusRow(

@@ -1,4 +1,5 @@
 import AppKit
+import Core
 import Observation
 
 @MainActor
@@ -7,7 +8,7 @@ final class LaunchAtLoginController: NSObject {
     private let client: any LaunchAtLoginManaging
 
     private(set) var status: LaunchAtLoginStatus
-    private(set) var errorMessage: String?
+    private(set) var errorMessage: DisplayText?
 
     init(client: any LaunchAtLoginManaging = SystemLaunchAtLoginClient()) {
         self.client = client
@@ -51,9 +52,11 @@ final class LaunchAtLoginController: NSObject {
             refreshStatus()
         } catch {
             refreshStatus()
-            errorMessage = registered
-                ? String(localized: "Could not enable launch at login. Try again.", bundle: .module)
-                : String(localized: "Could not disable launch at login. Try again.", bundle: .module)
+            errorMessage = DisplayText {
+                registered
+                    ? String(displayLocalized: "Could not enable launch at login. Try again.", bundle: .module)
+                    : String(displayLocalized: "Could not disable launch at login. Try again.", bundle: .module)
+            }
         }
     }
 

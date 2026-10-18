@@ -1,7 +1,20 @@
 @testable import App
+import Core
 import XCTest
 
 final class AppVersionTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
+        DisplayLanguage.setCurrentLocale { Locale(identifier: "en_US") }
+    }
+
+    override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
+        DisplayLanguage.setCurrentLocale { Locale.current }
+        super.tearDown()
+    }
+
     func testPresentationUsesShortVersion() {
         let presentation = AppVersion.presentation(shortVersion: "0.9.0")
 

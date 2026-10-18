@@ -26,17 +26,17 @@ extension DeepSeekError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .missingKey:
-            String(localized: "No API key configured.")
+            String(displayLocalized: "No API key configured.", bundle: .module)
         case .http(401):
-            String(localized: "Authentication failed. Check your API key.")
+            String(displayLocalized: "Authentication failed. Check your API key.", bundle: .module)
         case let .http(code) where code == 429:
-            String(localized: "Rate limited. Try again later.")
+            String(displayLocalized: "Rate limited. Try again later.", bundle: .module)
         case .network:
-            String(localized: "Network error. Check your connection.")
+            String(displayLocalized: "Network error. Check your connection.", bundle: .module)
         case .internalInconsistency:
-            String(localized: "Internal error: unexpected auth shape.")
+            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
         case .decoding, .http:
-            String(localized: "Unexpected response from server.")
+            String(displayLocalized: "Unexpected response from server.", bundle: .module)
         }
     }
 }
@@ -97,7 +97,10 @@ public struct DeepSeekProvider: AIProvider {
     public static let providerId = "deepseek"
     public static let providerName = "DeepSeek"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(localized: "Monitor prepaid balance")
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor prepaid balance", bundle: .module)
+    }
+
     /// Host root for DeepSeek requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.deepseek.com")!
     /// `/user/balance` sends every amount with two decimals.
@@ -243,9 +246,9 @@ public struct DeepSeekProvider: AIProvider {
 
         var label: String {
             switch self {
-            case .total: String(localized: "Total balance")
-            case .granted: String(localized: "Granted credits")
-            case .toppedUp: String(localized: "Topped up")
+            case .total: String(displayLocalized: "Total balance", bundle: .module)
+            case .granted: String(displayLocalized: "Granted credits", bundle: .module)
+            case .toppedUp: String(displayLocalized: "Topped up", bundle: .module)
             }
         }
 
@@ -279,27 +282,30 @@ public struct DeepSeekProvider: AIProvider {
 
         return shown.map { component, amount in
             UsageLine(
-                label: component.label,
+                label: DisplayText { component.label },
                 balance: UsageBalance(amount: .finite(amount), unit: .currency(info.currency)),
                 id: component.lineId(for: info)
             )
         }
     }
 
-    private func computeHeadline(response: DeepSeekBalanceResponse) -> String {
+    private func computeHeadline(response: DeepSeekBalanceResponse) -> DisplayText {
         if !response.isAvailable {
-            return String(localized: "No balance available")
+            return DisplayText { String(displayLocalized: "No balance available", bundle: .module) }
         }
 
         guard let info = response.balanceInfos.first,
               let total = Self.decimal(from: info.totalBalance)
         else {
-            return String(localized: "No data")
+            return DisplayText { String(displayLocalized: "No data", bundle: .module) }
         }
 
-        let amount = Self.currencyFormatter(currencyCode: info.currency)
-            .string(from: NSDecimalNumber(decimal: total)) ?? "\(total)"
-        return String(localized: "\(amount) left")
+        let currency = info.currency
+        return DisplayText {
+            let amount = Self.currencyFormatter(currencyCode: currency)
+                .string(from: NSDecimalNumber(decimal: total)) ?? "\(total)"
+            return String(displayLocalized: "\(amount) left", bundle: .module)
+        }
     }
 
     private static func decimal(from value: String) -> Decimal? {
@@ -309,6 +315,7 @@ public struct DeepSeekProvider: AIProvider {
     private static func currencyFormatter(currencyCode: String) -> NumberFormatter {
         let formatter = NumberFormatter()
         formatter.numberStyle = .currency
+        formatter.locale = DisplayLanguage.locale
         formatter.currencyCode = currencyCode
         return formatter
     }

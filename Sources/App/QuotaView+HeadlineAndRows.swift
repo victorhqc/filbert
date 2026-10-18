@@ -27,7 +27,7 @@ struct QuotaHeadlineAndRows: View {
             }
             .padding(.bottom, 2)
 
-            ForEach(lines, id: \.label) { line in
+            ForEach(lines, id: \.label.resolved) { line in
                 UsageLineRow(line: line, forecast: hasForecasts ? forecastLineSource(for: line) : nil)
             }
         }
@@ -38,7 +38,7 @@ struct QuotaHeadlineAndRows: View {
         if let forecast {
             ForecastHeadline(headline: forecast)
         } else {
-            Text(quota.headline)
+            Text(quota.headline.resolved)
                 .font(.headline)
         }
     }

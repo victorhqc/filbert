@@ -27,34 +27,35 @@
             "state" : "translated",
             "value" : "Queda %@"
           }
-        }
-      }
-    },
-    "%@ used of %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ von %@ verwendet"
+            "value" : "残り%@"
           }
         },
-        "en" : {
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@ used of %@"
+            "value" : "Restante: %@"
           }
         },
-        "es-ES" : {
+        "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se han usado %@ de %@"
+            "value" : "Restante: %@"
           }
         },
-        "es-MX" : {
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se usó %@ de %@"
+            "value" : "Осталось: %@"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剩余 %@"
           }
         }
       }
@@ -81,6 +82,36 @@
           }
         },
         "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "API"
@@ -114,6 +145,36 @@
             "state" : "translated",
             "value" : "Falló la autenticación"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証に失敗しました"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na autenticação"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falha na autenticação"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка аутентификации"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "认证失败"
+          }
         }
       }
     },
@@ -143,34 +204,35 @@
             "state" : "translated",
             "value" : "Auto"
           }
-        }
-      }
-    },
-    "Billing cycle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrechnungszeitraum"
+            "value" : "自動"
           }
         },
-        "en" : {
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Billing cycle"
+            "value" : "Auto"
           }
         },
-        "es-ES" : {
+        "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ciclo de facturación"
+            "value" : "Auto"
           }
         },
-        "es-MX" : {
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ciclo de facturación"
+            "value" : "Auto"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自动"
           }
         }
       }
@@ -201,6 +263,36 @@
             "state" : "translated",
             "value" : "Créditos adicionales"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボーナスクレジット"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créditos bônus"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créditos de bónus"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Бонусные кредиты"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "赠金"
+          }
         }
       }
     },
@@ -229,6 +321,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cursor CLI no está instalado — ejecuta `agent login` o inicia sesión en la aplicación Cursor."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor CLIがインストールされていません。`agent login`を実行するか、Cursorアプリにサインインしてください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor CLI não instalado — execute `agent login` ou inicie sessão no app Cursor."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor CLI não instalado — execute `agent login` ou inicie sessão na aplicação Cursor."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor CLI не установлен — выполните `agent login` или войдите в приложение Cursor."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未安装 Cursor CLI——请运行 `agent login`，或登录 Cursor App。"
           }
         }
       }
@@ -259,6 +381,36 @@
             "state" : "translated",
             "value" : "Uso incluido"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プランに含まれる使用量"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uso incluído"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Utilização incluída"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Включённое использование"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含用量"
+          }
         }
       }
     },
@@ -286,7 +438,37 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitorea la suscripción y el gasto bajo demanda"
+            "value" : "Supervisa la suscripción y el gasto bajo demanda"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サブスクリプションとオンデマンドの支出を監視"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitora a assinatura e os gastos sob demanda"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoriza a subscrição e os gastos a pedido"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отслеживает подписку и расходы по запросу"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "监控订阅和按需支出"
           }
         }
       }
@@ -317,6 +499,36 @@
             "state" : "translated",
             "value" : "Error de red. Revisa tu conexión."
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークエラーです。接続を確認してください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro de rede. Verifique sua conexão."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro de rede. Verifique a ligação."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ошибка сети. Проверьте подключение."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "网络错误。请检查你的网络连接。"
+          }
         }
       }
     },
@@ -346,34 +558,35 @@
             "state" : "translated",
             "value" : "Sin datos"
           }
-        }
-      }
-    },
-    "No usage reported" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Keine Nutzung gemeldet"
+            "value" : "データなし"
           }
         },
-        "en" : {
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No usage reported"
+            "value" : "Sem dados"
           }
         },
-        "es-ES" : {
+        "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha registrado uso"
+            "value" : "Sem dados"
           }
         },
-        "es-MX" : {
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se reportó uso"
+            "value" : "Нет данных"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无数据"
           }
         }
       }
@@ -404,34 +617,35 @@
             "state" : "translated",
             "value" : "Gasto bajo demanda"
           }
-        }
-      }
-    },
-    "Plan" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Tarif"
+            "value" : "オンデマンドの支出"
           }
         },
-        "en" : {
+        "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plan"
+            "value" : "Gastos sob demanda"
           }
         },
-        "es-ES" : {
+        "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plan"
+            "value" : "Gastos a pedido"
           }
         },
-        "es-MX" : {
+        "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Plan"
+            "value" : "Расходы по запросу"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按需支出"
           }
         }
       }
@@ -462,6 +676,36 @@
             "state" : "translated",
             "value" : "Gasto compartido"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有の支出"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastos compartilhados"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gastos partilhados"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Общие расходы"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共享支出"
+          }
         }
       }
     },
@@ -490,6 +734,36 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se alcanzó el límite de solicitudes"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レート制限されています"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite de solicitações atingido"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Limite de pedidos atingido"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Слишком много запросов"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请求过于频繁"
           }
         }
       }
@@ -520,6 +794,36 @@
             "state" : "translated",
             "value" : "La sesión expiró"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セッションの期限が切れました"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sessão expirada"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sessão expirada"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сеанс истёк"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话已过期"
+          }
         }
       }
     },
@@ -549,6 +853,36 @@
             "state" : "translated",
             "value" : "La sesión expiró — este proveedor necesita una actualización"
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セッションの期限が切れました。このプロバイダのアップデートが必要です"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sessão expirada — este provedor precisa de uma atualização"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sessão expirada — este fornecedor precisa de uma atualização"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сеанс истёк — этот провайдер нужно обновить"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "会话已过期——此提供商需要更新"
+          }
         }
       }
     },
@@ -576,7 +910,37 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicia sesión en Cursor"
+            "value" : "Iniciar sesión en Cursor"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorにサインイン"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sessão no Cursor"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Iniciar sessão no Cursor"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Войти в Cursor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登录 Cursor"
           }
         }
       }
@@ -607,6 +971,36 @@
             "state" : "translated",
             "value" : "Este proveedor usa endpoints de Cursor no documentados y puede dejar de funcionar si Cursor los cambia."
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このプロバイダはCursorの非公開エンドポイントを使用しているため、Cursorが変更すると動作しなくなる場合があります。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este provedor usa endpoints não documentados do Cursor e pode parar de funcionar se o Cursor os alterar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Este fornecedor usa endpoints não documentados do Cursor e pode deixar de funcionar se o Cursor os alterar."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Этот провайдер использует недокументированные эндпоинты Cursor и может перестать работать, если Cursor их изменит."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此提供商使用未公开的 Cursor 端点，如果 Cursor 更改这些端点，可能会停止工作。"
+          }
         }
       }
     },
@@ -636,6 +1030,36 @@
             "state" : "translated",
             "value" : "Respuesta inesperada del servidor."
           }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバから予期しない応答がありました。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resposta inesperada do servidor."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Resposta inesperada do servidor."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неожиданный ответ сервера."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "服务器返回了意外响应。"
+          }
         }
       }
     },
@@ -664,6 +1088,390 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ilimitado"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無制限"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilimitado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ilimitado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Без ограничений"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无限制"
+          }
+        }
+      }
+    },
+    "Saved Cursor credentials are incomplete. Re-import them." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die gespeicherten Cursor-Anmeldedaten sind unvollständig. Importiere sie erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved Cursor credentials are incomplete. Re-import them."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales guardadas de Cursor están incompletas. Vuelve a importarlas."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales guardadas de Cursor están incompletas. Vuelve a importarlas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存されたCursorの認証情報が不完全です。もう一度読み込んでください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As credenciais salvas do Cursor estão incompletas. Importe-as novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As credenciais guardadas do Cursor estão incompletas. Importe-as novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Сохранённые учётные данные Cursor неполны. Импортируйте их снова."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已存储的 Cursor 凭证不完整。请重新导入。"
+          }
+        }
+      }
+    },
+    "Sign in to Cursor, then import credentials." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Melde dich bei Cursor an und importiere dann die Anmeldedaten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in to Cursor, then import credentials."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión en Cursor y luego importa las credenciales."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión en Cursor y luego importa las credenciales."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorにサインインしてから、認証情報を読み込んでください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicie sessão no Cursor e importe as credenciais."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicie sessão no Cursor e importe as credenciais."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Войдите в Cursor, затем импортируйте учётные данные."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "请登录 Cursor，然后导入凭证。"
+          }
+        }
+      }
+    },
+    "Unable to access saved Cursor credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf die gespeicherten Cursor-Anmeldedaten kann nicht zugegriffen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to access saved Cursor credentials. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales guardadas de Cursor. Comprueba el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales guardadas de Cursor. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存されたCursorの認証情報にアクセスできませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível acessar as credenciais salvas do Cursor. Verifique o acesso às chaves e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível aceder às credenciais guardadas do Cursor. Verifique o acesso ao porta-chaves e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет доступа к сохранённым учётным данным Cursor. Проверьте доступ к связке ключей и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法访问已存储的 Cursor 凭证。请检查钥匙串访问权限，然后重试。"
+          }
+        }
+      }
+    },
+    "Re-import Cursor credentials" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor-Anmeldedaten erneut importieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Re-import Cursor credentials"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver a importar las credenciales de Cursor"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver a importar las credenciales de Cursor"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorの認証情報を再読み込み"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar novamente as credenciais do Cursor"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Importar novamente as credenciais do Cursor"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Повторно импортировать учётные данные Cursor"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新导入 Cursor 凭证"
+          }
+        }
+      }
+    },
+    "Unable to access Cursor credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf die Cursor-Anmeldedaten kann nicht zugegriffen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to access Cursor credentials. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales de Cursor. Comprueba el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales de Cursor. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorの認証情報にアクセスできませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível acessar as credenciais do Cursor. Verifique o acesso às chaves e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível aceder às credenciais do Cursor. Verifique o acesso ao porta-chaves e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет доступа к учётным данным Cursor. Проверьте доступ к связке ключей и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法访问 Cursor 凭证。请检查钥匙串访问权限，然后重试。"
+          }
+        }
+      }
+    },
+    "Cursor credentials are invalid. Sign in to Cursor, then re-import them." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Cursor-Anmeldedaten sind ungültig. Melde dich bei Cursor an und importiere sie dann erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor credentials are invalid. Sign in to Cursor, then re-import them."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales de Cursor no son válidas. Inicia sesión en Cursor y luego vuelve a importarlas."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales de Cursor no son válidas. Inicia sesión en Cursor y luego vuelve a importarlas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorの認証情報が無効です。Cursorにサインインしてから、もう一度読み込んでください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As credenciais do Cursor são inválidas. Inicie sessão no Cursor e importe-as novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "As credenciais do Cursor são inválidas. Inicie sessão no Cursor e importe-as novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Учётные данные Cursor недействительны. Войдите в Cursor, затем импортируйте их снова."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor 凭证无效。请登录 Cursor，然后重新导入。"
           }
         }
       }
