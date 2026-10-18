@@ -4,7 +4,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 
 ## Context
 
-- Status: draft for review. Found during the manual check of (providers 17) on 2026-10-12.
+- Status: implemented, not yet on `main` (2026-10-18). Found during the manual check of (providers 17) on 2026-10-12. VoiceOver is checked with (ui 32) Plan step 8.
 - (ui 01 AC7) requires all UI chrome in the active language. Today that does not hold.
 - `Package.swift` processes each module's `Resources/Localizable.xcstrings` into that module's resource bundle. Only `Bundle.module` reads it.
 - `String(localized:)` without `bundle:` reads `Bundle.main`. `Bundle.main` has no catalog, so the lookup returns the key. A key that is the English text looks correct. A name-style key shows raw.
@@ -67,7 +67,8 @@ Resolve every user-facing string against its own module's String Catalog, so the
 
 ## Plan
 
-1. [ ] Evidence. On a German system, open Settings in the packaged release. Check the "General" tab label, which already passes `bundle: .module`. "Allgemein" means module bundles pick the user's language. "General" means `packaging/Info.plist` needs `CFBundleLocalizations`, and step 5 is required.
+1. [x] Evidence. On a German system, open Settings in the packaged release. Check the "General" tab label, which already passes `bundle: .module`. "Allgemein" means module bundles pick the user's language. "General" means `packaging/Info.plist` needs `CFBundleLocalizations`, and step 5 is required.
+   - 2026-10-18: step 5 was done anyway by (ui 31) Plan step 6. On the user's German Mac, Filbert shows German.
 2. [x] Add the source guard test (AC1) and the generated catalog test (AC3) in `Tests/AppTests/StringCatalogCoverageTests.swift`, with the key scanner in `Tests/AppTests/LocalizedSourceScanner.swift`. `AllowanceForecastLocalizationTests` is removed. The tests cover Core, App, and all seven providers.
    - The guard first matched line by line, so it missed `String(` followed by `localized:` on the next line. One such call in `ProviderRegistry` was found during the provider sweep. The guard now matches across line breaks, and a probe file confirmed it.
    - Swift builds an interpolated key with one plain specifier per value (`"\(name): \(count)% used"` → `%@: %lld%% used`). A positional catalog key such as `%1$@: %2$lld%% used` never matches; this was verified with a compiled catalog. Two App keys had this form, so the menu bar and card header accessibility labels were never translated. They are re-keyed. Translations can still use positional placeholders.
@@ -80,9 +81,11 @@ Resolve every user-facing string against its own module's String Catalog, so the
    - Claude Code had "Claude Code not found" and "Claude Code not found." Swift Build cannot give two keys that differ only by punctuation separate symbols. The error now uses the first text, as Codex does.
    - Provider tests that compare English text pin English too: 9 classes, plus `EnglishTestCase` for the 3 Cursor classes.
 4. [x] Add catalogs for Claude Code and Codex, with translations (AC4).
-5. [ ] If step 1 requires it, declare the four languages in `packaging/Info.plist` (AC5).
+5. [x] If step 1 requires it, declare the four languages in `packaging/Info.plist` (AC5).
+   - (ui 31) Plan step 6 declares all eight languages, and `PackagedLocalizationsTests` keeps the list equal to `SupportedLanguage.all`.
 6. [x] Compile the catalogs in CI before running the tests, so tests read compiled catalogs (AC6). Drop the step once CI uses Swift Build by default.
-7. [ ] Run the validation gate. Then manually check the popover, every settings tab, and each provider's states in German, Spanish, and English, at normal width and with VoiceOver.
+7. [x] Run the validation gate. Then manually check the popover, every settings tab, and each provider's states in German, Spanish, and English, at normal width and with VoiceOver.
+   - 2026-10-18: the user checked the popover and every settings tab in each language, together with (ui 31) Plan step 7. VoiceOver and the provider error states move to (ui 32) Plan step 8.
 
 ## Risks
 

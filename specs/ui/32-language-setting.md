@@ -4,7 +4,7 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
 
 ## Context
 
-- Status: draft for review.
+- Status: in progress, not yet on `main`. Plan steps 1–7 are done. The manual check in step 8 is open.
 - Requires (ui 31) for the language list and `CFBundleLocalizations`. Changes how (ui 29) does lookups. See Plan.
 - `Sources/App/GeneralSettingsView.swift` — the General tab. A new "Language" card goes after "Startup".
 - Facts checked on 2026-10-18 with a compiled catalog:
@@ -119,6 +119,7 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
    - A 6-second launch of the debug build ran without errors. The picker itself is checked by hand in step 8.
 8. [ ] Run the validation gate. Then manually check AC3 to AC7 in the packaged app for each language, with the popover and Settings open together.
    - 2026-10-18: the user checked AC3 by hand. Every language reads well, and the text changes when the language changes in Settings. AC4 to AC7 (relaunch, Sparkle, System Default, System Settings) are still open. Check them again after (ui 31) adds the remaining languages.
+   - 2026-10-18: (ui 31) is done. Still open: AC4 to AC7, plus VoiceOver and the provider error states, moved here from (ui 29) and (ui 31).
 
 ## Risks
 

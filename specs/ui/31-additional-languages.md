@@ -4,7 +4,7 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 
 ## Context
 
-- Status: draft for review.
+- Status: implemented, not yet on `main`. Plan steps 1–7 are done (2026-10-18). Before a release, a native speaker reviews `ru`, `zh-Hans`, and `pt-PT` (Risks).
 - Builds on (ui 29). Its generated catalog test (ui 29 AC3) is the gate for every language in this spec.
 - Catalog languages on 2026-10-18: `en` (source), `de-DE`, `es-ES`, `es-MX`.
 - `es-ES` and `es-MX` are mostly copies of each other. Identical entries on 2026-10-18: App 201 of 222, Cursor 12 of 23, ZAI 5 of 9, GeminiCLI 29 of 29, Core 3 of 3.
@@ -110,7 +110,10 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - `PackagedLocalizationsTests` checks that the list equals `SupportedLanguage.all`, so a new language can't miss the plist.
    - An unsigned local DMG (`scripts/build-dmg.sh --no-sign --skip-launch-check`) has the eight languages in `Contents/Info.plist`, and `filbert_App.bundle` has eight `.lproj` folders. The System Settings listing is checked by hand in step 7.
    - German follows Apple's Mac User Guide, which uses "du". GeminiCLI's 11 "Sie" strings now use "du". "Versuch es später nochmal" in DeepSeek, OpenCode Go, and Z.ai is now "Versuche es später erneut". `testEveryLanguageAvoidsItsDeniedTerms` (renamed from the Spanish-only test) denies "Sie", "Ihnen", "Ihr…", and "nochmal" in `de-DE`.
-7. [ ] Run the validation gate. Then manually check AC5 and AC7 in each language: the popover, every settings tab, the error states, and VoiceOver.
+7. [x] Run the validation gate. Then manually check AC5 and AC7 in each language: the popover, every settings tab, the error states, and VoiceOver. (2026-10-18)
+   - The gate passes: 1054 tests, also on the native build path with compiled catalogs.
+   - The user checked AC5 (macOS picks the language; their Mac runs German and Filbert follows), AC6 (Filbert appears in Language & Region › Applications), and AC7 (no truncation in the popover and the settings tabs).
+   - VoiceOver and the provider error states were not part of this check. (ui 32) Plan step 8 covers them.
 
 ## Risks
 
