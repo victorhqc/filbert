@@ -125,7 +125,7 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertEqual(headline.text, "3% · About \(abbreviated(80 * 60)) of use remaining")
         XCTAssertEqual(
             headline.accessibilityLabel,
-            "3%. About \(remaining) of use remaining at recent pace, based on the last \(span(20 * 60))"
+            "3%. About \(remaining) of use remaining at recent pace, based on \(span(20 * 60)) of history"
         )
     }
 
@@ -138,11 +138,11 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         let headline = try XCTUnwrap(presentation.headline)
         XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
-        XCTAssertEqual(headline.detail, "Based on the last \(span(20 * 60))")
+        XCTAssertEqual(headline.detail, "Based on \(span(20 * 60)) of history")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(
             presentation.rowLines["weekly"]?.text,
-            "About \(abbreviated(30 * 60)) of use remaining · last \(span(40 * 60))"
+            "About \(abbreviated(30 * 60)) of use remaining · \(span(40 * 60)) of history"
         )
     }
 
@@ -155,11 +155,11 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         let headline = try XCTUnwrap(presentation.headline)
         XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(headline.status, "Should last until reset")
-        XCTAssertEqual(headline.detail, "At your pace over the last \(span(60 * 60))")
+        XCTAssertEqual(headline.detail, "At your pace, based on \(span(60 * 60)) of history")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(
             presentation.rowLines["weekly"]?.text,
-            "Should last until reset · last \(span(60 * 60))"
+            "Should last until reset · \(span(60 * 60)) of history"
         )
     }
 
@@ -170,7 +170,7 @@ final class AllowanceForecastHeadlineRuleTests: AllowanceForecastPresentationTes
         XCTAssertEqual(
             headline.accessibilitySentences,
             [
-                "Should last until reset at your pace over the last \(span(60 * 60))",
+                "Should last until reset at your pace, based on \(span(60 * 60)) of history",
                 "Timing is approximate",
             ]
         )

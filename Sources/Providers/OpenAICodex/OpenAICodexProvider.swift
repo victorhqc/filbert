@@ -12,7 +12,7 @@ extension OpenAICodexError: LocalizedError {
         case .binaryNotFound:
             String(displayLocalized: "Codex CLI not installed", bundle: .module)
         case .internalInconsistency:
-            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
+            String(displayLocalized: "Internal error: unexpected credential type.", bundle: .module)
         }
     }
 }

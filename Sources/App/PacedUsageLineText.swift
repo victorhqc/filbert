@@ -13,9 +13,14 @@ struct PacedUsageLineText: Equatable {
             String(displayLocalized: "%@%% used", bundle: .module),
             pace.usedPercentage.formatted(.number.precision(.fractionLength(0)).locale(DisplayLanguage.locale))
         )
+        let leftFormat = String(displayLocalized: "%@ left", bundle: .module)
         remainingTime = String.localizedStringWithFormat(
-            String(displayLocalized: "%@ left", bundle: .module),
+            leftFormat,
             CoarseDurationFormatting.string(from: pace.remainingTime)
+        )
+        let spokenRemainingTime = String.localizedStringWithFormat(
+            leftFormat,
+            CoarseDurationFormatting.string(from: pace.remainingTime, unitsStyle: .full)
         )
         allowance = Self.allowanceText(pace.allowance)
         let paceStatus = switch pace.tier {
@@ -24,7 +29,7 @@ struct PacedUsageLineText: Equatable {
         case .warn, .critical:
             String(displayLocalized: "Over current allowance", bundle: .module)
         }
-        accessibilitySentences = [used, remainingTime, paceStatus, allowance, forecast?.accessibilityLabel]
+        accessibilitySentences = [used, spokenRemainingTime, paceStatus, allowance, forecast?.accessibilityLabel]
             .compactMap(\.self)
     }
 

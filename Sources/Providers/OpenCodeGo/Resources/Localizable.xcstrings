@@ -72,19 +72,19 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Anmeldung fehlgeschlagen. Überprüfe deinen API-Schlüssel."
+            "value" : "Authentifizierung fehlgeschlagen. Überprüfe deinen API-Schlüssel."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido iniciar sesión. Comprueba tu clave de API."
+            "value" : "Error de autenticación. Comprueba tu clave de API."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo iniciar sesión. Revisa tu clave de API."
+            "value" : "Falló la autenticación. Revisa tu clave de API."
           }
         },
         "ja" : {
@@ -119,66 +119,67 @@
         }
       }
     },
-    "Internal error: unexpected auth shape." : {
+    "Internal error: unexpected credential type." : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Internal error: unexpected auth shape."
+            "value" : "Internal error: unexpected credential type."
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Interner Fehler: Unerwartete Authentifizierungsform."
+            "value" : "Interner Fehler: unerwarteter Typ der Anmeldedaten."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error interno: forma de autenticación inesperada."
+            "value" : "Error interno: tipo de credencial inesperado."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Error interno: forma de autenticación inesperada."
+            "value" : "Error interno: tipo de credencial inesperado."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内部エラー: 予期しない認証形式です。"
+            "value" : "内部エラー: 予期しない種類の認証情報です。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erro interno: formato de autenticação inesperado."
+            "value" : "Erro interno: tipo de credencial inesperado."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Erro interno: formato de autenticação inesperado."
+            "value" : "Erro interno: tipo de credencial inesperado."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Внутренняя ошибка: неожиданный формат аутентификации."
+            "value" : "Внутренняя ошибка: неожиданный тип учётных данных."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "内部错误：意外的认证格式。"
+            "value" : "内部错误：意外的凭证类型。"
           }
         }
       }
     },
     "Monthly" : {
+      "comment" : "Usage window label: the monthly limit window. Also fills “%@ limit reached”.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
@@ -621,7 +622,7 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レート制限されています"
+            "value" : "リクエストの上限に達しました"
           }
         },
         "pt-BR" : {
@@ -662,25 +663,25 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zu viele Anfragen. Versuche es später erneut."
+            "value" : "Anfragelimit erreicht. Versuche es später erneut."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Has hecho demasiadas solicitudes. Inténtalo más tarde."
+            "value" : "Límite de solicitudes alcanzado. Inténtalo de nuevo más tarde."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiciste demasiadas solicitudes. Inténtalo más tarde."
+            "value" : "Se alcanzó el límite de solicitudes. Inténtalo más tarde."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "レート制限されています。あとでやり直してください。"
+            "value" : "リクエストの上限に達しました。あとでやり直してください。"
           }
         },
         "pt-BR" : {
@@ -698,7 +699,7 @@
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Слишком много запросов. Повторите попытку позже."
+            "value" : "Достигнут лимит запросов. Повторите попытку позже."
           }
         },
         "zh-Hans" : {
@@ -887,6 +888,7 @@
       }
     },
     "Weekly" : {
+      "comment" : "Usage window label: the weekly limit window. Also fills “%@ limit reached”.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {

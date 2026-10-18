@@ -89,7 +89,9 @@ public struct CursorProvider: AIProvider {
         }
         return .setup(DisplayText {
             String(
-                displayLocalized: "Cursor CLI not installed — run `agent login`, or sign in to the Cursor app.",
+                displayLocalized: """
+                Cursor CLI not found. Install it and run “agent login”, or sign in to the Cursor app.
+                """,
                 bundle: .module
             )
         })

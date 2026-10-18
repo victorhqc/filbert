@@ -195,7 +195,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permite que Filbert lea el elemento del llavero de Gemini CLI"
+            "value": "Permite que Filbert lea el ítem del llavero de Gemini CLI"
           }
         },
         "es-MX": {
@@ -231,7 +231,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "允许 Filbert 读取 Gemini CLI 钥匙串项目"
+            "value": "允许 Filbert 读取 Gemini CLI 钥匙串项"
           }
         }
       },
@@ -313,7 +313,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Filbert no ha podido leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
+            "value": "Filbert no ha podido leer el ítem del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
           }
         },
         "es-MX": {
@@ -349,7 +349,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Filbert 无法读取 Gemini CLI 钥匙串项目。请允许访问，然后重试。"
+            "value": "Filbert 无法读取 Gemini CLI 钥匙串项。请允许访问，然后重试。"
           }
         }
       },
@@ -549,19 +549,19 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+            "value": "Se ha alcanzado el límite de frecuencia de Gemini CLI. Vuelve a intentarlo más tarde."
           }
         },
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+            "value": "Se alcanzó el límite de frecuencia de Gemini CLI. Vuelve a intentarlo más tarde."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLIがレート制限されています。あとでやり直してください。"
+            "value": "Gemini CLIのリクエストの上限に達しました。あとでやり直してください。"
           }
         },
         "pt-BR": {
@@ -614,7 +614,7 @@
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI está desconectado. Abre Gemini CLI e inicia sesión con Google."
+            "value": "Se cerró la sesión de Gemini CLI. Abre Gemini CLI e inicia sesión con Google."
           }
         },
         "ja": {
@@ -815,7 +815,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Время ожидания запроса к сервису использования Gemini CLI истекло. Повторите попытку позже."
+            "value": "Истекло время ожидания запроса данных об использовании Gemini CLI. Повторите попытку позже."
           }
         },
         "zh-Hans": {
@@ -874,7 +874,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Сервис использования Gemini CLI вернул неожиданную ошибку. Повторите попытку позже."
+            "value": "При получении данных об использовании Gemini CLI произошла непредвиденная ошибка. Повторите попытку позже."
           }
         },
         "zh-Hans": {
@@ -1004,60 +1004,60 @@
       },
       "extractionState": "manual"
     },
-    "Internal error: unexpected auth shape.": {
+    "Internal error: unexpected credential type.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Internal error: unexpected auth shape."
+            "value": "Internal error: unexpected credential type."
           }
         },
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Interner Fehler: Unerwartete Authentifizierungsform."
+            "value": "Interner Fehler: unerwarteter Typ der Anmeldedaten."
           }
         },
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Error interno: forma de autenticación inesperada."
+            "value": "Error interno: tipo de credencial inesperado."
           }
         },
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Error interno: forma de autenticación inesperada."
+            "value": "Error interno: tipo de credencial inesperado."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "内部エラー: 予期しない認証形式です。"
+            "value": "内部エラー: 予期しない種類の認証情報です。"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erro interno: formato de autenticação inesperado."
+            "value": "Erro interno: tipo de credencial inesperado."
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Erro interno: formato de autenticação inesperado."
+            "value": "Erro interno: tipo de credencial inesperado."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Внутренняя ошибка: неожиданный формат аутентификации."
+            "value": "Внутренняя ошибка: неожиданный тип учётных данных."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "内部错误：意外的认证格式。"
+            "value": "内部错误：意外的凭证类型。"
           }
         }
       },
@@ -1080,7 +1080,7 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se han informado límites de uso"
+            "value": "No se han indicado límites de uso"
           }
         },
         "es-MX": {
@@ -1228,7 +1228,7 @@
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Не удалось связаться с сервисом использования Gemini CLI. Проверьте подключение и повторите попытку."
+            "value": "Не удалось получить данные об использовании Gemini CLI. Проверьте подключение и повторите попытку."
           }
         },
         "zh-Hans": {

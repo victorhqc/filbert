@@ -14,7 +14,7 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         let headline = try XCTUnwrap(presentation.headline)
         XCTAssertEqual(headline.value, "3%")
         XCTAssertEqual(headline.status, "About \(abbreviated(80 * 60)) of use remaining")
-        XCTAssertEqual(headline.detail, "Based on the last \(span(20 * 60))")
+        XCTAssertEqual(headline.detail, "Based on \(span(20 * 60)) of history")
         XCTAssertNil(presentation.rowLines["five-hour"])
         XCTAssertEqual(presentation.rowLines["weekly"]?.text, "Learning your usage rate…")
     }
@@ -23,7 +23,7 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         let expectations: [(AllowanceForecast.State, String?)] = [
             (.learning, "Learning your usage rate…"),
             (.quiet, "No recent consumption detected"),
-            (.tooFarApart, "Updates too far apart to estimate"),
+            (.tooFarApart, "Refreshes too far apart to estimate"),
             (.paused, "Forecast paused until fresh data arrives"),
             (.exhausted, nil),
             (.insufficient, nil),
@@ -76,12 +76,12 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         let remaining = CoarseDurationFormatting.string(from: 26 * 60 * 60, unitsStyle: .full)
         XCTAssertEqual(
             row.accessibilityLabel,
-            "About \(remaining) of use remaining at recent pace, based on the last \(span(2 * 60 * 60))"
+            "About \(remaining) of use remaining at recent pace, based on \(span(2 * 60 * 60)) of history"
         )
         let headlineRemaining = CoarseDurationFormatting.string(from: 80 * 60, unitsStyle: .full)
         XCTAssertEqual(
             try XCTUnwrap(presentation.headline).accessibilitySentences,
-            ["About \(headlineRemaining) of use remaining at recent pace, based on the last \(span(20 * 60))"]
+            ["About \(headlineRemaining) of use remaining at recent pace, based on \(span(20 * 60)) of history"]
         )
         XCTAssertFalse(row.text.contains(" left"))
     }
@@ -136,10 +136,13 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         let row = try XCTUnwrap(presentation.rowLines["weekly"])
         let fourWeeks = CoarseDurationFormatting.string(from: 4 * week, unitsStyle: .full)
         XCTAssertEqual(headline.status, "More than \(abbreviated(4 * week)) of use remaining")
-        XCTAssertEqual(row.text, "More than \(abbreviated(4 * week)) of use remaining · last \(span(2 * 60 * 60))")
+        XCTAssertEqual(
+            row.text,
+            "More than \(abbreviated(4 * week)) of use remaining · \(span(2 * 60 * 60)) of history"
+        )
         XCTAssertEqual(
             row.accessibilityLabel,
-            "More than \(fourWeeks) of use remaining at recent pace, based on the last \(span(2 * 60 * 60))"
+            "More than \(fourWeeks) of use remaining at recent pace, based on \(span(2 * 60 * 60)) of history"
         )
     }
 

@@ -14,10 +14,14 @@ enum PeakHoursPresentation {
                 .percent.precision(.fractionLength(0 ... 1)).locale(DisplayLanguage.locale)
             )
             return String.localizedStringWithFormat(
-                String(displayLocalized: "%@ credit rate", bundle: .module),
+                String(displayLocalized: "%@ of standard credit rate", bundle: .module),
                 percent
             )
         }
+    }
+
+    static func rangeText(from start: String, to end: String) -> String {
+        String.localizedStringWithFormat(String(displayLocalized: "Range format", bundle: .module), start, end)
     }
 
     /// "Mon–Fri"-style label for the configured weekdays, or nil when the set
@@ -48,7 +52,7 @@ enum PeakHoursPresentation {
         let runTexts = runs.map { run -> String in
             guard let first = run.first, let last = run.last else { return "" }
             let firstSymbol = symbols[first - 1]
-            return run.count == 1 ? firstSymbol : "\(firstSymbol)–\(symbols[last - 1])"
+            return run.count == 1 ? firstSymbol : rangeText(from: firstSymbol, to: symbols[last - 1])
         }
         return runTexts.formatted(.list(type: .and).locale(DisplayLanguage.locale))
     }

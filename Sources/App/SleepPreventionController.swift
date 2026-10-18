@@ -203,7 +203,7 @@ final class SleepPreventionController {
         case .some(.timed):
             String.localizedStringWithFormat(
                 String(displayLocalized: "Mac won't sleep for %@", bundle: .module),
-                Self.remainingTimeText(for: remainingSeconds)
+                Self.spokenRemainingTime(for: remainingSeconds)
             )
         }
     }
@@ -274,6 +274,17 @@ final class SleepPreventionController {
             return String(format: "%d:%02d:%02d", hours, minutes, seconds)
         }
         return String(format: "%d:%02d", minutes, seconds)
+    }
+
+    static func spokenRemainingTime(for remainingSeconds: Int) -> String {
+        let formatter = DateComponentsFormatter()
+        var calendar = Calendar.current
+        calendar.locale = DisplayLanguage.locale
+        formatter.calendar = calendar
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.unitsStyle = .full
+        formatter.zeroFormattingBehavior = .dropAll
+        return formatter.string(from: TimeInterval(remainingSeconds)) ?? ""
     }
 
     private func createAssertionIfNeeded() -> Bool {

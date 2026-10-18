@@ -60,61 +60,62 @@
         }
       }
     },
-    "resets %@" : {
+    "resets in %@" : {
+      "comment" : "Quota reset countdown. %@ is the time left in one unit, full style: “2 hours”, “45 minutes”, “6 days”. Shown alone, after “15% · ”, after “Limit reached · ”, and in “%1$@ limit reached, %2$@”.",
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "resets %@"
+            "value" : "resets in %@"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "se restablece %@"
+            "value" : "%@ para restablecerse"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "se restablece %@"
+            "value" : "%@ para restablecerse"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "zurückgesetzt %@"
+            "value" : "noch %@ bis zum Zurücksetzen"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@にリセット"
+            "value" : "リセットまであと%@"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "redefine %@"
+            "value" : "redefinição em %@"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "repõe %@"
+            "value" : "repõe-se dentro de %@"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "сброс %@"
+            "value" : "до сброса %@"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@重置"
+            "value" : "%@后重置"
           }
         }
       }
@@ -131,13 +132,13 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "restableciendo…"
+            "value" : "restableciéndose…"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "restableciendo…"
+            "value" : "restableciéndose…"
           }
         },
         "de-DE" : {

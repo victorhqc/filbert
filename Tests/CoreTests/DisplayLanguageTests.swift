@@ -59,20 +59,53 @@ final class DisplayLanguageTests: XCTestCase {
         }
     }
 
-    func testRelativeTime_joinsChineseWithoutASpace() {
-        DisplayLanguage.selectedLanguageCode = "zh-Hans"
+    func testResetCountdownsShowTheTimeLeftInEachLanguage() {
+        let now = Date(timeIntervalSinceReferenceDate: 0)
+        let expected = [
+            "en": "resets in 2 hours",
+            "de-DE": "noch 2 Stunden bis zum Zurücksetzen",
+            "es-ES": "2 horas para restablecerse",
+            "es-MX": "2 horas para restablecerse",
+            "pt-BR": "redefinição em 2 horas",
+            "pt-PT": "repõe-se dentro de 2 horas",
+            "ru": "до сброса 2 часа",
+            "zh-Hans": "2小时后重置",
+            "ja": "リセットまであと2時間",
+        ]
+        for (language, text) in expected {
+            DisplayLanguage.selectedLanguageCode = language
 
-        let countdown = QuotaFormatting.countdown(to: Date().addingTimeInterval(2 * 3600 + 60))
-
-        XCTAssertEqual(countdown, "2小时后重置")
+            XCTAssertEqual(QuotaFormatting.countdown(to: now.addingTimeInterval(2 * 3600), now: now), text, language)
+        }
     }
 
-    func testRelativeTime_comesBeforeTheJapaneseVerb() {
-        DisplayLanguage.selectedLanguageCode = "ja"
+    func testResetCountdownsRoundToTheNearestSingleUnit() {
+        DisplayLanguage.selectedLanguageCode = "en"
+        let now = Date(timeIntervalSinceReferenceDate: 0)
+        let expected: [(TimeInterval, String)] = [
+            (30, "resets in 1 minute"),
+            (45 * 60, "resets in 45 minutes"),
+            (59 * 60 + 30, "resets in 1 hour"),
+            (100 * 60, "resets in 2 hours"),
+            (23 * 3600 + 40 * 60, "resets in 1 day"),
+            (6 * 86400 + 13 * 3600, "resets in 7 days"),
+        ]
+        for (remaining, text) in expected {
+            XCTAssertEqual(QuotaFormatting.countdown(to: now.addingTimeInterval(remaining), now: now), text)
+        }
+    }
 
-        let countdown = QuotaFormatting.countdown(to: Date().addingTimeInterval(2 * 3600 + 60))
-
-        XCTAssertEqual(countdown, "2 時間後にリセット")
+    func testRussianResetCountdownsKeepTheDurationInTheNominative() {
+        DisplayLanguage.selectedLanguageCode = "ru"
+        let now = Date(timeIntervalSinceReferenceDate: 0)
+        let expected: [(TimeInterval, String)] = [
+            (60, "до сброса 1 минута"),
+            (21 * 3600, "до сброса 21 час"),
+            (6 * 86400, "до сброса 6 дней"),
+        ]
+        for (remaining, text) in expected {
+            XCTAssertEqual(QuotaFormatting.countdown(to: now.addingTimeInterval(remaining), now: now), text)
+        }
     }
 
     func testLookup_followsSelectionWithoutRelaunch() {
@@ -92,14 +125,6 @@ final class DisplayLanguageTests: XCTestCase {
             ProviderSetupError.notSupported.errorDescription,
             "Dieser Anbieter unterstützt diese Aktion nicht."
         )
-    }
-
-    func testRelativeTime_usesTheDisplayLanguage() {
-        DisplayLanguage.selectedLanguageCode = "de-DE"
-
-        let countdown = QuotaFormatting.countdown(to: Date().addingTimeInterval(2 * 3600 + 60))
-
-        XCTAssertTrue(countdown.hasPrefix("zurückgesetzt in 2 Stunden"), countdown)
     }
 
     private func assertLanguage(_ locale: Locale, _ expected: String, line: UInt = #line) {

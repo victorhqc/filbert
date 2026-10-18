@@ -114,7 +114,7 @@ final class FallbackPoolPresentationTests: FallbackPoolTestCase {
         XCTAssertEqual(headline.label, "Credits")
         let remaining = CoarseDurationFormatting.string(from: 4 * 60 * 60)
         XCTAssertEqual(headline.status, "About \(remaining) of use remaining")
-        XCTAssertEqual(headline.detail, "Based on the last \(CoarseDurationFormatting.evidenceSpan(10 * 60))")
+        XCTAssertEqual(headline.detail, "Based on \(CoarseDurationFormatting.evidenceSpan(10 * 60)) of history")
         XCTAssertEqual(Array(headline.accessibilitySentences.prefix(2)), [
             "Using Credits",
             "5-hour window limit reached, \(QuotaFormatting.countdown(to: fiveHourReset))",

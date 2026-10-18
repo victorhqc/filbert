@@ -319,7 +319,7 @@ private struct ProviderSettingsRow: View {
                     saveOverride()
                 }
                 .buttonStyle(.borderedProminent)
-                Button(String(displayLocalized: "Reset", bundle: .module)) {
+                Button(String(displayLocalized: "Use Default", bundle: .module)) {
                     resetOverride()
                 }
                 .disabled(overrideURL == nil)
