@@ -4,7 +4,7 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 
 ## Context
 
-- Status: in progress, not yet on `main`. Plan steps 1–7 are done (2026-10-18). Japanese was added on 2026-10-18. Steps 8–10 are done; the manual check in step 11 is open. Before a release, a native speaker reviews `ru`, `zh-Hans`, `pt-PT`, and `ja` (Risks).
+- Status: implemented, not yet on `main`. Plan steps 1–11 are done (2026-10-18), including Japanese. Before a release, a native speaker reviews `ru`, `zh-Hans`, `pt-PT`, and `ja` (Risks).
 - Builds on (ui 29). Its generated catalog test (ui 29 AC3) is the gate for every language in this spec.
 - Catalog languages on 2026-10-18: `en` (source), `de-DE`, `es-ES`, `es-MX`.
 - `es-ES` and `es-MX` are mostly copies of each other. Identical entries on 2026-10-18: App 201 of 222, Cursor 12 of 23, ZAI 5 of 9, GeminiCLI 29 of 29, Core 3 of 3.
@@ -129,7 +129,8 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 10. [x] Add `ja` to `CFBundleLocalizations` (AC6). Extend the language tables in `DisplayLanguageTests` (AC5, a lookup, and relative dates joined to Japanese text), `DisplayLocaleFormattingTests`, `ZAIWindowLabelTests`, and `AppLanguagePreferenceTests`. (2026-10-18)
    - `DisplayLanguageTests` also checks that `en-JP` stays English.
    - The gate passes: lint, release build, and 1055 tests, also on the native build path with compiled catalogs. That build has a `ja.lproj` in `filbert_App.bundle`.
-11. [ ] Run the validation gate. Then manually check AC5 and AC7 in Japanese: the popover, every settings tab, and Language & Region › Applications.
+11. [x] Run the validation gate. Then manually check AC5 and AC7 in Japanese: the popover, every settings tab, and Language & Region › Applications. (2026-10-18)
+   - The user checked Filbert in Japanese and confirmed it works.
 
 ## Risks
 
