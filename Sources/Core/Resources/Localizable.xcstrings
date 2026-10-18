@@ -28,6 +28,12 @@
             "value" : "Keine Anmeldedaten gefunden. Melde dich bei diesem Anbieter an und versuche es erneut."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証情報が見つかりません。このプロバイダにサインインして、やり直してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -79,6 +85,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "zurückgesetzt %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@にリセット"
           }
         },
         "pt-BR" : {
@@ -134,6 +146,12 @@
             "value" : "wird zurückgesetzt…"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リセット中…"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -187,6 +205,12 @@
             "value" : "Dieser Anbieter unterstützt diese Aktion nicht."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このプロバイダはこの操作に対応していません。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -238,6 +262,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudieron leer las credenciales. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証情報を読み取れませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
           }
         },
         "pt-BR" : {

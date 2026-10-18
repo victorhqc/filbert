@@ -33,6 +33,7 @@ final class DisplayLocaleFormattingTests: XCTestCase {
             "pt-PT": ["1 segundo", "2 segundos", "1 minuto", "2 minutos", "5 minutos", "21 minutos"],
             "ru": ["1 секунда", "2 секунды", "1 минута", "2 минуты", "5 минут", "21 минута"],
             "zh-Hans": ["1 秒", "2 秒", "1 分钟", "2 分钟", "5 分钟", "21 分钟"],
+            "ja": ["1秒", "2秒", "1分", "2分", "5分", "21分"],
         ]
         for (language, texts) in expected {
             DisplayLanguage.selectedLanguageCode = language

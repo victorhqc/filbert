@@ -28,6 +28,12 @@
             "value" : "Queda %@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "残り%@"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -76,6 +82,12 @@
           }
         },
         "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "API"
@@ -134,6 +146,12 @@
             "value" : "Falló la autenticación"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証に失敗しました"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -185,6 +203,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Auto"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自動"
           }
         },
         "pt-BR" : {
@@ -240,6 +264,12 @@
             "value" : "Créditos adicionales"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ボーナスクレジット"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -291,6 +321,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cursor CLI no está instalado — ejecuta `agent login` o inicia sesión en la aplicación Cursor."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor CLIがインストールされていません。`agent login`を実行するか、Cursorアプリにサインインしてください。"
           }
         },
         "pt-BR" : {
@@ -346,6 +382,12 @@
             "value" : "Uso incluido"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プランに含まれる使用量"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -397,6 +439,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supervisa la suscripción y el gasto bajo demanda"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サブスクリプションとオンデマンドの支出を監視"
           }
         },
         "pt-BR" : {
@@ -452,6 +500,12 @@
             "value" : "Error de red. Revisa tu conexión."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークエラーです。接続を確認してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -503,6 +557,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin datos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データなし"
           }
         },
         "pt-BR" : {
@@ -558,6 +618,12 @@
             "value" : "Gasto bajo demanda"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オンデマンドの支出"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -609,6 +675,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gasto compartido"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "共有の支出"
           }
         },
         "pt-BR" : {
@@ -664,6 +736,12 @@
             "value" : "Se alcanzó el límite de solicitudes"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レート制限されています"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -715,6 +793,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "La sesión expiró"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セッションの期限が切れました"
           }
         },
         "pt-BR" : {
@@ -770,6 +854,12 @@
             "value" : "La sesión expiró — este proveedor necesita una actualización"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "セッションの期限が切れました。このプロバイダのアップデートが必要です"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -821,6 +911,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Iniciar sesión en Cursor"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorにサインイン"
           }
         },
         "pt-BR" : {
@@ -876,6 +972,12 @@
             "value" : "Este proveedor usa endpoints de Cursor no documentados y puede dejar de funcionar si Cursor los cambia."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このプロバイダはCursorの非公開エンドポイントを使用しているため、Cursorが変更すると動作しなくなる場合があります。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -927,6 +1029,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Respuesta inesperada del servidor."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバから予期しない応答がありました。"
           }
         },
         "pt-BR" : {
@@ -982,6 +1090,12 @@
             "value" : "Ilimitado"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無制限"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1033,6 +1147,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Las credenciales guardadas de Cursor están incompletas. Vuelve a importarlas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存されたCursorの認証情報が不完全です。もう一度読み込んでください。"
           }
         },
         "pt-BR" : {
@@ -1088,6 +1208,12 @@
             "value" : "Inicia sesión en Cursor y luego importa las credenciales."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorにサインインしてから、認証情報を読み込んでください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1139,6 +1265,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se puede acceder a las credenciales guardadas de Cursor. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存されたCursorの認証情報にアクセスできませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
           }
         },
         "pt-BR" : {
@@ -1194,6 +1326,12 @@
             "value" : "Volver a importar las credenciales de Cursor"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorの認証情報を再読み込み"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1247,6 +1385,12 @@
             "value" : "No se puede acceder a las credenciales de Cursor. Revisa el acceso al llavero e inténtalo de nuevo."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorの認証情報にアクセスできませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1298,6 +1442,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Las credenciales de Cursor no son válidas. Inicia sesión en Cursor y luego vuelve a importarlas."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursorの認証情報が無効です。Cursorにサインインしてから、もう一度読み込んでください。"
           }
         },
         "pt-BR" : {

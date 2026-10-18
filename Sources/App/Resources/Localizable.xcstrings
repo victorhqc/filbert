@@ -8,6 +8,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "General" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "General" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "General" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "一般" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Geral" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Geral" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Основные" } },
@@ -21,6 +22,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Startup" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inicio" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inicio" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "起動" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inicialização" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arranque" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Запуск" } },
@@ -34,6 +36,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at login" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir al iniciar sesión" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir al iniciar sesión" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ログイン時に開く" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ao iniciar sessão" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ao iniciar sessão" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывать при входе" } },
@@ -47,6 +50,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Start Filbert in the menu bar after you sign in to your Mac." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en la barra de menús después de iniciar sesión en tu Mac." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en la barra de menús después de iniciar sesión en tu Mac." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Macにログインした後、メニューバーでFilbertを起動します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert na barra de menus ao iniciar sessão no Mac." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert na barra de menus ao iniciar sessão no Mac." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Запускать Filbert в строке меню после входа в систему на Mac." } },
@@ -60,6 +64,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert will not start at login." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no se abrirá al iniciar sesión." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert no se abrirá al iniciar sesión." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertはログイン時に起動しません。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert não será aberto ao iniciar sessão." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert não será aberto ao iniciar sessão." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert не будет открываться при входе." } },
@@ -73,6 +78,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert will start at login." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert se abrirá al iniciar sesión." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert se abrirá al iniciar sesión." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertはログイン時に起動します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert será aberto ao iniciar sessão." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert será aberto ao iniciar sessão." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert будет открываться при входе." } },
@@ -86,6 +92,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert is registered, but macOS approval is required before it can start at login." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert está registrado, pero requiere aprobación en macOS para abrirse al iniciar sesión." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert está registrado, pero requiere aprobación en macOS para abrirse al iniciar sesión." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertは登録されていますが、ログイン時に起動するにはmacOSの承認が必要です。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert está registrado, mas precisa da aprovação do macOS para abrir ao iniciar sessão." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert está registado, mas precisa da aprovação do macOS para abrir ao iniciar sessão." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert зарегистрирован, но для открытия при входе требуется разрешение macOS." } },
@@ -99,6 +106,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "macOS could not find Filbert's login item. Enable Launch at login to register it." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "macOS no ha podido encontrar el ítem de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el elemento de inicio de Filbert. Activa “Abrir al iniciar sesión” para registrarlo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "macOSでFilbertのログイン項目が見つかりませんでした。“ログイン時に開く”をオンにして登録してください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O macOS não encontrou o item de início de sessão do Filbert. Ative “Abrir ao iniciar sessão” para registrá-lo." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O macOS não encontrou o elemento de início de sessão do Filbert. Ative «Abrir ao iniciar sessão» para o registar." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "macOS не удалось найти объект входа Filbert. Включите «Открывать при входе», чтобы зарегистрировать его." } },
@@ -112,6 +120,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Launch at login requires an installed Filbert app." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir Filbert al iniciar sesión, la app debe estar instalada." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir Filbert al iniciar sesión, la app debe estar instalada." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ログイン時に開くには、インストール済みのFilbertアプリが必要です。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir ao iniciar sessão, o app Filbert precisa estar instalado." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir ao iniciar sessão, a aplicação Filbert tem de estar instalada." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Для открытия при входе нужно установленное приложение Filbert." } },
@@ -125,6 +134,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Login Items Settings" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ajustes de ítems de inicio" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir configuración de elementos de inicio" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“ログイン項目”設定を開く" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ajustes de Itens de Início de Sessão" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir definições de início de sessão" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть настройки объектов входа" } },
@@ -138,6 +148,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not enable launch at login. Try again." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido activar la apertura al iniciar sesión. Inténtalo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo activar la apertura al iniciar sesión. Inténtalo de nuevo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ログイン時に開く設定をオンにできませんでした。やり直してください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível ativar a abertura ao iniciar sessão. Tente novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível ativar a abertura ao iniciar sessão. Tente novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось включить открытие при входе. Повторите попытку." } },
@@ -151,6 +162,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Could not disable launch at login. Try again." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo desactivar la apertura al iniciar sesión. Inténtalo de nuevo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ログイン時に開く設定をオフにできませんでした。やり直してください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível desativar a abertura ao iniciar sessão. Tente novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível desativar a abertura ao iniciar sessão. Tente novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось выключить открытие при входе. Повторите попытку." } },
@@ -182,6 +194,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudo borrar la clave de API. Revisa el acceso al llavero y vuelve a intentarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIキーを消去できませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
           }
         },
         "pt-BR" : {
@@ -217,6 +235,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh cancelled. Select Refresh to try again." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新がキャンセルされました。やり直すには“更新”を選択してください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização cancelada. Selecione Atualizar para tentar novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização cancelada. Selecione Atualizar para tentar novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновление отменено. Нажмите «Обновить», чтобы повторить попытку." } },
@@ -230,6 +249,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Logs" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registros" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registros" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ログを表示" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registros" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показать журналы" } },
@@ -243,6 +263,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Reveal the error log in Finder." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar el registro de errores en Finder." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar el registro de errores en Finder." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Finderでエラーログを表示します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar o registro de erros no Finder." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar o registo de erros no Finder." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показать журнал ошибок в Finder." } },
@@ -256,6 +277,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "The error log is unavailable." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El registro de errores no está disponible." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El registro de errores no está disponible." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "エラーログを利用できません。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O registro de erros não está disponível." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O registo de erros não está disponível." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Журнал ошибок недоступен." } },
@@ -269,6 +291,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@。%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
@@ -282,6 +305,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ left" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ restantes" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ restantes" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "残り%@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tempo restante: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Tempo restante: %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось: %@" } },
@@ -295,6 +319,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%@%% available until reset" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% disponibles hasta el restablecimiento" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% disponibles hasta el restablecimiento" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リセットまで%@%%利用可能" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%% disponível até a redefinição" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%% disponível até à reposição" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До сброса доступно %@ %%" } },
@@ -308,6 +333,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%@%% used" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% usado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ %% usado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@%%使用済み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%% usado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%% utilizado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Использовано %@ %%" } },
@@ -339,6 +365,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@: quedan %2$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: 残り%2$@"
           }
         },
         "pt-BR" : {
@@ -394,6 +426,12 @@
             "value" : "%1$@: %2$lld%% usado"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@: %2$lld%%使用済み"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -427,6 +465,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Collapse" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Contraer" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Contraer" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "折りたたむ" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Recolher" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Recolher" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Свернуть" } },
@@ -440,6 +479,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Collapsed" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Contraído" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Contraído" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "折りたたみ済み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Recolhido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Recolhido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Свёрнуто" } },
@@ -453,6 +493,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@%%/day available" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/día disponibles" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/día disponibles" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "1日あたり約%@%%利用可能" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@%%/dia disponível" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@%%/dia disponível" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доступно около %@ %% в день" } },
@@ -466,6 +507,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@%%/week available" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/semana disponibles" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aproximadamente %@ %%/semana disponibles" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "1週間あたり約%@%%利用可能" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@%%/semana disponível" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@%%/semana disponível" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доступно около %@ %% в неделю" } },
@@ -479,6 +521,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Expand" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "展開" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Развернуть" } },
@@ -492,6 +535,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Expanded" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "展開済み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Развёрнуто" } },
@@ -505,6 +549,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast refresh active" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速更新中" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização rápida ativa" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização rápida ativa" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрое обновление включено" } },
@@ -518,6 +563,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Within current allowance" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Dentro de la asignación actual" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Dentro de la asignación actual" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "現在の枠内" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Dentro da cota atual" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Dentro da quota atual" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "В пределах текущей квоты" } },
@@ -531,6 +577,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Over current allowance" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Por encima de la asignación actual" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Por encima de la asignación actual" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "現在の枠を超過" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acima da cota atual" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Acima da quota atual" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сверх текущей квоты" } },
@@ -562,6 +609,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Muestra una cara clásica de Mac feliz/triste en lugar del anillo en la barra de menús"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "メニューバーにリングの代わりにクラシックなHappy / Sad Macの顔を表示"
           }
         },
         "pt-BR" : {
@@ -617,6 +670,12 @@
             "value" : "Mac vintage"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ビンテージMac"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -665,6 +724,12 @@
           }
         },
         "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Filbert"
@@ -723,6 +788,12 @@
             "value" : "Beenden"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "終了"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -774,6 +845,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API-Schlüssel"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIキー"
           }
         },
         "pt-BR" : {
@@ -829,6 +906,12 @@
             "value" : "Speichern"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "保存"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -880,6 +963,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Schlüssel löschen"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キーを消去"
           }
         },
         "pt-BR" : {
@@ -935,6 +1024,12 @@
             "value" : "Aktualisieren"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "更新"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -986,6 +1081,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erneut versuchen"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再試行"
           }
         },
         "pt-BR" : {
@@ -1041,6 +1142,12 @@
             "value" : "Lädt…"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "読み込み中…"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1092,6 +1199,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "El proveedor le pidió a Filbert que espere. Vuelve a intentarlo en %@."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロバイダからFilbertに待機が要求されました。%@後にやり直してください。"
           }
         },
         "pt-BR" : {
@@ -1147,6 +1260,12 @@
             "value" : "Actualizado por última vez por %1$@: %2$@"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@による最終更新: %2$@"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1198,6 +1317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zuletzt aktualisiert: %@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "最終更新: %@"
           }
         },
         "pt-BR" : {
@@ -1253,6 +1378,12 @@
             "value" : "Anbieter"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロバイダ"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1304,6 +1435,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Configura un proveedor en la pestaña “Proveedores” para empezar a reordenar."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "並べ替えるには、“プロバイダ”タブでプロバイダを設定してください。"
           }
         },
         "pt-BR" : {
@@ -1359,6 +1496,12 @@
             "value" : "Eingerichtet"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定済み"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1410,6 +1553,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudo guardar la clave de API. Revisa el acceso al llavero y vuelve a intentarlo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIキーを保存できませんでした。キーチェーンへのアクセスを確認して、やり直してください。"
           }
         },
         "pt-BR" : {
@@ -1465,6 +1614,12 @@
             "value" : "Nicht eingerichtet"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1516,6 +1671,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin datos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データなし"
           }
         },
         "pt-BR" : {
@@ -1571,6 +1732,12 @@
             "value" : "Kein Anbieter eingerichtet"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "プロバイダが設定されていません"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1622,6 +1789,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Öffne die Einstellungen, um deinen ersten KI-Anbieter hinzuzufügen."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開いて、最初のAIプロバイダを追加してください。"
           }
         },
         "pt-BR" : {
@@ -1677,6 +1850,12 @@
             "value" : "Einstellungen öffnen"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定を開く"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1728,6 +1907,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Einstellungen …"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定…"
           }
         },
         "pt-BR" : {
@@ -1783,6 +1968,12 @@
             "value" : "Spitzenzeiten"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピーク時間帯"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1834,6 +2025,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Script auxiliar instalado y activo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルパースクリプトはインストール済みで、有効です。"
           }
         },
         "pt-BR" : {
@@ -1889,6 +2086,12 @@
             "value" : "In der Spitze"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ピーク時間帯中"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -1940,6 +2143,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Außerhalb der Spitze"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "オフピーク"
           }
         },
         "pt-BR" : {
@@ -1995,6 +2204,12 @@
             "value" : "Anstehende Preise"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "今後の料金"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2046,6 +2261,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gültig ab %1$@"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@から適用"
           }
         },
         "pt-BR" : {
@@ -2101,6 +2322,12 @@
             "value" : "%1$lld× Multiplikator"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "倍率%1$lld×"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2154,6 +2381,12 @@
             "value" : "%1$@ (deine Zeit)"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@（現地時間）"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2202,6 +2435,12 @@
           }
         },
         "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@"
+          }
+        },
+        "ja" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ %2$@"
@@ -2260,6 +2499,12 @@
             "value" : "Standard-Creditrate"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準のクレジット消費率"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2311,6 +2556,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ Credit-Tarif"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@のクレジット消費率"
           }
         },
         "pt-BR" : {
@@ -2366,6 +2617,12 @@
             "value" : "Nutzung: %1$lld %%"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量: %1$lld%%"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2417,6 +2674,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Erweitert"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "詳細"
           }
         },
         "pt-BR" : {
@@ -2472,6 +2735,12 @@
             "value" : "eigene URL"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタムURL"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2523,6 +2792,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Eigene Basis-URL (Proxy)"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "カスタムベースURL（プロキシ）"
           }
         },
         "pt-BR" : {
@@ -2578,6 +2853,12 @@
             "value" : "Standard:"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "デフォルト:"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2629,6 +2910,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Quitar script auxiliar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルパースクリプトを削除"
           }
         },
         "pt-BR" : {
@@ -2684,6 +2971,12 @@
             "value" : "Zurücksetzen"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "リセット"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2735,6 +3028,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Guthabenschwellen"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "残高のしきい値"
           }
         },
         "pt-BR" : {
@@ -2790,6 +3089,12 @@
             "value" : "Niedrig unter"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低残高のしきい値"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2841,6 +3146,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OK über"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "十分な残高のしきい値"
           }
         },
         "pt-BR" : {
@@ -2896,6 +3207,12 @@
             "value" : "Gilt für alle Anbieterwährungen (USD, CNY, …)."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "すべてのプロバイダの通貨（USD、CNY…）に適用されます。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -2929,6 +3246,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "情報" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sobre" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "О программе" } },
@@ -2942,6 +3260,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los íconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Claude、DeepSeek、OpenCodeのプロバイダアイコンはSimple Iconsに基づいています。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Os ícones dos provedores Claude, DeepSeek e OpenCode são derivados do Simple Icons." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Os ícones dos fornecedores Claude, DeepSeek e OpenCode derivam do Simple Icons." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Значки провайдеров Claude, DeepSeek и OpenCode основаны на Simple Icons." } },
@@ -2955,6 +3274,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert is a native macOS AI usage tracker." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es un rastreador nativo de uso de IA para macOS." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es un rastreador nativo de uso de IA para macOS." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "FilbertはmacOSネイティブのAI使用量トラッカーです。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é um app nativo do macOS que acompanha o uso de IA." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é uma aplicação nativa do macOS que acompanha a utilização de IA." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert — нативное приложение для macOS, которое отслеживает использование ИИ." } },
@@ -2968,6 +3288,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert is open source under the MIT License." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es de código abierto bajo la MIT License." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert es de código abierto bajo la MIT License." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "FilbertはMITライセンスで公開されているオープンソースです。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é de código aberto, sob a Licença MIT." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é de código aberto, ao abrigo da Licença MIT." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert — программа с открытым исходным кодом под лицензией MIT." } },
@@ -2999,6 +3320,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Solo se permiten URL https."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "https URLのみ使用できます。"
           }
         },
         "pt-BR" : {
@@ -3054,6 +3381,12 @@
             "value" : "Abre %@ para actualizar"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@を開いて更新"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3087,6 +3420,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Filbert on GitHub" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en GitHub" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Filbert en GitHub" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "GitHubでFilbertを開く" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть Filbert на GitHub" } },
@@ -3100,6 +3434,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Simple Icons on GitHub" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Simple Icons en GitHub" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir Simple Icons en GitHub" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "GitHubでSimple Iconsを開く" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Simple Icons no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Simple Icons no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть Simple Icons на GitHub" } },
@@ -3113,6 +3448,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Source" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Código abierto" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Código abierto" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オープンソース" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Código aberto" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Código aberto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открытый исходный код" } },
@@ -3126,6 +3462,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Open the MIT License on GitHub" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir la MIT License en GitHub" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir la MIT License en GitHub" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "GitHubでMITライセンスを開く" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir a Licença MIT no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir a Licença MIT no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть лицензию MIT на GitHub" } },
@@ -3139,6 +3476,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Project" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Proyecto" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Proyecto" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロジェクト" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Projeto" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Projeto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проект" } },
@@ -3152,6 +3490,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "View on GitHub" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ver en GitHub" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ver en GitHub" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "GitHubで表示" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ver no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ver no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть на GitHub" } },
@@ -3165,6 +3504,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "View the MIT License" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ver la MIT License" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ver la MIT License" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "MITライセンスを表示" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ver a Licença MIT" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ver a Licença MIT" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Посмотреть лицензию MIT" } },
@@ -3178,6 +3518,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "filbert development" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "filbert en desarrollo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "filbert en desarrollo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "filbert開発版" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "filbert em desenvolvimento" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "filbert em desenvolvimento" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "filbert (разработка)" } },
@@ -3209,6 +3550,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Filbert lee tu uso de Claude Code conectándose a su línea de estado."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "FilbertはClaude Codeのステータスラインに接続して、使用量を読み取ります。"
           }
         },
         "pt-BR" : {
@@ -3244,6 +3591,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
@@ -3275,6 +3623,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "unter %lld"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld未満"
           }
         },
         "pt-BR" : {
@@ -3330,6 +3684,12 @@
             "value" : "%lld und mehr"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld以上"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -3363,6 +3723,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Appearance" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Apariencia" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Apariencia" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "外観" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aparência" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Aspeto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Оформление" } },
@@ -3376,6 +3737,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически" } },
@@ -3389,6 +3751,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Favor recently active providers automatically; as activity fades, return to saved order." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近アクティブなプロバイダを自動的に優先し、アクティビティが減ると保存された順序に戻ります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Priorizar automaticamente os provedores ativos recentemente; quando a atividade diminuir, voltar à ordem salva." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Dar prioridade automaticamente aos fornecedores ativos recentemente; quando a atividade diminuir, voltar à ordem guardada." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически выдвигать недавно активных провайдеров; когда активность спадает, возвращать сохранённый порядок." } },
@@ -3402,6 +3765,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Favor recently active providers automatically; as activity fades, return to saved order. Current menu-bar provider: %@." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menús: %@." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menús: %@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近アクティブなプロバイダを自動的に優先し、アクティビティが減ると保存された順序に戻ります。現在のメニューバーのプロバイダ: %@。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Priorizar automaticamente os provedores ativos recentemente; quando a atividade diminuir, voltar à ordem salva. Provedor atual na barra de menus: %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Dar prioridade automaticamente aos fornecedores ativos recentemente; quando a atividade diminuir, voltar à ordem guardada. Fornecedor atual na barra de menus: %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически выдвигать недавно активных провайдеров; когда активность спадает, возвращать сохранённый порядок. Текущий провайдер в строке меню: %@." } },
@@ -3415,6 +3779,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag providers to change their order." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra los proveedores para cambiar su orden." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra los proveedores para cambiar su orden." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダをドラッグして順序を変更します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste os provedores para mudar a ordem." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste os fornecedores para alterar a ordem." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетаскивайте провайдеров, чтобы изменить порядок." } },
@@ -3428,6 +3793,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag to reorder providers" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar los proveedores" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar los proveedores" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ドラッグしてプロバイダを並べ替え" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar os provedores" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar os fornecedores" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетащите, чтобы изменить порядок провайдеров" } },
@@ -3441,6 +3807,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Error" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Error" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Error" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "エラー" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Erro" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Erro" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ошибка" } },
@@ -3454,6 +3821,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Disabled" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Desactivado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Desactivado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "無効" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Desativado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Desativado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выключен" } },
@@ -3467,6 +3835,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activar %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activar %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@を有効にする" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativar %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativar %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включить %@" } },
@@ -3480,6 +3849,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Enable this provider to view setup options." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa este proveedor para ver las opciones de configuración." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa este proveedor para ver las opciones de configuración." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定オプションを表示するには、このプロバイダを有効にしてください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative este provedor para ver as opções de configuração." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative este fornecedor para ver as opções de configuração." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите этого провайдера, чтобы увидеть параметры настройки." } },
@@ -3493,6 +3863,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Enabled" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "有効" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включён" } },
@@ -3506,6 +3877,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar icon" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Icono de la barra de menús" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ícono de la barra de menús" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーアイコン" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ícone da barra de menus" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ícone da barra de menus" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Значок в строке меню" } },
@@ -3519,6 +3891,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar automatically selects %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーは%@を自動的に選択します" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus seleciona automaticamente %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus seleciona automaticamente %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню автоматически выбирает %@" } },
@@ -3532,6 +3905,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar uses the first provider: %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーは最初のプロバイダを使用します: %@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus usa o primeiro provedor: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus usa o primeiro fornecedor: %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню использует первого провайдера: %@" } },
@@ -3545,6 +3919,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Move down" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mover abajo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mover abajo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "下へ移動" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mover para baixo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mover para baixo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Переместить вниз" } },
@@ -3558,6 +3933,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Move up" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mover arriba" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mover arriba" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "上へ移動" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mover para cima" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mover para cima" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Переместить вверх" } },
@@ -3571,6 +3947,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Not configured" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Sin configurar" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Sin configurar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "未設定" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não configurado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não configurado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не настроен" } },
@@ -3584,6 +3961,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider order" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Orden de proveedores" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Orden de proveedores" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダの順序" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ordem dos provedores" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ordem dos fornecedores" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Порядок провайдеров" } },
@@ -3597,6 +3975,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Ready" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Listo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Listo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "準備完了" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Pronto" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Pronto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Готово" } },
@@ -3610,6 +3989,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Setup needed" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定が必要" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Требуется настройка" } },
@@ -3623,6 +4003,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Working…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Procesando…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Procesando…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "処理中…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Processando…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A processar…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выполняется…" } },
@@ -3636,6 +4017,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動更新" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление" } },
@@ -3649,6 +4031,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh mode" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Modo de actualización" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Modo de actualización" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新モード" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Modo de atualização" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Modo de atualização" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим обновления" } },
@@ -3662,6 +4045,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Normal" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Normal" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "標準" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обычный" } },
@@ -3675,6 +4059,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スマート" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Умный" } },
@@ -3688,6 +4073,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose which providers refresh automatically. Mode and intervals control how often." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores se actualizan automáticamente. El modo y los intervalos controlan la frecuencia." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores se actualizan automáticamente. El modo y los intervalos controlan la frecuencia." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動的に更新するプロバイダを選択します。頻度はモードと間隔で決まります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha quais provedores são atualizados automaticamente. O modo e os intervalos definem a frequência." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha que fornecedores são atualizados automaticamente. O modo e os intervalos definem a frequência." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, какие провайдеры обновляются автоматически. Режим и интервалы задают частоту." } },
@@ -3701,6 +4087,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose a shared cadence for opted-in providers." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オンにしたプロバイダに共通の更新間隔を選択します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha uma frequência comum para os provedores selecionados." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha uma frequência comum para os fornecedores selecionados." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите общую частоту для выбранных провайдеров." } },
@@ -3714,6 +4101,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Slow interval" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "低速間隔" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Медленный интервал" } },
@@ -3727,6 +4115,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast interval" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速間隔" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрый интервал" } },
@@ -3740,6 +4129,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn on automatic refresh for each provider you want to check." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa la actualización automática para cada proveedor que quieras consultar." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa la actualización automática para cada proveedor que quieras consultar." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認したいプロバイダごとに自動更新をオンにしてください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative a atualização automática para cada provedor que quiser verificar." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative a atualização automática para cada fornecedor que pretende verificar." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите автоматическое обновление для каждого провайдера, которого нужно проверять." } },
@@ -3753,6 +4143,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh Settings" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de actualización" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración de actualización" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新設定" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de atualização" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Definições de atualização" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Настройки обновления" } },
@@ -3766,6 +4157,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular refresh checks opted-in providers every %@." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "標準の更新では、オンにしたプロバイダを%@ごとに確認します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização regular verifica os provedores selecionados a cada %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização regular verifica os fornecedores selecionados a cada %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обычное обновление проверяет выбранных провайдеров с заданным интервалом (%@)." } },
@@ -3779,6 +4171,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Quiet window" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de reposo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de reposo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "静止期間" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Janela de inatividade" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Janela de inatividade" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Период затишья" } },
@@ -3792,6 +4185,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ for %3$@, then every %4$@ once more before returning to the slow interval." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente consulta cada %1$@. Tras un cambio de uso, un proveedor consulta cada %2$@ durante %3$@ y luego una vez más cada %4$@ antes de volver al intervalo lento." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente consulta cada %1$@. Tras un cambio de uso, un proveedor consulta cada %2$@ durante %3$@ y luego una vez más cada %4$@ antes de volver al intervalo lento." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スマート更新では%1$@ごとに確認します。使用量が変化すると、プロバイダは%3$@の間%2$@ごとに確認し、その後%4$@ごとにもう一度確認してから低速間隔に戻ります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização inteligente verifica a cada %1$@. Após uma mudança no uso, o provedor verifica a cada %2$@ durante %3$@ e depois mais uma vez a cada %4$@ antes de voltar ao intervalo lento." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização inteligente verifica a cada %1$@. Após uma alteração na utilização, o fornecedor verifica a cada %2$@ durante %3$@ e depois mais uma vez a cada %4$@ antes de voltar ao intervalo lento." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Умное обновление проверяет с медленным интервалом (%1$@). После изменения использования провайдер проверяет с быстрым интервалом (%2$@) в течение периода затишья (%3$@), затем ещё раз через заданный интервал (%4$@) и возвращается к медленному интервалу." } },
@@ -3805,6 +4199,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected interval: %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo seleccionado: %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo seleccionado: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "選択した間隔: %@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo selecionado: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo selecionado: %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выбранный интервал: %@" } },
@@ -3818,6 +4213,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ runs %2$@ in the background. These checks may use some of your %3$@ quota. Shorter Smart intervals can increase the number of checks." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ ejecuta %2$@ en segundo plano. Estas consultas pueden usar parte de tu cuota de %3$@. Los intervalos inteligentes más cortos pueden aumentar el número de consultas." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ ejecuta %2$@ en segundo plano. Estas consultas pueden usar parte de tu cuota de %3$@. Los intervalos inteligentes más cortos pueden aumentar el número de consultas." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@はバックグラウンドで%2$@を実行します。これらの確認で%3$@の割り当ての一部が使われる場合があります。スマートの間隔を短くすると、確認の回数が増えることがあります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O %1$@ executa %2$@ em segundo plano. Essas verificações podem consumir parte da sua cota do %3$@. Intervalos inteligentes mais curtos podem aumentar o número de verificações." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O %1$@ executa %2$@ em segundo plano. Estas verificações podem consumir parte da sua quota do %3$@. Intervalos inteligentes mais curtos podem aumentar o número de verificações." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ запускает %2$@ в фоновом режиме. Эти проверки могут расходовать часть квоты %3$@. Более короткие интервалы умного режима могут увеличить число проверок." } },
@@ -3831,6 +4227,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh for %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática para %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática para %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@の自動更新" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática para %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática para %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление: %@" } },
@@ -3844,6 +4241,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Toggle periodic refresh for this provider." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva la actualización periódica para este proveedor." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva la actualización periódica para este proveedor." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダの定期的な更新をオンまたはオフにします。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a atualização periódica deste provedor." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a atualização periódica deste fornecedor." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включает или выключает периодическое обновление этого провайдера." } },
@@ -3857,6 +4255,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is paused because this provider is disabled." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está en pausa porque este proveedor está desactivado." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está en pausa porque este proveedor está desactivado." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダが無効なため、自動更新は一時停止しています。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está pausada porque este provedor está desativado." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está em pausa porque este fornecedor está desativado." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление приостановлено, потому что этот провайдер выключен." } },
@@ -3870,6 +4269,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is waiting for setup." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動更新は設定の完了を待っています。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está aguardando a configuração." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está a aguardar a configuração." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление ожидает настройки." } },
@@ -3883,6 +4283,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast checks are on due to recent activity." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas están activas por actividad reciente." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas están activas por actividad reciente." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近のアクティビティにより、高速確認がオンになっています。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas estão ativas devido à atividade recente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas estão ativas devido à atividade recente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые проверки включены из-за недавней активности." } },
@@ -3896,6 +4297,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast and slow checks use the same interval, so fast checks are not more frequent." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas y lentas usan el mismo intervalo, así que las consultas rápidas no son más frecuentes." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas rápidas y lentas usan el mismo intervalo, así que las consultas rápidas no son más frecuentes." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認と低速確認の間隔が同じため、高速確認の頻度は上がりません。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas e lentas usam o mesmo intervalo, então as rápidas não são mais frequentes." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas e lentas usam o mesmo intervalo, pelo que as rápidas não são mais frequentes." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые и медленные проверки используют один интервал, поэтому быстрые проверки не чаще обычных." } },
@@ -3909,6 +4311,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認を続ける" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжить проверки" } },
@@ -3922,6 +4325,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking for %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@の確認を続ける" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando por %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar durante %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжить проверки (%@)" } },
@@ -3935,6 +4339,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast checks for %@ more." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas rápidas durante %@ más." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas rápidas durante %@ más." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認はあと%@続きます。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações rápidas por mais %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações rápidas durante mais %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые проверки: осталось %@." } },
@@ -3948,6 +4353,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Checks every %@ for the time you choose, even when usage does not change." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consulta cada %@ durante el tiempo que elijas, aunque el uso no cambie." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consulta cada %@ durante el tiempo que elijas, aunque el uso no cambie." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量が変化しなくても、選択した時間の間は%@ごとに確認します。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verifica a cada %@ durante o tempo escolhido, mesmo quando o uso não muda." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verifica a cada %@ durante o tempo escolhido, mesmo quando a utilização não se altera." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверяет с заданным интервалом (%@) в течение выбранного времени, даже если использование не меняется." } },
@@ -3961,6 +4367,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Stop extension" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener la extensión" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "延長を停止" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar extensão" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Parar extensão" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановить продление" } },
@@ -3974,6 +4381,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Stopping ends the fast checks early. Automatic refresh stays on and the normal Smart timing resumes." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detener finaliza antes las consultas rápidas. La actualización automática sigue activada y se reanuda el ritmo inteligente normal." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detener finaliza antes las consultas rápidas. La actualización automática sigue activada y se reanuda el ritmo inteligente normal." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "停止すると高速確認が早めに終了します。自動更新はオンのままで、通常のスマートのタイミングに戻ります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar encerra as verificações rápidas antes do tempo. A atualização automática continua ativa e o ritmo inteligente normal é retomado." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Parar termina as verificações rápidas antecipadamente. A atualização automática mantém-se ativa e o ritmo inteligente normal é retomado." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановка досрочно завершает быстрые проверки. Автоматическое обновление остаётся включенным, и возобновляется обычный умный режим." } },
@@ -3987,6 +4395,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Provider limit: checks no more often than every %@." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite del proveedor: consultas como máximo cada %@." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite del proveedor: consultas como máximo cada %@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダの制限: 確認の間隔は%@以上です。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite do provedor: verifica no máximo a cada %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite do fornecedor: verifica no máximo a cada %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ограничение провайдера: минимальный интервал — %@." } },
@@ -4000,6 +4409,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "These checks may use some of your %@ quota." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas pueden usar parte de tu cuota de %@." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas pueden usar parte de tu cuota de %@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "これらの確認で%@の割り当ての一部が使われる場合があります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Essas verificações podem consumir parte da sua cota do %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Estas verificações podem consumir parte da sua quota do %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Эти проверки могут расходовать часть квоты %@." } },
@@ -4013,6 +4423,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "The quota cost of these checks is unknown." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El coste en cuota de estas consultas es desconocido." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El costo en cuota de estas consultas es desconocido." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "これらの確認で使われる割り当ての量は不明です。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O consumo de cota dessas verificações é desconhecido." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O consumo de quota destas verificações é desconhecido." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Неизвестно, сколько квоты расходуют эти проверки." } },
@@ -4026,6 +4437,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "These checks are documented as not using quota. Frequency limits may still apply." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas están documentadas como sin uso de cuota. Aun así pueden aplicarse límites de frecuencia." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Estas consultas están documentadas como sin uso de cuota. Aun así pueden aplicarse límites de frecuencia." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "これらの確認は割り当てを使わないと文書化されていますが、頻度の制限が適用される場合があります。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Segundo a documentação, essas verificações não consomem cota. Ainda podem ser aplicados limites de frequência." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Segundo a documentação, estas verificações não consomem quota. Podem, ainda assim, aplicar-se limites de frequência." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Согласно документации, эти проверки не расходуют квоту. Ограничения частоты всё равно могут действовать." } },
@@ -4105,6 +4517,12 @@
                 }
               }
             }
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld秒"
           }
         },
         "pt-BR" : {
@@ -4256,6 +4674,12 @@
             }
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分"
+          }
+        },
         "pt-BR" : {
           "variations" : {
             "plural" : {
@@ -4337,6 +4761,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic updates are available only in installed releases." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las actualizaciones automáticas solo están disponibles en versiones instaladas." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las actualizaciones automáticas solo están disponibles en versiones instaladas." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動アップデートは、インストールされたリリースでのみ利用できます。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "As atualizações automáticas estão disponíveis apenas em versões instaladas." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "As atualizações automáticas só estão disponíveis em versões instaladas." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматические обновления доступны только в установленных версиях." } },
@@ -4350,6 +4775,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for a newer Filbert release" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar una versión más reciente de Filbert" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar una versión más reciente de Filbert" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertの新しいリリースを確認" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar uma versão mais recente do Filbert" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar uma versão mais recente do Filbert" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить наличие новой версии Filbert" } },
@@ -4363,6 +4789,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for Updates…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデートを確認…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar atualizações…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar atualizações…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить обновления…" } },
@@ -4376,6 +4803,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Check for updates automatically" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones automáticamente" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar actualizaciones automáticamente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデートを自動的に確認" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar atualizações automaticamente" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar atualizações automaticamente" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически проверять обновления" } },
@@ -4389,6 +4817,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Download updates automatically" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Descargar actualizaciones automáticamente" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Descargar actualizaciones automáticamente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデートを自動的にダウンロード" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Baixar atualizações automaticamente" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Descarregar atualizações automaticamente" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически загружать обновления" } },
@@ -4402,6 +4831,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "MIT License" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Licencia MIT" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Licencia MIT" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "MITライセンス" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Licença MIT" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Licença MIT" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лицензия MIT" } },
@@ -4415,6 +4845,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Updates" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデート" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновления" } },
@@ -4428,6 +4859,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "1 hour" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "1時間" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "1 час" } },
@@ -4441,6 +4873,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "2 hours" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "2時間" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "2 часа" } },
@@ -4454,6 +4887,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "5 minutes" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "5分" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "5 минут" } },
@@ -4467,6 +4901,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "10 minutes" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "10分" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "10 минут" } },
@@ -4480,6 +4915,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "20 minutes" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "20分" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "20 минут" } },
@@ -4493,6 +4929,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "30 minutes" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "30分" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "30 минут" } },
@@ -4506,6 +4943,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose how long Filbert keeps your Mac awake" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene activo tu Mac" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene activa tu Mac" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "FilbertがMacをスリープさせない時間を選択" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha por quanto tempo o Filbert mantém o Mac ativo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha durante quanto tempo o Filbert mantém o Mac ativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, как долго Filbert не даст Mac уснуть" } },
@@ -4519,6 +4957,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "for %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "durante %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "durante %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "残り%@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "por %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "durante %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "ещё %@" } },
@@ -4532,6 +4971,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "for…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "durante…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "durante…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "時間…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "por…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "durante…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "на…" } },
@@ -4545,6 +4985,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Inactive" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inactivo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inactivo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフ" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inativo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Inativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Неактивно" } },
@@ -4558,6 +4999,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake active" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«Mantener activo» activado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "“Mantener activo” activado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”がオン" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "“Manter ativo” ativado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "«Manter ativo» ativado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим «Не засыпать» включен" } },
@@ -4571,6 +5013,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep for %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo durante %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La Mac no entrará en reposo durante %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Macは%@の間スリープしません" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em repouso por %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em pausa durante %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Mac не уснёт ещё %@" } },
@@ -4584,6 +5027,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep until turned off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La Mac no entrará en reposo hasta que lo desactives" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフにするまでMacはスリープしません" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em repouso até você desativar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em pausa até desativar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Mac не уснёт, пока вы не выключите режим" } },
@@ -4597,6 +5041,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スリープさせない" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Manter ativo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Manter ativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не засыпать" } },
@@ -4610,6 +5055,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Show a keep-awake timer in Filbert's panel" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activa la Mac en el panel de Filbert" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertのパネルに“スリープさせない”のタイマーを表示" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador de “Manter ativo” no painel do Filbert" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador «Manter ativo» no painel do Filbert" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать таймер «Не засыпать» на панели Filbert" } },
@@ -4623,6 +5069,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Keep Awake" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Mantener activo»" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Mantener activo”" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”を表示" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Manter ativo”" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Manter ativo»" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать «Не засыпать»" } },
@@ -4636,6 +5083,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake couldn't start. Try again." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido iniciar «Mantener activo». Inténtalo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar “Mantener activo”. Inténtalo de nuevo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”を開始できませんでした。やり直してください。" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar “Manter ativo”. Tente novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar «Manter ativo». Tente novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось включить «Не засыпать». Повторите попытку." } },
@@ -4649,6 +5097,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake duration" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «Mantener activo»" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de “Mantener activo”" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”の時間" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração de “Manter ativo”" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração de «Manter ativo»" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность «Не засыпать»" } },
@@ -4662,6 +5111,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn Off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Desactivar" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Desactivar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフにする" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Desativar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Desativar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выключить" } },
@@ -4675,6 +5125,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Until turned off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Hasta que se desactive" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Hasta que se desactive" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフにするまで" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Até desativar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Até desativar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До выключения" } },
@@ -4688,6 +5139,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ is available" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está disponible" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está disponible" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@が利用可能です" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está disponível" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está disponível" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доступен Filbert %@" } },
@@ -4701,6 +5153,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Update" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデート" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновить" } },
@@ -4714,6 +5167,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Update Filbert to version %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizar Filbert a la versión %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertをバージョン%@にアップデート" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizar o Filbert para a versão %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizar o Filbert para a versão %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновить Filbert до версии %@" } },
@@ -4727,6 +5181,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Downloading Filbert %@…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Descargando Filbert %@…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Descargando Filbert %@…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@をダウンロード中…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Baixando o Filbert %@…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A descarregar o Filbert %@…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Загрузка Filbert %@…" } },
@@ -4740,6 +5195,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Preparing Filbert %@…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Preparando Filbert %@…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Preparando Filbert %@…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@を準備中…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Preparando o Filbert %@…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A preparar o Filbert %@…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Подготовка Filbert %@…" } },
@@ -4753,6 +5209,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ is ready to install" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@をインストールする準備ができました" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está pronto para instalar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está pronto a instalar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ готов к установке" } },
@@ -4784,6 +5241,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Instalar script auxiliar"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ヘルパースクリプトをインストール"
           }
         },
         "pt-BR" : {
@@ -4819,6 +5282,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Installing Filbert %@…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Instalando Filbert %@…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Instalando Filbert %@…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@をインストール中…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalando o Filbert %@…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A instalar o Filbert %@…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установка Filbert %@…" } },
@@ -4832,6 +5296,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Restart to Update" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動してアップデート" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar para atualizar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar para atualizar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перезапустить для обновления" } },
@@ -4845,6 +5310,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Restart and update Filbert to version %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar y actualizar Filbert a la versión %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar y actualizar Filbert a la versión %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動してFilbertをバージョン%@にアップデート" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar e atualizar o Filbert para a versão %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar e atualizar o Filbert para a versão %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перезапустить и обновить Filbert до версии %@" } },
@@ -4858,6 +5324,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
@@ -4871,6 +5338,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@ of use remaining" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %@ de uso" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %@ de uso" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "あと約%@使用可能" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@ de uso restante" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@ de utilização restante" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось примерно %@ использования" } },
@@ -4884,6 +5352,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Based on the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Según %@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%@に基づく" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "На основе истории (%@)" } },
@@ -4897,6 +5366,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リセットまで持つ見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Должно хватить до сброса" } },
@@ -4910,6 +5380,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "At your pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo, según %@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%@のペースで" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "No seu ritmo, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao seu ritmo, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При вашем темпе, на основе истории (%@)" } },
@@ -4923,6 +5394,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %1$@ of use remaining · last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "あと約%1$@使用可能 · 過去%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de uso restante · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de utilização restante · histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось примерно %1$@ использования · история: %2$@" } },
@@ -4936,6 +5408,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset · last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento · %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento · %@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リセットまで持つ見込み · 過去%@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição · histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição · histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Должно хватить до сброса · история: %@" } },
@@ -4949,6 +5422,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Learning your usage rate…" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Aprendiendo tu ritmo de uso…" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Aprendiendo tu ritmo de uso…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用ペースを学習中…" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aprendendo seu ritmo de uso…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A aprender o seu ritmo de utilização…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Изучение темпа использования…" } },
@@ -4962,6 +5436,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "No recent consumption detected" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha detectado consumo reciente" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se detectó consumo reciente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近の使用は検出されていません" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Nenhum consumo recente detectado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Nenhum consumo recente detetado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Недавнего расхода не обнаружено" } },
@@ -4975,6 +5450,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Updates too far apart to estimate" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones demasiado espaciadas para estimar" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaciones demasiado espaciadas para estimar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新の間隔が長すぎて推定できません" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações muito espaçadas para estimar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações demasiado espaçadas para estimar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновления слишком редкие для оценки" } },
@@ -4988,6 +5464,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Forecast paused until fresh data arrives" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Pronóstico en pausa hasta recibir datos nuevos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Pronóstico en pausa hasta recibir datos nuevos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "新しいデータが届くまで予測を一時停止中" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Previsão pausada até chegarem dados novos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Previsão em pausa até chegarem dados novos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Прогноз приостановлен до получения новых данных" } },
@@ -5001,6 +5478,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %1$@ of use remaining at recent pace, based on the last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近のペースでは、あと約%1$@使用可能（過去%2$@に基づく）" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de uso restante no ritmo recente, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de utilização restante ao ritmo recente, com base no histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При недавнем темпе осталось примерно %1$@ использования, на основе истории (%2$@)" } },
@@ -5014,6 +5492,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el restablecimiento, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el restablecimiento, según %@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%@のペースでは、リセットまで持つ見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição no seu ritmo, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição ao seu ritmo, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При вашем темпе должно хватить до сброса, на основе истории (%@)" } },
@@ -5027,6 +5506,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "約%@後に使い切る見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se dentro de cerca de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: около %@" } },
@@ -5040,6 +5520,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "At your average pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio, según %@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%@の平均ペースで" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "No seu ritmo médio, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao seu ritmo médio, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе, на основе истории (%@)" } },
@@ -5053,6 +5534,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ · last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "約%1$@後に使い切る見込み · 過去%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %1$@ · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se dentro de cerca de %1$@ · histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: около %1$@ · история: %2$@" } },
@@ -5066,6 +5548,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ at your average pace over the last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio se agota en aprox. %1$@, según %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%2$@の平均ペースでは、約%1$@後に使い切る見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %1$@ no seu ritmo médio, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se dentro de cerca de %1$@ ao seu ritmo médio, com base no histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе до исчерпания около %1$@, на основе истории (%2$@)" } },
@@ -5079,6 +5562,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your average pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio debería durar hasta el restablecimiento, según %@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el restablecimiento, según %@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%@の平均ペースでは、リセットまで持つ見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição no seu ritmo médio, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição ao seu ritmo médio, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе должно хватить до сброса, на основе истории (%@)" } },
@@ -5110,6 +5594,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Esto agrega un pequeño script auxiliar a ~/.claude/."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "~/.claude/に小さなヘルパースクリプトを追加します。"
           }
         },
         "pt-BR" : {
@@ -5145,6 +5635,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Timing is approximate" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "時間は目安です" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O tempo é aproximado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O tempo é aproximado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Время приблизительное" } },
@@ -5158,6 +5649,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Unlimited" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "無制限" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Без ограничений" } },
@@ -5171,6 +5663,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
@@ -5184,6 +5677,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Using %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "En uso: %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "En uso: %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@を使用中" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Usando %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A usar %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Используется: %@" } },
@@ -5197,6 +5691,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ limit reached" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@: límite alcanzado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@: límite alcanzado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@: 上限に達しました" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@: limite atingido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@: limite atingido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%@: лимит исчерпан" } },
@@ -5210,6 +5705,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ limit reached, %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: límite alcanzado, %2$@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: límite alcanzado, %2$@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: 上限に達しました、%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: limite atingido, %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: limite atingido, %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: лимит исчерпан, %2$@" } },
@@ -5223,6 +5719,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached · %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado · %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado · %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "上限に達しました · %@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido · %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido · %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лимит исчерпан · %@" } },
@@ -5236,6 +5733,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ credits remaining" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: quedan %2$@ créditos" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: quedan %2$@ créditos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: 残りクレジット%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ créditos restantes" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ créditos restantes" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ — осталось кредитов: %2$@" } },
@@ -5249,6 +5747,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "上限に達しました" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лимит исчерпан" } },
@@ -5262,6 +5761,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached, no more use available until reset" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el restablecimiento" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el restablecimiento" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "上限に達しました。リセットまで使用できません" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido, sem mais uso disponível até a redefinição" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido, sem mais utilização disponível até à reposição" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лимит исчерпан, до сброса использование недоступно" } },
@@ -5275,6 +5775,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "More than %@ of use remaining" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %@ de uso" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %@ de uso" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "あと%@以上使用可能" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %@ de uso restante" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %@ de utilização restante" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось использования: %@ и более" } },
@@ -5288,6 +5789,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "More than %1$@ of use remaining · last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %1$@ de uso · %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan más de %1$@ de uso · %2$@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "あと%1$@以上使用可能 · 過去%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de uso restante · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de utilização restante · histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось использования: %1$@ и более · история: %2$@" } },
@@ -5301,6 +5803,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "More than %1$@ of use remaining at recent pace, based on the last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan más de %1$@ de uso, según %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan más de %1$@ de uso, según %2$@ de historial" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近のペースでは、あと%1$@以上使用可能（過去%2$@に基づく）" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de uso restante no ritmo recente, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de utilização restante ao ritmo recente, com base no histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При недавнем темпе осталось использования: %1$@ и более, на основе истории (%2$@)" } },
@@ -5332,6 +5835,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Idioma"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "言語"
           }
         },
         "pt-BR" : {
@@ -5387,6 +5896,12 @@
             "value" : "Elige el idioma que usa Filbert."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbertで使用する言語を選択します。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5440,6 +5955,12 @@
             "value" : "Predeterminado del sistema"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "システムデフォルト"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -5491,6 +6012,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Algunos cuadros de diálogo del sistema cambian cuando Filbert se reinicia."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "一部のシステムダイアログは、Filbertの再起動後に変更されます。"
           }
         },
         "pt-BR" : {

@@ -115,6 +115,15 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | credit rate (Z.ai peak hours) | Credit-Tarif | tarifa de créditos | tarifa de créditos | taxa de créditos | taxa de créditos | тариф | 消耗速率 ⚠︎ | クレジット消費率 ⚠︎ |
 | Finder | Finder | Finder | Finder | Finder | Finder | Finder | 访达 | Finder |
 
+### Japanese only
+
+Terms that the other languages don't need in the table above, from the same macOS strings:
+
+- Advanced (tab): 詳細. About (tab): 情報. Status: 状況.
+- server: サーバ. interface: インターフェイス. import: 読み込む. timed out: タイムアウトしました.
+- quota window: 枠 ("5時間枠"). Weekly: 週間. Monthly: 月間 ⚠︎.
+- Quiet window: 静止期間 ⚠︎.
+
 ## Language names in the picker
 
 Each language appears in its own name (ui 32 AC1): English, Deutsch, Español (México), Español (España), Português (Brasil), Português (Portugal), Русский, 简体中文, 日本語.

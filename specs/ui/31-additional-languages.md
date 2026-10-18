@@ -4,7 +4,7 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 
 ## Context
 
-- Status: in progress, not yet on `main`. Plan steps 1–7 are done (2026-10-18). Japanese was added on 2026-10-18; steps 8–11 cover it. Before a release, a native speaker reviews `ru`, `zh-Hans`, `pt-PT`, and `ja` (Risks).
+- Status: in progress, not yet on `main`. Plan steps 1–7 are done (2026-10-18). Japanese was added on 2026-10-18. Steps 8–10 are done; the manual check in step 11 is open. Before a release, a native speaker reviews `ru`, `zh-Hans`, `pt-PT`, and `ja` (Risks).
 - Builds on (ui 29). Its generated catalog test (ui 29 AC3) is the gate for every language in this spec.
 - Catalog languages on 2026-10-18: `en` (source), `de-DE`, `es-ES`, `es-MX`.
 - `es-ES` and `es-MX` are mostly copies of each other. Identical entries on 2026-10-18: App 201 of 222, Cursor 12 of 23, ZAI 5 of 9, GeminiCLI 29 of 29, Core 3 of 3.
@@ -116,13 +116,19 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - The gate passes: 1054 tests, also on the native build path with compiled catalogs.
    - The user checked AC5 (macOS picks the language; their Mac runs German and Filbert follows), AC6 (Filbert appears in Language & Region › Applications), and AC7 (no truncation in the popover and the settings tabs).
    - VoiceOver and the provider error states were not part of this check. (ui 32) Plan step 8 covers them.
-8. [ ] Japanese glossary. Add a `ja` column to the Conventions and Terms tables in `docs/localization-glossary.md`. Take each term from Apple's Mac User Guide in `ja-jp` and Google's docs with `hl=ja`. Record how Apple addresses the user and phrases buttons, its quotes, and whether it puts a space between Japanese and Latin letters or digits ("Mac の"). The user reviews the column before any translation.
-   - Draft written on 2026-10-18 and awaiting the user's review. macOS's own Japanese UI strings (the `.loctable` files under `/System`) decide the style, because Apple's help pages differ from its UI.
+8. [x] Japanese glossary. Add a `ja` column to the Conventions and Terms tables in `docs/localization-glossary.md`. Take each term from Apple's Mac User Guide in `ja-jp` and Google's docs with `hl=ja`. Record how Apple addresses the user and phrases buttons, its quotes, and whether it puts a space between Japanese and Latin letters or digits ("Mac の"). The user reviews the column before any translation.
+   - The user approved the column on 2026-10-18. macOS's own Japanese UI strings (the `.loctable` files under `/System`) decide the style, because Apple's help pages differ from its UI.
    - macOS UI quotes with “…”, not 「…」. It puts no space before Latin text ("APIキー", "Macの"), uses half-width ? and ":", and omits the subject. Google's docs write "API キー"; Filbert follows macOS.
    - Proposed `ja` deny list: あなた, 「」, full-width ？！：, and a space between Japanese and Latin text. Step 9 adds it to `testEveryLanguageAvoidsItsDeniedTerms`.
    - Still ⚠︎: credits, balance, peak hours, and the DeepSeek and Z.ai balance terms. No Japanese vendor source was found.
-9. [ ] Japanese catalogs, one module at a time: App, Core, then each provider (AC3). Add `ja` to `SupportedLanguage.all` as "日本語". Add `"ja": ["other"]` to the catalog test's plural forms, so every counted string has one `other` form (AC4).
-10. [ ] Add `ja` to `CFBundleLocalizations` (AC6). Extend the language tables in `DisplayLanguageTests` (AC5, a lookup, and relative dates joined to Japanese text), `DisplayLocaleFormattingTests`, `ZAIWindowLabelTests`, and `AppLanguagePreferenceTests`.
+9. [x] Japanese catalogs, one module at a time: App, Core, then each provider (AC3). Add `ja` to `SupportedLanguage.all` as "日本語". Add `"ja": ["other"]` to the catalog test's plural forms, so every counted string has one `other` form (AC4). (2026-10-18)
+   - All 357 keys in 9 catalogs have a `ja` value. Counted strings use one value, as `zh-Hans` does: "%lld分", "%lld時間枠".
+   - `testEveryLanguageAvoidsItsDeniedTerms` enforces the `ja` deny list. The space check uses explicit kana and kanji ranges, because ICU's `\p{Han}` also matches the " · " separator.
+   - Foundation's relative dates keep a space in Japanese ("2 時間後"), so a reset reads "2 時間後にリセット". The text comes from the formatter, not the catalog.
+   - Terms for the native review: "静止期間" (Quiet window), and "週間" and "月間" for the Weekly and Monthly windows.
+10. [x] Add `ja` to `CFBundleLocalizations` (AC6). Extend the language tables in `DisplayLanguageTests` (AC5, a lookup, and relative dates joined to Japanese text), `DisplayLocaleFormattingTests`, `ZAIWindowLabelTests`, and `AppLanguagePreferenceTests`. (2026-10-18)
+   - `DisplayLanguageTests` also checks that `en-JP` stays English.
+   - The gate passes: lint, release build, and 1055 tests, also on the native build path with compiled catalogs. That build has a `ja.lproj` in `filbert_App.bundle`.
 11. [ ] Run the validation gate. Then manually check AC5 and AC7 in Japanese: the popover, every settings tab, and Language & Region › Applications.
 
 ## Risks

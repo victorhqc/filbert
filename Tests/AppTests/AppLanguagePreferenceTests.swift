@@ -101,7 +101,7 @@ final class AppLanguagePreferenceTests: XCTestCase {
             SupportedLanguage.all.map(\.autonym),
             [
                 "English", "Deutsch", "Español (México)", "Español (España)",
-                "Português (Brasil)", "Português (Portugal)", "Русский", "简体中文",
+                "Português (Brasil)", "Português (Portugal)", "Русский", "简体中文", "日本語",
             ]
         )
     }

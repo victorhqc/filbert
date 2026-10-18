@@ -52,6 +52,12 @@
             "value" : "%lld-Stunden-Fenster"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld時間枠"
+          }
+        },
         "pt-BR" : {
           "variations" : {
             "plural" : {
@@ -129,6 +135,12 @@
             "value" : "API-Nutzung und Kontingente überwachen"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIの使用量と割り当てを監視"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -180,6 +192,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Monatliche Web-Tool-Aufrufe"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "月間のWebツール呼び出し"
           }
         },
         "pt-BR" : {
@@ -235,6 +253,12 @@
             "value" : "Wöchentlich"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "週間"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -286,6 +310,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Kein API-Schlüssel eingerichtet."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIキーが設定されていません。"
           }
         },
         "pt-BR" : {
@@ -341,6 +371,12 @@
             "value" : "Anmeldung fehlgeschlagen. Überprüfe deinen API-Schlüssel."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証に失敗しました。APIキーを確認してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -392,6 +428,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Zu viele Anfragen. Versuche es später erneut."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レート制限されています。あとでやり直してください。"
           }
         },
         "pt-BR" : {
@@ -447,6 +489,12 @@
             "value" : "Netzwerkfehler. Überprüfe deine Verbindung."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークエラーです。接続を確認してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -498,6 +546,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unerwartete Antwort vom Server."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバから予期しない応答がありました。"
           }
         },
         "pt-BR" : {
@@ -553,6 +607,12 @@
             "value" : "Sin datos"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データなし"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -604,6 +664,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内部エラー: 予期しない認証形式です。"
           }
         },
         "pt-BR" : {

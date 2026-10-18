@@ -28,6 +28,12 @@
             "value" : "Supervisa el saldo prepagado"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "前払い残高を監視"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -79,6 +85,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Saldo total"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "合計残高"
           }
         },
         "pt-BR" : {
@@ -134,6 +146,12 @@
             "value" : "Créditos otorgados"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "付与残高"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -185,6 +203,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Saldo recargado"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "チャージ残高"
           }
         },
         "pt-BR" : {
@@ -240,6 +264,12 @@
             "value" : "No hay saldo disponible"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "利用可能な残高がありません"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -291,6 +321,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin datos"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "データなし"
           }
         },
         "pt-BR" : {
@@ -346,6 +382,12 @@
             "value" : "%@ restantes"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "残り%@"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -397,6 +439,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No tienes ninguna clave de API configurada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "APIキーが設定されていません。"
           }
         },
         "pt-BR" : {
@@ -452,6 +500,12 @@
             "value" : "No se pudo iniciar sesión. Revisa tu clave de API."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認証に失敗しました。APIキーを確認してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -503,6 +557,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Hiciste demasiadas solicitudes. Inténtalo más tarde."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "レート制限されています。あとでやり直してください。"
           }
         },
         "pt-BR" : {
@@ -558,6 +618,12 @@
             "value" : "Error de red. Revisa tu conexión."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "ネットワークエラーです。接続を確認してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -611,6 +677,12 @@
             "value" : "Respuesta inesperada del servidor."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "サーバから予期しない応答がありました。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -662,6 +734,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内部エラー: 予期しない認証形式です。"
           }
         },
         "pt-BR" : {

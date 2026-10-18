@@ -89,6 +89,11 @@ final class StringCatalogCoverageTests: XCTestCase {
         ],
         // Case-sensitive, because lowercase "sie" means "them".
         "de-DE": [#"(?-i)\b(?:Sie|Ihnen|Ihre?[mnrs]?)\b"#, #"\bnochmal\b"#],
+        // Kana and kanji ranges, because ICU's \p{Han} also matches " · ".
+        "ja": [
+            "あなた", "[「」]", "[？！：]",
+            #"[\u3040-\u30FF\u4E00-\u9FFF] [A-Za-z0-9%]"#, #"[A-Za-z0-9@] [\u3040-\u30FF\u4E00-\u9FFF]"#,
+        ],
     ]
 
     func testEveryLanguageAvoidsItsDeniedTerms() throws {
@@ -112,6 +117,7 @@ final class StringCatalogCoverageTests: XCTestCase {
     private let pluralForms: [String: Set<String>] = [
         "ru": ["one", "few", "many", "other"],
         "zh-Hans": ["other"],
+        "ja": ["other"],
     ]
 
     func testEveryPluralHasTheFormsItsLanguageNeeds() throws {

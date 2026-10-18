@@ -52,6 +52,12 @@
             }
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分枠"
+          }
+        },
         "pt-BR" : {
           "variations" : {
             "plural" : {
@@ -129,6 +135,12 @@
             "value" : "Ventana de 5 horas"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5時間枠"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -180,6 +192,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Saldo"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "残高"
           }
         },
         "pt-BR" : {
@@ -235,6 +253,12 @@
             "value" : "La CLI de Codex no está instalada"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex CLIがインストールされていません"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -286,6 +310,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Codex no respondió a tiempo. Inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codexが時間内に応答しませんでした。やり直してください。"
           }
         },
         "pt-BR" : {
@@ -341,6 +371,12 @@
             "value" : "Codex devolvió una respuesta de límites de uso no compatible. Actualiza Codex e inténtalo de nuevo."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codexから対応していない使用量上限の応答が返されました。Codexをアップデートして、やり直してください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -392,6 +428,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Codex se detuvo antes de poder leer los límites de uso. Inténtalo de nuevo."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量の上限を読み取る前にCodexが停止しました。やり直してください。"
           }
         },
         "pt-BR" : {
@@ -447,6 +489,12 @@
             "value" : "Créditos"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "クレジット"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -498,6 +546,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Instalar Codex CLI"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex CLIをインストール"
           }
         },
         "pt-BR" : {
@@ -553,6 +607,12 @@
             "value" : "Error interno: forma de autenticación inesperada."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内部エラー: 予期しない認証形式です。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -604,6 +664,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Supervisa el uso de la suscripción de Codex"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codexサブスクリプションの使用量を監視"
           }
         },
         "pt-BR" : {
@@ -659,6 +725,12 @@
             "value" : "No se informaron límites de uso"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量の上限は報告されていません"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -710,6 +782,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Inicia sesión en Codex con el comando codex login."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "codex loginを実行してCodexにサインインしてください。"
           }
         },
         "pt-BR" : {
@@ -765,6 +843,12 @@
             "value" : "Actualiza Codex a una versión compatible con los límites de uso."
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量の上限に対応したバージョンにCodexをアップデートしてください。"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -818,6 +902,12 @@
             "value" : "Ventana de uso"
           }
         },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量の枠"
+          }
+        },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
@@ -869,6 +959,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Semanal"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "週間"
           }
         },
         "pt-BR" : {

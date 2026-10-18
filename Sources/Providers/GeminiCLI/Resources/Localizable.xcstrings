@@ -27,6 +27,12 @@
             "value": "%@ · %@"
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -78,6 +84,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ usado"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@使用済み"
           }
         },
         "pt-BR": {
@@ -133,6 +145,12 @@
             "value": "%@ usado · %@"
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@使用済み · %@"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -184,6 +202,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Permite que Filbert lea el elemento del llavero de Gemini CLI"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FilbertにGemini CLIのキーチェーン項目の読み取りを許可"
           }
         },
         "pt-BR": {
@@ -239,6 +263,12 @@
             "value": "Completa la configuración de Gemini CLI o configura un proyecto de Google Cloud y vuelve a intentarlo."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIの設定を完了するか、Google Cloudプロジェクトを設定してから、やり直してください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -290,6 +320,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Filbert no pudo leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "FilbertはGemini CLIのキーチェーン項目を読み取れませんでした。アクセスを許可して、やり直してください。"
           }
         },
         "pt-BR": {
@@ -345,6 +381,12 @@
             "value": "Se requiere configurar la cuenta o el proyecto de Gemini CLI."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIのアカウントまたはプロジェクトの設定が必要です。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -396,6 +438,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "La autenticación de Gemini CLI falló. Vuelve a iniciar sesión."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIの認証に失敗しました。もう一度サインインしてください。"
           }
         },
         "pt-BR": {
@@ -451,6 +499,12 @@
             "value": "Las credenciales de Gemini CLI no son compatibles. Actualiza Gemini CLI e inicia sesión de nuevo."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このGemini CLIの認証情報には対応していません。Gemini CLIをアップデートして、もう一度サインインしてください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -502,6 +556,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIがレート制限されています。あとでやり直してください。"
           }
         },
         "pt-BR": {
@@ -557,6 +617,12 @@
             "value": "Gemini CLI está desconectado. Abre Gemini CLI e inicia sesión con Google."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIからサインアウトしています。Gemini CLIを開いて、Googleでサインインしてください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -608,6 +674,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI devolvió una respuesta de uso inesperada."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIから予期しない使用量の応答がありました。"
           }
         },
         "pt-BR": {
@@ -663,6 +735,12 @@
             "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIからFilbertで読み取れないデータが返されました。Filbertをアップデートして、やり直してください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -714,6 +792,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIの使用量リクエストがタイムアウトしました。あとでやり直してください。"
           }
         },
         "pt-BR": {
@@ -769,6 +853,12 @@
             "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIの使用量サービスから予期しないエラーが返されました。あとでやり直してください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -820,6 +910,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tokens de entrada"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "入力トークン"
           }
         },
         "pt-BR": {
@@ -875,6 +971,12 @@
             "value": "Instalar Gemini CLI"
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIをインストール"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -926,6 +1028,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内部エラー: 予期しない認証形式です。"
           }
         },
         "pt-BR": {
@@ -981,6 +1089,12 @@
             "value": "No se informaron límites de uso"
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用量の上限は報告されていません"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -1032,6 +1146,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Supervisa las cuotas de modelos de Gemini CLI"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIのモデルの割り当てを監視"
           }
         },
         "pt-BR": {
@@ -1087,6 +1207,12 @@
             "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Revisa tu conexión y vuelve a intentarlo."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIの使用量サービスに接続できませんでした。接続を確認して、やり直してください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -1138,6 +1264,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tokens de salida"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "出力トークン"
           }
         },
         "pt-BR": {
@@ -1193,6 +1325,12 @@
             "value": "Cuota"
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "割り当て"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -1244,6 +1382,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Restante"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "残り"
           }
         },
         "pt-BR": {
@@ -1299,6 +1443,12 @@
             "value": "Solicitudes"
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "リクエスト"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -1350,6 +1500,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inicia sesión en Gemini CLI"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIにサインイン"
           }
         },
         "pt-BR": {
@@ -1405,6 +1561,12 @@
             "value": "Inicia sesión en Gemini CLI antes de actualizar el uso."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用量を更新する前に、Gemini CLIにサインインしてください。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -1458,6 +1620,12 @@
             "value": "Este proveedor usa la interfaz privada de Code Assist de Google y puede necesitar una actualización si Google la cambia."
           }
         },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "このプロバイダはGoogleの非公開のCode Assistインターフェイスを使用しているため、Googleが変更するとアップデートが必要になる場合があります。"
+          }
+        },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
@@ -1509,6 +1677,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actualiza Gemini CLI e inicia sesión de nuevo"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLIをアップデートして、もう一度サインイン"
           }
         },
         "pt-BR": {
