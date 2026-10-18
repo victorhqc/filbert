@@ -99,7 +99,11 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
    - Three format keys take numbers: `%lld seconds`, `%lld minutes`, and `%lld× multiplier`. They are now interpolated lookups with the same keys, so the display locale formats the number and picks the plural form.
    - Number and percent formats follow the region, not the language. English with the German region gives "42 %" with a no-break space, as macOS does for a per-app language. `DisplayLanguage.setCurrentLocale` lets tests pin the region. Tests that compare English text pin `en_US` too, so they pass on any Mac.
    - `DisplayLocaleFormattingTests` checks durations, numbers, weekdays, and a language switch that keeps the region formats.
-4. [ ] Refresh views. The popover root and the Settings root observe the language and rebuild on a change. The Settings tab selection and the provider collapse state live above the rebuild, so they persist (AC3). The menu bar item updates its accessibility label.
+4. [x] Refresh views (2026-10-18). The popover root and the Settings root observe the language and rebuild on a change. The Settings tab selection and the provider collapse state live above the rebuild, so they persist (AC3). The menu bar item updates its accessibility label.
+   - `DisplayLanguageModel` in `Sources/App` is `@Observable`. `select(_:)` sets `DisplayLanguage` and updates `locale`. It also refreshes on `NSLocale.currentLocaleDidChangeNotification`, so "System Default" follows a macOS language change. `locale` changes only when the result differs, so selecting the same language rebuilds nothing.
+   - `DisplayLanguageRoot` wraps the popover, the menu bar label, and Settings. It sets `.id(locale)` and `.environment(\.locale)`. `SettingsView` takes its tab selection as a binding to `@State` in `FilbertApp`. The collapse state was already in the view model.
+   - `LaunchAtLoginController.errorMessage` is now `DisplayText`, because it lives above the rebuild on the General tab.
+   - Unit tests cover the model. The rebuild itself is checked by hand in step 8.
 5. [ ] Persistence. Add `AppLanguagePreference` in `Sources/App`. It reads and writes `AppleLanguages` only in the app's persistent domain, through an injected `UserDefaults`, and sets `DisplayLanguage` at launch and on change. Unit tests cover AC2, AC5, AC6, AC7, and AC8.
 6. [ ] Add `SupportedLanguage` in `Sources/App` with a code and an autonym for each language. The picker and the catalog test (ui 29 AC3) read this one list.
 7. [ ] Add the Language card to `GeneralSettingsView` (AC1, AC4, AC10).
@@ -109,6 +113,6 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
 
 - Plan step 2 changes the provider protocol's public types. Every provider and many tests change. Do it as one Core change with mechanical updates to providers, before new languages are added.
 - Resolved by Plan step 2: text that a provider formats itself, such as a currency amount from `NumberFormatter`, now resolves at render time with the display locale.
-- A rebuild of the view tree resets transient view state: scroll position, an open picker, or text typed in an API key field on another tab. Keep the API key draft state above the rebuild.
+- A rebuild of the view tree resets transient view state: scroll position, an open picker, or text typed in an API key field on another tab. The API key draft is not lifted above the rebuild. AGENTS.md keeps keys in memory no longer than needed, and lifting the draft would keep an unsaved key for as long as the Settings window exists. A key that is typed but not saved is cleared by a language change. The picker is on another tab, so this is rare.
 - `Locale.current` keeps the macOS region. The display locale must keep that region too (for example `es-MX` text with the German region). Otherwise the date order and the first weekday change when the user only wanted a different language.
 - Under `swift run`, `Bundle.main` has no bundle identifier. The persistent-domain lookup must not crash. The live switch still works for that session.

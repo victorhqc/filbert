@@ -35,7 +35,7 @@ struct GeneralSettingsView: View {
                     }
                 }
 
-                if let errorMessage = launchAtLogin.errorMessage {
+                if let errorMessage = launchAtLogin.errorMessage?.resolved {
                     Label(errorMessage, systemImage: "exclamationmark.triangle.fill")
                         .font(.caption)
                         .foregroundStyle(.red)

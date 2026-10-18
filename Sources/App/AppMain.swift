@@ -15,6 +15,8 @@ struct AppMain: App {
     @State private var viewModel: QuotaViewModel
     @State private var sleepPrevention = SleepPreventionController()
     @State private var launchAtLogin = LaunchAtLoginController()
+    @State private var displayLanguage = DisplayLanguageModel()
+    @State private var settingsTab = SettingsTab.general
     private let updateCoordinator: UpdateCoordinator
 
     init() {
@@ -35,26 +37,31 @@ struct AppMain: App {
 
     var body: some Scene {
         MenuBarExtra {
-            QuotaView(
-                viewModel: viewModel,
-                sleepPrevention: sleepPrevention,
-                updateCoordinator: updateCoordinator
-            )
-            .frame(width: 280)
-            .environment(\.locale, DisplayLanguage.locale)
+            DisplayLanguageRoot(model: displayLanguage) {
+                QuotaView(
+                    viewModel: viewModel,
+                    sleepPrevention: sleepPrevention,
+                    updateCoordinator: updateCoordinator
+                )
+                .frame(width: 280)
+            }
         } label: {
-            MenuBarStatusIcon(viewModel: viewModel, sleepPrevention: sleepPrevention)
+            DisplayLanguageRoot(model: displayLanguage) {
+                MenuBarStatusIcon(viewModel: viewModel, sleepPrevention: sleepPrevention)
+            }
         }
         .menuBarExtraStyle(.window)
 
         Settings {
-            SettingsView(
-                viewModel: viewModel,
-                updateCoordinator: updateCoordinator,
-                sleepPrevention: sleepPrevention,
-                launchAtLogin: launchAtLogin
-            )
-            .environment(\.locale, DisplayLanguage.locale)
+            DisplayLanguageRoot(model: displayLanguage) {
+                SettingsView(
+                    viewModel: viewModel,
+                    updateCoordinator: updateCoordinator,
+                    sleepPrevention: sleepPrevention,
+                    launchAtLogin: launchAtLogin,
+                    selectedTab: $settingsTab
+                )
+            }
         }
         .defaultSize(width: 620, height: 520)
         .windowResizability(.contentMinSize)
