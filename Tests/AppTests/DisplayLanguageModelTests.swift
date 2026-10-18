@@ -20,7 +20,7 @@ final class DisplayLanguageModelTests: XCTestCase {
     }
 
     func testSelectingALanguageChangesTheLocaleTheViewsRead() {
-        let model = DisplayLanguageModel(notificationCenter: NotificationCenter())
+        let model = makeModel()
         let changed = expectation(description: "Views rebuild")
         withObservationTracking { _ = model.locale } onChange: { changed.fulfill() }
 
@@ -33,7 +33,8 @@ final class DisplayLanguageModelTests: XCTestCase {
     }
 
     func testSelectingTheSameLanguageKeepsTheViews() {
-        let model = DisplayLanguageModel(notificationCenter: NotificationCenter())
+        let model = makeModel()
+        model.select("en")
         let changed = expectation(description: "Views rebuild")
         changed.isInverted = true
         withObservationTracking { _ = model.locale } onChange: { changed.fulfill() }
@@ -45,8 +46,7 @@ final class DisplayLanguageModelTests: XCTestCase {
 
     func testWithNoSelectionAMacOSLanguageChangeChangesTheLocale() {
         let center = NotificationCenter()
-        let model = DisplayLanguageModel(notificationCenter: center)
-        model.select(nil)
+        let model = makeModel(notificationCenter: center)
         let changed = expectation(description: "Views rebuild")
         withObservationTracking { _ = model.locale } onChange: { changed.fulfill() }
 
@@ -55,5 +55,10 @@ final class DisplayLanguageModelTests: XCTestCase {
 
         wait(for: [changed], timeout: 1)
         XCTAssertEqual(model.locale.language.maximalIdentifier, Locale.Language(identifier: "es-MX").maximalIdentifier)
+    }
+
+    private func makeModel(notificationCenter: NotificationCenter = NotificationCenter()) -> DisplayLanguageModel {
+        let preference = AppLanguagePreference(domainName: nil, globalLanguages: { ["en-US"] })
+        return DisplayLanguageModel(preference: preference, notificationCenter: notificationCenter)
     }
 }

@@ -1,8 +1,9 @@
+@testable import App
 import Foundation
 import XCTest
 
 final class StringCatalogCoverageTests: XCTestCase {
-    private let languages = ["de-DE", "en", "es-ES", "es-MX"]
+    private let languages = SupportedLanguage.all.map(\.code)
 
     private let modules = [
         "Sources/Core",
@@ -71,6 +72,17 @@ final class StringCatalogCoverageTests: XCTestCase {
             failures += catalog.strings.keys.sorted()
                 .filter { catalogKey in !keys.contains { $0.matches(catalogKey) } }
                 .map { "\(module.catalog) \"\($0)\" has no lookup" }
+        }
+        XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
+    }
+
+    func testEveryCatalogLanguageIsSupported() throws {
+        var failures: [String] = []
+        for module in modules {
+            let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
+            let catalogLanguages = Set(catalog.strings.values.flatMap { $0.localizations?.keys ?? [:].keys })
+            failures += catalogLanguages.subtracting(languages).sorted()
+                .map { "\(module.catalog) has \($0), which SupportedLanguage does not list" }
         }
         XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
     }

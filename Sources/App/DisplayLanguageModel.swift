@@ -6,11 +6,21 @@ import SwiftUI
 @MainActor
 @Observable
 final class DisplayLanguageModel {
-    private(set) var locale = DisplayLanguage.locale
-    private(set) var selectedLanguageCode = DisplayLanguage.selectedLanguageCode
+    private(set) var locale: Locale
+    private(set) var selectedLanguageCode: String?
+    @ObservationIgnored private let preference: AppLanguagePreference
     @ObservationIgnored private var localeObserverToken: NSObjectProtocol?
 
-    init(notificationCenter: NotificationCenter = .default) {
+    init(
+        preference: AppLanguagePreference = AppLanguagePreference(),
+        notificationCenter: NotificationCenter = .default
+    ) {
+        self.preference = preference
+        DisplayLanguage.setSystemPreferences { preference.systemLanguages() }
+        let stored = preference.selectedLanguageCode
+        DisplayLanguage.selectedLanguageCode = stored
+        selectedLanguageCode = stored
+        locale = DisplayLanguage.locale
         localeObserverToken = notificationCenter.addObserver(
             forName: NSLocale.currentLocaleDidChangeNotification,
             object: nil,
@@ -23,8 +33,11 @@ final class DisplayLanguageModel {
     }
 
     func select(_ languageCode: String?) {
+        preference.store(languageCode)
         DisplayLanguage.selectedLanguageCode = languageCode
-        selectedLanguageCode = languageCode
+        if languageCode != selectedLanguageCode {
+            selectedLanguageCode = languageCode
+        }
         refresh()
     }
 

@@ -104,8 +104,14 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
    - `DisplayLanguageRoot` wraps the popover, the menu bar label, and Settings. It sets `.id(locale)` and `.environment(\.locale)`. `SettingsView` takes its tab selection as a binding to `@State` in `FilbertApp`. The collapse state was already in the view model.
    - `LaunchAtLoginController.errorMessage` is now `DisplayText`, because it lives above the rebuild on the General tab.
    - Unit tests cover the model. The rebuild itself is checked by hand in step 8.
-5. [ ] Persistence. Add `AppLanguagePreference` in `Sources/App`. It reads and writes `AppleLanguages` only in the app's persistent domain, through an injected `UserDefaults`, and sets `DisplayLanguage` at launch and on change. Unit tests cover AC2, AC5, AC6, AC7, and AC8.
-6. [ ] Add `SupportedLanguage` in `Sources/App` with a code and an autonym for each language. The picker and the catalog test (ui 29 AC3) read this one list.
+5. [x] Persistence (2026-10-18). Add `AppLanguagePreference` in `Sources/App`. It reads and writes `AppleLanguages` only in the app's persistent domain, through an injected `UserDefaults`, and sets `DisplayLanguage` at launch and on change. Unit tests cover AC2, AC5, AC6, AC7, and AC8.
+   - `DisplayLanguageModel` takes the preference. At launch it sets `DisplayLanguage` from the stored value. `select(_:)` stores the code, or removes the key for System Default, and applies it at once.
+   - A stored value counts as a selection only when it matches a supported language with the same language code: `es-419` selects `es-MX`, and `fr` selects nothing.
+   - `DisplayLanguage.setSystemPreferences` gets the stored value when it exists, and the global-domain order when it does not. So an unsupported value such as `fr` shows English, as macOS does (AC8), and System Default follows macOS before a relaunch (AC6).
+   - The stored value is read only at launch. System Settings applies a per-app language at the next launch too. Rereading it on a locale change would also undo a session-only choice under `swift run`, where nothing is stored.
+   - `AppLanguagePreferenceTests` covers AC2, AC5, AC6, AC7, AC8, and `swift run` with no bundle identifier. All tests use a separate defaults suite, so nothing writes to the test runner's own domain.
+6. [x] Add `SupportedLanguage` in `Sources/App` with a code and an autonym for each language. The picker and the catalog test (ui 29 AC3) read this one list.
+   - Done with step 5, which needs the list to check a stored value. It lists the four current languages; (ui 31) adds the rest. The catalog test also fails when a catalog has a language that the list does not name.
 7. [ ] Add the Language card to `GeneralSettingsView` (AC1, AC4, AC10).
 8. [ ] Run the validation gate. Then manually check AC3 to AC7 in the packaged app for each language, with the popover and Settings open together.
 
