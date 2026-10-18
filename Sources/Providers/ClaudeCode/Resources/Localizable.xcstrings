@@ -1,0 +1,586 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "5-hour window" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5-Stunden-Fenster"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5-hour window"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ventana de 5 horas"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ventana de 5 horas"
+          }
+        }
+      }
+    },
+    "Automatic helper migration failed. Select Install Helper to retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die automatische Migration des Hilfsskripts ist fehlgeschlagen. Wähle „Hilfsskript installieren“, um es erneut zu versuchen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Automatic helper migration failed. Select Install Helper to retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La migración automática del script auxiliar ha fallado. Selecciona «Instalar script auxiliar» para reintentar."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Falló la migración automática del script auxiliar. Selecciona “Instalar script auxiliar” para reintentar."
+          }
+        }
+      }
+    },
+    "Claude Code not found" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code nicht gefunden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code not found"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha encontrado Claude Code"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró Claude Code"
+          }
+        }
+      }
+    },
+    "Claude Code not found. Install Claude Code and retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code wurde nicht gefunden. Installiere Claude Code und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code not found. Install Claude Code and retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha encontrado Claude Code. Instala Claude Code e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró Claude Code. Instala Claude Code e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Claude Code refresh failed with exit code %d. Open Claude Code and retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Aktualisierung von Claude Code ist mit dem Exit-Code %d fehlgeschlagen. Öffne Claude Code und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code refresh failed with exit code %d. Open Claude Code and retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La actualización de Claude Code ha fallado con el código de salida %d. Abre Claude Code e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La actualización de Claude Code falló con el código de salida %d. Abre Claude Code e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Claude Code refresh timed out. Retry the refresh." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zeitüberschreitung bei der Aktualisierung von Claude Code. Versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code refresh timed out. Retry the refresh."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se ha agotado el tiempo de espera de la actualización de Claude Code. Intenta actualizar de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se agotó el tiempo de espera de la actualización de Claude Code. Intenta actualizar de nuevo."
+          }
+        }
+      }
+    },
+    "Claude Code returned no usage data. Open Claude Code and retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code hat keine Nutzungsdaten geliefert. Öffne Claude Code und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code returned no usage data. Open Claude Code and retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code no ha devuelto datos de uso. Abre Claude Code e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code no devolvió datos de uso. Abre Claude Code e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Could not decode Claude Code usage data. Refresh to retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Nutzungsdaten von Claude Code konnten nicht decodiert werden. Aktualisiere, um es erneut zu versuchen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not decode Claude Code usage data. Refresh to retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido decodificar los datos de uso de Claude Code. Actualiza para reintentar."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron decodificar los datos de uso de Claude Code. Actualiza para reintentar."
+          }
+        }
+      }
+    },
+    "Could not parse ~/.claude/settings.json." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "~/.claude/settings.json konnte nicht verarbeitet werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not parse ~/.claude/settings.json."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido interpretar ~/.claude/settings.json."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo interpretar ~/.claude/settings.json."
+          }
+        }
+      }
+    },
+    "Could not prepare Claude Code refresh. Retry the refresh." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Aktualisierung von Claude Code konnte nicht vorbereitet werden. Versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not prepare Claude Code refresh. Retry the refresh."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido preparar la actualización de Claude Code. Intenta actualizar de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo preparar la actualización de Claude Code. Intenta actualizar de nuevo."
+          }
+        }
+      }
+    },
+    "Could not read Claude Code usage data. Refresh to retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Nutzungsdaten von Claude Code konnten nicht gelesen werden. Aktualisiere, um es erneut zu versuchen."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not read Claude Code usage data. Refresh to retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido leer los datos de uso de Claude Code. Actualiza para reintentar."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron leer los datos de uso de Claude Code. Actualiza para reintentar."
+          }
+        }
+      }
+    },
+    "Could not verify the helper installation." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Installation des Hilfsskripts konnte nicht überprüft werden."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Could not verify the helper installation."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido verificar la instalación del script auxiliar."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo verificar la instalación del script auxiliar."
+          }
+        }
+      }
+    },
+    "Helper executable not found in app bundle. Reinstall Filbert and retry." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Hilfsskript fehlt im App-Bundle. Installiere Filbert neu und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helper executable not found in app bundle. Reinstall Filbert and retry."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha encontrado el script auxiliar en la app. Reinstala Filbert e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se encontró el script auxiliar en la app. Reinstala Filbert e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Helper not installed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hilfsskript nicht installiert"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Helper not installed"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Script auxiliar no instalado"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Script auxiliar no instalado"
+          }
+        }
+      }
+    },
+    "Install Claude Code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code installieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install Claude Code"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar Claude Code"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar Claude Code"
+          }
+        }
+      }
+    },
+    "Internal error: unexpected auth shape." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interner Fehler: Unerwartete Authentifizierungsform."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Internal error: unexpected auth shape."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error interno: forma de autenticación inesperada."
+          }
+        }
+      }
+    },
+    "Monitor Claude Pro/Max subscription usage" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzung des Claude-Pro/Max-Abonnements überwachen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitor Claude Pro/Max subscription usage"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa el uso de la suscripción de Claude Pro/Max"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa el uso de la suscripción de Claude Pro/Max"
+          }
+        }
+      }
+    },
+    "No data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Daten"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No data"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
+          }
+        }
+      }
+    },
+    "Open Claude Code to populate usage data" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Öffne Claude Code, um Nutzungsdaten zu laden"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open Claude Code to populate usage data"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Claude Code para cargar los datos de uso"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abre Claude Code para cargar los datos de uso"
+          }
+        }
+      }
+    },
+    "Weekly" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wöchentlich"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weekly"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

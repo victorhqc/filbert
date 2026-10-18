@@ -47,7 +47,7 @@ final class BudgetPaceCompactTierTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "opencode-go",
             providerName: "OpenCode Go",
-            headline: "45%",
+            headline: DisplayText(verbatim: "45%"),
             lines: [line],
             lastUpdated: now
         )
@@ -63,10 +63,10 @@ final class BudgetPaceCompactTierTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "claude-code",
             providerName: "Claude Code",
-            headline: "29%",
+            headline: DisplayText(verbatim: "29%"),
             lines: [
                 UsageLine(
-                    label: "5-hour window",
+                    label: DisplayText(verbatim: "5-hour window"),
                     percentage: 29,
                     resetDate: now.addingTimeInterval(60 * 60),
                     windowDuration: UsageWindowDuration.fiveHours
@@ -83,10 +83,10 @@ final class BudgetPaceCompactTierTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "opencode-go",
             providerName: "OpenCode Go",
-            headline: "95%",
+            headline: DisplayText(verbatim: "95%"),
             lines: [
                 UsageLine(
-                    label: "5-hour window",
+                    label: DisplayText(verbatim: "5-hour window"),
                     percentage: 95,
                     resetDate: now.addingTimeInterval(60 * 60),
                     windowDuration: UsageWindowDuration.fiveHours
@@ -101,7 +101,7 @@ final class BudgetPaceCompactTierTests: XCTestCase {
 
     private func weeklyLine(usedPercentage: Double, resetDate: Date) -> UsageLine {
         UsageLine(
-            label: "Weekly",
+            label: DisplayText(verbatim: "Weekly"),
             percentage: usedPercentage,
             resetDate: resetDate,
             windowDuration: UsageWindowDuration.week
@@ -110,7 +110,7 @@ final class BudgetPaceCompactTierTests: XCTestCase {
 
     private func monthlyLine(usedPercentage: Double, resetDate: Date) -> UsageLine {
         UsageLine(
-            label: "Monthly",
+            label: DisplayText(verbatim: "Monthly"),
             percentage: usedPercentage,
             resetDate: resetDate,
             windowDuration: UsageWindowDuration.month
@@ -126,7 +126,7 @@ final class BudgetPaceCompactTierTests: XCTestCase {
         ProviderQuota(
             providerId: providerId,
             providerName: providerName,
-            headline: "\(usedPercentage)%",
+            headline: DisplayText(verbatim: "\(usedPercentage)%"),
             lines: [weeklyLine(usedPercentage: usedPercentage, resetDate: resetDate)],
             lastUpdated: now
         )

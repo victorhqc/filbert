@@ -80,7 +80,7 @@ private struct UnconfiguredAPIKeyProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )
@@ -99,14 +99,14 @@ private struct UnconfiguredAPIKeyFreeProvider: AIProvider {
     }
 
     func currentSetupState() async -> ProviderState? {
-        .setup("Not installed")
+        .setup(DisplayText(verbatim: "Not installed"))
     }
 
     func fetchQuota(auth _: ProviderAuth, baseURL _: URL) async throws -> ProviderQuota {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )
@@ -128,7 +128,7 @@ private final class ConfiguredAPIKeyFreeProvider: AIProvider, @unchecked Sendabl
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )

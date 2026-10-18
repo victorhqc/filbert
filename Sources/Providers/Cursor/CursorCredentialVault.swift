@@ -15,11 +15,14 @@ enum CursorCredentialVaultError: Error, LocalizedError {
     var errorDescription: String? {
         switch self {
         case .malformedRecord:
-            String(localized: "Saved Cursor credentials are incomplete. Re-import them.")
+            String(displayLocalized: "Saved Cursor credentials are incomplete. Re-import them.", bundle: .module)
         case .unavailable:
-            String(localized: "Sign in to Cursor, then import credentials.")
+            String(displayLocalized: "Sign in to Cursor, then import credentials.", bundle: .module)
         case .keychain:
-            String(localized: "Unable to access saved Cursor credentials. Check Keychain access and try again.")
+            String(
+                displayLocalized: "Unable to access saved Cursor credentials. Check Keychain access and try again.",
+                bundle: .module
+            )
         }
     }
 }

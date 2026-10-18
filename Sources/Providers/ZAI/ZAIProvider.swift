@@ -26,17 +26,17 @@ extension ZAIError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .missingKey:
-            String(localized: "No API key configured.")
+            String(displayLocalized: "No API key configured.", bundle: .module)
         case .http(401):
-            String(localized: "Authentication failed. Check your API key.")
+            String(displayLocalized: "Authentication failed. Check your API key.", bundle: .module)
         case let .http(code) where code == 429:
-            String(localized: "Rate limited. Try again later.")
+            String(displayLocalized: "Rate limited. Try again later.", bundle: .module)
         case .network:
-            String(localized: "Network error. Check your connection.")
+            String(displayLocalized: "Network error. Check your connection.", bundle: .module)
         case .internalInconsistency:
-            String(localized: "Internal error: unexpected auth shape.")
+            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
         case .decoding, .http:
-            String(localized: "Unexpected response from server.")
+            String(displayLocalized: "Unexpected response from server.", bundle: .module)
         }
     }
 }
@@ -80,7 +80,10 @@ public struct ZAIProvider: AIProvider {
     public static let providerId = "zai"
     public static let providerName = "z.ai"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(localized: "Monitor API usage and quotas")
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor API usage and quotas", bundle: .module)
+    }
+
     /// Host root for z.ai requests; path segments live in `fetchQuota`.
     public static let baseURL = URL(string: "https://api.z.ai")!
 

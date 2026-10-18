@@ -28,7 +28,7 @@ extension OpenAICodexProvider {
     }
 
     func creditsLine(for balance: CodexCreditsBalance) -> UsageLine {
-        let label = String(localized: "Credits")
+        let label = DisplayText { String(displayLocalized: "Credits", bundle: .module) }
         return switch balance {
         case let .amount(amount):
             UsageLine(
@@ -40,7 +40,10 @@ extension OpenAICodexProvider {
         case let .unparseable(raw):
             UsageLine(
                 label: label,
-                details: [UsageDetail(label: String(localized: "Balance"), value: raw)],
+                details: [UsageDetail(
+                    label: DisplayText { String(displayLocalized: "Balance", bundle: .module) },
+                    value: DisplayText(verbatim: raw)
+                )],
                 id: Self.creditsLineId,
                 fallbackForLimitGroup: Self.subscriptionLimitGroup
             )

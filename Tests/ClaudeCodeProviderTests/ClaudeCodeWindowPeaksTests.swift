@@ -133,7 +133,7 @@ final class ClaudeCodeWindowPeaksTests: XCTestCase {
         let quota = try await provider.fetchQuota(auth: .apiKeyFree, baseURL: ClaudeCodeProvider.baseURL)
 
         XCTAssertEqual(quota.lines.first?.percentage, 7)
-        XCTAssertTrue(quota.headline.hasPrefix("7%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("7%"))
         let metric = try XCTUnwrap(quota.activityObservation?.metrics.first)
         XCTAssertEqual(metric.value, .number(7))
         XCTAssertEqual(metric.forecastDescriptor?.timing, .source(Date(timeIntervalSince1970: now + 1)))

@@ -5,9 +5,16 @@ final class StringCatalogCoverageTests: XCTestCase {
     private let languages = ["de-DE", "en", "es-ES", "es-MX"]
 
     private let modules = [
-        Module(sources: "Sources/Core", catalog: "Sources/Core/Resources/Localizable.xcstrings"),
-        Module(sources: "Sources/App", catalog: "Sources/App/Resources/Localizable.xcstrings"),
-    ]
+        "Sources/Core",
+        "Sources/App",
+        "Sources/Providers/ClaudeCode",
+        "Sources/Providers/Cursor",
+        "Sources/Providers/DeepSeek",
+        "Sources/Providers/GeminiCLI",
+        "Sources/Providers/OpenAICodex",
+        "Sources/Providers/OpenCodeGo",
+        "Sources/Providers/ZAI",
+    ].map { Module(sources: $0, catalog: "\($0)/Resources/Localizable.xcstrings") }
 
     private let bypassingLookups = [
         #"String\(\s*localized:"#,
@@ -21,7 +28,7 @@ final class StringCatalogCoverageTests: XCTestCase {
         for module in modules {
             for (file, source) in try sources(of: module) {
                 for pattern in bypassingLookups {
-                    for line in lines(of: source, matching: pattern) {
+                    for line in try lines(of: source, matching: pattern) {
                         failures.append("\(file):\(line) bypasses the display lookup")
                     }
                 }
@@ -50,6 +57,20 @@ final class StringCatalogCoverageTests: XCTestCase {
                     failures += translationFailures(for: catalogKey, entry: entry, at: lookup.location)
                 }
             }
+        }
+        XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
+    }
+
+    func testEveryCatalogKeyHasALookup() throws {
+        var failures: [String] = []
+        for module in modules {
+            let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
+            let keys = try sources(of: module).flatMap { file, source in
+                LocalizedSourceScanner.lookups(in: source, file: file).compactMap(\.key)
+            }
+            failures += catalog.strings.keys.sorted()
+                .filter { catalogKey in !keys.contains { $0.matches(catalogKey) } }
+                .map { "\(module.catalog) \"\($0)\" has no lookup" }
         }
         XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
     }
@@ -91,11 +112,14 @@ final class StringCatalogCoverageTests: XCTestCase {
             .map { try ("\(module.sources)/\($0.path.dropFirst(root.path.count + 1))", String(contentsOf: $0)) }
     }
 
-    private func lines(of source: String, matching pattern: String) -> [Int] {
-        source.components(separatedBy: "\n").enumerated()
-            .filter { !$0.element.trimmingCharacters(in: .whitespaces).hasPrefix("//") }
-            .filter { $0.element.range(of: pattern, options: .regularExpression) != nil }
-            .map { $0.offset + 1 }
+    /// Matches across line breaks, so a call split after `String(` is still found.
+    private func lines(of source: String, matching pattern: String) throws -> [Int] {
+        let code = source.components(separatedBy: "\n")
+            .map { $0.trimmingCharacters(in: .whitespaces).hasPrefix("//") ? "" : $0 }
+            .joined(separator: "\n")
+        return try code.ranges(of: Regex(pattern)).map { match in
+            code[..<match.lowerBound].filter { $0 == "\n" }.count + 1
+        }
     }
 
     private func url(_ repositoryPath: String) -> URL {

@@ -102,7 +102,7 @@ struct QuotaView: View {
             }
 
             if let guidance = quota.error {
-                Text(guidance)
+                Text(guidance.resolved)
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
@@ -148,10 +148,10 @@ struct QuotaView: View {
 
     private func headerErrorMessage(providerId: String, state: ProviderState) -> String? {
         if let refreshError = viewModel.refreshErrors[providerId] {
-            return refreshError
+            return refreshError.resolved
         }
         if case let .error(message) = state {
-            return message
+            return message.resolved
         }
         return nil
     }
@@ -248,11 +248,11 @@ private extension QuotaView {
                 if !collapsed {
                     providerBody(providerId: providerId, state: state)
                 } else if case let .error(message) = state {
-                    errorContent(message, providerId: providerId)
+                    errorContent(message.resolved, providerId: providerId)
                 }
 
                 if let message = viewModel.refreshErrors[providerId] {
-                    Label(message, systemImage: "exclamationmark.triangle.fill")
+                    Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                     ErrorLogLink(errorLog: viewModel.errorLog)
@@ -362,13 +362,13 @@ private extension QuotaView {
         case .unconfigured:
             EmptyView()
         case let .setup(reason):
-            setupContent(reason, providerId: providerId)
+            setupContent(reason.resolved, providerId: providerId)
         case .loading:
             loadingContent
         case let .loaded(quota):
             quotaContent(quota, providerId: providerId)
         case let .error(message):
-            errorContent(message, providerId: providerId)
+            errorContent(message.resolved, providerId: providerId)
         }
     }
 }

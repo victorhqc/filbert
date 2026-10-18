@@ -39,6 +39,7 @@ let package = Package(
             resources: [
                 .copy("Resources/ProviderGlyph.png"),
                 .copy("Resources/ProviderGlyph@2x.png"),
+                .process("Resources/Localizable.xcstrings"),
             ],
             swiftSettings: strictSourceSettings
         ),

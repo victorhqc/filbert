@@ -67,7 +67,7 @@ private final class ImportingTestProvider: AIProvider, @unchecked Sendable {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Ready",
+            headline: DisplayText(verbatim: "Ready"),
             lines: [],
             lastUpdated: Date()
         )
@@ -90,7 +90,7 @@ private struct UnsupportedTestProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "Unavailable",
+            headline: DisplayText(verbatim: "Unavailable"),
             lines: [],
             lastUpdated: Date()
         )

@@ -30,35 +30,6 @@
         }
       }
     },
-    "%@ used of %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ von %@ verwendet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%@ used of %@"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se han usado %@ de %@"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Se usó %@ de %@"
-          }
-        }
-      }
-    },
     "API" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -142,35 +113,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Auto"
-          }
-        }
-      }
-    },
-    "Billing cycle" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Abrechnungszeitraum"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Billing cycle"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ciclo de facturación"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Ciclo de facturación"
           }
         }
       }
@@ -349,35 +291,6 @@
         }
       }
     },
-    "No usage reported" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Nutzung gemeldet"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No usage reported"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha registrado uso"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se reportó uso"
-          }
-        }
-      }
-    },
     "On-demand spend" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -403,35 +316,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Gasto bajo demanda"
-          }
-        }
-      }
-    },
-    "Plan" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Tarif"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plan"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plan"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Plan"
           }
         }
       }
@@ -664,6 +548,180 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Ilimitado"
+          }
+        }
+      }
+    },
+    "Saved Cursor credentials are incomplete. Re-import them." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die gespeicherten Cursor-Anmeldedaten sind unvollständig. Importiere sie erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saved Cursor credentials are incomplete. Re-import them."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales guardadas de Cursor están incompletas. Vuelve a importarlas."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales guardadas de Cursor están incompletas. Vuelve a importarlas."
+          }
+        }
+      }
+    },
+    "Sign in to Cursor, then import credentials." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Melde dich bei Cursor an und importiere dann die Anmeldedaten."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sign in to Cursor, then import credentials."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión en Cursor y luego importa las credenciales."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Inicia sesión en Cursor y luego importa las credenciales."
+          }
+        }
+      }
+    },
+    "Unable to access saved Cursor credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf die gespeicherten Cursor-Anmeldedaten kann nicht zugegriffen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to access saved Cursor credentials. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales guardadas de Cursor. Comprueba el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales guardadas de Cursor. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Re-import Cursor credentials" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor-Anmeldedaten erneut importieren"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Re-import Cursor credentials"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver a importar las credenciales de Cursor"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Volver a importar las credenciales de Cursor"
+          }
+        }
+      }
+    },
+    "Unable to access Cursor credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auf die Cursor-Anmeldedaten kann nicht zugegriffen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to access Cursor credentials. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales de Cursor. Comprueba el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se puede acceder a las credenciales de Cursor. Revisa el acceso al llavero e inténtalo de nuevo."
+          }
+        }
+      }
+    },
+    "Cursor credentials are invalid. Sign in to Cursor, then re-import them." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die Cursor-Anmeldedaten sind ungültig. Melde dich bei Cursor an und importiere sie dann erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor credentials are invalid. Sign in to Cursor, then re-import them."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales de Cursor no son válidas. Inicia sesión en Cursor y luego vuelve a importarlas."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Las credenciales de Cursor no son válidas. Inicia sesión en Cursor y luego vuelve a importarlas."
           }
         }
       }

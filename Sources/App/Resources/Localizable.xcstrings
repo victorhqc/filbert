@@ -138,24 +138,6 @@
         }
       }
     },
-    "Unable to read credentials. Check Keychain access and try again." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anmeldedaten können nicht gelesen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Unable to read credentials. Check Keychain access and try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudieron leer las credenciales. Comprueba el acceso al llavero e inténtalo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudieron leer las credenciales. Comprueba el acceso al llavero e inténtalo de nuevo." } }
-      }
-    },
-    "Helper executable not found in app bundle. Reinstall Filbert and retry." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Das Hilfsprogramm fehlt im App-Bundle. Installiere Filbert erneut und versuche es erneut." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Helper executable not found in app bundle. Reinstall Filbert and retry." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se encontró el ejecutable auxiliar en la app. Reinstala Filbert e inténtalo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se encontró el ejecutable auxiliar en la app. Reinstala Filbert e inténtalo de nuevo." } }
-      }
-    },
     "Refresh cancelled. Select Refresh to try again." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -163,15 +145,6 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh cancelled. Select Refresh to try again." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } }
-      }
-    },
-    "No credentials found. Sign in to this provider and try again." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Keine Anmeldedaten gefunden. Melde dich bei diesem Anbieter an und versuche es erneut." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "No credentials found. Sign in to this provider and try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se encontraron credenciales. Inicia sesión con este proveedor e inténtalo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se encontraron credenciales. Inicia sesión con este proveedor e inténtalo de nuevo." } }
       }
     },
     "Show Logs" : {
@@ -521,122 +494,6 @@
         }
       }
     },
-    "Codex CLI not installed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Codex CLI not installed"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Codex CLI ist nicht installiert"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La CLI de Codex no está instalada"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La CLI de Codex no está instalada"
-          }
-        }
-      }
-    },
-    "Install Claude Code" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Install Claude Code"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Claude Code installieren"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instalar Claude Code"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instalar Claude Code"
-          }
-        }
-      }
-    },
-    "Install Codex CLI" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Install Codex CLI"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Codex CLI installieren"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instalar Codex CLI"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Instalar Codex CLI"
-          }
-        }
-      }
-    },
-    "Monitor Codex subscription usage" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Monitor Codex subscription usage"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Codex-Abonnementnutzung überwachen"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supervisa el uso de la suscripción de Codex"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supervisa el uso de la suscripción de Codex"
-          }
-        }
-      }
-    },
     "Save" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -778,180 +635,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Lädt…"
-          }
-        }
-      }
-    },
-    "Authentication failed. Check your API key." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Authentication failed. Check your API key."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido iniciar sesión. Revisa tu clave de API."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo iniciar sesión. Revisa tu llave de API."
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Anmeldung fehlgeschlagen. Überprüfe deinen API-Schlüssel."
-          }
-        }
-      }
-    },
-    "Rate limited. Try again later." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Rate limited. Try again later."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Has hecho demasiadas peticiones. Inténtalo más tarde."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Hiciste demasiadas peticiones. Inténtalo más tarde."
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zu viele Anfragen. Versuch es später nochmal."
-          }
-        }
-      }
-    },
-    "Network error. Check your connection." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Network error. Check your connection."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error de red. Revisa tu conexión."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Error de red. Revisa tu conexión."
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Netzwerkfehler. Überprüfe deine Verbindung."
-          }
-        }
-      }
-    },
-    "Unexpected response from server." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unexpected response from server."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Respuesta inesperada del servidor."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Respuesta inesperada del servidor."
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unerwartete Antwort vom Server."
-          }
-        }
-      }
-    },
-    "No API key configured." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No API key configured."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No hay ninguna clave de API configurada."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No tienes ninguna llave de API configurada."
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Kein API-Schlüssel eingerichtet."
-          }
-        }
-      }
-    },
-    "Keychain access failed." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keychain access failed."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se ha podido acceder al Llavero."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No se pudo acceder al Llavero."
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Zugriff auf den Schlüsselbund fehlgeschlagen."
           }
         }
       }
@@ -1532,35 +1215,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$lld× Multiplikator"
-          }
-        }
-      }
-    },
-    "%@–%@ (your time)" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@–%2$@ (your time)"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@–%2$@ (tu hora)"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@–%2$@ (tu hora)"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "%1$@–%2$@ (deine Zeit)"
           }
         }
       }
@@ -2935,15 +2589,6 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep until turned off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } }
-      }
-    },
-    "Panel" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Bereich" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } }
       }
     },
     "Keep Awake" : {

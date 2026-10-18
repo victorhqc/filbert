@@ -20,9 +20,9 @@ extension ClaudeCodeError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .binaryNotFound:
-            String(localized: "Claude Code not found.")
+            String(displayLocalized: "Claude Code not found", bundle: .module)
         case .internalInconsistency:
-            String(localized: "Internal error: unexpected auth shape.")
+            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
         }
     }
 }
@@ -44,9 +44,10 @@ public struct ClaudeCodeProvider: AIProvider {
     public static let providerId = "claude-code"
     public static let providerName = "Claude Code"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(
-        localized: "Monitor Claude Pro/Max subscription usage"
-    )
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor Claude Pro/Max subscription usage", bundle: .module)
+    }
+
     public static let automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? =
         ProviderAutomaticRefreshDisclosure(
             command: "claude -p \"/usage\"",
@@ -55,10 +56,13 @@ public struct ClaudeCodeProvider: AIProvider {
     /// Placeholder — this provider never makes network calls.
     public static let baseURL = URL(string: "https://api.anthropic.com")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
-    public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
-        linkLabel: String(localized: "Install Claude Code"),
-        url: URL(string: "https://docs.claude.com/en/docs/claude-code/overview")!
-    )
+    public static var setupHelp: ProviderSetupHelp? {
+        ProviderSetupHelp(
+            linkLabel: String(displayLocalized: "Install Claude Code", bundle: .module),
+            url: URL(string: "https://docs.claude.com/en/docs/claude-code/overview")!
+        )
+    }
+
     public static let refreshCharacteristics = ProviderRefreshCharacteristics(
         costEvidence: .possibleConsumption,
         canInvokeInference: true
@@ -103,7 +107,7 @@ public struct ClaudeCodeProvider: AIProvider {
 
     public func currentSetupState() async -> ProviderState? {
         if locator.resolve() == nil {
-            return .setup(String(localized: "Claude Code not found"))
+            return .setup(DisplayText { String(displayLocalized: "Claude Code not found", bundle: .module) })
         }
         if !installer.isHelperInstalled() {
             guard let executableURL = StatuslineHelperResource.resolve() else {
@@ -111,7 +115,7 @@ public struct ClaudeCodeProvider: AIProvider {
                     component: "claude-code-provider", operation: "resolve-helper",
                     code: "helper-executable-missing", providerID: Self.providerId
                 )
-                return .error(InstallerError.helperExecutableNotFound.localizedDescription)
+                return .error(DisplayText(describing: InstallerError.helperExecutableNotFound))
             }
             do {
                 _ = try await Task.detached {
@@ -124,14 +128,15 @@ public struct ClaudeCodeProvider: AIProvider {
                     component: "claude-code-provider", operation: "migrate-helper",
                     code: "helper-migration-failed", providerID: Self.providerId, error: error
                 )
-                return .error(
+                return .error(DisplayText {
                     String(
-                        localized: "Automatic helper migration failed. Select Install Helper to retry."
+                        displayLocalized: "Automatic helper migration failed. Select Install Helper to retry.",
+                        bundle: .module
                     )
-                )
+                })
             }
             if !installer.isHelperInstalled() {
-                return .setup(String(localized: "Helper not installed"))
+                return .setup(DisplayText { String(displayLocalized: "Helper not installed", bundle: .module) })
             }
         }
         return nil
@@ -174,12 +179,10 @@ public struct ClaudeCodeProvider: AIProvider {
             return ProviderQuota(
                 providerId: Self.providerId,
                 providerName: Self.providerName,
-                headline: String(localized: "No data"),
+                headline: DisplayText { String(displayLocalized: "No data", bundle: .module) },
                 lines: [],
                 lastUpdated: .distantPast,
-                error: String(
-                    localized: "Open Claude Code to populate usage data"
-                )
+                error: Self.emptyCacheGuidance
             )
         }
 
@@ -197,7 +200,7 @@ public struct ClaudeCodeProvider: AIProvider {
         if let fiveHour {
             lines.append(usageLine(
                 id: Self.fiveHourLineId,
-                label: String(localized: "5-hour window"),
+                label: DisplayText { String(displayLocalized: "5-hour window", bundle: .module) },
                 window: fiveHour,
                 windowDuration: UsageWindowDuration.fiveHours
             ))
@@ -206,7 +209,7 @@ public struct ClaudeCodeProvider: AIProvider {
         if let sevenDay {
             lines.append(usageLine(
                 id: Self.weeklyLineId,
-                label: String(localized: "Weekly"),
+                label: DisplayText { String(displayLocalized: "Weekly", bundle: .module) },
                 window: sevenDay,
                 windowDuration: UsageWindowDuration.week
             ))
@@ -228,16 +231,20 @@ public struct ClaudeCodeProvider: AIProvider {
             headline: headline,
             lines: lines,
             lastUpdated: lastUpdated,
-            error: lines.isEmpty ? String(localized: "Open Claude Code to populate usage data") : nil,
+            error: lines.isEmpty ? Self.emptyCacheGuidance : nil,
             isStale: isStale,
             activityObservation: activityObservation(from: cache),
             headlineUsageLineId: lines.first?.id
         )
     }
 
+    private static let emptyCacheGuidance = DisplayText {
+        String(displayLocalized: "Open Claude Code to populate usage data", bundle: .module)
+    }
+
     private func usageLine(
         id: String,
-        label: String,
+        label: DisplayText,
         window: Window,
         windowDuration: TimeInterval
     ) -> UsageLine {
@@ -254,24 +261,26 @@ public struct ClaudeCodeProvider: AIProvider {
     private func computeHeadline(
         fiveHour: Window?,
         sevenDay: Window?
-    ) -> String {
-        guard let primary = fiveHour ?? sevenDay else {
-            return String(localized: "No data")
-        }
-
-        let countdown = primary.resetsAt.map {
-            QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
-        }
-
-        if let usedPercentage = primary.usedPercentage, usedPercentage.isFinite {
-            let pctString = String(format: "%.0f%%", usedPercentage)
-            if let countdown {
-                return "\(pctString) · \(countdown)"
+    ) -> DisplayText {
+        DisplayText {
+            guard let primary = fiveHour ?? sevenDay else {
+                return String(displayLocalized: "No data", bundle: .module)
             }
-            return pctString
-        }
 
-        return countdown ?? String(localized: "No data")
+            let countdown = primary.resetsAt.map {
+                QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
+            }
+
+            if let usedPercentage = primary.usedPercentage, usedPercentage.isFinite {
+                let pctString = String(format: "%.0f%%", usedPercentage)
+                if let countdown {
+                    return "\(pctString) · \(countdown)"
+                }
+                return pctString
+            }
+
+            return countdown ?? String(displayLocalized: "No data", bundle: .module)
+        }
     }
 }
 

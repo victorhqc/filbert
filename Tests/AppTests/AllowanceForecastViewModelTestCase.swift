@@ -37,7 +37,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
     func currentQuota() -> ProviderQuota {
         let percentage = NSDecimalNumber(decimal: consumed).doubleValue
         let line = UsageLine(
-            label: "Window",
+            label: DisplayText(verbatim: "Window"),
             percentage: percentage,
             resetDate: resetsAt,
             windowDuration: windowDuration,
@@ -47,7 +47,7 @@ final class ForecastSpyProvider: AIProvider, @unchecked Sendable {
         return ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "\(Int(percentage))% · resets soon",
+            headline: DisplayText(verbatim: "\(Int(percentage))% · resets soon"),
             lines: [line],
             lastUpdated: clock.date,
             isStale: isStale,

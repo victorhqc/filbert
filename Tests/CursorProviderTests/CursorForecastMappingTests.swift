@@ -2,7 +2,7 @@ import Core
 @testable import CursorProvider
 import XCTest
 
-final class CursorForecastMappingTests: XCTestCase {
+final class CursorForecastMappingTests: EnglishTestCase {
     private let day: TimeInterval = 24 * 60 * 60
     private let included = CursorProvider.includedUsageLineId
     private let percent = CursorProvider.includedUsagePercentMetricId
@@ -133,7 +133,7 @@ final class CursorForecastMappingTests: XCTestCase {
         XCTAssertEqual(quota.lines.map(\.id), [included, nil, nil, nil])
         XCTAssertEqual(quota.lines.map(\.limitGroup), [nil, nil, nil, nil])
         XCTAssertNil(quota.headlineUsageLineId)
-        XCTAssertTrue(quota.headline.contains("left"), quota.headline)
+        XCTAssertTrue(quota.headline.resolved.contains("left"), quota.headline.resolved)
     }
 
     func testRepeatedReadsAreNoChange() throws {

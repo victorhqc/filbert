@@ -9,7 +9,7 @@ public final class ProviderRegistry {
     private var providers: [String: any AIProvider] = [:]
     private let keychain: Keychain
     public let errorLog: ErrorLog
-    private var configurationErrors: [String: String] = [:]
+    private var configurationErrors: [String: DisplayText] = [:]
 
     public init(keychain: Keychain = .shared, errorLog: ErrorLog = .shared) {
         self.keychain = keychain
@@ -87,9 +87,12 @@ public final class ProviderRegistry {
                     providerID: providerId,
                     error: error
                 )
-                configurationErrors[providerId] = String(
-                    localized: "Unable to read credentials. Check Keychain access and try again."
-                )
+                configurationErrors[providerId] = DisplayText {
+                    String(
+                        displayLocalized: "Unable to read credentials. Check Keychain access and try again.",
+                        bundle: .module
+                    )
+                }
                 return false
             }
         case .apiKeyFree:
@@ -97,7 +100,7 @@ public final class ProviderRegistry {
         }
     }
 
-    public func configurationError(for providerId: String) -> String? {
+    public func configurationError(for providerId: String) -> DisplayText? {
         configurationErrors[providerId]
     }
 

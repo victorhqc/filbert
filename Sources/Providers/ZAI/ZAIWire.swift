@@ -50,7 +50,7 @@ struct ZAISubscription: Decodable {
 // MARK: - Window recognition
 
 struct ZAIWindowDescriptor {
-    let label: String
+    let label: DisplayText
     let windowDuration: TimeInterval?
     let isFiveHour: Bool
     let isWeekly: Bool
@@ -62,17 +62,14 @@ struct ZAIWindowDescriptor {
             case 3:
                 let hours = max(limit.number ?? 5, 1)
                 return ZAIWindowDescriptor(
-                    label: String.localizedStringWithFormat(
-                        String(localized: "%lld-hour window"),
-                        hours
-                    ),
+                    label: DisplayText { String(displayLocalized: "\(hours)-hour window", bundle: .module) },
                     windowDuration: TimeInterval(hours) * 3600,
                     isFiveHour: true,
                     isWeekly: false
                 )
             case 6:
                 return ZAIWindowDescriptor(
-                    label: String(localized: "Weekly"),
+                    label: DisplayText { String(displayLocalized: "Weekly", bundle: .module) },
                     windowDuration: UsageWindowDuration.week,
                     isFiveHour: false,
                     isWeekly: true
@@ -85,7 +82,7 @@ struct ZAIWindowDescriptor {
                 return nil
             }
             return ZAIWindowDescriptor(
-                label: String(localized: "Monthly web-tool calls"),
+                label: DisplayText { String(displayLocalized: "Monthly web-tool calls", bundle: .module) },
                 windowDuration: nil,
                 isFiveHour: false,
                 isWeekly: false

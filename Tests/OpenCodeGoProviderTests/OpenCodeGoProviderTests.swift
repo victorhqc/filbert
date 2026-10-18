@@ -8,6 +8,7 @@ final class OpenCodeGoProviderTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
         let configuration = URLSessionConfiguration.ephemeral
         configuration.protocolClasses = [MockURLProtocol.self]
         session = URLSession(configuration: configuration)
@@ -15,6 +16,7 @@ final class OpenCodeGoProviderTests: XCTestCase {
     }
 
     override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
         MockURLProtocol.responseData = Data()
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseError = nil
@@ -56,8 +58,8 @@ final class OpenCodeGoProviderTests: XCTestCase {
 
         XCTAssertEqual(quota.providerId, "opencode-go")
         XCTAssertEqual(quota.providerName, "OpenCode Go")
-        XCTAssertEqual(quota.headline, "OpenCode Go usage")
-        XCTAssertEqual(quota.lines.map(\.label), ["5-hour window", "Weekly", "Monthly"])
+        XCTAssertEqual(quota.headline.resolved, "OpenCode Go usage")
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["5-hour window", "Weekly", "Monthly"])
         XCTAssertEqual(quota.lines.map(\.percentage), [2, 1, 0])
         XCTAssertEqual(quota.lines[0].resetDate, date("2026-08-15T03:20:21.283Z"))
         XCTAssertEqual(quota.lines[1].resetDate, date("2026-08-18T00:00:00.000Z"))
@@ -79,8 +81,8 @@ final class OpenCodeGoProviderTests: XCTestCase {
 
         let details = try XCTUnwrap(quota.lines[0].details)
         XCTAssertEqual(details.count, 1)
-        XCTAssertEqual(details[0].label, "Status")
-        XCTAssertEqual(details[0].value, "Rate limited")
+        XCTAssertEqual(details[0].label.resolved, "Status")
+        XCTAssertEqual(details[0].value.resolved, "Rate limited")
     }
 
     func testFetchQuota_throwsMissingKey() async {

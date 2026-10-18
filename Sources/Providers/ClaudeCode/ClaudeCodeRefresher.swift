@@ -16,22 +16,25 @@ extension ClaudeCodeRefresherError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .binaryNotFound:
-            String(localized: "Claude Code not found. Install Claude Code and retry.")
+            String(displayLocalized: "Claude Code not found. Install Claude Code and retry.", bundle: .module)
         case .workingDirectoryUnavailable:
-            String(localized: "Could not prepare Claude Code refresh. Retry the refresh.")
+            String(displayLocalized: "Could not prepare Claude Code refresh. Retry the refresh.", bundle: .module)
         case let .processFailed(diagnostic):
             Self.processFailureDescription(exitStatus: diagnostic.exitStatus)
         case .timedOut:
-            String(localized: "Claude Code refresh timed out. Retry the refresh.")
+            String(displayLocalized: "Claude Code refresh timed out. Retry the refresh.", bundle: .module)
         case .outputCollectionIncomplete:
-            String(localized: "Claude Code refresh timed out. Retry the refresh.")
+            String(displayLocalized: "Claude Code refresh timed out. Retry the refresh.", bundle: .module)
         case .noUsageData:
-            String(localized: "Claude Code returned no usage data. Open Claude Code and retry.")
+            String(displayLocalized: "Claude Code returned no usage data. Open Claude Code and retry.", bundle: .module)
         }
     }
 
     private static func processFailureDescription(exitStatus: Int32) -> String {
-        String(localized: "Claude Code refresh failed with exit code \(exitStatus). Open Claude Code and retry.")
+        String(
+            displayLocalized: "Claude Code refresh failed with exit code \(exitStatus). Open Claude Code and retry.",
+            bundle: .module
+        )
     }
 }
 

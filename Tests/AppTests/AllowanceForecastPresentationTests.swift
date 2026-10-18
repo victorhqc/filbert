@@ -52,8 +52,8 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
 
     func testRowsAssociateByLineIdOnly() {
         let quota = makeQuota(lines: [
-            UsageLine(label: "five-hour", percentage: 3),
-            UsageLine(label: "Weekly", percentage: 95, id: "weekly"),
+            UsageLine(label: DisplayText(verbatim: "five-hour"), percentage: 3),
+            UsageLine(label: DisplayText(verbatim: "Weekly"), percentage: 95, id: "weekly"),
         ])
         let forecasts = [
             "five-hour": forecast("five-hour", .learning),

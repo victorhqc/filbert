@@ -177,10 +177,10 @@ private extension AllowanceForecastPresentation {
         }
         let inUse = String.localizedStringWithFormat(
             String(displayLocalized: "Using %@", bundle: .module),
-            layout.pool.label
+            layout.pool.label.resolved
         )
         return Headline(
-            label: layout.pool.label,
+            label: layout.pool.label.resolved,
             value: value,
             status: forecastHeadline?.status,
             detail: forecastHeadline?.detail,
@@ -194,12 +194,12 @@ private extension AllowanceForecastPresentation {
         guard let resetDate = line.resetDate else {
             return String.localizedStringWithFormat(
                 String(displayLocalized: "%@ limit reached", bundle: .module),
-                line.label
+                line.label.resolved
             )
         }
         return String.localizedStringWithFormat(
             String(displayLocalized: "%1$@ limit reached, %2$@", bundle: .module),
-            line.label,
+            line.label.resolved,
             QuotaFormatting.countdown(to: resetDate)
         )
     }

@@ -3,7 +3,7 @@ import Core
 import Foundation
 import XCTest
 
-final class CursorProviderTests: XCTestCase {
+final class CursorProviderTests: EnglishTestCase {
     // MARK: - authenticated Connect-RPC request shape
 
     func testFetchQuota_issuesCorrectRequest() async throws {
@@ -41,7 +41,7 @@ final class CursorProviderTests: XCTestCase {
     func testFetchQuota_mapsPlanUsageToPercentageAndCurrencyLines() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
-        let includedLine = try XCTUnwrap(quota.lines.first { $0.label == "Included usage" })
+        let includedLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "Included usage" })
         XCTAssertEqual(includedLine.percentage, 42.5)
         XCTAssertEqual(try XCTUnwrap(includedLine.used), 50.0, accuracy: 0.01)
         XCTAssertEqual(try XCTUnwrap(includedLine.total), 100.0, accuracy: 0.01)
@@ -68,7 +68,7 @@ final class CursorProviderTests: XCTestCase {
     func testFetchQuota_addsBonusCreditsLineWhenPresent() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
-        let bonusLine = try XCTUnwrap(quota.lines.first { $0.label == "Bonus credits" })
+        let bonusLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "Bonus credits" })
         XCTAssertEqual(try XCTUnwrap(bonusLine.used), 20.0, accuracy: 0.01)
         XCTAssertNil(bonusLine.total)
         XCTAssertNil(bonusLine.balance)
@@ -78,10 +78,10 @@ final class CursorProviderTests: XCTestCase {
     func testFetchQuota_addsAutoAndApiPercentDetails() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
-        let includedLine = try XCTUnwrap(quota.lines.first { $0.label == "Included usage" })
+        let includedLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "Included usage" })
         let details = try XCTUnwrap(includedLine.details)
-        XCTAssertTrue(details.contains { $0.label == "Auto" && $0.value == "10%" })
-        XCTAssertTrue(details.contains { $0.label == "API" && $0.value == "30%" })
+        XCTAssertTrue(details.contains { $0.label.resolved == "Auto" && $0.value.resolved == "10%" })
+        XCTAssertTrue(details.contains { $0.label.resolved == "API" && $0.value.resolved == "30%" })
     }
 
     func testFetchQuota_omitsBonusLineWhenAbsent() async throws {
@@ -91,18 +91,18 @@ final class CursorProviderTests: XCTestCase {
         json["planUsage"] = planUsage
         let quota = try await fetchWithMock(CursorTestFixtures.jsonToData(json))
 
-        XCTAssertNil(quota.lines.first { $0.label == "Bonus credits" })
+        XCTAssertNil(quota.lines.first { $0.label.resolved == "Bonus credits" })
     }
 
     func testFetchQuota_supportsLegacyIndividualUsageShape() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.legacyResponse())
 
-        let includedLine = try XCTUnwrap(quota.lines.first { $0.label == "Included usage" })
+        let includedLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "Included usage" })
         XCTAssertEqual(includedLine.percentage, 55.0)
         XCTAssertEqual(try XCTUnwrap(includedLine.used), 55.0, accuracy: 0.01)
         XCTAssertEqual(try XCTUnwrap(includedLine.total), 100.0, accuracy: 0.01)
 
-        let onDemandLine = try XCTUnwrap(quota.lines.first { $0.label == "On-demand spend" })
+        let onDemandLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "On-demand spend" })
         XCTAssertEqual(try XCTUnwrap(onDemandLine.used), 15.0, accuracy: 0.01)
         XCTAssertEqual(try XCTUnwrap(onDemandLine.total), 20.0, accuracy: 0.01)
     }
@@ -112,7 +112,7 @@ final class CursorProviderTests: XCTestCase {
     func testFetchQuota_addsOnDemandSpendLine() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
-        let onDemandLine = try XCTUnwrap(quota.lines.first { $0.label == "On-demand spend" })
+        let onDemandLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "On-demand spend" })
         XCTAssertEqual(try XCTUnwrap(onDemandLine.used), 15.0, accuracy: 0.01)
         XCTAssertEqual(try XCTUnwrap(onDemandLine.total), 20.0, accuracy: 0.01)
         XCTAssertEqual(onDemandLine.unit, "USD")
@@ -125,13 +125,13 @@ final class CursorProviderTests: XCTestCase {
         json["spendLimitUsage"] = spendLimit
         let quota = try await fetchWithMock(CursorTestFixtures.jsonToData(json))
 
-        XCTAssertNil(quota.lines.first { $0.label == "On-demand spend" })
+        XCTAssertNil(quota.lines.first { $0.label.resolved == "On-demand spend" })
     }
 
     func testFetchQuota_addsPooledSpendLineForTeamPlans() async throws {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
-        let pooledLine = try XCTUnwrap(quota.lines.first { $0.label == "Pooled spend" })
+        let pooledLine = try XCTUnwrap(quota.lines.first { $0.label.resolved == "Pooled spend" })
         XCTAssertEqual(try XCTUnwrap(pooledLine.used), 5.0, accuracy: 0.01)
         // total = used + remaining = 500 + 500 = 1000 cents = $10.00
         XCTAssertEqual(try XCTUnwrap(pooledLine.total), 10.0, accuracy: 0.01)
@@ -144,7 +144,7 @@ final class CursorProviderTests: XCTestCase {
         let quota = try await fetchWithMock(CursorTestFixtures.usageResponse())
 
         // remaining = (10000 - 5000) / 100 = $50.00 left
-        XCTAssertTrue(quota.headline.contains("left"), "headline was: \(quota.headline)")
+        XCTAssertTrue(quota.headline.resolved.contains("left"), "headline was: \(quota.headline.resolved)")
     }
 
     func testFetchQuota_headlineShowsUnlimitedWhenIsUnlimited() async throws {
@@ -152,7 +152,7 @@ final class CursorProviderTests: XCTestCase {
         json["isUnlimited"] = true
         let quota = try await fetchWithMock(CursorTestFixtures.jsonToData(json))
 
-        XCTAssertEqual(quota.headline, "Unlimited")
+        XCTAssertEqual(quota.headline.resolved, "Unlimited")
     }
 
     func testFetchQuota_headlineFallsBackToNoDataWhenNoPlanData() async throws {
@@ -165,7 +165,7 @@ final class CursorProviderTests: XCTestCase {
         """.utf8)
         let quota = try await fetchWithMock(json)
 
-        XCTAssertEqual(quota.headline, "No data")
+        XCTAssertEqual(quota.headline.resolved, "No data")
     }
 
     // MARK: - typed errors

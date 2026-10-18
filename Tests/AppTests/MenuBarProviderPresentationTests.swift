@@ -52,10 +52,10 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "deepseek",
             providerName: "DeepSeek",
-            headline: "",
+            headline: DisplayText(verbatim: ""),
             lines: [
                 UsageLine(
-                    label: "Total balance",
+                    label: DisplayText(verbatim: "Total balance"),
                     balance: UsageBalance(amount: .finite(amount), unit: .currency("CNY"))
                 ),
             ],
@@ -248,15 +248,18 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         let lines: [UsageLine] = if !isDisplayable {
             []
         } else if isBalance {
-            [UsageLine(label: "Balance", balance: UsageBalance(amount: .finite(12.34), unit: .currency("USD")))]
+            [UsageLine(
+                label: DisplayText(verbatim: "Balance"),
+                balance: UsageBalance(amount: .finite(12.34), unit: .currency("USD"))
+            )]
         } else {
-            [UsageLine(label: "Window", percentage: 20)]
+            [UsageLine(label: DisplayText(verbatim: "Window"), percentage: 20)]
         }
         return .loaded(
             ProviderQuota(
                 providerId: providerId,
                 providerName: providerId,
-                headline: "",
+                headline: DisplayText(verbatim: ""),
                 lines: lines,
                 lastUpdated: .distantPast
             )

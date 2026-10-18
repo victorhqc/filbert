@@ -197,8 +197,8 @@ final class MenuBarProviderSelectionViewModelTests: XCTestCase {
             ProviderQuota(
                 providerId: providerId,
                 providerName: providerId,
-                headline: "",
-                lines: [UsageLine(label: "Window", percentage: 20)],
+                headline: DisplayText(verbatim: ""),
+                lines: [UsageLine(label: DisplayText(verbatim: "Window"), percentage: 20)],
                 lastUpdated: Date(timeIntervalSinceReferenceDate: updatedAt)
             )
         )

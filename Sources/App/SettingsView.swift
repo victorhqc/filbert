@@ -93,7 +93,7 @@ struct SettingsView: View {
             isEnabled: isEnabled,
             overrideURL: viewModel.overrideURL(for: provider.id),
             errorLog: viewModel.errorLog,
-            refreshError: viewModel.refreshErrors[provider.id],
+            refreshError: viewModel.refreshErrors[provider.id]?.resolved,
             onEnabledChange: { enabled in
                 viewModel.setProviderEnabled(enabled, for: provider.id)
             },
@@ -124,7 +124,7 @@ struct SettingsView: View {
                 ? viewModel.credentialImportActionTitle(for: provider.id)
                 : nil,
             errorLog: viewModel.errorLog,
-            refreshError: viewModel.refreshErrors[provider.id],
+            refreshError: viewModel.refreshErrors[provider.id]?.resolved,
             onEnabledChange: { enabled in
                 viewModel.setProviderEnabled(enabled, for: provider.id)
             },
@@ -193,7 +193,7 @@ private struct ProviderSettingsRow: View {
     @ViewBuilder
     private var configuredContent: some View {
         if case let .error(message) = state {
-            Label(message, systemImage: "exclamationmark.triangle.fill")
+            Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
                 .font(.caption)
                 .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
             ErrorLogLink(errorLog: errorLog)

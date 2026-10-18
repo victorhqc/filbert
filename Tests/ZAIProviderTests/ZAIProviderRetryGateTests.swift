@@ -80,7 +80,7 @@ final class ZAIProviderRetryGateTests: XCTestCase {
             baseURL: ZAIProvider.baseURL
         )
 
-        XCTAssertTrue(quota.headline.hasPrefix("42%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("42%"))
         XCTAssertEqual(provider.retryGate?.remaining, 0)
     }
 

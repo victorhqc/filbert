@@ -10,8 +10,8 @@ final class FallbackPoolPresentationTests: FallbackPoolTestCase {
         XCTAssertEqual(layout.exhaustedLines.map(\.id), ["five-hour"])
         XCTAssertEqual(layout.otherLines.map(\.id), ["weekly"])
         let detail = try XCTUnwrap(layout.poolLine().details?.last)
-        XCTAssertEqual(detail.label, "5-hour window")
-        XCTAssertEqual(detail.value, "Limit reached · \(QuotaFormatting.countdown(to: fiveHourReset))")
+        XCTAssertEqual(detail.label.resolved, "5-hour window")
+        XCTAssertEqual(detail.value.resolved, "Limit reached · \(QuotaFormatting.countdown(to: fiveHourReset))")
     }
 
     func testAPassedResetWithoutANewMeasurementKeepsThePromotedLayout() throws {
@@ -29,7 +29,7 @@ final class FallbackPoolPresentationTests: FallbackPoolTestCase {
 
         let layout = try XCTUnwrap(FallbackPoolLayout(lines: passed))
 
-        XCTAssertEqual(layout.poolLine().details?.last?.value, "Limit reached · resetting…")
+        XCTAssertEqual(layout.poolLine().details?.last?.value.resolved, "Limit reached · resetting…")
     }
 
     func testAPromotedCreditsPoolShowsItsAmountWithoutATier() {
@@ -54,9 +54,9 @@ final class FallbackPoolPresentationTests: FallbackPoolTestCase {
     func testAPromotedCurrencyPoolKeepsItsBalanceTier() throws {
         let amount = try XCTUnwrap(Decimal(string: "12.5"))
         let lines = [
-            UsageLine(label: "Plan", percentage: 100, id: "plan", limitGroup: "plan"),
+            UsageLine(label: DisplayText(verbatim: "Plan"), percentage: 100, id: "plan", limitGroup: "plan"),
             UsageLine(
-                label: "Balance",
+                label: DisplayText(verbatim: "Balance"),
                 balance: UsageBalance(amount: .finite(amount), unit: .currency("USD")),
                 id: "balance",
                 fallbackForLimitGroup: "plan"
@@ -65,7 +65,7 @@ final class FallbackPoolPresentationTests: FallbackPoolTestCase {
         let quota = ProviderQuota(
             providerId: "money",
             providerName: "Money",
-            headline: "",
+            headline: DisplayText(verbatim: ""),
             lines: lines,
             lastUpdated: now
         )

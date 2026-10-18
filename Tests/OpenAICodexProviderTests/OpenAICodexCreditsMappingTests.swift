@@ -12,7 +12,7 @@ final class OpenAICodexCreditsMappingTests: XCTestCase {
         XCTAssertEqual(quota.lines.map(\.id), ["primary-window-usage", "secondary-window-usage", "credits"])
         XCTAssertTrue(quota.lines.allSatisfy { $0.details == nil })
         let row = quota.lines[2]
-        XCTAssertEqual(row.label, "Credits")
+        XCTAssertEqual(row.label.resolved, "Credits")
         XCTAssertEqual(row.balance, UsageBalance(amount: .finite(decimal("811.774902")), unit: .credits))
         XCTAssertNil(row.limitGroup)
         XCTAssertEqual(row.fallbackForLimitGroup, "subscription")
@@ -101,7 +101,7 @@ final class OpenAICodexCreditsMappingTests: XCTestCase {
 
             XCTAssertEqual(row?.id, "credits")
             XCTAssertNil(row?.balance)
-            XCTAssertEqual(row?.details?.map(\.value), [raw])
+            XCTAssertEqual(row?.details?.map(\.value.resolved), [raw])
             XCTAssertNil(creditsMetric(in: map(credits: credits(balance: raw))))
         }
     }

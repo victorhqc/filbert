@@ -18,82 +18,33 @@ struct GeminiQuotaBucket: Decodable, Sendable {
     let modelId: String?
 }
 
-public enum GeminiCLIError: Error, Equatable, Sendable {
-    case internalInconsistency
-    case missingCredentials
-    case invalidCredentials
-    case keychainAccessDenied
-    case signedOut
-    case projectSetupRequired
-    case rateLimited
-    case http(Int)
-    case network(URLError.Code?)
-    case timeout
-    case decoding
-    case payloadDrift
-}
-
-extension GeminiCLIError: LocalizedError {
-    public var errorDescription: String? {
-        switch self {
-        case .internalInconsistency:
-            String(localized: "Internal error: unexpected auth shape.")
-        case .missingCredentials:
-            String(localized: "Sign in to Gemini CLI before refreshing usage.")
-        case .invalidCredentials:
-            String(localized: "Gemini CLI credentials are unsupported. Update Gemini CLI and sign in again.")
-        case .keychainAccessDenied:
-            String(localized: "Filbert could not read the Gemini CLI Keychain item. Allow access and try again.")
-        case .signedOut:
-            String(localized: "Gemini CLI is signed out. Open Gemini CLI and sign in with Google.")
-        case .projectSetupRequired:
-            String(localized: "Complete Gemini CLI setup or configure a Google Cloud project, then try again.")
-        case .rateLimited:
-            String(localized: "Gemini CLI is rate limited. Try again later.")
-        case let .http(status) where status == 401:
-            String(localized: "Gemini CLI authentication failed. Sign in again.")
-        case let .http(status) where status == 403:
-            String(localized: "Gemini CLI account or project setup is required.")
-        case .http:
-            String(localized: "Gemini CLI usage service returned an unexpected error. Try again later.")
-        case .network:
-            String(localized: "Could not reach Gemini CLI usage service. Check your connection and try again.")
-        case .timeout:
-            String(localized: "Gemini CLI usage request timed out. Try again later.")
-        case .decoding:
-            String(localized: "Gemini CLI returned data Filbert could not read. Update Filbert and try again.")
-        case .payloadDrift:
-            String(localized: "Gemini CLI returned an unexpected usage response.")
-        }
-    }
-}
-
-extension GeminiCLIError: UnderlyingErrorProviding {
-    public var underlyingError: (any Error)? {
-        guard case let .network(code?) = self else { return nil }
-        return URLError(code)
-    }
-}
-
 public struct GeminiCLIProvider: AIProvider {
     public static let providerId = "gemini-cli"
     public static let providerName = "Gemini CLI"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(
-        localized: "Monitor Gemini CLI model quotas"
-    )
-    public static let providerDisclaimer: String? = String(
-        localized:
-        "This provider uses Google's private Code Assist interface and may need an update if Google changes it."
-    )
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor Gemini CLI model quotas", bundle: .module)
+    }
+
+    public static var providerDisclaimer: String? {
+        String(
+            displayLocalized: """
+            This provider uses Google's private Code Assist interface and may need an update if Google changes it.
+            """,
+            bundle: .module
+        )
+    }
+
     public static let baseURL = URL(string: "https://cloudcode-pa.googleapis.com")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
-    public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
-        linkLabel: String(localized: "Install Gemini CLI"),
-        url: URL(
-            string: "https://google-gemini.github.io/gemini-cli/docs/get-started/authentication.html"
-        )!
-    )
+    public static var setupHelp: ProviderSetupHelp? {
+        ProviderSetupHelp(
+            linkLabel: String(displayLocalized: "Install Gemini CLI", bundle: .module),
+            url: URL(
+                string: "https://google-gemini.github.io/gemini-cli/docs/get-started/authentication.html"
+            )!
+        )
+    }
 
     let credentialStore: any GeminiCredentialStore
     private let oauth: GeminiOAuthClient
@@ -162,7 +113,7 @@ public struct GeminiCLIProvider: AIProvider {
             return ProviderQuota(
                 providerId: Self.providerId,
                 providerName: Self.providerName,
-                headline: String(localized: "No usage limits reported"),
+                headline: DisplayText { String(displayLocalized: "No usage limits reported", bundle: .module) },
                 lines: [],
                 lastUpdated: Date(),
                 activityObservation: ProviderActivityObservation(metrics: [])
@@ -248,14 +199,18 @@ public struct GeminiCLIProvider: AIProvider {
     }
 
     private func usageLine(_ bucket: GeminiMappedBucket) -> UsageLine {
-        let tokenType = tokenTypeLabel(bucket.tokenType)
-        let label = String.localizedStringWithFormat(
-            String(localized: "%@ · %@"),
-            bucket.modelId,
-            tokenType
-        )
+        let label = DisplayText {
+            String.localizedStringWithFormat(
+                String(displayLocalized: "%@ · %@", bundle: .module),
+                bucket.modelId,
+                Self.tokenTypeLabel(bucket.tokenType)
+            )
+        }
         let details = bucket.remainingAmount.map {
-            [UsageDetail(label: String(localized: "Remaining"), value: $0)]
+            [UsageDetail(
+                label: DisplayText { String(displayLocalized: "Remaining", bundle: .module) },
+                value: DisplayText(verbatim: $0)
+            )]
         }
         return UsageLine(
             label: label,
@@ -265,19 +220,23 @@ public struct GeminiCLIProvider: AIProvider {
         )
     }
 
-    private func headline(for bucket: GeminiMappedBucket) -> String {
+    private func headline(for bucket: GeminiMappedBucket) -> DisplayText {
         let percentage = String(format: "%.0f%%", (1 - bucket.remainingFraction) * 100)
         guard let resetDate = bucket.resetDate else {
-            return String.localizedStringWithFormat(
-                String(localized: "%@ used"),
-                percentage
+            return DisplayText {
+                String.localizedStringWithFormat(
+                    String(displayLocalized: "%@ used", bundle: .module),
+                    percentage
+                )
+            }
+        }
+        return DisplayText {
+            String.localizedStringWithFormat(
+                String(displayLocalized: "%@ used · %@", bundle: .module),
+                percentage,
+                QuotaFormatting.countdown(to: resetDate)
             )
         }
-        return String.localizedStringWithFormat(
-            String(localized: "%@ used · %@"),
-            percentage,
-            QuotaFormatting.countdown(to: resetDate)
-        )
     }
 
     private func activityMetric(_ bucket: GeminiMappedBucket) -> ProviderActivityMetric {
@@ -289,16 +248,16 @@ public struct GeminiCLIProvider: AIProvider {
         )
     }
 
-    private func tokenTypeLabel(_ tokenType: String?) -> String {
+    private static func tokenTypeLabel(_ tokenType: String?) -> String {
         switch tokenType?.uppercased() {
         case "REQUESTS":
-            String(localized: "Requests")
+            String(displayLocalized: "Requests", bundle: .module)
         case "INPUT_TOKENS":
-            String(localized: "Input tokens")
+            String(displayLocalized: "Input tokens", bundle: .module)
         case "OUTPUT_TOKENS":
-            String(localized: "Output tokens")
+            String(displayLocalized: "Output tokens", bundle: .module)
         default:
-            String(localized: "Quota")
+            String(displayLocalized: "Quota", bundle: .module)
         }
     }
 

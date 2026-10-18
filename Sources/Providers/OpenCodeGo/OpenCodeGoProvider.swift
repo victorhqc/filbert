@@ -37,21 +37,21 @@ extension OpenCodeGoError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .missingKey:
-            String(localized: "No API key configured.")
+            String(displayLocalized: "No API key configured.", bundle: .module)
         case .untrustedBaseURL:
-            String(localized: "OpenCode Go usage must be fetched from opencode.ai.")
+            String(displayLocalized: "OpenCode Go usage must be fetched from opencode.ai.", bundle: .module)
         case .authenticationFailed:
-            String(localized: "Authentication failed. Check your API key.")
+            String(displayLocalized: "Authentication failed. Check your API key.", bundle: .module)
         case .noSubscription:
-            String(localized: "No OpenCode Go subscription.")
+            String(displayLocalized: "No OpenCode Go subscription.", bundle: .module)
         case .rateLimited:
-            String(localized: "Rate limited. Try again later.")
+            String(displayLocalized: "Rate limited. Try again later.", bundle: .module)
         case .network:
-            String(localized: "Network error. Check your connection.")
+            String(displayLocalized: "Network error. Check your connection.", bundle: .module)
         case .decoding, .http:
-            String(localized: "Unexpected response from server.")
+            String(displayLocalized: "Unexpected response from server.", bundle: .module)
         case .internalInconsistency:
-            String(localized: "Internal error: unexpected auth shape.")
+            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
         }
     }
 }
@@ -141,7 +141,10 @@ public struct OpenCodeGoProvider: AIProvider {
     public static let providerId = "opencode-go"
     public static let providerName = "OpenCode Go"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(localized: "Monitor OpenCode Go subscription usage")
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor OpenCode Go subscription usage", bundle: .module)
+    }
+
     public static let baseURL = URL(string: "https://opencode.ai")!
 
     private let session: URLSession

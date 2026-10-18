@@ -9,6 +9,24 @@
             "state" : "translated",
             "value" : "5-hour window"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5-Stunden-Fenster"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ventana de 5 horas"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ventana de 5 horas"
+          }
         }
       }
     },
@@ -19,6 +37,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Authentication failed. Check your API key."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldung fehlgeschlagen. Überprüfe deinen API-Schlüssel."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido iniciar sesión. Revisa tu clave de API."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo iniciar sesión. Revisa tu clave de API."
           }
         }
       }
@@ -31,6 +67,24 @@
             "state" : "translated",
             "value" : "Internal error: unexpected auth shape."
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interner Fehler: Unerwartete Authentifizierungsform."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error interno: forma de autenticación inesperada."
+          }
         }
       }
     },
@@ -41,6 +95,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Monthly"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monatlich"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensual"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mensual"
           }
         }
       }
@@ -53,6 +125,24 @@
             "state" : "translated",
             "value" : "Monitor OpenCode Go subscription usage"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nutzung des OpenCode-Go-Abonnements überwachen"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa el uso de la suscripción de OpenCode Go"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa el uso de la suscripción de OpenCode Go"
+          }
         }
       }
     },
@@ -63,6 +153,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Network error. Check your connection."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Netzwerkfehler. Überprüfe deine Verbindung."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red. Revisa tu conexión."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red. Revisa tu conexión."
           }
         }
       }
@@ -75,6 +183,24 @@
             "state" : "translated",
             "value" : "No API key configured."
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein API-Schlüssel eingerichtet."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna clave de API configurada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tienes ninguna clave de API configurada."
+          }
         }
       }
     },
@@ -85,6 +211,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No OpenCode Go subscription."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein OpenCode-Go-Abonnement."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna suscripción de OpenCode Go."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna suscripción de OpenCode Go."
           }
         }
       }
@@ -97,6 +241,24 @@
             "state" : "translated",
             "value" : "OpenCode Go usage"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "OpenCode-Go-Nutzung"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uso de OpenCode Go"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Uso de OpenCode Go"
+          }
         }
       }
     },
@@ -107,6 +269,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "OpenCode Go usage must be fetched from opencode.ai."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Die OpenCode-Go-Nutzung muss von opencode.ai abgerufen werden."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El uso de OpenCode Go debe obtenerse de opencode.ai."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El uso de OpenCode Go debe obtenerse de opencode.ai."
           }
         }
       }
@@ -119,6 +299,24 @@
             "state" : "translated",
             "value" : "Rate limited"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anfragelimit erreicht"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Límite de solicitudes alcanzado"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Se alcanzó el límite de solicitudes"
+          }
         }
       }
     },
@@ -129,6 +327,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rate limited. Try again later."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu viele Anfragen. Versuch es später nochmal."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has hecho demasiadas peticiones. Inténtalo más tarde."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiciste demasiadas peticiones. Inténtalo más tarde."
           }
         }
       }
@@ -141,6 +357,24 @@
             "state" : "translated",
             "value" : "Status"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Status"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado"
+          }
         }
       }
     },
@@ -151,6 +385,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Unexpected response from server."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unerwartete Antwort vom Server."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta inesperada del servidor."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta inesperada del servidor."
           }
         }
       }
@@ -163,6 +415,24 @@
             "state" : "translated",
             "value" : "Unknown status"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekannter Status"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado desconocido"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Estado desconocido"
+          }
         }
       }
     },
@@ -173,6 +443,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Weekly"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Wöchentlich"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
           }
         }
       }

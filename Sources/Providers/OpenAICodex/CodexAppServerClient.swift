@@ -15,15 +15,18 @@ extension CodexAppServerError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .launchFailed, .childExited:
-            String(localized: "Codex stopped before usage limits could be read. Try again.")
+            String(displayLocalized: "Codex stopped before usage limits could be read. Try again.", bundle: .module)
         case .unsupportedVersion:
-            String(localized: "Update Codex to a version that supports usage limits.")
+            String(displayLocalized: "Update Codex to a version that supports usage limits.", bundle: .module)
         case .signedOut:
-            String(localized: "Sign in to Codex by running codex login.")
+            String(displayLocalized: "Sign in to Codex by running codex login.", bundle: .module)
         case .malformedResponse:
-            String(localized: "Codex returned an unsupported usage-limits response. Update Codex and try again.")
+            String(
+                displayLocalized: "Codex returned an unsupported usage-limits response. Update Codex and try again.",
+                bundle: .module
+            )
         case .timedOut:
-            String(localized: "Codex did not respond in time. Try again.")
+            String(displayLocalized: "Codex did not respond in time. Try again.", bundle: .module)
         }
     }
 }

@@ -3,10 +3,10 @@ import Foundation
 public struct ProviderQuota: Sendable {
     public let providerId: String
     public let providerName: String
-    public let headline: String
+    public let headline: DisplayText
     public let lines: [UsageLine]
     public let lastUpdated: Date
-    public let error: String?
+    public let error: DisplayText?
     public let isStale: Bool
     public let activityObservation: ProviderActivityObservation?
     /// Optional peak-hours pricing config. Providers that have time-based
@@ -19,10 +19,10 @@ public struct ProviderQuota: Sendable {
     public init(
         providerId: String,
         providerName: String,
-        headline: String,
+        headline: DisplayText,
         lines: [UsageLine],
         lastUpdated: Date,
-        error: String? = nil,
+        error: DisplayText? = nil,
         isStale: Bool = false,
         activityObservation: ProviderActivityObservation? = nil,
         peakHoursConfig: PeakHoursConfig? = nil,
@@ -125,7 +125,7 @@ public enum UsageWindowDuration {
 }
 
 public struct UsageLine: Sendable {
-    public let label: String
+    public let label: DisplayText
     public let used: Double?
     /// The limit of `used`, never a balance.
     public let total: Double?
@@ -144,7 +144,7 @@ public struct UsageLine: Sendable {
     public let fallbackForLimitGroup: String?
 
     public init(
-        label: String,
+        label: DisplayText,
         used: Double? = nil,
         total: Double? = nil,
         percentage: Double? = nil,
@@ -177,10 +177,10 @@ public struct UsageLine: Sendable {
 }
 
 public struct UsageDetail: Sendable {
-    public let label: String
-    public let value: String
+    public let label: DisplayText
+    public let value: DisplayText
 
-    public init(label: String, value: String) {
+    public init(label: DisplayText, value: DisplayText) {
         self.label = label
         self.value = value
     }
@@ -348,10 +348,10 @@ public extension AIProvider {
 public enum ProviderState: Sendable {
     case unconfigured
     /// The associated value is a human-readable reason the provider isn't ready.
-    case setup(String)
+    case setup(DisplayText)
     case loading
     case loaded(ProviderQuota)
-    case error(String)
+    case error(DisplayText)
 }
 
 // MARK: - ProviderSetupError

@@ -7,12 +7,14 @@ final class OpenAICodexProviderTests: XCTestCase {
     var temporaryDirectory: URL!
 
     override func setUpWithError() throws {
+        DisplayLanguage.selectedLanguageCode = "en"
         temporaryDirectory = FileManager.default.temporaryDirectory
             .appendingPathComponent(UUID().uuidString, isDirectory: true)
         try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
     }
 
     override func tearDownWithError() throws {
+        DisplayLanguage.selectedLanguageCode = nil
         try FileManager.default.removeItem(at: temporaryDirectory)
     }
 
@@ -71,7 +73,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         guard case let .setup(message) = await provider.currentSetupState() else {
             return XCTFail("Expected setup state")
         }
-        XCTAssertEqual(message, "Codex CLI not installed")
+        XCTAssertEqual(message.resolved, "Codex CLI not installed")
     }
 
     func testProvider_suppliesOfficialCLISetupHelp() throws {
@@ -184,7 +186,7 @@ final class OpenAICodexProviderTests: XCTestCase {
 
         XCTAssertEqual(quota.lines.map(\.id), ["primary-window-usage", "secondary-window-usage", "credits"])
         XCTAssertEqual(quota.lines[0].percentage, 20)
-        XCTAssertEqual(quota.lines[0].label, "60-minute window")
+        XCTAssertEqual(quota.lines[0].label.resolved, "60-minute window")
         XCTAssertEqual(quota.lines[0].resetDate, Date(timeIntervalSince1970: 3000))
         XCTAssertEqual(quota.lines[0].windowDuration, 60 * 60)
         XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
@@ -193,7 +195,7 @@ final class OpenAICodexProviderTests: XCTestCase {
         XCTAssertNil(quota.lines[0].unit)
         XCTAssertNil(quota.lines[0].details)
         XCTAssertEqual(quota.lines[2].balance, UsageBalance(amount: .finite(12.5), unit: .credits))
-        XCTAssertTrue(quota.headline.hasPrefix("20%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("20%"))
         XCTAssertEqual(
             quota.activityObservation?.metrics.map(\.value),
             [.number(20), .number(40), .number(12.5)]
@@ -213,9 +215,9 @@ final class OpenAICodexProviderTests: XCTestCase {
 
         let quota = provider.map(result, receivedAt: Date())
 
-        XCTAssertEqual(quota.headline, "No usage limits reported")
+        XCTAssertEqual(quota.headline.resolved, "No usage limits reported")
         XCTAssertEqual(quota.lines.count, 1)
-        XCTAssertEqual(quota.lines[0].label, "Credits")
+        XCTAssertEqual(quota.lines[0].label.resolved, "Credits")
         XCTAssertEqual(quota.lines[0].balance, UsageBalance(amount: .unlimited, unit: .credits))
         XCTAssertEqual(quota.activityObservation?.metrics, [
             ProviderActivityMetric(id: "credits", kind: .credits, value: .discrete("unlimited")),

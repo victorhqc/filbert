@@ -35,7 +35,7 @@ final class OpenAICodexForecastMappingTests: XCTestCase {
         let quota = map(primary: weekly, secondary: fiveHour)
 
         XCTAssertEqual(quota.headlineUsageLineId, "secondary-window-usage")
-        XCTAssertTrue(quota.headline.hasPrefix("12%"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("12%"))
     }
 
     func testASingleWindowIsTheHeadlineLine() {

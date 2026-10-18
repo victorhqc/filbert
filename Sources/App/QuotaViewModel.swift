@@ -74,7 +74,7 @@ final class QuotaViewModel {
 
     var isRefreshing: [String: Bool] = [:]
 
-    var refreshErrors: [String: String] = [:]
+    var refreshErrors: [String: DisplayText] = [:]
 
     // MARK: - Auto-refresh
 

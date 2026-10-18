@@ -113,7 +113,7 @@ private final class FakeProactiveRefreshProvider: AIProvider, ProactiveRefreshab
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "fake",
+            headline: DisplayText(verbatim: "fake"),
             lines: [],
             lastUpdated: Date()
         )
@@ -135,7 +135,7 @@ private struct FakeNonRefreshableProvider: AIProvider {
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "fake",
+            headline: DisplayText(verbatim: "fake"),
             lines: [],
             lastUpdated: Date()
         )
@@ -156,7 +156,7 @@ private final class FakeCredentialImportProvider: AIProvider, @unchecked Sendabl
         ProviderQuota(
             providerId: Self.providerId,
             providerName: Self.providerName,
-            headline: "fake",
+            headline: DisplayText(verbatim: "fake"),
             lines: [],
             lastUpdated: Date()
         )

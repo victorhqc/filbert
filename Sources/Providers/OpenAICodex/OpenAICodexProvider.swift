@@ -10,9 +10,9 @@ extension OpenAICodexError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .binaryNotFound:
-            String(localized: "Codex CLI not installed")
+            String(displayLocalized: "Codex CLI not installed", bundle: .module)
         case .internalInconsistency:
-            String(localized: "Internal error: unexpected auth shape.")
+            String(displayLocalized: "Internal error: unexpected auth shape.", bundle: .module)
         }
     }
 }
@@ -30,16 +30,20 @@ public struct OpenAICodexProvider: AIProvider {
     public static let providerId = "openai-codex"
     public static let providerName = "OpenAI Codex"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
-    public static let providerDescription = String(
-        localized: "Monitor Codex subscription usage"
-    )
+    public static var providerDescription: String {
+        String(displayLocalized: "Monitor Codex subscription usage", bundle: .module)
+    }
+
     /// Placeholder required by `AIProvider`; the provider has no HTTP endpoint.
     public static let baseURL = URL(string: "https://chatgpt.com")!
     public static let authShape: ProviderAuth.Shape = .apiKeyFree
-    public static let setupHelp: ProviderSetupHelp? = ProviderSetupHelp(
-        linkLabel: String(localized: "Install Codex CLI"),
-        url: URL(string: "https://developers.openai.com/codex/cli/")!
-    )
+    public static var setupHelp: ProviderSetupHelp? {
+        ProviderSetupHelp(
+            linkLabel: String(displayLocalized: "Install Codex CLI", bundle: .module),
+            url: URL(string: "https://developers.openai.com/codex/cli/")!
+        )
+    }
+
     public static let refreshCharacteristics = ProviderRefreshCharacteristics(
         costEvidence: .unknown,
         canInvokeInference: false
@@ -69,7 +73,7 @@ public struct OpenAICodexProvider: AIProvider {
 
     public func currentSetupState() async -> ProviderState? {
         guard !isConfigured() else { return nil }
-        return .setup(String(localized: "Codex CLI not installed"))
+        return .setup(DisplayText { String(displayLocalized: "Codex CLI not installed", bundle: .module) })
     }
 
     public func fetchQuota(
@@ -180,8 +184,9 @@ public struct OpenAICodexProvider: AIProvider {
     }
 
     private func usageLine(for entry: WindowEntry) -> UsageLine {
-        UsageLine(
-            label: windowLabel(for: entry.window.windowDurationMins),
+        let duration = entry.window.windowDurationMins
+        return UsageLine(
+            label: DisplayText { Self.windowLabel(for: duration) },
             percentage: entry.window.usedPercent,
             resetDate: entry.window.resetsAt.map { Date(timeIntervalSince1970: $0) },
             windowDuration: entry.window.windowDurationMins.map { TimeInterval($0) * 60 },
@@ -190,34 +195,34 @@ public struct OpenAICodexProvider: AIProvider {
         )
     }
 
-    private func headline(for shortestWindow: CodexRateLimitWindow?) -> String {
-        guard let shortestWindow else {
-            return String(localized: "No usage limits reported")
-        }
+    private func headline(for shortestWindow: CodexRateLimitWindow?) -> DisplayText {
+        let usedPercent = shortestWindow?.usedPercent
+        let resetsAt = shortestWindow?.resetsAt
+        return DisplayText {
+            let percentage = usedPercent.map { String(format: "%.0f%%", $0) }
+            let countdown = resetsAt.map {
+                QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
+            }
 
-        let percentage = shortestWindow.usedPercent.map { String(format: "%.0f%%", $0) }
-        let countdown = shortestWindow.resetsAt.map {
-            QuotaFormatting.countdown(to: Date(timeIntervalSince1970: $0))
-        }
-
-        return switch (percentage, countdown) {
-        case let (.some(percentage), .some(countdown)): "\(percentage) · \(countdown)"
-        case let (.some(percentage), .none): percentage
-        case let (.none, .some(countdown)): countdown
-        case (.none, .none): String(localized: "No usage limits reported")
+            return switch (percentage, countdown) {
+            case let (.some(percentage), .some(countdown)): "\(percentage) · \(countdown)"
+            case let (.some(percentage), .none): percentage
+            case let (.none, .some(countdown)): countdown
+            case (.none, .none): String(displayLocalized: "No usage limits reported", bundle: .module)
+            }
         }
     }
 
-    private func windowLabel(for duration: Int?) -> String {
+    private static func windowLabel(for duration: Int?) -> String {
         switch duration {
         case 300:
-            String(localized: "5-hour window")
+            String(displayLocalized: "5-hour window", bundle: .module)
         case 10080:
-            String(localized: "Weekly")
+            String(displayLocalized: "Weekly", bundle: .module)
         case let .some(minutes):
-            String.localizedStringWithFormat(String(localized: "%lld-minute window"), Int64(minutes))
+            String(displayLocalized: "\(minutes)-minute window", bundle: .module)
         case .none:
-            String(localized: "Usage window")
+            String(displayLocalized: "Usage window", bundle: .module)
         }
     }
 }

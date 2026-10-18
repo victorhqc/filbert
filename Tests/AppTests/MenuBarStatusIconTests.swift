@@ -50,9 +50,9 @@ final class MenuBarStatusIconTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "claude-code",
             providerName: "Claude Code",
-            headline: "42%",
+            headline: DisplayText(verbatim: "42%"),
             lines: [
-                UsageLine(label: "5-hour window", percentage: 42),
+                UsageLine(label: DisplayText(verbatim: "5-hour window"), percentage: 42),
             ],
             lastUpdated: Date()
         )
@@ -65,10 +65,10 @@ final class MenuBarStatusIconTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "claude-code",
             providerName: "Claude Code",
-            headline: "42%",
+            headline: DisplayText(verbatim: "42%"),
             lines: [
-                UsageLine(label: "5-hour window", percentage: 42),
-                UsageLine(label: "Weekly", percentage: 37),
+                UsageLine(label: DisplayText(verbatim: "5-hour window"), percentage: 42),
+                UsageLine(label: DisplayText(verbatim: "Weekly"), percentage: 37),
             ],
             lastUpdated: Date()
         )
@@ -81,9 +81,9 @@ final class MenuBarStatusIconTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "zai",
             providerName: "Z.AI",
-            headline: "",
+            headline: DisplayText(verbatim: ""),
             lines: [
-                UsageLine(label: "Monthly", used: 25, total: 100),
+                UsageLine(label: DisplayText(verbatim: "Monthly"), used: 25, total: 100),
             ],
             lastUpdated: Date()
         )
@@ -96,7 +96,7 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testResolve_currencyBalance_returnsBalanceMode() {
         let status = QuotaStatusResolver.resolve(for: quota([
-            UsageLine(label: "Total balance", balance: usdBalance("12.34")),
+            UsageLine(label: DisplayText(verbatim: "Total balance"), balance: usdBalance("12.34")),
         ]))
 
         guard case let .balance(amount, formattedAmount) = status else {
@@ -108,9 +108,9 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testResolve_multipleBalanceLines_picksFirstPositiveCurrencyBalance() {
         let status = QuotaStatusResolver.resolve(for: quota([
-            UsageLine(label: "Empty balance", balance: usdBalance("0")),
-            UsageLine(label: "Total balance", balance: usdBalance("12.34")),
-            UsageLine(label: "Gift balance", balance: usdBalance("1.00")),
+            UsageLine(label: DisplayText(verbatim: "Empty balance"), balance: usdBalance("0")),
+            UsageLine(label: DisplayText(verbatim: "Total balance"), balance: usdBalance("12.34")),
+            UsageLine(label: DisplayText(verbatim: "Gift balance"), balance: usdBalance("1.00")),
         ]))
 
         guard case let .balance(amount, _) = status else {
@@ -121,9 +121,15 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testResolve_creditsUnlimitedAndSpentAmounts_neverGiveAStatus() {
         let status = QuotaStatusResolver.resolve(for: quota([
-            UsageLine(label: "Credits", balance: UsageBalance(amount: .finite(811.77), unit: .credits)),
-            UsageLine(label: "Unlimited", balance: UsageBalance(amount: .unlimited, unit: .currency("USD"))),
-            UsageLine(label: "Bonus credits", used: 20, unit: "USD"),
+            UsageLine(
+                label: DisplayText(verbatim: "Credits"),
+                balance: UsageBalance(amount: .finite(811.77), unit: .credits)
+            ),
+            UsageLine(
+                label: DisplayText(verbatim: "Unlimited"),
+                balance: UsageBalance(amount: .unlimited, unit: .currency("USD"))
+            ),
+            UsageLine(label: DisplayText(verbatim: "Bonus credits"), used: 20, unit: "USD"),
         ]))
 
         XCTAssertEqual(status, .fallback)
@@ -137,7 +143,7 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testResolve_zeroCurrencyBalance_returnsFallback() {
         let status = QuotaStatusResolver.resolve(for: quota([
-            UsageLine(label: "Total balance", balance: usdBalance("0")),
+            UsageLine(label: DisplayText(verbatim: "Total balance"), balance: usdBalance("0")),
         ]))
 
         XCTAssertEqual(status, .fallback)
@@ -145,8 +151,8 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testResolve_percentageWinsOverBalance_whenBothPresent() {
         let status = QuotaStatusResolver.resolve(for: quota([
-            UsageLine(label: "Window", percentage: 30),
-            UsageLine(label: "Balance", balance: usdBalance("100")),
+            UsageLine(label: DisplayText(verbatim: "Window"), percentage: 30),
+            UsageLine(label: DisplayText(verbatim: "Balance"), balance: usdBalance("100")),
         ]))
 
         XCTAssertEqual(status, .window(percentage: 30))
@@ -156,10 +162,13 @@ final class MenuBarStatusIconTests: XCTestCase {
 
     func testFirstCurrencyBalance_skipsCreditsAndSpentAmounts() {
         let lines = [
-            UsageLine(label: "Window", percentage: 30),
-            UsageLine(label: "Credits", balance: UsageBalance(amount: .finite(811.77), unit: .credits)),
-            UsageLine(label: "Bonus credits", used: 20, unit: "USD"),
-            UsageLine(label: "Total balance", balance: usdBalance("0")),
+            UsageLine(label: DisplayText(verbatim: "Window"), percentage: 30),
+            UsageLine(
+                label: DisplayText(verbatim: "Credits"),
+                balance: UsageBalance(amount: .finite(811.77), unit: .credits)
+            ),
+            UsageLine(label: DisplayText(verbatim: "Bonus credits"), used: 20, unit: "USD"),
+            UsageLine(label: DisplayText(verbatim: "Total balance"), balance: usdBalance("0")),
         ]
 
         XCTAssertEqual(QuotaStatusResolver.firstCurrencyBalance(in: lines), 0)
@@ -170,7 +179,7 @@ final class MenuBarStatusIconTests: XCTestCase {
         ProviderQuota(
             providerId: "test",
             providerName: "Test",
-            headline: "",
+            headline: DisplayText(verbatim: ""),
             lines: lines,
             lastUpdated: Date()
         )
@@ -199,8 +208,8 @@ final class MenuBarStatusIconTests: XCTestCase {
         let quota = ProviderQuota(
             providerId: "buggy",
             providerName: "Buggy",
-            headline: "",
-            lines: [UsageLine(label: "Window", percentage: 150)],
+            headline: DisplayText(verbatim: ""),
+            lines: [UsageLine(label: DisplayText(verbatim: "Window"), percentage: 150)],
             lastUpdated: Date()
         )
 

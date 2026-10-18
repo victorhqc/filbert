@@ -29,17 +29,17 @@ extension CursorError: LocalizedError {
     public var errorDescription: String? {
         switch self {
         case .sessionExpired:
-            String(localized: "Session expired")
+            String(displayLocalized: "Session expired", bundle: .module)
         case .clientIdRejected:
-            String(localized: "Session expired — this provider needs an update")
+            String(displayLocalized: "Session expired — this provider needs an update", bundle: .module)
         case .http(401):
-            String(localized: "Authentication failed")
+            String(displayLocalized: "Authentication failed", bundle: .module)
         case let .http(code) where code == 429:
-            String(localized: "Rate limited")
+            String(displayLocalized: "Rate limited", bundle: .module)
         case .network:
-            String(localized: "Network error. Check your connection.")
+            String(displayLocalized: "Network error. Check your connection.", bundle: .module)
         case .decoding, .http:
-            String(localized: "Unexpected response from server.")
+            String(displayLocalized: "Unexpected response from server.", bundle: .module)
         }
     }
 }

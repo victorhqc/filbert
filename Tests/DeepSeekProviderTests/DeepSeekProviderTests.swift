@@ -8,6 +8,7 @@ final class DeepSeekProviderTests: XCTestCase {
 
     override func setUp() {
         super.setUp()
+        DisplayLanguage.selectedLanguageCode = "en"
         let config = URLSessionConfiguration.ephemeral
         config.protocolClasses = [MockURLProtocol.self]
         session = URLSession(configuration: config)
@@ -15,6 +16,7 @@ final class DeepSeekProviderTests: XCTestCase {
     }
 
     override func tearDown() {
+        DisplayLanguage.selectedLanguageCode = nil
         MockURLProtocol.responseData = nil
         MockURLProtocol.responseStatusCode = 200
         MockURLProtocol.responseError = nil
@@ -64,9 +66,9 @@ final class DeepSeekProviderTests: XCTestCase {
         let quota = try await fetchWithMock(validResponseJSON())
 
         XCTAssertEqual(quota.lines.count, 3)
-        XCTAssertEqual(quota.lines[0].label, "Total balance")
-        XCTAssertEqual(quota.lines[1].label, "Granted credits")
-        XCTAssertEqual(quota.lines[2].label, "Topped up")
+        XCTAssertEqual(quota.lines[0].label.resolved, "Total balance")
+        XCTAssertEqual(quota.lines[1].label.resolved, "Granted credits")
+        XCTAssertEqual(quota.lines[2].label.resolved, "Topped up")
     }
 
     func testFetchQuota_mapsAmountsToCurrencyBalances() async throws {
@@ -122,7 +124,7 @@ final class DeepSeekProviderTests: XCTestCase {
     func testFetchQuota_supportsUSDCurrency() async throws {
         let quota = try await fetchWithMock(usdResponseJSON())
 
-        XCTAssertEqual(quota.lines.map(\.label), ["Total balance"])
+        XCTAssertEqual(quota.lines.map(\.label.resolved), ["Total balance"])
         XCTAssertEqual(quota.lines.first?.balance?.unit, .currency("USD"))
     }
 
@@ -144,7 +146,7 @@ final class DeepSeekProviderTests: XCTestCase {
         """.utf8)
         let quota = try await fetchWithMock(json)
 
-        XCTAssertEqual(quota.headline, "No balance available")
+        XCTAssertEqual(quota.headline.resolved, "No balance available")
         // Lines are still returned so the user can see what's left.
         XCTAssertEqual(quota.lines.count, 3)
         XCTAssertEqual(quota.activityObservation?.availability, .unavailable)
@@ -159,9 +161,9 @@ final class DeepSeekProviderTests: XCTestCase {
         // dependent. We verify structure: the headline must end with " left"
         // and the amount portion must not be a bare Double description
         // (which would mean the formatter wasn't used).
-        XCTAssertTrue(quota.headline.hasSuffix(" left"), "headline was: \(quota.headline)")
+        XCTAssertTrue(quota.headline.resolved.hasSuffix(" left"), "headline was: \(quota.headline.resolved)")
 
-        let amountPart = String(quota.headline.dropLast(" left".count))
+        let amountPart = String(quota.headline.resolved.dropLast(" left".count))
         XCTAssertNotEqual(
             amountPart, "110.0",
             "currency formatter must be used, not bare Double: \(amountPart)"
@@ -177,7 +179,7 @@ final class DeepSeekProviderTests: XCTestCase {
         """.utf8)
         let quota = try await fetchWithMock(json)
 
-        XCTAssertEqual(quota.headline, "No data")
+        XCTAssertEqual(quota.headline.resolved, "No data")
         XCTAssertEqual(quota.lines.count, 0)
     }
 

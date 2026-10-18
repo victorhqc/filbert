@@ -47,9 +47,9 @@ struct APIKeyFreeSettingsRow: View {
                 case let .setup(reason):
                     VStack(alignment: .leading, spacing: 8) {
                         if canInstall {
-                            installPromptView(reason: reason)
+                            installPromptView(reason: reason.resolved)
                         } else {
-                            setupReasonView(reason: reason)
+                            setupReasonView(reason: reason.resolved)
                         }
                         if canRemove {
                             removeButton
@@ -68,7 +68,7 @@ struct APIKeyFreeSettingsRow: View {
                     }
                 case let .error(message):
                     VStack(alignment: .leading, spacing: 8) {
-                        Label(message, systemImage: "exclamationmark.triangle.fill")
+                        Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
                             .font(.caption)
                             .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
                         ErrorLogLink(errorLog: errorLog)

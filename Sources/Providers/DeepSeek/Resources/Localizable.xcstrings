@@ -9,6 +9,24 @@
             "state" : "translated",
             "value" : "Monitor prepaid balance"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prepaid-Guthaben überwachen"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa el saldo prepago"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa el saldo prepagado"
+          }
         }
       }
     },
@@ -19,6 +37,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Total balance"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gesamtguthaben"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo total"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo total"
           }
         }
       }
@@ -31,6 +67,24 @@
             "state" : "translated",
             "value" : "Granted credits"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gewährtes Guthaben"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créditos otorgados"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Créditos otorgados"
+          }
         }
       }
     },
@@ -41,6 +95,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Topped up"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Aufgeladenes Guthaben"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo recargado"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saldo recargado"
           }
         }
       }
@@ -53,6 +125,24 @@
             "state" : "translated",
             "value" : "No balance available"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein Guthaben verfügbar"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay saldo disponible"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay saldo disponible"
+          }
         }
       }
     },
@@ -63,6 +153,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No data"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Daten"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sin datos"
           }
         }
       }
@@ -75,6 +183,24 @@
             "state" : "translated",
             "value" : "%@ left"
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ verbleibend"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ restantes"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ restantes"
+          }
         }
       }
     },
@@ -85,6 +211,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No API key configured."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Kein API-Schlüssel eingerichtet."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No hay ninguna clave de API configurada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No tienes ninguna clave de API configurada."
           }
         }
       }
@@ -97,6 +241,24 @@
             "state" : "translated",
             "value" : "Authentication failed. Check your API key."
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldung fehlgeschlagen. Überprüfe deinen API-Schlüssel."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se ha podido iniciar sesión. Revisa tu clave de API."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudo iniciar sesión. Revisa tu clave de API."
+          }
         }
       }
     },
@@ -107,6 +269,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Rate limited. Try again later."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zu viele Anfragen. Versuch es später nochmal."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Has hecho demasiadas peticiones. Inténtalo más tarde."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hiciste demasiadas peticiones. Inténtalo más tarde."
           }
         }
       }
@@ -119,6 +299,24 @@
             "state" : "translated",
             "value" : "Network error. Check your connection."
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Netzwerkfehler. Überprüfe deine Verbindung."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red. Revisa tu conexión."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error de red. Revisa tu conexión."
+          }
         }
       }
     },
@@ -130,6 +328,24 @@
             "state" : "translated",
             "value" : "Unexpected response from server."
           }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unerwartete Antwort vom Server."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta inesperada del servidor."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Respuesta inesperada del servidor."
+          }
         }
       }
     },
@@ -140,6 +356,24 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Internal error: unexpected auth shape."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Interner Fehler: Unerwartete Authentifizierungsform."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Error interno: forma de autenticación inesperada."
           }
         }
       }

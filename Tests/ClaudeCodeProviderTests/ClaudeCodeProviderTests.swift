@@ -95,7 +95,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
             XCTFail("Expected .setup, got \(String(describing: state))")
             return
         }
-        XCTAssertTrue(reason.contains("not found"))
+        XCTAssertTrue(reason.resolved.contains("not found"))
     }
 
     func testCurrentSetupState_setupReasonWhenHelperNotInstalled() async {
@@ -107,7 +107,7 @@ final class ClaudeCodeProviderTests: XCTestCase {
             XCTFail("Expected .setup, got \(String(describing: state))")
             return
         }
-        XCTAssertTrue(reason.contains("not installed"))
+        XCTAssertTrue(reason.resolved.contains("not installed"))
     }
 
     func testCurrentSetupState_nilWhenBinaryFoundAndHelperInstalled() async {
@@ -168,10 +168,10 @@ extension ClaudeCodeProviderTests {
         )
 
         XCTAssertEqual(quota.providerId, "claude-code")
-        XCTAssertEqual(quota.headline, "No data")
+        XCTAssertEqual(quota.headline.resolved, "No data")
         XCTAssertTrue(quota.lines.isEmpty)
         XCTAssertNotNil(quota.error)
-        XCTAssertTrue(quota.error?.contains("Open Claude Code") ?? false)
+        XCTAssertTrue(quota.error?.resolved.contains("Open Claude Code") ?? false)
     }
 
     // MARK: - both windows → two UsageLines
@@ -187,7 +187,7 @@ extension ClaudeCodeProviderTests {
         )
 
         XCTAssertEqual(quota.lines.count, 2)
-        XCTAssertEqual(quota.lines[0].label, "5-hour window")
+        XCTAssertEqual(quota.lines[0].label.resolved, "5-hour window")
         XCTAssertEqual(quota.lines[0].percentage, 42)
         let reset0 = try XCTUnwrap(quota.lines[0].resetDate)
         XCTAssertEqual(
@@ -195,7 +195,7 @@ extension ClaudeCodeProviderTests {
             1_713_127_600.0 as TimeInterval,
             accuracy: 0.5
         )
-        XCTAssertEqual(quota.lines[1].label, "Weekly")
+        XCTAssertEqual(quota.lines[1].label.resolved, "Weekly")
         XCTAssertEqual(quota.lines[1].percentage, 60)
     }
 
@@ -212,7 +212,7 @@ extension ClaudeCodeProviderTests {
         )
 
         XCTAssertEqual(quota.lines.count, 1)
-        XCTAssertEqual(quota.lines[0].label, "5-hour window")
+        XCTAssertEqual(quota.lines[0].label.resolved, "5-hour window")
         XCTAssertEqual(quota.lines[0].percentage, 15)
     }
 
@@ -229,7 +229,7 @@ extension ClaudeCodeProviderTests {
         )
 
         XCTAssertEqual(quota.lines.count, 1)
-        XCTAssertEqual(quota.lines[0].label, "Weekly")
+        XCTAssertEqual(quota.lines[0].label.resolved, "Weekly")
         XCTAssertEqual(quota.lines[0].percentage, 80)
     }
 
@@ -264,7 +264,7 @@ extension ClaudeCodeProviderTests {
             baseURL: ClaudeCodeProvider.baseURL
         )
 
-        XCTAssertEqual(quota.headline, "No data")
+        XCTAssertEqual(quota.headline.resolved, "No data")
         XCTAssertTrue(quota.lines.isEmpty)
     }
 
@@ -280,9 +280,9 @@ extension ClaudeCodeProviderTests {
             baseURL: ClaudeCodeProvider.baseURL
         )
 
-        XCTAssertTrue(quota.headline.hasPrefix("42%"))
-        XCTAssertTrue(quota.headline.contains("\u{00B7}"))
-        XCTAssertTrue(quota.headline.contains("resets"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("42%"))
+        XCTAssertTrue(quota.headline.resolved.contains("\u{00B7}"))
+        XCTAssertTrue(quota.headline.resolved.contains("resets"))
     }
 
     func testFetchQuota_headlineFallsBackToWeekly() async throws {
@@ -295,8 +295,8 @@ extension ClaudeCodeProviderTests {
             baseURL: ClaudeCodeProvider.baseURL
         )
 
-        XCTAssertTrue(quota.headline.hasPrefix("75%"))
-        XCTAssertTrue(quota.headline.contains("resets"))
+        XCTAssertTrue(quota.headline.resolved.hasPrefix("75%"))
+        XCTAssertTrue(quota.headline.resolved.contains("resets"))
     }
 
     // MARK: - isStale flag
@@ -379,7 +379,7 @@ extension ClaudeCodeProviderTests {
         let quota = ProviderQuota(
             providerId: "zai",
             providerName: "z.ai",
-            headline: "test",
+            headline: DisplayText(verbatim: "test"),
             lines: [],
             lastUpdated: Date()
         )

@@ -168,7 +168,7 @@ extension ZAIProvider {
                 } else {
                     "—"
                 }
-                return UsageDetail(label: detail.modelCode, value: value)
+                return UsageDetail(label: DisplayText(verbatim: detail.modelCode), value: DisplayText(verbatim: value))
             }
         }
 
@@ -189,17 +189,17 @@ extension ZAIProvider {
     private func computeHeadline(
         fiveHourLimit: ZAILimit?,
         weeklyLimit: ZAILimit?
-    ) -> String {
+    ) -> DisplayText {
         let primary = fiveHourLimit ?? weeklyLimit
 
         if let primary, let pct = primary.percentage {
             let pctString = String(format: "%.0f%%", pct)
             if let resetDate = primary.resetDate {
-                return "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))"
+                return DisplayText { "\(pctString) · \(QuotaFormatting.countdown(to: resetDate))" }
             }
-            return pctString
+            return DisplayText(verbatim: pctString)
         }
 
-        return String(localized: "No data")
+        return DisplayText { String(displayLocalized: "No data", bundle: .module) }
     }
 }

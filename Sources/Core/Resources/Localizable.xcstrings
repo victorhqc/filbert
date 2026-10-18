@@ -30,35 +30,6 @@
         }
       }
     },
-    "No data" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "No data"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin datos"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin datos"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Keine Daten"
-          }
-        }
-      }
-    },
     "resets %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -142,6 +113,35 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Dieser Anbieter unterstützt diese Aktion nicht."
+          }
+        }
+      }
+    },
+    "Unable to read credentials. Check Keychain access and try again." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Anmeldedaten können nicht gelesen werden. Prüfe den Schlüsselbundzugriff und versuche es erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unable to read credentials. Check Keychain access and try again."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han podido leer las credenciales. Comprueba el acceso al llavero e inténtalo de nuevo."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se pudieron leer las credenciales. Revisa el acceso al llavero e inténtalo de nuevo."
           }
         }
       }

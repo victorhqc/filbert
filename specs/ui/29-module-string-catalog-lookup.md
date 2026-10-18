@@ -42,7 +42,8 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - **Then** the key exists in that module's catalog
 - **And** it is translated in every supported language (ui 31)
 - **And** each translation has the same placeholders as English
-- **And** the test finds keys in the source, not from a fixed list.
+- **And** the test finds keys in the source, not from a fixed list
+- **And** every catalog key has a lookup in its module's source, so no unused key gets translated.
 
 ### AC4: Every module with user-facing strings has a catalog
 
@@ -67,13 +68,18 @@ Resolve every user-facing string against its own module's String Catalog, so the
 ## Plan
 
 1. [ ] Evidence. On a German system, open Settings in the packaged release. Check the "General" tab label, which already passes `bundle: .module`. "Allgemein" means module bundles pick the user's language. "General" means `packaging/Info.plist` needs `CFBundleLocalizations`, and step 5 is required.
-2. [x] Add the source guard test (AC1) and the generated catalog test (AC3) in `Tests/AppTests/StringCatalogCoverageTests.swift`, with the key scanner in `Tests/AppTests/LocalizedSourceScanner.swift`. `AllowanceForecastLocalizationTests` is removed. The tests cover the swept modules; add each provider to `modules` as it is swept.
+2. [x] Add the source guard test (AC1) and the generated catalog test (AC3) in `Tests/AppTests/StringCatalogCoverageTests.swift`, with the key scanner in `Tests/AppTests/LocalizedSourceScanner.swift`. `AllowanceForecastLocalizationTests` is removed. The tests cover Core, App, and all seven providers.
+   - The guard first matched line by line, so it missed `String(` followed by `localized:` on the next line. One such call in `ProviderRegistry` was found during the provider sweep. The guard now matches across line breaks, and a probe file confirmed it.
    - Swift builds an interpolated key with one plain specifier per value (`"\(name): \(count)% used"` → `%@: %lld%% used`). A positional catalog key such as `%1$@: %2$lld%% used` never matches; this was verified with a compiled catalog. Two App keys had this form, so the menu bar and card header accessibility labels were never translated. They are re-keyed. Translations can still use positional placeholders.
    - Swift Build generates a symbol for each `manual` catalog key and fails on a key with no letters, such as `%lld%%`. Format such values in code instead: percentages use `.percent.locale(DisplayLanguage.locale)`, and a number range is not localized.
-3. [ ] Build the Core lookup first (ui 32, Plan step 1) [x]. Then move each call to it with `bundle: .module`, module by module: Core [x], App [x] (2026-10-18), then each provider together with (ui 32, Plan step 2). The two `Automatic selection` keys resolve from the App catalog (AC2).
+3. [x] Build the Core lookup first (ui 32, Plan step 1) [x]. Then move each call to it with `bundle: .module`, module by module: Core [x], App [x], then each provider together with (ui 32, Plan step 2) [x] (2026-10-18). The two `Automatic selection` keys resolve from the App catalog (AC2).
    - App sweep, 2026-10-18: 259 calls moved. 14 keys used in App were missing from the App catalog, and they are added in `de-DE`, `es-ES`, and `es-MX` per `docs/localization-glossary.md`. 14 App catalog keys are unused, mostly provider text that belongs in provider catalogs. Leave them for the provider sweep.
    - Tests that compare English text pin `DisplayLanguage.selectedLanguageCode = "en"`, in 7 test classes or their base classes.
-4. [ ] Add catalogs for Claude Code and Codex, with translations (AC4).
+   - Provider sweep, 2026-10-18: 144 calls moved. Before, every provider call read `Bundle.main` and showed English. 50 keys were missing from provider catalogs. DeepSeek and OpenCodeGo had English only. All are now in `de-DE`, `es-ES`, and `es-MX`. Translations already in another catalog are reused, with the glossary's "clave de API" in `es-MX`.
+   - 20 unused keys are removed: 15 in App (provider text, plus dead `Panel` and `%@–%@ (your time)`), 4 in Cursor, and 1 in Core.
+   - Claude Code had "Claude Code not found" and "Claude Code not found." Swift Build cannot give two keys that differ only by punctuation separate symbols. The error now uses the first text, as Codex does.
+   - Provider tests that compare English text pin English too: 9 classes, plus `EnglishTestCase` for the 3 Cursor classes.
+4. [x] Add catalogs for Claude Code and Codex, with translations (AC4).
 5. [ ] If step 1 requires it, declare the four languages in `packaging/Info.plist` (AC5).
 6. [x] Compile the catalogs in CI before running the tests, so tests read compiled catalogs (AC6). Drop the step once CI uses Swift Build by default.
 7. [ ] Run the validation gate. Then manually check the popover, every settings tab, and each provider's states in German, Spanish, and English, at normal width and with VoiceOver.
