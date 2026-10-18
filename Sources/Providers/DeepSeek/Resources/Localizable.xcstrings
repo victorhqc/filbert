@@ -490,7 +490,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zu viele Anfragen. Versuch es später nochmal."
+            "value" : "Zu viele Anfragen. Versuche es später erneut."
           }
         },
         "es-ES" : {

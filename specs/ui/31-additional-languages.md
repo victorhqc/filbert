@@ -104,8 +104,12 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - Russian durations arrive in the nominative, so no string puts one after a word that needs another case. Colons and parentheses carry them instead. The glossary records this rule.
    - Russian and Chinese counted windows use forms that don't change with the count ("5-часовое окно", "5 小时窗口"). Portuguese uses plural variations.
    - `DisplayLanguageTests` covers the AC5 table, a lookup in each new language, and Chinese text joined to a relative date without a space. `AppLanguagePreferenceTests` covers Traditional Chinese from System Settings, which shows System Default in English.
-   - Not done here: GeminiCLI's `de-DE` uses "Sie", while the rest of the app uses "du".
-6. [ ] Declare `CFBundleLocalizations` in `packaging/Info.plist` (AC6).
+   - GeminiCLI's `de-DE` used "Sie". Step 6 fixed it.
+6. [x] Declare `CFBundleLocalizations` in `packaging/Info.plist` (AC6). (2026-10-18)
+   - The app bundle has no `.lproj` folders, because the catalogs live in the SwiftPM resource bundles. `CFBundleLocalizations` is how macOS learns the languages.
+   - `PackagedLocalizationsTests` checks that the list equals `SupportedLanguage.all`, so a new language can't miss the plist.
+   - An unsigned local DMG (`scripts/build-dmg.sh --no-sign --skip-launch-check`) has the eight languages in `Contents/Info.plist`, and `filbert_App.bundle` has eight `.lproj` folders. The System Settings listing is checked by hand in step 7.
+   - German follows Apple's Mac User Guide, which uses "du". GeminiCLI's 11 "Sie" strings now use "du". "Versuch es später nochmal" in DeepSeek, OpenCode Go, and Z.ai is now "Versuche es später erneut". `testEveryLanguageAvoidsItsDeniedTerms` (renamed from the Spanish-only test) denies "Sie", "Ihnen", "Ihr…", and "nochmal" in `de-DE`.
 7. [ ] Run the validation gate. Then manually check AC5 and AC7 in each language: the popover, every settings tab, the error states, and VoiceOver.
 
 ## Risks

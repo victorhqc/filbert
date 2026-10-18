@@ -87,9 +87,11 @@ final class StringCatalogCoverageTests: XCTestCase {
             #"\bConfiguración del Sistema\b"#, #"\bcomputadora"#, #"\bagreg"#, #"\bícono"#, #"\bhoras? pico\b"#,
             #"\bla Mac\b"#, #"\bllave de API\b"#,
         ],
+        // Case-sensitive, because lowercase "sie" means "them".
+        "de-DE": [#"(?-i)\b(?:Sie|Ihnen|Ihre?[mnrs]?)\b"#, #"\bnochmal\b"#],
     ]
 
-    func testEachSpanishVariantAvoidsTheOtherVariantsTerms() throws {
+    func testEveryLanguageAvoidsItsDeniedTerms() throws {
         let options: String.CompareOptions = [.regularExpression, .caseInsensitive]
         var failures: [String] = []
         for module in modules {

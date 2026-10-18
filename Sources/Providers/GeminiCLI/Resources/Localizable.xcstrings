@@ -224,7 +224,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Richten Sie Gemini CLI ein oder konfigurieren Sie ein Google-Cloud-Projekt und versuchen Sie es erneut."
+            "value": "Richte Gemini CLI ein oder konfiguriere ein Google-Cloud-Projekt und versuche es dann erneut."
           }
         },
         "es-ES": {
@@ -277,7 +277,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Filbert konnte das Schlüsselbundobjekt von Gemini CLI nicht lesen. Erlauben Sie den Zugriff und versuchen Sie es erneut."
+            "value": "Filbert konnte das Schlüsselbundobjekt von Gemini CLI nicht lesen. Erlaube den Zugriff und versuche es erneut."
           }
         },
         "es-ES": {
@@ -383,7 +383,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Die Gemini-CLI-Authentifizierung ist fehlgeschlagen. Melden Sie sich erneut an."
+            "value": "Die Gemini-CLI-Authentifizierung ist fehlgeschlagen. Melde dich erneut an."
           }
         },
         "es-ES": {
@@ -436,7 +436,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Die Gemini-CLI-Anmeldedaten werden nicht unterstützt. Aktualisieren Sie Gemini CLI und melden Sie sich erneut an."
+            "value": "Die Gemini-CLI-Anmeldedaten werden nicht unterstützt. Aktualisiere Gemini CLI und melde dich erneut an."
           }
         },
         "es-ES": {
@@ -489,7 +489,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI ist rate-limitiert. Versuchen Sie es später erneut."
+            "value": "Gemini CLI hat das Anfragelimit erreicht. Versuche es später erneut."
           }
         },
         "es-ES": {
@@ -542,7 +542,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI ist abgemeldet. Öffnen Sie Gemini CLI und melden Sie sich mit Google an."
+            "value": "Gemini CLI ist abgemeldet. Öffne Gemini CLI und melde dich mit Google an."
           }
         },
         "es-ES": {
@@ -648,7 +648,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI hat Daten zurückgegeben, die Filbert nicht lesen konnte. Aktualisieren Sie Filbert und versuchen Sie es erneut."
+            "value": "Gemini CLI hat Daten zurückgegeben, die Filbert nicht lesen konnte. Aktualisiere Filbert und versuche es erneut."
           }
         },
         "es-ES": {
@@ -701,7 +701,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Die Gemini-CLI-Nutzungsanfrage ist abgelaufen. Versuchen Sie es später erneut."
+            "value": "Zeitüberschreitung bei der Nutzungsanfrage von Gemini CLI. Versuche es später erneut."
           }
         },
         "es-ES": {
@@ -754,7 +754,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Der Gemini-CLI-Nutzungsdienst hat einen unerwarteten Fehler zurückgegeben. Versuchen Sie es später erneut."
+            "value": "Der Gemini-CLI-Nutzungsdienst hat einen unerwarteten Fehler zurückgegeben. Versuche es später erneut."
           }
         },
         "es-ES": {
@@ -1072,7 +1072,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Der Gemini-CLI-Nutzungsdienst ist nicht erreichbar. Überprüfen Sie Ihre Verbindung und versuchen Sie es erneut."
+            "value": "Der Gemini-CLI-Nutzungsdienst ist nicht erreichbar. Überprüfe deine Verbindung und versuche es erneut."
           }
         },
         "es-ES": {
@@ -1390,7 +1390,7 @@
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Melden Sie sich bei Gemini CLI an, bevor Sie die Nutzung aktualisieren."
+            "value": "Melde dich bei Gemini CLI an, bevor du die Nutzung aktualisierst."
           }
         },
         "es-ES": {

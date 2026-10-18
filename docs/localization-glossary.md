@@ -49,7 +49,8 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 
 - `es-MX` denies: Ajustes, ordenador, añadir, icono (no accent), comprobar / comprueba, horas punta, vosotros verb forms, llave de API, refrescar, coste, el Mac / del Mac.
 - `es-ES` denies: Configuración del Sistema, computadora, agregar, ícono, horas pico, la Mac, llave de API.
-- `StringCatalogCoverageTests` enforces both lists.
+- `de-DE` denies: Sie, Ihnen, Ihr… (case-sensitive, because lowercase "sie" means "them"), nochmal.
+- `StringCatalogCoverageTests` enforces these lists.
 
 ## Portuguese: Brazil vs. Portugal
 
@@ -113,6 +114,7 @@ Each language appears in its own name (ui 32 AC1): English, Deutsch, Español (M
 
 ## Sources consulted on 2026-10-18
 
+- du (de-DE): Apple Mac User Guide "Change the language your Mac uses" (`mh26684`) in `de-de` says "Du kannst …" and "Führe … aus".
 - Login Items, System Settings, sign in: Apple Mac User Guide "Open items automatically when you log in" (`mh15189`) in `de-de`, `es-lamr`, `es-es`, `pt-br`, `pt-pt`, `ru-ru`, `zh-cn`.
 - Keychain: Apple Keychain Access User Guide in `pt-br` and `pt-pt`.
 - the Mac (es-MX): Apple Mac User Guide in `es-lamr` says "Apagar o reiniciar la Mac" (`mchlp1066`).
