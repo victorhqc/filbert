@@ -48,7 +48,7 @@ struct AppearanceTab: View {
                 }
             }
 
-            SettingsCard(heading: String(localized: "Prevent Mac from sleeping")) {
+            SettingsCard(heading: String(localized: "Keep Awake")) {
                 Toggle(
                     isOn: Binding(
                         get: { sleepPrevention.isFeatureVisible },
@@ -56,7 +56,7 @@ struct AppearanceTab: View {
                     )
                 ) {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text(String(localized: "Show sleep prevention"))
+                        Text(String(localized: "Show Keep Awake"))
                         Text(String(localized: "Show a keep-awake timer in Filbert's panel"))
                             .font(.caption)
                             .foregroundColor(.secondary)

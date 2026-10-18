@@ -42,7 +42,7 @@ struct MenuBarStatusIcon: View {
                 .accessibilityLabel(
                     [
                         String(localized: "Filbert"),
-                        String(localized: "Mac sleep prevention active"),
+                        String(localized: "Keep Awake active"),
                     ].joined(separator: ", ")
                 )
         } else {

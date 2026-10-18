@@ -127,7 +127,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
             MenuBarProviderPresentation.accessibilityLabel(
                 for: resolved,
                 isSleepPreventionActive: true
-            ).contains("Mac sleep prevention active")
+            ).contains("Keep Awake active")
         )
     }
 
