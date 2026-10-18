@@ -3,17 +3,15 @@ import Foundation
 
 enum CoarseDurationFormatting {
     private static let day: TimeInterval = 24 * 60 * 60
-    private static let week: TimeInterval = 7 * day
 
     static func string(
         from interval: TimeInterval,
         unitsStyle: DateComponentsFormatter.UnitsStyle = .abbreviated
     ) -> String {
         let formatter = displayFormatter()
-        // `.weekOfYear` throws NSInternalInconsistencyException. Only
-        // `.weekOfMonth` works.
-        formatter.allowedUnits = interval >= week
-            ? [.weekOfMonth, .day]
+        // Weeks would render as a Latin "w" inside Japanese text ("2w3日").
+        formatter.allowedUnits = interval >= 7 * day
+            ? [.day]
             : interval >= day ? [.day, .hour] : [.hour, .minute]
         formatter.maximumUnitCount = 2
         formatter.unitsStyle = unitsStyle

@@ -120,6 +120,10 @@ final class StringCatalogCoverageTests: XCTestCase {
         "ja": ["other"],
     ]
 
+    /// Languages whose `one` category holds only the count 1, so its form may say "every minute" without the number.
+    /// In Russian `one` also holds 21, 31, and 41, so its form must keep the count.
+    private let languagesWhereOneIsOnlyOne: Set = ["en", "de-DE", "es-ES", "es-MX", "pt-BR", "pt-PT"]
+
     func testEveryPluralHasTheFormsItsLanguageNeeds() throws {
         var failures: [String] = []
         for module in modules {
@@ -150,16 +154,18 @@ final class StringCatalogCoverageTests: XCTestCase {
     }
 
     private func translationFailures(for key: String, entry: Catalog.Entry, at location: String) -> [String] {
-        let english = entry.localizations?["en"]?.units.first?.value ?? key
+        let english = entry.localizations?["en"]?.otherUnit?.value ?? key
         return languages.flatMap { language -> [String] in
-            guard let units = entry.localizations?[language]?.units, !units.isEmpty else {
+            guard let forms = entry.localizations?[language]?.forms, !forms.isEmpty else {
                 return ["\(location) \"\(key)\" has no \(language) translation"]
             }
-            return units.compactMap { unit in
+            return forms.compactMap { category, unit in
                 if unit.state != "translated" {
                     return "\(location) \"\(key)\" is not translated in \(language)"
                 }
-                if placeholders(in: unit.value) != placeholders(in: english) {
+                let mayOmitCount = category == "one" && languagesWhereOneIsOnlyOne.contains(language)
+                    && placeholders(in: unit.value).isEmpty
+                if !mayOmitCount, placeholders(in: unit.value) != placeholders(in: english) {
                     return "\(location) \"\(key)\" has different placeholders in \(language)"
                 }
                 return nil
@@ -221,7 +227,16 @@ private struct Catalog: Decodable {
         let variations: Variations?
 
         var units: [StringUnit] {
-            [stringUnit].compactMap { $0 } + (variations?.plural?.values.map(\.stringUnit) ?? [])
+            forms.map(\.unit)
+        }
+
+        var forms: [(category: String?, unit: StringUnit)] {
+            [stringUnit].compactMap { $0 }.map { (nil, $0) }
+                + (variations?.plural?.map { ($0.key, $0.value.stringUnit) } ?? [])
+        }
+
+        var otherUnit: StringUnit? {
+            stringUnit ?? variations?.plural?["other"]?.stringUnit
         }
     }
 

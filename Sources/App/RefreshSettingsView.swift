@@ -83,22 +83,22 @@ struct RefreshSettingsView: View {
         switch viewModel.autoRefreshMode {
         case .regular:
             String.localizedStringWithFormat(
-                String(displayLocalized: "Regular refresh checks opted-in providers every %@.", bundle: .module),
-                refreshDurationText(viewModel.autoRefreshSlowInterval)
+                String(displayLocalized: "Regular refresh checks opted-in providers %@.", bundle: .module),
+                refreshIntervalText(viewModel.autoRefreshSlowInterval)
             )
         case .smart:
             String.localizedStringWithFormat(
                 String(
                     displayLocalized: """
-                    Smart refresh checks every %1$@. After a usage change, a provider checks every %2$@ \
-                    for %3$@, then every %4$@ for another %3$@ before returning to the slow interval.
+                    Smart refresh checks %1$@. After a usage change, a provider checks %2$@ for %3$@, \
+                    then %4$@ for another %3$@ before returning to the slow interval.
                     """,
                     bundle: .module
                 ),
-                refreshDurationText(viewModel.autoRefreshSlowInterval),
-                refreshDurationText(viewModel.autoRefreshFastInterval),
+                refreshIntervalText(viewModel.autoRefreshSlowInterval),
+                refreshIntervalText(viewModel.autoRefreshFastInterval),
                 refreshDurationText(viewModel.autoRefreshQuietWindow),
-                refreshDurationText(viewModel.autoRefreshCooldownInterval)
+                refreshIntervalText(viewModel.autoRefreshCooldownInterval)
             )
         }
     }

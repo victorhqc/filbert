@@ -20,6 +20,10 @@ enum PeakHoursPresentation {
         }
     }
 
+    static func rangeText(from start: String, to end: String) -> String {
+        String.localizedStringWithFormat(String(displayLocalized: "Range format", bundle: .module), start, end)
+    }
+
     /// "Mon–Fri"-style label for the configured weekdays, or nil when the set
     /// is empty or spans the whole week (daily schedule).
     static func weekdayRangeText(for weekdays: Set<Int>) -> String? {
@@ -48,7 +52,7 @@ enum PeakHoursPresentation {
         let runTexts = runs.map { run -> String in
             guard let first = run.first, let last = run.last else { return "" }
             let firstSymbol = symbols[first - 1]
-            return run.count == 1 ? firstSymbol : "\(firstSymbol)–\(symbols[last - 1])"
+            return run.count == 1 ? firstSymbol : rangeText(from: firstSymbol, to: symbols[last - 1])
         }
         return runTexts.formatted(.list(type: .and).locale(DisplayLanguage.locale))
     }

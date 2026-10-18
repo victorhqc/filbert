@@ -83,7 +83,10 @@ struct PeakHoursBlock: View {
         let windows = config.windows.map { window in
             let localStart = peakWindowBoundary(hour: window.startHour)
             let localEnd = peakWindowBoundary(hour: window.endHour)
-            let times = "\(formatter.string(from: localStart))–\(formatter.string(from: localEnd))"
+            let times = PeakHoursPresentation.rangeText(
+                from: formatter.string(from: localStart),
+                to: formatter.string(from: localEnd)
+            )
             guard let days = window.weekdays.flatMap(PeakHoursPresentation.weekdayRangeText) else {
                 return times
             }

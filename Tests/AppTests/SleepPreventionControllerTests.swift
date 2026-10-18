@@ -217,6 +217,14 @@ final class SleepPreventionControllerTests: XCTestCase {
         XCTAssertEqual(SleepPreventionController.remainingTimeText(for: 7205), "2:00:05")
     }
 
+    func testVoiceOverHearsTheRemainingTimeAsADuration() {
+        DisplayLanguage.selectedLanguageCode = "en"
+        defer { DisplayLanguage.selectedLanguageCode = nil }
+
+        XCTAssertEqual(SleepPreventionController.spokenRemainingTime(for: 754), "12 minutes, 34 seconds")
+        XCTAssertEqual(SleepPreventionController.spokenRemainingTime(for: 3605), "1 hour, 5 seconds")
+    }
+
     func testDurationMenuTitleKeepsTheTimerInsideTheMenu() {
         let controller = SleepPreventionController(
             powerManager: FakePowerManager(),

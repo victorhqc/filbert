@@ -23,6 +23,40 @@ final class DisplayLocaleFormattingTests: XCTestCase {
         XCTAssertEqual(refreshDurationText(5 * 60), "5 Minuten")
     }
 
+    func testDurationsOfAWeekOrMoreUseDays() {
+        let expected = ["en": "9d", "de-DE": "9d", "ru": "9 д.", "zh-Hans": "9天", "ja": "9日"]
+        for (language, text) in expected {
+            DisplayLanguage.selectedLanguageCode = language
+
+            XCTAssertEqual(CoarseDurationFormatting.string(from: 9 * 24 * 3600 + 3600), text, language)
+        }
+    }
+
+    func testRefreshIntervalsAgreeWithTheCount() {
+        let expected = [
+            "en": ["every second", "every 30 seconds", "every minute", "every 5 minutes"],
+            "de-DE": ["jede Sekunde", "alle 30 Sekunden", "jede Minute", "alle 5 Minuten"],
+            "ru": ["раз в 1 секунду", "раз в 30 секунд", "раз в 1 минуту", "раз в 5 минут"],
+            "ja": ["1秒ごと", "30秒ごと", "1分ごと", "5分ごと"],
+        ]
+        for (language, texts) in expected {
+            DisplayLanguage.selectedLanguageCode = language
+            let shown = [1, 30, 60, 300].map { refreshIntervalText(TimeInterval($0)) }
+            XCTAssertEqual(shown, texts, language)
+        }
+        DisplayLanguage.selectedLanguageCode = "ru"
+        XCTAssertEqual(refreshIntervalText(21 * 60), "раз в 21 минуту")
+    }
+
+    func testRangesUseEachLanguagesRangeForm() {
+        let expected = ["de-DE": "Mo.–Fr.", "zh-Hans": "周一至周五", "ja": "月〜金"]
+        for (language, text) in expected {
+            DisplayLanguage.selectedLanguageCode = language
+
+            XCTAssertEqual(PeakHoursPresentation.weekdayRangeText(for: [2, 3, 4, 5, 6]), text, language)
+        }
+    }
+
     func testCountedStringsAgreeWithTheCount() {
         let expected = [
             "en": ["1 second", "2 seconds", "1 minute", "2 minutes", "5 minutes", "21 minutes"],

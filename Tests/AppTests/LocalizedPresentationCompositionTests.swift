@@ -43,6 +43,11 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
                 let text = PacedUsageLineText(pace: pace, forecast: nil)
 
                 XCTAssertEqual(text.remainingTime, "Tiempo restante: \(abbreviated(duration))", language)
+                XCTAssertEqual(
+                    text.accessibilitySentences[1],
+                    "Tiempo restante: \(CoarseDurationFormatting.string(from: duration, unitsStyle: .full))",
+                    language
+                )
             }
         }
     }
@@ -69,7 +74,7 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
                     : "\(status) · \(history) Verlauf"
                 let spoken = language == "ru"
                     ? "При среднем темпе до исчерпания: примерно \(full). Период наблюдения: \(history)."
-                    : "Reicht bei deinem Durchschnittstempo der letzten \(history) noch etwa \(full)"
+                    : "Reicht bei deinem Durchschnittstempo noch etwa \(full), basierend auf \(history) Verlauf"
 
                 XCTAssertEqual(headline.status, status, language)
                 XCTAssertEqual(headline.accessibilitySentences, [spoken], language)

@@ -223,18 +223,18 @@ struct RefreshSettingsProviderRow: View {
             return nil
         }
         return String.localizedStringWithFormat(
-            String(displayLocalized: "Provider limit: checks no more often than every %@.", bundle: .module),
-            refreshDurationText(viewModel.effectiveFastInterval(for: provider.id))
+            String(displayLocalized: "Provider limit: checks no more often than %@.", bundle: .module),
+            refreshIntervalText(viewModel.effectiveFastInterval(for: provider.id))
         )
     }
 
     private var keepCheckingExplanation: String {
         String.localizedStringWithFormat(
             String(
-                displayLocalized: "Checks every %@ for the time you choose, even when usage does not change.",
+                displayLocalized: "Checks %@ for the time you choose, even when usage does not change.",
                 bundle: .module
             ),
-            refreshDurationText(viewModel.effectiveFastInterval(for: provider.id))
+            refreshIntervalText(viewModel.effectiveFastInterval(for: provider.id))
         )
     }
 

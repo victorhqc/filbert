@@ -4,13 +4,13 @@ Make durations, intervals, and ranges read naturally in every language, on scree
 
 ## Context
 
-- Status: draft, waiting for the user's review.
+- Status: implemented on 2026-10-18. The user reviewed the spec and approved it. Plan steps 1–7 are done. Step 8 waits for the user's check in the app.
 - Follows the native language review (ui 31, plan steps 13–15). These issues come from code, not from the catalogs.
 - `Sources/App/CoarseDurationFormatting.swift` formats durations in `.abbreviated` style. For a week or more it uses weeks, and Japanese then shows a Latin "w": "残り2w3日", "約1w2日". German shows "1W 2d".
 - `Sources/App/PacedUsageLineText.swift` reuses the visual text for VoiceOver, so VoiceOver reads "4d 15h left". The forecast sentences already use `.full`.
 - `Sources/App/SleepPreventionController.swift` fills "Mac won't sleep for %@" with a clock ("12:34", "1:02:03"). VoiceOver reads it as a time of day.
 - `Sources/App/RefreshSettingsFormatting.swift` returns "1 minute", and the sentences put "every" in front of it: "every 1 minute". Affected keys: "Regular refresh checks opted-in providers every %@.", the Smart refresh sentence, "Provider limit: checks no more often than every %@.", and "Checks every %@ for the time you choose…". German works around it with "im Abstand von %@".
-- `CoarseDurationFormatting.evidenceSpan` is often exactly one unit, so English reads "Based on the last 1 hour". Eight forecast keys contain "last %@". Most translations already say "%@ of history", so the problem is mainly English.
+- `CoarseDurationFormatting.evidenceSpan` is often exactly one unit, so English reads "Based on the last 1 hour". Twelve forecast keys contain "last %@". Most translations already say "%@ of history", so the problem is mainly English.
 - `Sources/App/PeakHoursPresentation.swift` and `PeakHoursBlock.swift` hard-code "–" for weekday and time ranges. Chinese writes "周一至周五", and Japanese writes "月〜金".
 - Foundation decides how durations look in each language (ui 31 glossary): "4d 15h" is Apple's own German `.abbreviated` output. This spec keeps the system formatters and changes only how Filbert uses them.
 
@@ -38,7 +38,7 @@ Make durations, intervals, and ranges read naturally in every language, on scree
 - **Given** a refresh interval of 1 minute, 5 minutes, or 30 seconds
 - **When** the refresh settings describe it
 - **Then** English reads "every minute", "every 5 minutes", and "every 30 seconds", never "every 1 minute"
-- **And** every language uses its own plural forms for the interval phrase, such as "jede Minute" / "alle 5 Minuten" and "каждую минуту" / "каждые 5 минут" / "каждые 21 минуту".
+- **And** every language uses its own plural forms for the interval phrase, such as "jede Minute" / "alle 5 Minuten" and "раз в 1 минуту" / "раз в 5 минут" / "раз в 21 минуту".
 
 ### AC5: The evidence span reads naturally in English
 - **Given** a forecast based on exactly 1 hour of history
@@ -54,14 +54,23 @@ Make durations, intervals, and ranges read naturally in every language, on scree
 
 ## Plan
 
-1. `CoarseDurationFormatting.string`: replace `[.weekOfMonth, .day]` with `[.day]` for 7 days and more. Keep `.abbreviated` everywhere else. Update the forecast tests that expect weeks.
-2. `PacedUsageLineText`: build `accessibilitySentences` from a separate `.full` duration. The visual `remainingTime` keeps `.abbreviated`.
-3. Keep Awake: add a spoken form from `DateComponentsFormatter` (`.full`, hours, minutes, seconds) and use it in the accessibility label and value. Keep the clock text on screen.
-4. Interval phrases: add plural keys "every %lld seconds" and "every %lld minutes" (English `one`: "every minute"). The four refresh sentences take the phrase as `%@` and no longer contain "every". The reviewers for each language write the plural forms and the sentence templates. German drops "im Abstand von" where the plural phrase reads better.
-5. Evidence span: rename the eight English keys to the "%@ of history" pattern ("Based on %@ of history", "Should last until reset · %@ of history"). Translations move to the new keys unchanged, unless a reviewer finds a problem.
-6. Ranges: add a catalog key "%1$@–%2$@" for a range, with a translator comment. Weekday ranges and peak time ranges use it. zh-Hans writes "%1$@至%2$@", ja "%1$@〜%2$@", other languages keep "–".
-7. Glossary: record the interval-phrase rule, the range key, and the "no weeks" rule. Update the duration rules that mention "alle %@" and "im Abstand von %@".
-8. Validation gate: SwiftFormat, SwiftLint, release build, and the tests on the compiled-catalog path. Then the user checks the popover, the refresh settings, and Keep Awake with VoiceOver in at least German, Russian, and Japanese.
+1. [x] `CoarseDurationFormatting.string`: replace `[.weekOfMonth, .day]` with `[.day]` for 7 days and more. Keep `.abbreviated` everywhere else. Update the forecast tests that expect weeks.
+2. [x] `PacedUsageLineText`: build `accessibilitySentences` from a separate `.full` duration. The visual `remainingTime` keeps `.abbreviated`.
+3. [x] Keep Awake: add a spoken form from `DateComponentsFormatter` (`.full`, hours, minutes, seconds) and use it in the accessibility label and value. Keep the clock text on screen.
+4. [x] Interval phrases: add plural keys "every %lld seconds" and "every %lld minutes" (English `one`: "every minute"). The four refresh sentences take the phrase as `%@` and no longer contain "every". The reviewers for each language write the plural forms and the sentence templates. German drops "im Abstand von" where the plural phrase reads better.
+5. [x] Evidence span: rename the twelve English keys to the "%@ of history" pattern ("Based on %@ of history", "Should last until reset · %@ of history"). Translations move to the new keys unchanged, unless a reviewer finds a problem.
+6. [x] Ranges: add a catalog key "%1$@–%2$@" for a range, with a translator comment. Weekday ranges and peak time ranges use it. zh-Hans writes "%1$@至%2$@", ja "%1$@〜%2$@", other languages keep "–".
+7. [x] Glossary: record the interval-phrase rule, the range key, and the "no weeks" rule. Update the duration rules that mention "alle %@" and "im Abstand von %@".
+8. [ ] Validation gate: SwiftFormat, SwiftLint, release build, and the tests on the compiled-catalog path. Then the user checks the popover, the refresh settings, and Keep Awake with VoiceOver in at least German, Russian, and Japanese.
+   - The gate passes: SwiftFormat, SwiftLint, release build, and the tests on the compiled-catalog path. (2026-10-18)
+
+### Findings during implementation
+
+- Russian `one` also holds 21, 31, and 41, so "каждую минуту" would show for a 21-minute interval. Russian uses "раз в %lld минуту/минуты/минут" in every form. The 1-minute case reads "раз в 1 минуту".
+- Chinese and Japanese have only the `other` form, so 1 minute reads "每 1 分钟" and "1分ごと". A separate key for exactly 1 would allow "每分钟". It is not done.
+- `StringCatalogCoverageTests` compared every form with the first English form, and dictionary order made that form random. It now compares with the English `other` form. A `one` form may drop the count only in en, de-DE, es-ES, es-MX, pt-BR, and pt-PT.
+- German now says "jede Minute" / "alle 5 Minuten" and no longer needs "im Abstand von". Chinese rewrote the provider limit as "最多%@检查一次", because "最短检查间隔为每 2 分钟" was wrong.
+- German "Runs out in about %1$@ at your average pace, based on %2$@ of history" no longer says "der letzten %2$@", which worked only for feminine units.
 
 ## Risks
 
