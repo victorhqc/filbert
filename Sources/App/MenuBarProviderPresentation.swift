@@ -54,7 +54,7 @@ enum MenuBarProviderPresentation {
             values.append(String(localized: "Fast refresh active"))
         }
         if isSleepPreventionActive {
-            values.append(String(localized: "Mac sleep prevention active"))
+            values.append(String(localized: "Keep Awake active"))
         }
         return values.joined(separator: ", ")
     }

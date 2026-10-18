@@ -2620,13 +2620,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inactivo" } }
       }
     },
-    "Mac sleep prevention active" : {
+    "Keep Awake active" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac-Ruhezustand wird verhindert" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac sleep prevention active" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Prevención de reposo del Mac activa" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Prevención de reposo del Mac activa" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ aktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake active" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«No dormir» activo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "«No dormir» activo" } }
       }
     },
     "Mac won't sleep for %@" : {
@@ -2656,13 +2656,13 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } }
       }
     },
-    "Prevent Mac from sleeping" : {
+    "Keep Awake" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac nicht in den Ruhezustand versetzen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Prevent Mac from sleeping" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Impedir que el Mac entre en reposo" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wach halten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No dormir" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No dormir" } }
       }
     },
     "Show a keep-awake timer in Filbert's panel" : {
@@ -2674,31 +2674,31 @@
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } }
       }
     },
-    "Show sleep prevention" : {
+    "Show Keep Awake" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ruhezustand verhindern anzeigen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show sleep prevention" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar prevención de reposo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar prevención de reposo" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Keep Awake" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «No dormir»" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «No dormir»" } }
       }
     },
-    "Sleep prevention couldn't start. Try again." : {
+    "Keep Awake couldn't start. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ruhezustand konnte nicht verhindert werden. Versuche es erneut." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sleep prevention couldn't start. Try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar la prevención de reposo. Inténtalo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar la prevención de reposo. Inténtalo de nuevo." } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ konnte nicht starten. Versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake couldn't start. Try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar «No dormir». Inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar «No dormir». Inténtalo de nuevo." } }
       }
     },
-    "Sleep prevention duration" : {
+    "Keep Awake duration" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer der Ruhezustandsverhinderung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Sleep prevention duration" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de la prevención de reposo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de la prevención de reposo" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer für „Wach halten“" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake duration" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «No dormir»" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «No dormir»" } }
       }
     },
     "Turn Off" : {
