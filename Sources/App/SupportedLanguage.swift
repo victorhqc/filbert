@@ -13,5 +13,9 @@ struct SupportedLanguage: Identifiable, Equatable {
         SupportedLanguage(code: "de-DE", autonym: "Deutsch"),
         SupportedLanguage(code: "es-MX", autonym: "Español (México)"),
         SupportedLanguage(code: "es-ES", autonym: "Español (España)"),
+        SupportedLanguage(code: "pt-BR", autonym: "Português (Brasil)"),
+        SupportedLanguage(code: "pt-PT", autonym: "Português (Portugal)"),
+        SupportedLanguage(code: "ru", autonym: "Русский"),
+        SupportedLanguage(code: "zh-Hans", autonym: "简体中文"),
     ]
 }

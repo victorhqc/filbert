@@ -27,6 +27,30 @@
             "state" : "translated",
             "value" : "Ventana de 5 horas"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Janela de 5 horas"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Janela de 5 horas"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5-часовое окно"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5 小时窗口"
+          }
         }
       }
     },
@@ -55,6 +79,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Falló la migración automática del script auxiliar. Selecciona “Instalar script auxiliar” para reintentar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A migração automática do script auxiliar falhou. Selecione “Instalar script auxiliar” para tentar novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A migração automática do script auxiliar falhou. Selecione «Instalar script auxiliar» para tentar novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось автоматически перенести вспомогательный скрипт. Нажмите «Установить скрипт», чтобы повторить попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "辅助脚本自动迁移失败。选择“安装辅助脚本”以重试。"
           }
         }
       }
@@ -85,6 +133,30 @@
             "state" : "translated",
             "value" : "No se encontró Claude Code"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code não encontrado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code não encontrado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code не найден"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到 Claude Code"
+          }
         }
       }
     },
@@ -113,6 +185,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se encontró Claude Code. Instala Claude Code e inténtalo de nuevo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code não encontrado. Instale o Claude Code e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code não encontrado. Instale o Claude Code e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code не найден. Установите Claude Code и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未找到 Claude Code。请安装 Claude Code，然后重试。"
           }
         }
       }
@@ -143,6 +239,30 @@
             "state" : "translated",
             "value" : "La actualización de Claude Code falló con el código de salida %d. Abre Claude Code e inténtalo de nuevo."
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A atualização do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A atualização do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось обновить Claude Code: код завершения %d. Откройте Claude Code и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code 刷新失败，退出代码为 %d。请打开 Claude Code，然后重试。"
+          }
         }
       }
     },
@@ -171,6 +291,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Se agotó el tiempo de espera de la actualización de Claude Code. Intenta actualizar de nuevo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A atualização do Claude Code excedeu o tempo limite. Tente atualizar novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "A atualização do Claude Code excedeu o tempo limite. Tente atualizar novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Время ожидания обновления Claude Code истекло. Повторите обновление."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code 刷新超时。请重新刷新。"
           }
         }
       }
@@ -201,6 +345,30 @@
             "state" : "translated",
             "value" : "Claude Code no devolvió datos de uso. Abre Claude Code e inténtalo de nuevo."
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Claude Code não retornou dados de uso. Abra o Claude Code e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Claude Code não devolveu dados de utilização. Abra o Claude Code e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code не вернул данные об использовании. Откройте Claude Code и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code 未返回用量数据。请打开 Claude Code，然后重试。"
+          }
         }
       }
     },
@@ -229,6 +397,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudieron decodificar los datos de uso de Claude Code. Actualiza para reintentar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível decodificar os dados de uso do Claude Code. Atualize para tentar novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível descodificar os dados de utilização do Claude Code. Atualize para tentar novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось декодировать данные об использовании Claude Code. Обновите, чтобы повторить попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法解码 Claude Code 用量数据。请刷新以重试。"
           }
         }
       }
@@ -259,6 +451,30 @@
             "state" : "translated",
             "value" : "No se pudo interpretar ~/.claude/settings.json."
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível analisar ~/.claude/settings.json."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível analisar ~/.claude/settings.json."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось разобрать ~/.claude/settings.json."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法解析 ~/.claude/settings.json。"
+          }
         }
       }
     },
@@ -287,6 +503,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudo preparar la actualización de Claude Code. Intenta actualizar de nuevo."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível preparar a atualização do Claude Code. Tente atualizar novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível preparar a atualização do Claude Code. Tente atualizar novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось подготовить обновление Claude Code. Повторите обновление."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法准备 Claude Code 刷新。请重新刷新。"
           }
         }
       }
@@ -317,6 +557,30 @@
             "state" : "translated",
             "value" : "No se pudieron leer los datos de uso de Claude Code. Actualiza para reintentar."
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ler os dados de uso do Claude Code. Atualize para tentar novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível ler os dados de utilização do Claude Code. Atualize para tentar novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось прочитать данные об использовании Claude Code. Обновите, чтобы повторить попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法读取 Claude Code 用量数据。请刷新以重试。"
+          }
         }
       }
     },
@@ -345,6 +609,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "No se pudo verificar la instalación del script auxiliar."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível verificar a instalação do script auxiliar."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Não foi possível verificar a instalação do script auxiliar."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Не удалось проверить установку вспомогательного скрипта."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无法验证辅助脚本的安装。"
           }
         }
       }
@@ -375,6 +663,30 @@
             "state" : "translated",
             "value" : "No se encontró el script auxiliar en la app. Reinstala Filbert e inténtalo de nuevo."
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O executável auxiliar não foi encontrado no pacote do app. Reinstale o Filbert e tente novamente."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O executável auxiliar não foi encontrado no pacote da aplicação. Reinstale o Filbert e tente novamente."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вспомогательный исполняемый файл не найден в пакете приложения. Переустановите Filbert и повторите попытку."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在 App 包中找不到辅助可执行文件。请重新安装 Filbert，然后重试。"
+          }
         }
       }
     },
@@ -403,6 +715,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Script auxiliar no instalado"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Script auxiliar não instalado"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Script auxiliar não instalado"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вспомогательный скрипт не установлен"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未安装辅助脚本"
           }
         }
       }
@@ -433,6 +769,30 @@
             "state" : "translated",
             "value" : "Instalar Claude Code"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar o Claude Code"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar o Claude Code"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установить Claude Code"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装 Claude Code"
+          }
         }
       }
     },
@@ -461,6 +821,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro interno: formato de autenticação inesperado."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erro interno: formato de autenticação inesperado."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Внутренняя ошибка: неожиданный формат аутентификации."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "内部错误：意外的认证格式。"
           }
         }
       }
@@ -491,6 +875,30 @@
             "state" : "translated",
             "value" : "Supervisa el uso de la suscripción de Claude Pro/Max"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitora o uso da assinatura Claude Pro/Max"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Monitoriza a utilização da subscrição Claude Pro/Max"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отслеживает использование подписки Claude Pro/Max"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "监控 Claude Pro/Max 订阅用量"
+          }
         }
       }
     },
@@ -519,6 +927,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Sin datos"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem dados"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sem dados"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Нет данных"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "无数据"
           }
         }
       }
@@ -549,6 +981,30 @@
             "state" : "translated",
             "value" : "Abre Claude Code para cargar los datos de uso"
           }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abra o Claude Code para carregar os dados de uso"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Abra o Claude Code para carregar os dados de utilização"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Откройте Claude Code, чтобы загрузить данные об использовании"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打开 Claude Code 以载入用量数据"
+          }
         }
       }
     },
@@ -577,6 +1033,30 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Semanal"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Semanal"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Неделя"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每周"
           }
         }
       }

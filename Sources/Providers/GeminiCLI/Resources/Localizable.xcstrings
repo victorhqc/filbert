@@ -26,6 +26,30 @@
             "state": "translated",
             "value": "%@ · %@"
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
         }
       },
       "extractionState": "stale"
@@ -54,6 +78,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ usado"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ usado"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ utilizado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Использовано: %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已使用 %@"
           }
         }
       },
@@ -84,6 +132,30 @@
             "state": "translated",
             "value": "%@ usado · %@"
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ usado · %@"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ utilizado · %@"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Использовано: %@ · %@"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已使用 %@ · %@"
+          }
         }
       },
       "extractionState": "manual"
@@ -112,6 +184,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Permite que Filbert lea el elemento del llavero de Gemini CLI"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permitir que o Filbert leia o item das chaves do Gemini CLI"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Permitir que o Filbert leia o elemento de porta-chaves do Gemini CLI"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Разрешить Filbert читать объект связки ключей Gemini CLI"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "允许 Filbert 读取 Gemini CLI 钥匙串项目"
           }
         }
       },
@@ -142,6 +238,30 @@
             "state": "translated",
             "value": "Completa la configuración de Gemini CLI o configura un proyecto de Google Cloud y vuelve a intentarlo."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conclua a configuração do Gemini CLI ou configure um projeto do Google Cloud e tente novamente."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conclua a configuração do Gemini CLI ou configure um projeto do Google Cloud e tente novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Завершите настройку Gemini CLI или настройте проект Google Cloud, затем повторите попытку."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请完成 Gemini CLI 设置或配置 Google Cloud 项目，然后重试。"
+          }
         }
       },
       "extractionState": "manual"
@@ -170,6 +290,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Filbert no pudo leer el elemento del llavero de Gemini CLI. Permite el acceso y vuelve a intentarlo."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Filbert não conseguiu ler o item das chaves do Gemini CLI. Permita o acesso e tente novamente."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Filbert não conseguiu ler o elemento de porta-chaves do Gemini CLI. Permita o acesso e tente novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert не удалось прочитать объект связки ключей Gemini CLI. Разрешите доступ и повторите попытку."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert 无法读取 Gemini CLI 钥匙串项目。请允许访问，然后重试。"
           }
         }
       },
@@ -200,6 +344,30 @@
             "state": "translated",
             "value": "Se requiere configurar la cuenta o el proyecto de Gemini CLI."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "É necessário configurar a conta ou o projeto do Gemini CLI."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "É necessário configurar a conta ou o projeto do Gemini CLI."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Требуется настройка аккаунта или проекта Gemini CLI."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要设置 Gemini CLI 账户或项目。"
+          }
         }
       },
       "extractionState": "manual"
@@ -228,6 +396,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "La autenticación de Gemini CLI falló. Vuelve a iniciar sesión."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A autenticação do Gemini CLI falhou. Inicie sessão novamente."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A autenticação do Gemini CLI falhou. Inicie sessão novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ошибка аутентификации Gemini CLI. Войдите снова."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 认证失败。请重新登录。"
           }
         }
       },
@@ -258,6 +450,30 @@
             "state": "translated",
             "value": "Las credenciales de Gemini CLI no son compatibles. Actualiza Gemini CLI e inicia sesión de nuevo."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As credenciais do Gemini CLI não são compatíveis. Atualize o Gemini CLI e inicie sessão novamente."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "As credenciais do Gemini CLI não são suportadas. Atualize o Gemini CLI e inicie sessão novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Учётные данные Gemini CLI не поддерживаются. Обновите Gemini CLI и войдите снова."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支持此 Gemini CLI 凭证。请更新 Gemini CLI，然后重新登录。"
+          }
         }
       },
       "extractionState": "manual"
@@ -286,6 +502,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Gemini CLI atingiu o limite de solicitações. Tente novamente mais tarde."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Gemini CLI atingiu o limite de pedidos. Tente novamente mais tarde."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Слишком много запросов к Gemini CLI. Повторите попытку позже."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 请求过于频繁。请稍后重试。"
           }
         }
       },
@@ -316,6 +556,30 @@
             "state": "translated",
             "value": "Gemini CLI está desconectado. Abre Gemini CLI e inicia sesión con Google."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A sessão do Gemini CLI foi encerrada. Abra o Gemini CLI e inicie sessão com o Google."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A sessão do Gemini CLI foi terminada. Abra o Gemini CLI e inicie sessão com a Google."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выполнен выход из Gemini CLI. Откройте Gemini CLI и войдите через Google."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 已退出登录。请打开 Gemini CLI 并使用 Google 登录。"
+          }
         }
       },
       "extractionState": "manual"
@@ -344,6 +608,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI devolvió una respuesta de uso inesperada."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Gemini CLI retornou uma resposta de uso inesperada."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Gemini CLI devolveu uma resposta de utilização inesperada."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI вернул неожиданный ответ об использовании."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 返回了意外的用量响应。"
           }
         }
       },
@@ -374,6 +662,30 @@
             "state": "translated",
             "value": "Gemini CLI devolvió datos que Filbert no pudo leer. Actualiza Filbert y vuelve a intentarlo."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Gemini CLI retornou dados que o Filbert não conseguiu ler. Atualize o Filbert e tente novamente."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O Gemini CLI devolveu dados que o Filbert não conseguiu ler. Atualize o Filbert e tente novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI вернул данные, которые Filbert не смог прочитать. Обновите Filbert и повторите попытку."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 返回了 Filbert 无法读取的数据。请更新 Filbert，然后重试。"
+          }
         }
       },
       "extractionState": "manual"
@@ -402,6 +714,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "La solicitud de uso de Gemini CLI agotó el tiempo de espera. Vuelve a intentarlo más tarde."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "A solicitação de uso do Gemini CLI excedeu o tempo limite. Tente novamente mais tarde."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O pedido de utilização do Gemini CLI excedeu o tempo limite. Tente novamente mais tarde."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Время ожидания запроса к сервису использования Gemini CLI истекло. Повторите попытку позже."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 用量请求超时。请稍后重试。"
           }
         }
       },
@@ -432,6 +768,30 @@
             "state": "translated",
             "value": "El servicio de uso de Gemini CLI devolvió un error inesperado. Vuelve a intentarlo más tarde."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O serviço de uso do Gemini CLI retornou um erro inesperado. Tente novamente mais tarde."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "O serviço de utilização do Gemini CLI devolveu um erro inesperado. Tente novamente mais tarde."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Сервис использования Gemini CLI вернул неожиданную ошибку. Повторите попытку позже."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI 用量服务返回了意外错误。请稍后重试。"
+          }
         }
       },
       "extractionState": "manual"
@@ -460,6 +820,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tokens de entrada"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de entrada"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de entrada"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Входные токены"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入 token"
           }
         }
       },
@@ -490,6 +874,30 @@
             "state": "translated",
             "value": "Instalar Gemini CLI"
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar o Gemini CLI"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Instalar o Gemini CLI"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Установить Gemini CLI"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安装 Gemini CLI"
+          }
         }
       },
       "extractionState": "manual"
@@ -518,6 +926,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Error interno: forma de autenticación inesperada."
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erro interno: formato de autenticação inesperado."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Erro interno: formato de autenticação inesperado."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Внутренняя ошибка: неожиданный формат аутентификации."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "内部错误：意外的认证格式。"
           }
         }
       },
@@ -548,6 +980,30 @@
             "state": "translated",
             "value": "No se informaron límites de uso"
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum limite de uso informado"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nenhum limite de utilização comunicado"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Лимиты использования не получены"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未报告用量限制"
+          }
         }
       },
       "extractionState": "manual"
@@ -576,6 +1032,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Supervisa las cuotas de modelos de Gemini CLI"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitora as cotas de modelos do Gemini CLI"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Monitoriza as quotas de modelos do Gemini CLI"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Отслеживает квоты моделей Gemini CLI"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "监控 Gemini CLI 模型配额"
           }
         }
       },
@@ -606,6 +1086,30 @@
             "state": "translated",
             "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Revisa tu conexión y vuelve a intentarlo."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível acessar o serviço de uso do Gemini CLI. Verifique sua conexão e tente novamente."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não foi possível aceder ao serviço de utilização do Gemini CLI. Verifique a ligação e tente novamente."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не удалось связаться с сервисом использования Gemini CLI. Проверьте подключение и повторите попытку."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法连接 Gemini CLI 用量服务。请检查你的网络连接，然后重试。"
+          }
         }
       },
       "extractionState": "manual"
@@ -634,6 +1138,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Tokens de salida"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de saída"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tokens de saída"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Выходные токены"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输出 token"
           }
         }
       },
@@ -664,6 +1192,30 @@
             "state": "translated",
             "value": "Cuota"
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cota"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Quota"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Квота"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配额"
+          }
         }
       },
       "extractionState": "manual"
@@ -692,6 +1244,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Restante"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restante"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Restante"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Осталось"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "剩余"
           }
         }
       },
@@ -722,6 +1298,30 @@
             "state": "translated",
             "value": "Solicitudes"
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Solicitações"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pedidos"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Запросы"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请求"
+          }
         }
       },
       "extractionState": "manual"
@@ -750,6 +1350,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Inicia sesión en Gemini CLI"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sessão no Gemini CLI"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Iniciar sessão no Gemini CLI"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Войти в Gemini CLI"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登录 Gemini CLI"
           }
         }
       },
@@ -780,6 +1404,30 @@
             "state": "translated",
             "value": "Inicia sesión en Gemini CLI antes de actualizar el uso."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicie sessão no Gemini CLI antes de atualizar o uso."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Inicie sessão no Gemini CLI antes de atualizar a utilização."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Войдите в Gemini CLI, прежде чем обновлять данные об использовании."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "刷新用量前，请先登录 Gemini CLI。"
+          }
         }
       },
       "extractionState": "manual"
@@ -809,6 +1457,30 @@
             "state": "translated",
             "value": "Este proveedor usa la interfaz privada de Code Assist de Google y puede necesitar una actualización si Google la cambia."
           }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este provedor usa a interface privada do Code Assist do Google e pode precisar de uma atualização se o Google a alterar."
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Este fornecedor usa a interface privada do Code Assist da Google e pode precisar de uma atualização se a Google a alterar."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Этот провайдер использует закрытый интерфейс Google Code Assist. Если Google его изменит, может потребоваться обновление."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此提供商使用 Google 的非公开 Code Assist 接口，如果 Google 更改该接口，可能需要更新。"
+          }
         }
       },
       "extractionState": "manual"
@@ -837,6 +1509,30 @@
           "stringUnit": {
             "state": "translated",
             "value": "Actualiza Gemini CLI e inicia sesión de nuevo"
+          }
+        },
+        "pt-BR": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atualizar o Gemini CLI e iniciar sessão novamente"
+          }
+        },
+        "pt-PT": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Atualizar o Gemini CLI e iniciar sessão novamente"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Обновить Gemini CLI и войти снова"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新 Gemini CLI 并重新登录"
           }
         }
       },

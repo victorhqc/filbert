@@ -98,7 +98,13 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - Not counted nouns, so not plural: `%lld× multiplier`, `under %lld`, `%lld and up`, percentages, and the exit code. The sleep durations ("5 minutes", "1 hour", "2 hours") are fixed keys, one per menu item.
    - `testEveryPluralHasTheFormsItsLanguageNeeds` checks the CLDR forms for each language: `one` and `other` by default, four for `ru`, and only `other` for `zh-Hans`. Step 5 must add plural variations for `ru` wherever the noun changes with the count.
    - Credits arrive as formatted text with two decimals ("1.00 credits"), so they can't use plural variations. The glossary says how to phrase them.
-5. [ ] New languages, one module at a time: App, Core, then each provider (AC3). Extend the catalog test's language list.
+5. [x] New languages, one module at a time: App, Core, then each provider (AC3). Extend the catalog test's language list. (2026-10-18)
+   - All 357 keys in 9 catalogs have `pt-BR`, `pt-PT`, `ru`, and `zh-Hans` values. `SupportedLanguage.all` lists the four languages, so the picker shows them and the catalog test requires them.
+   - Before writing, the ⚠︎ terms were checked in Apple's Mac User Guide (`mh26684`) for each locale: Idioma / Язык / 语言, caixa de diálogo / диалоговое окно / 对话框, and "o Mac". Codex credits use OpenAI's 积分. DeepSeek balances use its own 赠金余额 and 充值余额. "average" and Z.ai's 消耗速率 are still ⚠︎ for the native review.
+   - Russian durations arrive in the nominative, so no string puts one after a word that needs another case. Colons and parentheses carry them instead. The glossary records this rule.
+   - Russian and Chinese counted windows use forms that don't change with the count ("5-часовое окно", "5 小时窗口"). Portuguese uses plural variations.
+   - `DisplayLanguageTests` covers the AC5 table, a lookup in each new language, and Chinese text joined to a relative date without a space. `AppLanguagePreferenceTests` covers Traditional Chinese from System Settings, which shows System Default in English.
+   - Not done here: GeminiCLI's `de-DE` uses "Sie", while the rest of the app uses "du".
 6. [ ] Declare `CFBundleLocalizations` in `packaging/Info.plist` (AC6).
 7. [ ] Run the validation gate. Then manually check AC5 and AC7 in each language: the popover, every settings tab, the error states, and VoiceOver.
 

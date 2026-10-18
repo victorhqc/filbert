@@ -31,15 +31,37 @@ final class DisplayLanguageTests: XCTestCase {
     }
 
     func testRegionalVariants_matchTheirCatalogLanguage() {
-        assertLanguage(resolve(selectedLanguageCode: nil, preferences: ["es"]), "es-ES")
-        assertLanguage(resolve(selectedLanguageCode: nil, preferences: ["es-419"]), "es-MX")
-        assertLanguage(resolve(selectedLanguageCode: nil, preferences: ["pt"]), "pt-BR")
-        assertLanguage(resolve(selectedLanguageCode: nil, preferences: ["zh-Hans-CN"]), "zh-Hans")
+        let expected = [
+            "es": "es-ES", "es-ES": "es-ES", "es-MX": "es-MX", "es-419": "es-MX",
+            "pt": "pt-BR", "pt-BR": "pt-BR", "pt-PT": "pt-PT",
+            "ru-RU": "ru", "zh-Hans-CN": "zh-Hans", "zh-CN": "zh-Hans",
+        ]
+        for (preferred, shown) in expected {
+            assertLanguage(resolve(selectedLanguageCode: nil, preferences: [preferred]), shown)
+        }
     }
 
     func testUnsupportedLanguage_fallsBackToEnglish() {
-        assertLanguage(resolve(selectedLanguageCode: nil, preferences: ["zh-Hant"]), "en")
+        for preferred in ["zh-Hant", "zh-Hant-TW", "zh-HK", "fr"] {
+            assertLanguage(resolve(selectedLanguageCode: nil, preferences: [preferred]), "en")
+        }
         assertLanguage(resolve(selectedLanguageCode: "fr", preferences: []), "en")
+    }
+
+    func testLookup_findsEachNewLanguage() {
+        let expected = ["pt-BR": "redefinindo…", "pt-PT": "a repor…", "ru": "сброс…", "zh-Hans": "正在重置…"]
+        for (language, text) in expected {
+            DisplayLanguage.selectedLanguageCode = language
+            XCTAssertEqual(QuotaFormatting.countdown(to: .distantPast), text, language)
+        }
+    }
+
+    func testRelativeTime_joinsChineseWithoutASpace() {
+        DisplayLanguage.selectedLanguageCode = "zh-Hans"
+
+        let countdown = QuotaFormatting.countdown(to: Date().addingTimeInterval(2 * 3600 + 60))
+
+        XCTAssertEqual(countdown, "2小时后重置")
     }
 
     func testLookup_followsSelectionWithoutRelaunch() {

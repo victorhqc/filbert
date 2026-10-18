@@ -99,8 +99,20 @@ final class AppLanguagePreferenceTests: XCTestCase {
     func testThePickerListsEachLanguageInItsOwnName() {
         XCTAssertEqual(
             SupportedLanguage.all.map(\.autonym),
-            ["English", "Deutsch", "Español (México)", "Español (España)"]
+            [
+                "English", "Deutsch", "Español (México)", "Español (España)",
+                "Português (Brasil)", "Português (Portugal)", "Русский", "简体中文",
+            ]
         )
+    }
+
+    func testTraditionalChineseFromSystemSettingsShowsSystemDefault() {
+        defaults.set(["zh-Hant-TW"], forKey: AppLanguagePreference.key)
+
+        let model = makeModel(global: ["en-US"])
+
+        XCTAssertNil(model.selectedLanguageCode)
+        XCTAssertEqual(model.locale.language.languageCode, "en")
     }
 
     private var storedLanguages: [String]? {

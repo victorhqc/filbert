@@ -31,6 +31,8 @@ Record new terms here with the source. **⚠︎** marks a term that no source ha
 - Never hand-write units such as "min" or "h". Durations, dates, and numbers come from the system formatters in the display language.
 - Counted strings use plural variations, not "(s)" or a fixed form. Russian needs `one`, `few`, `many`, and `other` (1 минута, 2 минуты, 5 минут, 21 минута). Chinese needs only `other`. The catalog test checks the forms.
 - A count that arrives as formatted text (`%@`), such as "%@ credits remaining", can't use plural variations. Phrase it so the noun doesn't agree with the number, for example "Осталось кредитов: %@".
+- Russian durations arrive in the nominative ("1 минута"). Never put them after a word that needs another case ("через", "в течение", "за", "больше"). Use a colon or parentheses instead: "Время ожидания: %@", "на основе истории (%@)".
+- Russian writes ё wherever it belongs: "учётные данные", "ещё", "сохранённый".
 
 ## Spanish: Mexico vs. Spain
 
@@ -91,14 +93,19 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | reset (quota window) | zurücksetzen, Zurücksetzung | restablecer | restablecer | redefinir | repor | сбросить, сброс | 重置 |
 | Rate limited | Anfragelimit erreicht | Se alcanzó el límite de solicitudes | Límite de solicitudes alcanzado | Limite de solicitações atingido | Limite de pedidos atingido | Слишком много запросов | 请求过于频繁 |
 | balance | Guthaben | saldo | saldo | saldo | saldo | баланс | 余额 |
-| credits | Credits | créditos | créditos | créditos | créditos | кредиты | promotional or bonus: 赠金; purchased: ⚠︎ use the provider's own Chinese UI |
+| credits | Credits | créditos | créditos | créditos | créditos | кредиты | promotional or bonus: 赠金; Codex (OpenAI): 积分 |
 | peak hours | Spitzenzeiten | horas pico | horas punta | horário de pico | horas de ponta | часы пик | 高峰时段 |
 | average (pace) | durchschnittlich | promedio | medio | médio ⚠︎ | médio ⚠︎ | средний ⚠︎ | 平均 ⚠︎ |
-| the Mac (article) | der Mac | la Mac | el Mac | o Mac ⚠︎ | o Mac ⚠︎ | Mac | Mac |
+| the Mac (article) | der Mac | la Mac | el Mac | o Mac | o Mac | Mac | Mac |
 | Keep Awake | Wach halten | Mantener activo | Mantener activo | Manter ativo | Manter ativo | Не засыпать | 保持唤醒 |
 | System Default (language) | Systemstandard | Predeterminado del sistema | Predeterminado del sistema | Padrão do sistema | Predefinição do sistema | Системный | 跟随系统 |
-| Language (setting) | Sprache | Idioma | Idioma | Idioma ⚠︎ | Idioma ⚠︎ | Язык ⚠︎ | 语言 ⚠︎ |
-| dialog (system window) | Dialog | cuadro de diálogo | cuadro de diálogo | caixa de diálogo ⚠︎ | caixa de diálogo ⚠︎ | диалоговое окно ⚠︎ | 对话框 ⚠︎ |
+| Language (setting) | Sprache | Idioma | Idioma | Idioma | Idioma | Язык | 语言 |
+| dialog (system window) | Dialog | cuadro de diálogo | cuadro de diálogo | caixa de diálogo | caixa de diálogo | диалоговое окно | 对话框 |
+| helper script | Hilfsskript | script auxiliar | script auxiliar | script auxiliar | script auxiliar | вспомогательный скрипт (buttons: скрипт) | 辅助脚本 |
+| granted balance (DeepSeek) | Gewährtes Guthaben | créditos otorgados | créditos otorgados | créditos concedidos | créditos concedidos | предоставленные кредиты | 赠金余额 |
+| topped-up balance (DeepSeek) | Aufgeladenes Guthaben | saldo recargado | saldo recargado | recarregado | carregado | пополнено | 充值余额 |
+| credit rate (Z.ai peak hours) | Credit-Tarif | tarifa de créditos | tarifa de créditos | taxa de créditos | taxa de créditos | тариф | 消耗速率 ⚠︎ |
+| Finder | Finder | Finder | Finder | Finder | Finder | Finder | 访达 |
 
 ## Language names in the picker
 
@@ -113,3 +120,6 @@ Each language appears in its own name (ui 32 AC1): English, Deutsch, Español (M
 - API key: Google Gemini API docs "API keys" in `ru` and `zh-cn`.
 - rate limits, quota, usage, reset (zh-Hans): Google Gemini API docs "Rate limits" in `zh-cn`.
 - credits (zh-Hans): Google Cloud docs and codelabs use 赠金.
+- Language, dialog, the Mac, Language & Region (pt-BR, pt-PT, ru, zh-Hans): Apple Mac User Guide "Change the language your Mac uses" (`mh26684`) in `pt-br`, `pt-pt`, `ru-ru`, `zh-cn`. The `zh-cn` guide uses 你; the `pt-pt` guide uses formal imperatives ("selecione", "Aceda").
+- Codex credits (zh-Hans): OpenAI's `zh-Hans-CN` pages use 积分 ("服务积分条款", the ChatGPT rate card).
+- DeepSeek balances (zh-Hans): DeepSeek API docs "Get user balance" in `zh-cn` use 赠金余额 and 充值余额.

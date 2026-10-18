@@ -17,6 +17,10 @@ final class ZAIWindowLabelTests: XCTestCase {
             "de-DE": ["1-Stunden-Fenster", "5-Stunden-Fenster"],
             "es-MX": ["Ventana de 1 hora", "Ventana de 5 horas"],
             "es-ES": ["Ventana de 1 hora", "Ventana de 5 horas"],
+            "pt-BR": ["Janela de 1 hora", "Janela de 5 horas"],
+            "pt-PT": ["Janela de 1 hora", "Janela de 5 horas"],
+            "ru": ["1-часовое окно", "5-часовое окно"],
+            "zh-Hans": ["1 小时窗口", "5 小时窗口"],
         ]
         for (language, labels) in expected {
             DisplayLanguage.selectedLanguageCode = language
