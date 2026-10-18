@@ -78,6 +78,31 @@ final class AppLanguagePreferenceTests: XCTestCase {
         XCTAssertNil(storedLanguages)
     }
 
+    func testTheRestartNoteShowsOnlyAfterAChangeThatPersists() {
+        let model = makeModel(global: ["en-US"])
+        XCTAssertFalse(model.changesSystemTextAtNextLaunch)
+
+        model.select("de-DE")
+        XCTAssertTrue(model.changesSystemTextAtNextLaunch)
+
+        model.select(nil)
+        XCTAssertFalse(model.changesSystemTextAtNextLaunch)
+
+        let sessionOnly = DisplayLanguageModel(
+            preference: AppLanguagePreference(defaults: defaults, domainName: nil, globalLanguages: { ["en-US"] }),
+            notificationCenter: NotificationCenter()
+        )
+        sessionOnly.select("de-DE")
+        XCTAssertFalse(sessionOnly.changesSystemTextAtNextLaunch)
+    }
+
+    func testThePickerListsEachLanguageInItsOwnName() {
+        XCTAssertEqual(
+            SupportedLanguage.all.map(\.autonym),
+            ["English", "Deutsch", "Español (México)", "Español (España)"]
+        )
+    }
+
     private var storedLanguages: [String]? {
         defaults.persistentDomain(forName: suiteName)?[AppLanguagePreference.key] as? [String]
     }

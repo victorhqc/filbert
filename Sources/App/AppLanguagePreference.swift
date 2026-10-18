@@ -42,6 +42,10 @@ struct AppLanguagePreference: @unchecked Sendable {
         storedLanguages ?? globalLanguages()
     }
 
+    var persistsSelection: Bool {
+        domainName != nil
+    }
+
     func store(_ languageCode: String?) {
         guard domainName != nil else { return }
         if let languageCode {

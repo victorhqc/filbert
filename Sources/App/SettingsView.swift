@@ -16,12 +16,13 @@ struct SettingsView: View {
     let updateCoordinator: UpdateCoordinator
     let sleepPrevention: SleepPreventionController
     let launchAtLogin: LaunchAtLoginController
+    let displayLanguage: DisplayLanguageModel
     /// Lives above the language rebuild, so a language change keeps the open tab.
     @Binding var selectedTab: SettingsTab
 
     var body: some View {
         TabView(selection: $selectedTab) {
-            GeneralSettingsView(launchAtLogin: launchAtLogin)
+            GeneralSettingsView(launchAtLogin: launchAtLogin, displayLanguage: displayLanguage)
                 .tabItem {
                     Label(String(displayLocalized: "General", bundle: .module), systemImage: "gearshape")
                 }

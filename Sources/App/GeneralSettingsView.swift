@@ -4,6 +4,7 @@ import SwiftUI
 @MainActor
 struct GeneralSettingsView: View {
     let launchAtLogin: LaunchAtLoginController
+    let displayLanguage: DisplayLanguageModel
 
     var body: some View {
         SettingsScrollColumn {
@@ -43,11 +44,52 @@ struct GeneralSettingsView: View {
                         .accessibilityLabel(errorMessage)
                 }
             }
+
+            languageCard
         }
         .navigationTitle(String(displayLocalized: "General", bundle: .module))
         .onAppear {
             launchAtLogin.refreshStatus()
         }
+    }
+
+    private var languageCard: some View {
+        SettingsCard(
+            heading: String(displayLocalized: "Language", bundle: .module),
+            description: String(displayLocalized: "Choose the language Filbert uses.", bundle: .module)
+        ) {
+            Picker(
+                String(displayLocalized: "Language", bundle: .module),
+                selection: Binding(
+                    get: { displayLanguage.selectedLanguageCode },
+                    set: { displayLanguage.select($0) }
+                )
+            ) {
+                Text(String(displayLocalized: "System Default", bundle: .module))
+                    .tag(String?.none)
+                ForEach(SupportedLanguage.all) { language in
+                    Text(autonym(of: language))
+                        .tag(Optional(language.code))
+                }
+            }
+            .labelsHidden()
+            .fixedSize()
+            .accessibilityLabel(String(displayLocalized: "Language", bundle: .module))
+
+            if displayLanguage.changesSystemTextAtNextLaunch {
+                Text(String(displayLocalized: "Some system dialogs change after Filbert restarts.", bundle: .module))
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+        }
+    }
+
+    /// VoiceOver reads each name in its own language.
+    private func autonym(of language: SupportedLanguage) -> AttributedString {
+        var autonym = AttributedString(language.autonym)
+        autonym[AttributeScopes.FoundationAttributes.LanguageIdentifierAttribute.self] = language.code
+        return autonym
     }
 
     private var statusDescription: String {

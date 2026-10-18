@@ -59,6 +59,7 @@ struct AppMain: App {
                     updateCoordinator: updateCoordinator,
                     sleepPrevention: sleepPrevention,
                     launchAtLogin: launchAtLogin,
+                    displayLanguage: displayLanguage,
                     selectedTab: $settingsTab
                 )
             }

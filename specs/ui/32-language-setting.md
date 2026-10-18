@@ -112,7 +112,11 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
    - `AppLanguagePreferenceTests` covers AC2, AC5, AC6, AC7, AC8, and `swift run` with no bundle identifier. All tests use a separate defaults suite, so nothing writes to the test runner's own domain.
 6. [x] Add `SupportedLanguage` in `Sources/App` with a code and an autonym for each language. The picker and the catalog test (ui 29 AC3) read this one list.
    - Done with step 5, which needs the list to check a stored value. It lists the four current languages; (ui 31) adds the rest. The catalog test also fails when a catalog has a language that the list does not name.
-7. [ ] Add the Language card to `GeneralSettingsView` (AC1, AC4, AC10).
+7. [x] Add the Language card to `GeneralSettingsView` (AC1, AC4, AC10). (2026-10-18)
+   - A menu picker with "System Default", then `SupportedLanguage.all` in order. Each name carries its own language identifier, so VoiceOver reads it in that language. The visible label is hidden because the card heading already says "Language". The accessibility label stays "Language" (AC10).
+   - `DisplayLanguageModel.changesSystemTextAtNextLaunch` shows the AC4 note only when the choice differs from the one at launch and can be stored. Under `swift run`, nothing is stored, so the note stays hidden.
+   - New strings: "Language", "Choose the language Filbert uses.", "System Default", and the AC4 note, in `de-DE`, `es-ES`, and `es-MX`. "Language" and "dialog" are in the glossary. Their pt, ru, and zh-Hans terms are marked ⚠︎ until (ui 31) checks them.
+   - A 6-second launch of the debug build ran without errors. The picker itself is checked by hand in step 8.
 8. [ ] Run the validation gate. Then manually check AC3 to AC7 in the packaged app for each language, with the popover and Settings open together.
 
 ## Risks

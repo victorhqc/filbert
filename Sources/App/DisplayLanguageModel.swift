@@ -9,6 +9,7 @@ final class DisplayLanguageModel {
     private(set) var locale: Locale
     private(set) var selectedLanguageCode: String?
     @ObservationIgnored private let preference: AppLanguagePreference
+    @ObservationIgnored private let launchLanguageCode: String?
     @ObservationIgnored private var localeObserverToken: NSObjectProtocol?
 
     init(
@@ -18,6 +19,7 @@ final class DisplayLanguageModel {
         self.preference = preference
         DisplayLanguage.setSystemPreferences { preference.systemLanguages() }
         let stored = preference.selectedLanguageCode
+        launchLanguageCode = stored
         DisplayLanguage.selectedLanguageCode = stored
         selectedLanguageCode = stored
         locale = DisplayLanguage.locale
@@ -30,6 +32,11 @@ final class DisplayLanguageModel {
                 self?.refresh()
             }
         }
+    }
+
+    /// macOS reads `AppleLanguages` only at launch, for Sparkle and other system text.
+    var changesSystemTextAtNextLaunch: Bool {
+        preference.persistsSelection && selectedLanguageCode != launchLanguageCode
     }
 
     func select(_ languageCode: String?) {

@@ -93,6 +93,8 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | peak hours | Spitzenzeiten | horas pico | horas punta | horário de pico | horas de ponta | часы пик | 高峰时段 |
 | Keep Awake | Wach halten | Mantener activo (today "No dormir") | Mantener activo | Manter ativo | Manter ativo | Не засыпать | 保持唤醒 |
 | System Default (language) | Systemstandard | Predeterminado del sistema | Predeterminado del sistema | Padrão do sistema | Predefinição do sistema | Системный | 跟随系统 |
+| Language (setting) | Sprache | Idioma | Idioma | Idioma ⚠︎ | Idioma ⚠︎ | Язык ⚠︎ | 语言 ⚠︎ |
+| dialog (system window) | Dialog | cuadro de diálogo | cuadro de diálogo | caixa de diálogo ⚠︎ | caixa de diálogo ⚠︎ | диалоговое окно ⚠︎ | 对话框 ⚠︎ |
 
 ## Language names in the picker
 
