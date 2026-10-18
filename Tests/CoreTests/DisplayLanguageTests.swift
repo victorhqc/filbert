@@ -67,12 +67,36 @@ final class DisplayLanguageTests: XCTestCase {
         XCTAssertEqual(countdown, "2小时后重置")
     }
 
-    func testRelativeTime_comesBeforeTheJapaneseVerb() {
+    func testRelativeTime_usesANeutralJapaneseResetLabel() {
         DisplayLanguage.selectedLanguageCode = "ja"
 
         let countdown = QuotaFormatting.countdown(to: Date().addingTimeInterval(2 * 3600 + 60))
 
-        XCTAssertEqual(countdown, "2 時間後にリセット")
+        XCTAssertEqual(countdown, "リセット: 2 時間後")
+    }
+
+    func testNamedJapaneseResetDatesNeedNoAdditionalParticle() {
+        DisplayLanguage.selectedLanguageCode = "ja"
+
+        for days in [1, 2, 7] {
+            let date = Date().addingTimeInterval(TimeInterval(days * 24 * 3600 + 60))
+            let relative = date.formatted(.relative(presentation: .named).locale(DisplayLanguage.locale))
+
+            XCTAssertEqual(QuotaFormatting.countdown(to: date), "リセット: \(relative)")
+        }
+    }
+
+    func testPortugueseResetCountdownsDescribeTheQuotaReset() {
+        let expected = ["pt-BR": "redefinição em 2 horas", "pt-PT": "repõe-se dentro de 2 horas"]
+        for (language, text) in expected {
+            DisplayLanguage.selectedLanguageCode = language
+
+            XCTAssertEqual(
+                QuotaFormatting.countdown(to: Date().addingTimeInterval(2 * 3600 + 60)),
+                text,
+                language
+            )
+        }
     }
 
     func testLookup_followsSelectionWithoutRelaunch() {

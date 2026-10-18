@@ -32,13 +32,18 @@ Record new terms here with the source. **⚠︎** marks a term that no source ha
 - Never hand-write units such as "min" or "h". Durations, dates, and numbers come from the system formatters in the display language.
 - Counted strings use plural variations, not "(s)" or a fixed form. Russian needs `one`, `few`, `many`, and `other` (1 минута, 2 минуты, 5 минут, 21 минута). Chinese needs only `other`. The catalog test checks the forms.
 - A count that arrives as formatted text (`%@`), such as "%@ credits remaining", can't use plural variations. Phrase it so the noun doesn't agree with the number, for example "Осталось кредитов: %@".
-- Russian durations arrive in the nominative ("1 минута"). Never put them after a word that needs another case ("через", "в течение", "за", "больше"). Use a colon or parentheses instead: "Время ожидания: %@", "на основе истории (%@)".
+- Formatted durations can be singular, plural, or compound. Spanish uses neutral labels such as "Tiempo restante: %@" and "Tiempo de uso restante: aprox. %@", not fixed "restantes" or "quedan". Portuguese currency balances use "saldo restante: %@".
+- Russian durations arrive in the nominative ("1 минута"). Never put them after a word that needs another case ("через", "в течение", "за", "больше", "около"). Use "примерно", a colon, or parentheses instead: "До исчерпания: примерно %@", "на основе истории (%@)".
+- German standalone durations cannot acquire case endings during interpolation. Use "Voraussichtliche Restzeit: etwa %@" rather than "in etwa %@" with a duration such as "2 Tage".
+- "Keep checking for %@" receives a provider name, not a duration. "Refresh" in provider errors means refreshing usage data, not upgrading the provider's software.
+- German and Spanish put a space before the percent sign. In format strings, keep the literal-percent escape: "%lld %%".
 - Russian writes ё wherever it belongs: "учётные данные", "ещё", "сохранённый".
 - Japanese sentences use です/ます. Buttons and menu items don't.
 - Japanese puts no space between Japanese and Latin letters, digits, or placeholders: "APIキー", "5分", "%@を終了", "Macの". Google's docs add the space ("API キー"); macOS does not, and Filbert follows macOS.
 - Japanese uses full-width 、。（）, but half-width ? ! and ": ", as macOS does: "残り: %@", "今すぐダウンロードしますか?".
 - Japanese "try again later" is "あとでやり直してください", as in macOS and Sparkle.
 - Japanese counted strings use one `other` form, like Chinese.
+- Relative dates include named days as well as numeric durations. Japanese uses "リセット: %@" so both "明日" and "2 時間後" fit without an extra particle.
 
 ## Spanish: Mexico vs. Spain
 
@@ -83,7 +88,7 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | Providers (tab) | Anbieter | Proveedores | Proveedores | Provedores | Fornecedores | Провайдеры | 提供商 | プロバイダ |
 | AI provider | KI-Anbieter | proveedor de IA | proveedor de IA | provedor de IA | fornecedor de IA | ИИ-провайдер | AI 提供商 | AIプロバイダ |
 | menu bar | Menüleiste | barra de menús | barra de menús | barra de menus | barra de menus | строка меню | 菜单栏 | メニューバー |
-| Keychain | Schlüsselbund | llavero | llavero | chaves (app: Acesso às Chaves; item: item das chaves) | porta-chaves (app: Acesso a Porta-chaves; item: elemento de porta-chaves) | связка ключей | 钥匙串 | キーチェーン (app: キーチェーンアクセス) |
+| Keychain | Schlüsselbund | llavero | llavero | chaves (app: Acesso às Chaves; item: item das chaves) | porta-chaves (app: Acesso a Porta-chaves; item: elemento de porta-chaves) | связка ключей | 钥匙串 (item: 钥匙串项) | キーチェーン (app: キーチェーンアクセス) |
 | API key | API-Schlüssel | clave de API | clave de API | chave de API | chave de API | ключ API | API 密钥 | APIキー |
 | Refresh | Aktualisieren | Actualizar | Actualizar | Atualizar | Atualizar | Обновить | 刷新 | 更新 |
 | Retry | Erneut versuchen | Reintentar | Reintentar | Tentar novamente | Tentar novamente | Повторить | 重试 | 再試行 |
@@ -100,8 +105,8 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | Limit reached | Limit erreicht | Límite alcanzado | Límite alcanzado | Limite atingido | Limite atingido | Лимит исчерпан | 已达上限 | 上限に達しました |
 | reset (quota window) | zurücksetzen, Zurücksetzung | restablecer | restablecer | redefinir | repor | сбросить, сброс | 重置 | リセット |
 | Rate limited | Anfragelimit erreicht | Se alcanzó el límite de solicitudes | Límite de solicitudes alcanzado | Limite de solicitações atingido | Limite de pedidos atingido | Слишком много запросов | 请求过于频繁 | レート制限されています |
-| balance | Guthaben | saldo | saldo | saldo | saldo | баланс | 余额 | 残高 ⚠︎ |
-| credits | Credits | créditos | créditos | créditos | créditos | кредиты | promotional or bonus: 赠金; Codex (OpenAI): 积分 | クレジット ⚠︎ |
+| balance | Guthaben | saldo | saldo | saldo | saldo | баланс | 余额 | 残高 |
+| credits | Credits | créditos | créditos | créditos | créditos | кредиты | promotional or bonus: 赠金; Codex (OpenAI): 额度; Z.ai usage credits: 积分 | クレジット |
 | peak hours | Spitzenzeiten | horas pico | horas punta | horário de pico | horas de ponta | часы пик | 高峰时段 | ピーク時間帯 ⚠︎ |
 | average (pace) | durchschnittlich | promedio | medio | médio ⚠︎ | médio ⚠︎ | средний ⚠︎ | 平均 ⚠︎ | 平均 |
 | the Mac (article) | der Mac | la Mac | el Mac | o Mac | o Mac | Mac | Mac | Mac |
@@ -112,7 +117,7 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | helper script | Hilfsskript | script auxiliar | script auxiliar | script auxiliar | script auxiliar | вспомогательный скрипт (buttons: скрипт) | 辅助脚本 | ヘルパースクリプト |
 | granted balance (DeepSeek) | Gewährtes Guthaben | créditos otorgados | créditos otorgados | créditos concedidos | créditos concedidos | предоставленные кредиты | 赠金余额 | 付与残高 ⚠︎ |
 | topped-up balance (DeepSeek) | Aufgeladenes Guthaben | saldo recargado | saldo recargado | recarregado | carregado | пополнено | 充值余额 | チャージ残高 ⚠︎ |
-| credit rate (Z.ai peak hours) | Credit-Tarif | tarifa de créditos | tarifa de créditos | taxa de créditos | taxa de créditos | тариф | 消耗速率 ⚠︎ | クレジット消費率 ⚠︎ |
+| credit rate (Z.ai peak hours) | Credit-Tarif (percentage: "%@ des Standard-Credit-Tarifs") | tarifa de créditos | tarifa de créditos | taxa de créditos | taxa de créditos | тариф | 积分消耗 (percentage: "按标准的 %@ 消耗积分") | クレジット消費率 ⚠︎ |
 | Finder | Finder | Finder | Finder | Finder | Finder | Finder | 访达 | Finder |
 
 ### Japanese only
@@ -122,7 +127,8 @@ Terms that the other languages don't need in the table above, from the same macO
 - Advanced (tab): 詳細. About (tab): 情報. Status: 状況.
 - server: サーバ. interface: インターフェイス. import: 読み込む. timed out: タイムアウトしました.
 - quota window: 枠 ("5時間枠"). Weekly: 週間. Monthly: 月間 ⚠︎.
-- Quiet window: 静止期間 ⚠︎.
+- Quiet window: 高速更新の継続時間. This describes how long fast checks continue after a usage change; it is not a pause.
+- Cursor's named Auto mode: Auto, not 自動.
 
 ## Language names in the picker
 
@@ -139,10 +145,20 @@ Each language appears in its own name (ui 32 AC1): English, Deutsch, Español (M
 - rate limits, quota, usage, reset (zh-Hans): Google Gemini API docs "Rate limits" in `zh-cn`.
 - credits (zh-Hans): Google Cloud docs and codelabs use 赠金.
 - Language, dialog, the Mac, Language & Region (pt-BR, pt-PT, ru, zh-Hans): Apple Mac User Guide "Change the language your Mac uses" (`mh26684`) in `pt-br`, `pt-pt`, `ru-ru`, `zh-cn`. The `zh-cn` guide uses 你; the `pt-pt` guide uses formal imperatives ("selecione", "Aceda").
-- Codex credits (zh-Hans): OpenAI's `zh-Hans-CN` pages use 积分 ("服务积分条款", the ChatGPT rate card).
+- Codex credits (zh-Hans): OpenAI's product-specific credit-usage help uses 额度, 额度余额, and 剩余额度. Prefer these to the broader service-credit translation 积分.
 - DeepSeek balances (zh-Hans): DeepSeek API docs "Get user balance" in `zh-cn` use 赠金余额 and 充值余额.
 - Japanese conventions and terms: macOS 27 UI strings on the dev Mac (`.loctable` files in AppKit, System Settings, its extensions, Utilities, CoreServices, and Security). They use “…” in 2,530 strings and 「…」 in none, half-width ? and :, full-width （）, and no space before Latin text in 3,157 strings against 22. Source of システム設定, 言語と地域, 一般, 外観, ログイン項目と機能拡張, ログイン時に開く, 再試行, サインイン, 終了, アップデートを確認, 上限に達しました, レート制限されています, リセット, キーチェーンアクセス, システムデフォルト, スリープさせない, プロバイダ, ヘルパーツール, スクリプト, 平均.
 - Japanese tone, Language, dialog, the Mac: Apple Mac User Guide "Change the language your Mac uses" (`mh26684`) and "Open items automatically when you log in" (`mh15189`) in `ja-jp`. Both write "Macの", omit the subject, and use です/ます.
 - Sparkle's own `ja` strings: "アップデートを確認できませんでした", "あとでやり直してください", "%@をアップデート中".
 - API key, quota, usage, rate limit (ja): Google Gemini API docs "API keys" and "Rate limits" with `hl=ja` (APIキー, 割り当て, 使用量, レート制限).
-- No Japanese vendor source was found for credits, balance, peak hours, or the DeepSeek and Z.ai terms. A search found no official Japanese page from OpenAI, DeepSeek, or Z.ai. These keep ⚠︎ for the native review.
+- OpenAI's Japanese credit-usage help confirms クレジット, 残高, and クレジット残高. No Japanese vendor source was established for peak hours or the DeepSeek and Z.ai terms; these keep ⚠︎ for the native review.
+
+## Language-review references
+
+- [OpenAI credit usage, Simplified Chinese](https://help.openai.com/zh-hans-cn/articles/12642688-using-credits-for-flexible-usage-in-chatgpt-freegopluspro-sora): Codex usage credits are 额度; the 额度余额 is distinct from the monetary wallet balance.
+- [OpenAI credit usage, Japanese](https://help.openai.com/ja-jp/articles/12642688-using-credits-for-flexible-usage-in-chatgpt-personal-plans): クレジット, 残高, クレジット残高.
+- [Z.ai Coding Plan, Chinese](https://docs.bigmodel.cn/cn/coding-plan/overview): "非高峰时段内，模型调用按基础积分消耗的 50% 抵扣". The percentage is a charge factor, not consumption per unit of time.
+- [Cursor models, Japanese](https://cursor.com/ja/docs/models): "Auto モード".
+- [Apple Keychain Access, Simplified Chinese](https://support.apple.com/zh-cn/guide/keychain-access/kyca1083/mac): "钥匙串项".
+- [Google Gemini rate limits, Latin American Spanish](https://ai.google.dev/gemini-api/docs/rate-limits?hl=es-419): "límites de frecuencia" and "Si alcanzas un límite de frecuencia…".
+- [RAE/ASALE, símbolo](https://www.rae.es/dpd/s%C3%ADmbolo): the percent sign is preceded by a space, as in "25 %".

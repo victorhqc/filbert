@@ -303,8 +303,8 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ verbleibend" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "%@ left" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ restantes" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@ restantes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo restante: %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo restante: %@" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "残り%@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tempo restante: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Tempo restante: %@" } },
@@ -376,13 +376,13 @@
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@: restam %2$@"
+            "value" : "%1$@: saldo restante: %2$@"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@: restam %2$@"
+            "value" : "%1$@: saldo restante: %2$@"
           }
         },
         "ru" : {
@@ -405,7 +405,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@: %2$lld%% verwendet"
+            "value" : "%1$@: %2$lld %% verwendet"
           }
         },
         "en" : {
@@ -417,13 +417,13 @@
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@: %2$lld%% usado"
+            "value" : "%1$@: %2$lld %% usado"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@: %2$lld%% usado"
+            "value" : "%1$@: %2$lld %% usado"
           }
         },
         "ja" : {
@@ -2083,7 +2083,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "In der Spitze"
+            "value" : "Spitzenzeit"
           }
         },
         "ja" : {
@@ -2142,7 +2142,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Außerhalb der Spitze"
+            "value" : "Außerhalb der Spitzenzeiten"
           }
         },
         "ja" : {
@@ -2496,7 +2496,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard-Creditrate"
+            "value" : "Standard-Credit-Tarif"
           }
         },
         "ja" : {
@@ -2526,7 +2526,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "标准消耗速率"
+            "value" : "标准积分消耗"
           }
         }
       }
@@ -2555,7 +2555,7 @@
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ Credit-Tarif"
+            "value" : "%1$@ des Standard-Credit-Tarifs"
           }
         },
         "ja" : {
@@ -2585,7 +2585,7 @@
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%1$@ 消耗速率"
+            "value" : "按标准的 %1$@ 消耗积分"
           }
         }
       }
@@ -4083,7 +4083,7 @@
     "Choose a shared cadence for opted-in providers." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle einen gemeinsamen Aktualisierungsrhythmus für aktivierte Anbieter." } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle einen gemeinsamen Rhythmus für Anbieter mit automatischer Aktualisierung." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose a shared cadence for opted-in providers." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
@@ -4153,7 +4153,7 @@
     "Regular refresh checks opted-in providers every %@." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die regelmäßige Aktualisierung prüft aktivierte Anbieter alle %@." } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anbieter mit automatischer Aktualisierung werden im Abstand von %@ geprüft." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular refresh checks opted-in providers every %@." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados cada %@." } },
@@ -4171,7 +4171,7 @@
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Quiet window" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de reposo" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de reposo" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "静止期間" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速更新の継続時間" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Janela de inatividade" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Janela de inatividade" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Период затишья" } },
@@ -4326,8 +4326,8 @@
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando %@" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@の確認を続ける" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando por %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar durante %@" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando o uso de %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжить проверки (%@)" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续检查 %@" } }
       }
@@ -5023,7 +5023,7 @@
     "Mac won't sleep until turned off" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac bleibt wach, bis du es ausschaltest" } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Der Mac bleibt wach, bis du „Wach halten“ ausschaltest" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep until turned off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La Mac no entrará en reposo hasta que lo desactives" } },
@@ -5336,8 +5336,8 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Etwa %@ Nutzung verbleibend" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@ of use remaining" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %@ de uso" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %@ de uso" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo de uso restante: aprox. %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo de uso restante: aprox. %@" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "あと約%@使用可能" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@ de uso restante" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@ de utilização restante" } },
@@ -5392,8 +5392,8 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Etwa %1$@ Nutzung verbleibend · %2$@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %1$@ of use remaining · last %2$@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quedan aprox. %1$@ de uso · %2$@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo de uso restante: aprox. %1$@ · %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo de uso restante: aprox. %1$@ · %2$@ de historial" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "あと約%1$@使用可能 · 過去%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de uso restante · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de utilização restante · histórico de %2$@" } },
@@ -5476,8 +5476,8 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim aktuellen Tempo etwa %1$@ Nutzung verbleibend, basierend auf %2$@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "About %1$@ of use remaining at recent pace, based on the last %2$@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Al ritmo reciente quedan aprox. %1$@ de uso, según %2$@ de historial" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo de uso restante al ritmo reciente: aprox. %1$@, según %2$@ de historial" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Tiempo de uso restante al ritmo reciente: aprox. %1$@, según %2$@ de historial" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近のペースでは、あと約%1$@使用可能（過去%2$@に基づく）" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de uso restante no ritmo recente, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de utilização restante ao ritmo recente, com base no histórico de %2$@" } },
@@ -5502,14 +5502,14 @@
     "Runs out in about %@" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aufgebraucht in etwa %@" } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Voraussichtliche Restzeit: etwa %@" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %@" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "約%@後に使い切る見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se dentro de cerca de %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: около %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: примерно %@" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@ 后用完" } }
       }
     },
@@ -5530,28 +5530,28 @@
     "Runs out in about %1$@ · last %2$@" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aufgebraucht in etwa %1$@ · %2$@ Verlauf" } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Voraussichtliche Restzeit: etwa %1$@ · jüngster Nutzungsverlauf (%2$@)" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ · last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se agota en aprox. %1$@ · %2$@ de historial" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "約%1$@後に使い切る見込み · 過去%2$@" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %1$@ · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se dentro de cerca de %1$@ · histórico de %2$@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: около %1$@ · история: %2$@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: примерно %1$@ · история: %2$@" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %1$@ 后用完 · 过去 %2$@" } }
       }
     },
     "Runs out in about %1$@ at your average pace over the last %2$@" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim durchschnittlichen Tempo in etwa %1$@ aufgebraucht, basierend auf %2$@ Verlauf" } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Voraussichtliche Restzeit beim durchschnittlichen Nutzungstempo: etwa %1$@. Grundlage: jüngster Nutzungsverlauf (%2$@)" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Runs out in about %1$@ at your average pace over the last %2$@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo medio se agota en aprox. %1$@, según %2$@ de historial" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio se agota en aprox. %1$@, según %2$@ de historial" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "過去%2$@の平均ペースでは、約%1$@後に使い切る見込み" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %1$@ no seu ritmo médio, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se dentro de cerca de %1$@ ao seu ritmo médio, com base no histórico de %2$@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе до исчерпания около %1$@, на основе истории (%2$@)" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе до исчерпания: примерно %1$@. Период наблюдения: %2$@." } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %2$@ 的平均速度，约 %1$@ 后用完" } }
       }
     },
@@ -5633,8 +5633,8 @@
       "localizations" : {
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeitangabe ist ungefähr" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Timing is approximate" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La hora es aproximada" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El tiempo indicado es aproximado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El tiempo indicado es aproximado" } },
         "ja" : { "stringUnit" : { "state" : "translated", "value" : "時間は目安です" } },
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O tempo é aproximado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O tempo é aproximado" } },
@@ -5737,7 +5737,7 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ créditos restantes" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ créditos restantes" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ — осталось кредитов: %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：剩余 %2$@ 积分" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：剩余额度 %2$@" } }
       }
     },
     "Limit reached" : {

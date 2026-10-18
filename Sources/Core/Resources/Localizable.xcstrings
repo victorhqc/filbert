@@ -90,19 +90,19 @@
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@にリセット"
+            "value" : "リセット: %@"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "redefine %@"
+            "value" : "redefinição %@"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "repõe %@"
+            "value" : "repõe-se %@"
           }
         },
         "ru" : {

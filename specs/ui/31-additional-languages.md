@@ -131,6 +131,14 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - The gate passes: lint, release build, and 1055 tests, also on the native build path with compiled catalogs. That build has a `ja.lproj` in `filbert_App.bundle`.
 11. [x] Run the validation gate. Then manually check AC5 and AC7 in Japanese: the popover, every settings tab, and Language & Region › Applications. (2026-10-18)
    - The user checked Filbert in Japanese and confirmed it works.
+12. [x] Apply the user-approved language-review corrections to the catalogs and glossary.
+   - Keep formatted durations grammatically independent in Russian, German, and both Spanish variants. Correct Portuguese provider-name placeholders and balance agreement, and Portuguese and Japanese reset templates.
+   - Correct Spanish rate-limit and timing messages, Russian Claude Code data-refresh errors, German refresh opt-ins, Keep Awake and peak-hour labels, and Chinese and German credit-charge wording.
+   - Use Cursor's `Auto` name in Japanese, Apple's `钥匙串项` in Chinese, and OpenAI's product-specific `额度` for Codex credits. Resolve the Japanese credit and balance glossary warnings with the reviewed OpenAI source.
+   - Correct German and Spanish percentage spacing. Add regression tests for runtime-composed durations, reset dates, balances, and credit-charge labels, then run the full validation gate.
+   - Optional style changes, disputed decimal agreement, and a cross-language rename of the English "Quiet window" are deferred. The Japanese label uses "高速更新の継続時間" to describe the actual fast-refresh period.
+   - Corrected 46 values in six catalogs. Added seven App composition tests and two Core reset-date tests, and updated the existing Japanese countdown assertion.
+   - The validation gate passes with the pinned SwiftFormat and SwiftLint versions. Layouts, live VoiceOver, and human native-speaker sign-off have not been repeated for these corrections.
 
 ## Risks
 

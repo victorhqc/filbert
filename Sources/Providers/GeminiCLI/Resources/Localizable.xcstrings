@@ -231,7 +231,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "允许 Filbert 读取 Gemini CLI 钥匙串项目"
+            "value": "允许 Filbert 读取 Gemini CLI 钥匙串项"
           }
         }
       },
@@ -349,7 +349,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "Filbert 无法读取 Gemini CLI 钥匙串项目。请允许访问，然后重试。"
+            "value": "Filbert 无法读取 Gemini CLI 钥匙串项。请允许访问，然后重试。"
           }
         }
       },
@@ -549,13 +549,13 @@
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+            "value": "Se ha alcanzado el límite de frecuencia de Gemini CLI. Vuelve a intentarlo más tarde."
           }
         },
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gemini CLI tiene un límite de frecuencia. Vuelve a intentarlo más tarde."
+            "value": "Se alcanzó el límite de frecuencia de Gemini CLI. Vuelve a intentarlo más tarde."
           }
         },
         "ja": {
