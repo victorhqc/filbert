@@ -160,19 +160,91 @@ func makeAutoRefreshViewModel(
     boundarySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
         throw CancellationError()
     },
-    activityNow: @escaping @Sendable () -> Date = { Date() }
+    activityNow: @escaping @Sendable () -> Date = { Date() },
+    errorLog: ErrorLog = AppTestErrorLog.make(),
+    networkPath: any NetworkPathObserving = TestNetworkPath(),
+    wakeNetworkSleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
+        throw CancellationError()
+    },
+    retryGateExpirySleeper: @escaping @Sendable (TimeInterval) async throws -> Void = { _ in
+        throw CancellationError()
+    }
 ) -> QuotaViewModel {
     ProviderEnablement.setEnabled(true, for: RefreshSpyProvider.providerId)
     let registry = ProviderRegistry()
     registry.register(provider)
     return QuotaViewModel(
         registry: registry,
-        errorLog: AppTestErrorLog.make(),
+        errorLog: errorLog,
         autoRefreshSleeper: sleeper,
         smartRefreshBoundarySleeper: boundarySleeper,
         smartRefreshElapsed: elapsed,
-        activityNow: activityNow
+        activityNow: activityNow,
+        networkPath: networkPath,
+        wakeNetworkSleeper: wakeNetworkSleeper,
+        retryGateExpirySleeper: retryGateExpirySleeper
     )
+}
+
+final class TestNetworkPath: NetworkPathObserving, @unchecked Sendable {
+    private let lock = NSLock()
+    private var currentStatus: NetworkPathStatus
+    private var continuation: AsyncStream<NetworkPathStatus>.Continuation?
+
+    init(_ status: NetworkPathStatus = .satisfied) {
+        currentStatus = status
+    }
+
+    var status: NetworkPathStatus {
+        lock.withLock { currentStatus }
+    }
+
+    func statusChanges() -> AsyncStream<NetworkPathStatus> {
+        let (stream, continuation) = AsyncStream<NetworkPathStatus>.makeStream()
+        lock.withLock { self.continuation = continuation }
+        return stream
+    }
+
+    func set(_ status: NetworkPathStatus) {
+        let continuation = lock.withLock {
+            currentStatus = status
+            return self.continuation
+        }
+        continuation?.yield(status)
+    }
+}
+
+actor ControlledSleeper {
+    private var waiters: [CheckedContinuation<Void, any Error>] = []
+    private var requests: [TimeInterval] = []
+
+    func sleep(_ interval: TimeInterval) async throws {
+        requests.append(interval)
+        try await withCheckedThrowingContinuation { continuation in
+            waiters.append(continuation)
+        }
+    }
+
+    func releaseNext() {
+        guard !waiters.isEmpty else { return }
+        waiters.removeFirst().resume()
+    }
+
+    func requestedIntervals() -> [TimeInterval] {
+        requests
+    }
+
+    func pendingCount() -> Int {
+        waiters.count
+    }
+}
+
+func waitForPendingSleeps(on sleeper: ControlledSleeper, count: Int) async {
+    for _ in 0 ..< 1000 where await sleeper.pendingCount() < count {
+        await Task.yield()
+    }
+    let pending = await sleeper.pendingCount()
+    XCTAssertGreaterThanOrEqual(pending, count)
 }
 
 @MainActor

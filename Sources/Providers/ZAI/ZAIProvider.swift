@@ -41,6 +41,17 @@ extension ZAIError: LocalizedError {
     }
 }
 
+extension ZAIError: UnderlyingErrorProviding {
+    public var underlyingError: (any Error)? {
+        switch self {
+        case let .network(error), let .decoding(error):
+            error
+        default:
+            nil
+        }
+    }
+}
+
 // MARK: - Peak-hours metadata
 
 public enum ZAIPeakHours {

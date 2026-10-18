@@ -1,3 +1,4 @@
+import Core
 import Foundation
 
 public enum CursorError: Error, Equatable, Sendable {
@@ -39,6 +40,17 @@ extension CursorError: LocalizedError {
             String(localized: "Network error. Check your connection.")
         case .decoding, .http:
             String(localized: "Unexpected response from server.")
+        }
+    }
+}
+
+extension CursorError: UnderlyingErrorProviding {
+    public var underlyingError: (any Error)? {
+        switch self {
+        case let .network(error), let .decoding(error):
+            error
+        default:
+            nil
         }
     }
 }

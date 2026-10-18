@@ -927,6 +927,35 @@
         }
       }
     },
+    "The provider asked Filbert to wait. Try again in %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Der Anbieter hat Filbert gebeten zu warten. Versuche es in %@ erneut."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The provider asked Filbert to wait. Try again in %@."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El proveedor ha pedido a Filbert que espere. Inténtalo de nuevo en %@."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "El proveedor le pidió a Filbert que espere. Vuelve a intentarlo en %@."
+          }
+        }
+      }
+    },
     "Last updated: %@" : {
       "extractionState" : "manual",
       "localizations" : {

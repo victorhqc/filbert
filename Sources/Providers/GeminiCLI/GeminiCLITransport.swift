@@ -2,7 +2,7 @@ import Core
 import Foundation
 
 enum GeminiHTTPError: Error, Equatable, Sendable {
-    case network
+    case network(URLError.Code?)
     case http(Int)
 }
 
@@ -40,7 +40,7 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
         do {
             let (data, response) = try await session.data(for: request)
             guard let httpResponse = response as? HTTPURLResponse else {
-                throw GeminiHTTPError.network
+                throw GeminiHTTPError.network(nil)
             }
             guard let requestURL = request.url,
                   let responseURL = httpResponse.url,
@@ -49,7 +49,7 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
                   responseURL.scheme == "https",
                   responseURL.host == requestURL.host
             else {
-                throw GeminiHTTPError.network
+                throw GeminiHTTPError.network(nil)
             }
             let retryAfter = httpResponse.value(forHTTPHeaderField: "Retry-After")
                 .flatMap(TimeInterval.init)
@@ -66,7 +66,7 @@ struct URLSessionGeminiHTTPTransport: GeminiHTTPTransport {
         } catch let error as URLError where error.code == .cancelled {
             throw CancellationError()
         } catch {
-            throw GeminiHTTPError.network
+            throw GeminiHTTPError.network((error as? URLError)?.code)
         }
     }
 }
@@ -115,9 +115,9 @@ struct GeminiHTTPClient: Sendable {
             } catch is CancellationError {
                 throw CancellationError()
             } catch {
-                throw GeminiHTTPError.network
+                throw GeminiHTTPError.network((error as? URLError)?.code)
             }
         }
-        throw GeminiHTTPError.network
+        throw GeminiHTTPError.network(nil)
     }
 }

@@ -345,3 +345,13 @@ final class MockURLProtocol: URLProtocol {
 
     override func stopLoading() {}
 }
+
+extension ZAIProviderTests {
+    func testNetworkAndDecodingErrorsExposeTheirCause() {
+        XCTAssertTrue(isConnectivityError(ZAIError.network(URLError(.notConnectedToInternet))))
+        XCTAssertFalse(isConnectivityError(ZAIError.network(URLError(.badServerResponse))))
+        XCTAssertFalse(isConnectivityError(ZAIError.http(500)))
+        XCTAssertNotNil(ZAIError.decoding(URLError(.cannotDecodeContentData)).underlyingError)
+        XCTAssertNil(ZAIError.http(429).underlyingError)
+    }
+}

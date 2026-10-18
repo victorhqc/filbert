@@ -26,7 +26,10 @@ struct AppMain: App {
         registry.register(OpenCodeGoProvider())
         registry.register(CursorProvider())
         registry.register(GeminiCLIProvider())
-        _viewModel = State(initialValue: QuotaViewModel(registry: registry))
+        _viewModel = State(initialValue: QuotaViewModel(
+            registry: registry,
+            networkPath: SystemNetworkPathObserver()
+        ))
         updateCoordinator = UpdateCoordinator()
     }
 

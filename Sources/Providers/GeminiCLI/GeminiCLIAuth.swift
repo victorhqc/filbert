@@ -125,8 +125,8 @@ struct GeminiOAuthClient: Sendable {
             throw error
         } catch let error as GeminiHTTPError {
             switch error {
-            case .network:
-                throw GeminiCLIError.network
+            case let .network(code):
+                throw GeminiCLIError.network(code)
             case let .http(status) where [400, 401, 403].contains(status):
                 throw GeminiCLIError.signedOut
             case .http(429):
@@ -229,8 +229,8 @@ struct GeminiCodeAssistClient: Sendable {
             return try await http.send(request)
         } catch let error as GeminiHTTPError {
             switch error {
-            case .network:
-                throw GeminiCLIError.network
+            case let .network(code):
+                throw GeminiCLIError.network(code)
             case .http(401):
                 throw GeminiCLIError.signedOut
             case .http(403):
@@ -243,7 +243,7 @@ struct GeminiCodeAssistClient: Sendable {
         } catch is CancellationError {
             throw CancellationError()
         } catch {
-            throw GeminiCLIError.network
+            throw GeminiCLIError.network((error as? URLError)?.code)
         }
     }
 }

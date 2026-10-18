@@ -216,3 +216,13 @@ final class OpenCodeGoProviderTests: XCTestCase {
         }
     }
 }
+
+extension OpenCodeGoProviderTests {
+    func testNetworkAndDecodingErrorsExposeTheirCause() {
+        XCTAssertTrue(isConnectivityError(OpenCodeGoError.network(URLError(.notConnectedToInternet))))
+        XCTAssertFalse(isConnectivityError(OpenCodeGoError.network(URLError(.badServerResponse))))
+        XCTAssertFalse(isConnectivityError(OpenCodeGoError.http(500)))
+        XCTAssertNotNil(OpenCodeGoError.decoding(URLError(.cannotDecodeContentData)).underlyingError)
+        XCTAssertNil(OpenCodeGoError.http(429).underlyingError)
+    }
+}

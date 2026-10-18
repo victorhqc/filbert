@@ -41,6 +41,17 @@ extension DeepSeekError: LocalizedError {
     }
 }
 
+extension DeepSeekError: UnderlyingErrorProviding {
+    public var underlyingError: (any Error)? {
+        switch self {
+        case let .network(error), let .decoding(error):
+            error
+        default:
+            nil
+        }
+    }
+}
+
 // MARK: - Wire types (private to this module)
 
 struct DeepSeekBalanceResponse: Decodable {

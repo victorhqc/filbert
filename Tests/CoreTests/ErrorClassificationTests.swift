@@ -26,4 +26,36 @@ final class ErrorClassificationTests: XCTestCase {
         XCTAssertFalse(isMissingCredentialError(KeychainError.saveFailed(errSecItemNotFound)))
         XCTAssertFalse(isMissingCredentialError(ProviderSetupError.notSupported))
     }
+
+    func testConnectivityErrorsAreFoundThroughWrappedCauses() {
+        for code: URLError.Code in [
+            .notConnectedToInternet, .networkConnectionLost, .cannotFindHost, .cannotConnectToHost,
+            .dnsLookupFailed, .timedOut, .internationalRoamingOff, .dataNotAllowed,
+        ] {
+            XCTAssertTrue(isConnectivityError(URLError(code)))
+            XCTAssertTrue(isConnectivityError(WrappingError(underlyingError: URLError(code))))
+            XCTAssertTrue(isConnectivityError(
+                WrappingError(underlyingError: WrappingError(underlyingError: URLError(code)))
+            ))
+        }
+        XCTAssertFalse(isConnectivityError(URLError(.badServerResponse)))
+        XCTAssertFalse(isConnectivityError(URLError(.secureConnectionFailed)))
+        XCTAssertFalse(isConnectivityError(WrappingError(underlyingError: nil)))
+        XCTAssertFalse(isConnectivityError(CancellationError()))
+    }
+
+    func testErrorChainStopsAtABoundedDepth() {
+        let cycle = SelfWrappingError()
+        XCTAssertEqual(errorChain(cycle).count, 8)
+    }
+}
+
+private struct WrappingError: UnderlyingErrorProviding {
+    let underlyingError: (any Error)?
+}
+
+private struct SelfWrappingError: UnderlyingErrorProviding {
+    var underlyingError: (any Error)? {
+        SelfWrappingError()
+    }
 }

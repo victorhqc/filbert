@@ -63,6 +63,10 @@ At the request deadline, the scheduler validates eligibility and safety again be
 The result determines the next completion-to-start gap.
 Settings edits and explicit user actions can replace a deadline, but cannot bypass the provider's safety limits.
 
+> **Clarified by (bugs 02 AC1, bugs 02 AC2).** The failure hold from AC9 is a
+> scheduler deadline, so a manual refresh replaces it. The provider retry gate
+> is a provider safety limit, so it still blocks a manual refresh.
+
 ### AC3: Quiet duration is independent of request frequency
 
 - **Given** the user opens Refresh Settings in Smart mode
@@ -151,6 +155,10 @@ The UI must show this limitation when the effective intervals are equal.
 
 ### AC9: Failures do not trigger a fast retry loop
 
+> **Amended by (bugs 02 AC5).** A connectivity failure sets no failure hold.
+> The next attempt runs when the network path returns, or after the slow
+> interval, whichever comes first.
+
 - **Given** proactive refresh or quota fetch fails
 - **When** the scheduler processes the failure
 - **Then** it preserves the last successful semantic baseline and last-known UI data
@@ -182,6 +190,10 @@ Quota-fetch admission therefore applies independently of proactive-refresh admis
 - **And** all controls and status text support localization and accessibility.
 
 ### AC11: Lifecycle and provider isolation remain predictable
+
+> **Amended by (bugs 02 AC4, bugs 02 AC6).** Automatic requests wait for a
+> satisfied network path. After a full wake, each opted-in provider that is
+> due or shows a failure refreshes once.
 
 - **Given** providers have independent windows, deadlines, requests, and baselines
 - **When** settings, eligibility, sleep, wake, or app lifecycle change

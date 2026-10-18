@@ -111,7 +111,7 @@ extension GeminiCLIProviderTests {
 extension GeminiCLIProviderTests {
     func testUserFacingFailuresAreDistinctAndRedacted() {
         let descriptions = [
-            GeminiCLIError.network.errorDescription,
+            GeminiCLIError.network(nil).errorDescription,
             GeminiCLIError.timeout.errorDescription,
             GeminiCLIError.decoding.errorDescription,
             GeminiCLIError.http(500).errorDescription,

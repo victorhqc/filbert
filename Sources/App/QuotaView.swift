@@ -120,7 +120,7 @@ struct QuotaView: View {
         }
         .buttonStyle(.borderless)
         .font(.caption)
-        .help(String(localized: "Refresh"))
+        .help(refreshHelp(for: providerId, defaultHelp: String(localized: "Refresh")))
         .disabled(isRefreshDisabled(providerId: providerId, state: state))
     }
 
@@ -131,7 +131,16 @@ struct QuotaView: View {
         if case .loading = state {
             return true
         }
-        return false
+        return viewModel.manualRefreshWaitRemaining(for: providerId) != nil
+    }
+
+    private func refreshHelp(for providerId: String, defaultHelp: String) -> String {
+        guard let remaining = viewModel.manualRefreshWaitRemaining(for: providerId) else {
+            return defaultHelp
+        }
+        let wholeMinutes = max((remaining / 60).rounded(.up), 1) * 60
+        let duration = CoarseDurationFormatting.string(from: wholeMinutes, unitsStyle: .full)
+        return String(localized: "The provider asked Filbert to wait. Try again in \(duration).")
     }
 
     private func headerErrorMessage(providerId: String, state: ProviderState) -> String? {
@@ -196,6 +205,11 @@ struct QuotaView: View {
                 Button(String(localized: "Retry")) {
                     viewModel.manualRefresh(for: providerId)
                 }
+                .help(refreshHelp(for: providerId, defaultHelp: String(localized: "Retry")))
+                .disabled(
+                    viewModel.isRefreshing[providerId] == true
+                        || viewModel.manualRefreshWaitRemaining(for: providerId) != nil
+                )
             } else {
                 Text(String(localized: "Open Settings"))
                     .openAndRaiseSettings()

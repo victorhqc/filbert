@@ -177,7 +177,7 @@ actor RecordingTransport: GeminiHTTPTransport {
             await gate.wait()
         }
         guard !remainingResponses.isEmpty else {
-            throw GeminiHTTPError.network
+            throw GeminiHTTPError.network(nil)
         }
         return remainingResponses.removeFirst()
     }
@@ -224,7 +224,7 @@ class GeminiHostResponseURLProtocol: URLProtocol {
         else {
             client?.urlProtocol(
                 self,
-                didFailWithError: GeminiHTTPError.network
+                didFailWithError: GeminiHTTPError.network(nil)
             )
             return
         }

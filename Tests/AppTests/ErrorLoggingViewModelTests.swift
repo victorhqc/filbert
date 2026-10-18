@@ -8,13 +8,13 @@ import XCTest
 final class ErrorLoggingViewModelTests: XCTestCase {
     private var directory: URL!
     private var defaults: UserDefaults!
-    private var suiteName: String!
+    private let suiteName = "filbert.tests.error-logging"
 
     override func setUpWithError() throws {
         try super.setUpWithError()
         directory = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
-        suiteName = "filbert.tests.error-logging.\(UUID().uuidString)"
         defaults = try XCTUnwrap(UserDefaults(suiteName: suiteName))
+        defaults.removePersistentDomain(forName: suiteName)
         ProviderEnablement.setUserDefaults(defaults)
         AutoRefreshPreferences.setUserDefaults(defaults)
         ProviderEnablement.setEnabled(true, for: ErrorLoggingProvider.providerId)

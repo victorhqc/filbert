@@ -61,3 +61,15 @@ public extension DiagnosticError {
         nil
     }
 }
+
+public protocol UnderlyingErrorProviding: Error {
+    var underlyingError: (any Error)? { get }
+}
+
+public func errorChain(_ error: any Error) -> [any Error] {
+    var chain: [any Error] = [error]
+    while chain.count < 8, let underlying = (chain.last as? any UnderlyingErrorProviding)?.underlyingError {
+        chain.append(underlying)
+    }
+    return chain
+}

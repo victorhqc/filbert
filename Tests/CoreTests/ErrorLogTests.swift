@@ -382,6 +382,7 @@ extension ErrorLogTests {
         compiler.arguments = [
             root.appendingPathComponent("Sources/Core/ErrorLog.swift").path,
             root.appendingPathComponent("Sources/Core/DiagnosticError.swift").path,
+            root.appendingPathComponent("Sources/Core/NetworkPath.swift").path,
             main.path, "-o", executable.path,
         ]
         try compiler.run()
