@@ -76,6 +76,36 @@ final class StringCatalogCoverageTests: XCTestCase {
         XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
     }
 
+    /// The deny lists in `docs/localization-glossary.md`.
+    private let deniedTerms = [
+        "es-MX": [
+            #"\bajustes\b"#, #"\bordenador"#, #"\bañad"#, #"\bicono"#, #"\bcompr(?:ob|ueb)"#, #"\bhoras? punta\b"#,
+            #"\b\w+(?:áis|éis)\b"#, #"\bvosotr"#, #"\bvuestr"#, #"\bllave de API\b"#, #"\brefresc"#,
+            #"\bcoste\b"#, #"\b(?:el|del) Mac\b"#,
+        ],
+        "es-ES": [
+            #"\bConfiguración del Sistema\b"#, #"\bcomputadora"#, #"\bagreg"#, #"\bícono"#, #"\bhoras? pico\b"#,
+            #"\bla Mac\b"#, #"\bllave de API\b"#,
+        ],
+    ]
+
+    func testEachSpanishVariantAvoidsTheOtherVariantsTerms() throws {
+        let options: String.CompareOptions = [.regularExpression, .caseInsensitive]
+        var failures: [String] = []
+        for module in modules {
+            let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
+            for (key, entry) in catalog.strings.sorted(by: { $0.key < $1.key }) {
+                for (language, patterns) in deniedTerms {
+                    let values = entry.localizations?[language]?.units.map(\.value) ?? []
+                    failures += patterns
+                        .filter { pattern in values.contains { $0.range(of: pattern, options: options) != nil } }
+                        .map { "\(module.catalog) \"\(key)\" in \(language) matches \($0)" }
+                }
+            }
+        }
+        XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
+    }
+
     func testEveryCatalogLanguageIsSupported() throws {
         var failures: [String] = []
         for module in modules {

@@ -118,6 +118,7 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
    - New strings: "Language", "Choose the language Filbert uses.", "System Default", and the AC4 note, in `de-DE`, `es-ES`, and `es-MX`. "Language" and "dialog" are in the glossary. Their pt, ru, and zh-Hans terms are marked ⚠︎ until (ui 31) checks them.
    - A 6-second launch of the debug build ran without errors. The picker itself is checked by hand in step 8.
 8. [ ] Run the validation gate. Then manually check AC3 to AC7 in the packaged app for each language, with the popover and Settings open together.
+   - 2026-10-18: the user checked AC3 by hand. Every language reads well, and the text changes when the language changes in Settings. AC4 to AC7 (relaunch, Sparkle, System Default, System Settings) are still open. Check them again after (ui 31) adds the remaining languages.
 
 ## Risks
 

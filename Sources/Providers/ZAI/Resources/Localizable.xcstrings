@@ -48,7 +48,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitorea el uso y las cuotas de la API"
+            "value" : "Supervisa el uso y las cuotas de la API"
           }
         },
         "de-DE" : {
@@ -135,7 +135,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No tienes ninguna llave de API configurada."
+            "value" : "No tienes ninguna clave de API configurada."
           }
         },
         "de-DE" : {
@@ -164,7 +164,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo iniciar sesión. Revisa tu llave de API."
+            "value" : "No se pudo iniciar sesión. Revisa tu clave de API."
           }
         },
         "de-DE" : {
@@ -193,7 +193,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiciste demasiadas peticiones. Inténtalo más tarde."
+            "value" : "Hiciste demasiadas solicitudes. Inténtalo más tarde."
           }
         },
         "de-DE" : {

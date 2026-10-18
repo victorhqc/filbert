@@ -111,7 +111,7 @@
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Permitir que Filbert lea el elemento del llavero de Gemini CLI"
+            "value": "Permite que Filbert lea el elemento del llavero de Gemini CLI"
           }
         }
       },
@@ -575,7 +575,7 @@
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Supervisar las cuotas de modelos de Gemini CLI"
+            "value": "Supervisa las cuotas de modelos de Gemini CLI"
           }
         }
       },
@@ -604,7 +604,7 @@
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Comprueba tu conexión y vuelve a intentarlo."
+            "value": "No se pudo conectar con el servicio de uso de Gemini CLI. Revisa tu conexión y vuelve a intentarlo."
           }
         }
       },

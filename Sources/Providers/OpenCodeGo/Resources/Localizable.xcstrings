@@ -344,7 +344,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Hiciste demasiadas peticiones. Inténtalo más tarde."
+            "value" : "Hiciste demasiadas solicitudes. Inténtalo más tarde."
           }
         }
       }

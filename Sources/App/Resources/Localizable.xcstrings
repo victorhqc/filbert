@@ -70,7 +70,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "macOS konnte Filberts Anmeldeobjekt nicht finden. Aktiviere „Bei der Anmeldung starten“, um es zu registrieren." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "macOS could not find Filbert's login item. Enable Launch at login to register it." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el ítem de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el elemento de inicio de Filbert. Activa «Abrir al iniciar sesión» para registrarlo." } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "macOS no pudo encontrar el elemento de inicio de Filbert. Activa “Abrir al iniciar sesión” para registrarlo." } }
       }
     },
     "Launch at login requires an installed Filbert app." : {
@@ -373,7 +373,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Muestra una cara clásica de Mac feliz/triste en lugar del anillo en la barra de menú"
+            "value" : "Muestra una cara clásica de Mac feliz/triste en lugar del anillo en la barra de menús"
           }
         }
       }
@@ -483,7 +483,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Llave de API"
+            "value" : "Clave de API"
           }
         },
         "de-DE" : {
@@ -541,7 +541,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Borrar llave"
+            "value" : "Borrar clave"
           }
         },
         "de-DE" : {
@@ -570,7 +570,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Refrescar"
+            "value" : "Actualizar"
           }
         },
         "de-DE" : {
@@ -599,7 +599,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Volver a intentar"
+            "value" : "Reintentar"
           }
         },
         "de-DE" : {
@@ -947,7 +947,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre Ajustes para agregar tu primer proveedor de IA."
+            "value" : "Abre Configuración para agregar tu primer proveedor de IA."
           }
         },
         "de-DE" : {
@@ -976,7 +976,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abrir Ajustes"
+            "value" : "Abrir Configuración"
           }
         },
         "de-DE" : {
@@ -1005,7 +1005,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Ajustes…"
+            "value" : "Configuración…"
           }
         },
         "de-DE" : {
@@ -1469,7 +1469,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Por defecto:"
+            "value" : "Predeterminada:"
           }
         },
         "de-DE" : {
@@ -1669,7 +1669,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Anbieter-Symbole für Claude, DeepSeek und OpenCode basieren auf Simple Icons." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los iconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Los íconos de los proveedores Claude, DeepSeek y OpenCode se derivan de Simple Icons." } }
       }
     },
     "Filbert is a native macOS AI usage tracker." : {
@@ -1949,7 +1949,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch kürzlich aktive Anbieter bevorzugen; wenn die Aktivität nachlässt, zur gespeicherten Reihenfolge zurückkehren. Aktueller Anbieter in der Menüleiste: %@." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Favor recently active providers automatically; as activity fades, return to saved order. Current menu-bar provider: %@." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menús: %@." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menú: %@." } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Da prioridad automática a los proveedores activos recientemente; cuando la actividad disminuya, vuelve al orden guardado. Proveedor actual en la barra de menús: %@." } }
       }
     },
     "Drag providers to change their order." : {
@@ -2021,7 +2021,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Menüleistensymbol" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar icon" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Icono de la barra de menús" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ícono de la barra de menú" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ícono de la barra de menús" } }
       }
     },
     "Menu bar automatically selects %@" : {
@@ -2030,7 +2030,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Menüleiste wählt automatisch %@ aus" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar automatically selects %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menú selecciona automáticamente %@" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } }
       }
     },
     "Menu bar uses the first provider: %@" : {
@@ -2039,7 +2039,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Menüleiste verwendet den ersten Anbieter: %@" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar uses the first provider: %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menú usa el primer proveedor: %@" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } }
       }
     },
     "Move down" : {
@@ -2192,7 +2192,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungseinstellungen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh Settings" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de actualización" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de actualización" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración de actualización" } }
       }
     },
     "Regular refresh checks opted-in providers every %@." : {
@@ -2372,7 +2372,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Kontingentkosten dieser Prüfungen sind unbekannt." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "The quota cost of these checks is unknown." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El coste en cuota de estas consultas es desconocido." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El coste en cuota de estas consultas es desconocido." } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El costo en cuota de estas consultas es desconocido." } }
       }
     },
     "These checks are documented as not using quota. Frequency limits may still apply." : {
@@ -2534,7 +2534,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, wie lange Filbert deinen Mac wach hält" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose how long Filbert keeps your Mac awake" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene despierto tu Mac" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene despierto tu Mac" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige cuánto tiempo Filbert mantiene activa tu Mac" } }
       }
     },
     "for %@" : {
@@ -2570,7 +2570,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ aktiv" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake active" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«No dormir» activo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "«No dormir» activo" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "“Mantener activo” activado" } }
       }
     },
     "Mac won't sleep for %@" : {
@@ -2579,7 +2579,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac bleibt noch %@ wach" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep for %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo durante %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo durante %@" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La Mac no entrará en reposo durante %@" } }
       }
     },
     "Mac won't sleep until turned off" : {
@@ -2588,7 +2588,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac bleibt wach, bis du es ausschaltest" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Mac won't sleep until turned off" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "El Mac no entrará en reposo hasta que lo desactives" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La Mac no entrará en reposo hasta que lo desactives" } }
       }
     },
     "Keep Awake" : {
@@ -2597,7 +2597,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wach halten" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No dormir" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No dormir" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } }
       }
     },
     "Show a keep-awake timer in Filbert's panel" : {
@@ -2606,7 +2606,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeige einen Wachhalte-Timer im Filbert-Bereich" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Show a keep-awake timer in Filbert's panel" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activa la Mac en el panel de Filbert" } }
       }
     },
     "Show Keep Awake" : {
@@ -2615,7 +2615,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ anzeigen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Keep Awake" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «No dormir»" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «No dormir»" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Mantener activo”" } }
       }
     },
     "Keep Awake couldn't start. Try again." : {
@@ -2624,7 +2624,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ konnte nicht starten. Versuche es erneut." } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake couldn't start. Try again." } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar «No dormir». Inténtalo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar «No dormir». Inténtalo de nuevo." } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar “Mantener activo”. Inténtalo de nuevo." } }
       }
     },
     "Keep Awake duration" : {
@@ -2633,7 +2633,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer für „Wach halten“" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake duration" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «No dormir»" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «No dormir»" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de “Mantener activo”" } }
       }
     },
     "Turn Off" : {
@@ -2797,7 +2797,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento" } }
       }
     },
     "At your pace over the last %@" : {
@@ -2824,7 +2824,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht voraussichtlich bis zum Zurücksetzen · %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset · last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio · %@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el reinicio · %@ de historial" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Debería durar hasta el restablecimiento · %@ de historial" } }
       }
     },
     "Learning your usage rate…" : {
@@ -2878,7 +2878,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim aktuellen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el reinicio, según %@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el reinicio, según %@ de historial" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo debería durar hasta el restablecimiento, según %@ de historial" } }
       }
     },
     "Runs out in about %@" : {
@@ -2923,7 +2923,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Reicht beim durchschnittlichen Tempo voraussichtlich bis zum Zurücksetzen, basierend auf %@ Verlauf" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Should last until reset at your average pace over the last %@" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el reinicio, según %@ de historial" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "A tu ritmo promedio debería durar hasta el restablecimiento, según %@ de historial" } }
       }
     },
     "This adds a small helper script to ~/.claude/." : {
@@ -3042,7 +3042,7 @@
         "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Limit erreicht, bis zum Zurücksetzen keine weitere Nutzung verfügbar" } },
         "en" : { "stringUnit" : { "state" : "translated", "value" : "Limit reached, no more use available until reset" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el reinicio" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el reinicio" } }
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Límite alcanzado, no hay más uso disponible hasta el restablecimiento" } }
       }
     },
     "More than %@ of use remaining" : {

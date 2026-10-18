@@ -44,8 +44,9 @@ Record new terms here with the source. **⚠︎** marks a term that no source ha
 
 Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also uses "configuración" as a common noun, so it is not denied in `es-ES`.
 
-- `es-MX` denies: Ajustes, ordenador, añadir, icono (no accent), comprobar / comprueba, horas punta, vosotros verb forms.
-- `es-ES` denies: Configuración del Sistema, computadora, agregar, ícono, horas pico.
+- `es-MX` denies: Ajustes, ordenador, añadir, icono (no accent), comprobar / comprueba, horas punta, vosotros verb forms, llave de API, refrescar, coste, el Mac / del Mac.
+- `es-ES` denies: Configuración del Sistema, computadora, agregar, ícono, horas pico, la Mac, llave de API.
+- `StringCatalogCoverageTests` enforces both lists.
 
 ## Portuguese: Brazil vs. Portugal
 
@@ -70,11 +71,11 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | Appearance (tab) | Darstellung | Apariencia | Apariencia | Aparência | Aspeto | Оформление | 外观 |
 | Providers (tab) | Anbieter | Proveedores | Proveedores | Provedores | Fornecedores | Провайдеры | 提供商 |
 | AI provider | KI-Anbieter | proveedor de IA | proveedor de IA | provedor de IA | fornecedor de IA | ИИ-провайдер | AI 提供商 |
-| menu bar | Menüleiste | barra de menús (today "barra de menú") | barra de menús | barra de menus | barra de menus | строка меню | 菜单栏 |
+| menu bar | Menüleiste | barra de menús | barra de menús | barra de menus | barra de menus | строка меню | 菜单栏 |
 | Keychain | Schlüsselbund | llavero | llavero | chaves (app: Acesso às Chaves; item: item das chaves) | porta-chaves (app: Acesso a Porta-chaves; item: elemento de porta-chaves) | связка ключей | 钥匙串 |
-| API key | API-Schlüssel | clave de API (today "llave de API") | clave de API | chave de API | chave de API | ключ API | API 密钥 |
-| Refresh | Aktualisieren | Actualizar (today "Refrescar") | Actualizar | Atualizar | Atualizar | Обновить | 刷新 |
-| Retry | Erneut versuchen | Reintentar (today "Volver a intentar") | Reintentar | Tentar novamente | Tentar novamente | Повторить | 重试 |
+| API key | API-Schlüssel | clave de API | clave de API | chave de API | chave de API | ключ API | API 密钥 |
+| Refresh | Aktualisieren | Actualizar | Actualizar | Atualizar | Atualizar | Обновить | 刷新 |
+| Retry | Erneut versuchen | Reintentar | Reintentar | Tentar novamente | Tentar novamente | Повторить | 重试 |
 | Sign in to X | Bei X anmelden | Iniciar sesión en X | Iniciar sesión en X | Iniciar sessão em X | Iniciar sessão em X | Войти в X | 登录 X |
 | Launch at login | Bei der Anmeldung starten | Abrir al iniciar sesión | Abrir al iniciar sesión | Abrir ao iniciar sessão | Abrir ao iniciar sessão | Открывать при входе | 登录时打开 |
 | Login Items & Extensions | Anmeldeobjekte & Erweiterungen | Elementos de inicio y extensiones | Ítems de inicio y extensiones | Itens de Início de Sessão e Extensões | Início de sessão e extensões | Объекты входа и расширения | 登录项与扩展 |
@@ -86,12 +87,13 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 | quota | Kontingent | cuota | cuota | cota | quota | квота | 配额 |
 | rate limit | Anfragelimit | límite de frecuencia | límite de frecuencia | limite de taxa | limite de taxa | ограничение частоты | 速率限制 |
 | Limit reached | Limit erreicht | Límite alcanzado | Límite alcanzado | Limite atingido | Limite atingido | Лимит исчерпан | 已达上限 |
-| reset (quota window) | zurücksetzen, Zurücksetzung | restablecer (today mixed with "reiniciar") | restablecer | redefinir | repor | сбросить, сброс | 重置 |
+| reset (quota window) | zurücksetzen, Zurücksetzung | restablecer | restablecer | redefinir | repor | сбросить, сброс | 重置 |
 | Rate limited | Anfragelimit erreicht | Se alcanzó el límite de solicitudes | Límite de solicitudes alcanzado | Limite de solicitações atingido | Limite de pedidos atingido | Слишком много запросов | 请求过于频繁 |
 | balance | Guthaben | saldo | saldo | saldo | saldo | баланс | 余额 |
 | credits | Credits | créditos | créditos | créditos | créditos | кредиты | promotional or bonus: 赠金; purchased: ⚠︎ use the provider's own Chinese UI |
 | peak hours | Spitzenzeiten | horas pico | horas punta | horário de pico | horas de ponta | часы пик | 高峰时段 |
-| Keep Awake | Wach halten | Mantener activo (today "No dormir") | Mantener activo | Manter ativo | Manter ativo | Не засыпать | 保持唤醒 |
+| the Mac (article) | der Mac | la Mac | el Mac | o Mac ⚠︎ | o Mac ⚠︎ | Mac | Mac |
+| Keep Awake | Wach halten | Mantener activo | Mantener activo | Manter ativo | Manter ativo | Не засыпать | 保持唤醒 |
 | System Default (language) | Systemstandard | Predeterminado del sistema | Predeterminado del sistema | Padrão do sistema | Predefinição do sistema | Системный | 跟随系统 |
 | Language (setting) | Sprache | Idioma | Idioma | Idioma ⚠︎ | Idioma ⚠︎ | Язык ⚠︎ | 语言 ⚠︎ |
 | dialog (system window) | Dialog | cuadro de diálogo | cuadro de diálogo | caixa de diálogo ⚠︎ | caixa de diálogo ⚠︎ | диалоговое окно ⚠︎ | 对话框 ⚠︎ |
@@ -104,6 +106,7 @@ Each language appears in its own name (ui 32 AC1): English, Deutsch, Español (M
 
 - Login Items, System Settings, sign in: Apple Mac User Guide "Open items automatically when you log in" (`mh15189`) in `de-de`, `es-lamr`, `es-es`, `pt-br`, `pt-pt`, `ru-ru`, `zh-cn`.
 - Keychain: Apple Keychain Access User Guide in `pt-br` and `pt-pt`.
+- the Mac (es-MX): Apple Mac User Guide in `es-lamr` says "Apagar o reiniciar la Mac" (`mchlp1066`).
 - menu bar: Apple Mac User Guide glossary in `es-lamr` and `es-es`.
 - API key: Google Gemini API docs "API keys" in `ru` and `zh-cn`.
 - rate limits, quota, usage, reset (zh-Hans): Google Gemini API docs "Rate limits" in `zh-cn`.

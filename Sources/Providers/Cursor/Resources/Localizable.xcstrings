@@ -228,7 +228,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitorea la suscripción y el gasto bajo demanda"
+            "value" : "Supervisa la suscripción y el gasto bajo demanda"
           }
         }
       }
@@ -460,7 +460,7 @@
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Inicia sesión en Cursor"
+            "value" : "Iniciar sesión en Cursor"
           }
         }
       }

@@ -82,8 +82,11 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 
 ## Plan
 
-1. [ ] Glossary in `docs/localization-glossary.md`. List about 25 recurring terms (Settings, API key, Keychain, menu bar, provider, refresh, retry, sign in, reset, usage, limit, credits, rate limited) for each language. Match Apple's own macOS terms, for example System Settings: "Configuración del Sistema" (`es-MX`), "Ajustes del Sistema" (`es-ES`), "Ajustes do Sistema" (`pt-BR`), "Definições do Sistema" (`pt-PT`), "Системные настройки" (`ru`), "系统设置" (`zh-Hans`). Add denied terms for each Spanish variant. The user reviews the glossary before any translation.
-2. [ ] Mexican Spanish audit. Read every `es-MX` string in every catalog and fix it against the glossary (AC1). Add the denied-term guard test.
+1. [x] Glossary in `docs/localization-glossary.md`. List about 25 recurring terms (Settings, API key, Keychain, menu bar, provider, refresh, retry, sign in, reset, usage, limit, credits, rate limited) for each language. Match Apple's own macOS terms, for example System Settings: "Configuración del Sistema" (`es-MX`), "Ajustes del Sistema" (`es-ES`), "Ajustes do Sistema" (`pt-BR`), "Definições do Sistema" (`pt-PT`), "Системные настройки" (`ru`), "系统设置" (`zh-Hans`). Add denied terms for each Spanish variant. The user reviews the glossary before any translation.
+2. [x] Mexican Spanish audit. Read every `es-MX` string in every catalog and fix it against the glossary (AC1). Add the denied-term guard test. (2026-10-18)
+   - All 358 strings in 9 catalogs were read. 42 values were fixed: "Configuración" for Settings, "clave de API", "Actualizar", "Reintentar", "Mantener activo", "restablecimiento" for a quota reset, "barra de menús", "Revisa", "costo", "íconos", "la Mac", “…” quotes, "solicitudes", and "Supervisa" in every provider description. Cursor's "Sign in to Cursor" link uses the infinitive, as a button does.
+   - `testEachSpanishVariantAvoidsTheOtherVariantsTerms` in `StringCatalogCoverageTests` enforces both deny lists. On the committed catalogs it failed on 14 `es-MX` strings. It passes now. `es-ES` had no hits, so step 3 must still read every `es-ES` string.
+   - Left for step 3: `es-ES` still says "No dormir", "reinicio", and Latin American past tenses. Left for step 4: `%lld-hour window` and the other counted strings.
 3. [ ] Spain Spanish pass. Rewrite `es-ES` in peninsular Spanish, without copying `es-MX` (AC2).
 4. [ ] Plural variations. Convert every counted key to plural variations in all languages (AC4). Prefer one format key over strings that join parts.
 5. [ ] New languages, one module at a time: App, Core, then each provider (AC3). Extend the catalog test's language list.
