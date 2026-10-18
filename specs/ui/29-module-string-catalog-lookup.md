@@ -17,7 +17,7 @@ Resolve every user-facing string against its own module's String Catalog, so the
 - `Sources/Providers/ClaudeCode` and `Sources/Providers/OpenAICodex` have no catalog.
 - Name-style keys that still show raw: `Automatic selection description` and `Automatic selection accessibility hint` in `Sources/App/AppearanceSettingsView.swift`. The four format keys (`Forecast headline format`, `Forecast labeled value format`, `Accessibility sentence format`, `Peak hours day and time format`) already pass `bundle: .module`, fixed together with (providers 17).
 - `packaging/Info.plist` sets `CFBundleDevelopmentRegion` to `en` and declares no `CFBundleLocalizations`.
-- Catalog languages: `de-DE`, `en`, `es-ES`, `es-MX`. Source language `en`. (ui 31) adds `pt-BR`, `pt-PT`, `ru`, and `zh-Hans`. (ui 32) adds an in-app language setting on top of this spec.
+- Catalog languages: `de-DE`, `en`, `es-ES`, `es-MX`. Source language `en`. (ui 31) adds `pt-BR`, `pt-PT`, `ru`, `zh-Hans`, and `ja`. (ui 32) adds an in-app language setting on top of this spec.
 - `Tests/AppTests/AllowanceForecastLocalizationTests.swift` checks a fixed list of forecast keys for translations and matching placeholders.
 
 ## Acceptance Criteria

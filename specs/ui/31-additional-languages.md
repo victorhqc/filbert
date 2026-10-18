@@ -1,10 +1,10 @@
 ## Objective
 
-Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Portuguese, European Portuguese, Russian, and Simplified Chinese.
+Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Portuguese, European Portuguese, Russian, Simplified Chinese, and Japanese.
 
 ## Context
 
-- Status: implemented, not yet on `main`. Plan steps 1–7 are done (2026-10-18). Before a release, a native speaker reviews `ru`, `zh-Hans`, and `pt-PT` (Risks).
+- Status: in progress, not yet on `main`. Plan steps 1–7 are done (2026-10-18). Japanese was added on 2026-10-18; steps 8–11 cover it. Before a release, a native speaker reviews `ru`, `zh-Hans`, `pt-PT`, and `ja` (Risks).
 - Builds on (ui 29). Its generated catalog test (ui 29 AC3) is the gate for every language in this spec.
 - Catalog languages on 2026-10-18: `en` (source), `de-DE`, `es-ES`, `es-MX`.
 - `es-ES` and `es-MX` are mostly copies of each other. Identical entries on 2026-10-18: App 201 of 222, Cursor 12 of 23, ZAI 5 of 9, GeminiCLI 29 of 29, Core 3 of 3.
@@ -17,10 +17,11 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
   - `pt`, `pt-BR` → `pt-BR`. `pt-PT` → `pt-PT`.
   - `zh-Hans`, `zh-CN`, `zh-Hans-CN` → `zh-Hans`. `zh-Hant` → `en`.
   - `de`, `de-AT` → `de-DE`.
+  - `ja`, `ja-JP` → `ja`. `en-JP` → `en`.
   - The current codes need no rename. `es-MX` also serves all of Latin America.
 - No catalog uses plural variations. `%lld seconds`, `%lld minutes`, and `%lld-hour window` (ZAI) read wrong for a count of 1 in English. Russian needs three forms (1 минута, 2 минуты, 5 минут).
 - `packaging/Info.plist` declares no `CFBundleLocalizations`. Without it, macOS does not localize system-supplied UI and does not list Filbert under System Settings › General › Language & Region › Applications.
-- Sparkle ships its own `de`, `es`, `pt_BR`, `pt_PT`, `ru`, and `zh_CN` strings. Its update dialogs follow the same language selection.
+- Sparkle ships its own `de`, `es`, `pt_BR`, `pt_PT`, `ru`, `zh_CN`, and `ja` strings. Its update dialogs follow the same language selection.
 
 ## Acceptance Criteria
 
@@ -38,18 +39,18 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 - **Then** it uses peninsular usage: "Ajustes", present perfect for recent events ("No se ha podido", "ha fallado"), and "Comprueba"
 - **And** an `es-ES` value that equals its `es-MX` value is correct in both variants. It is not a copy of the other variant.
 
-### AC3: The four new languages are complete
+### AC3: The five new languages are complete
 
 - **Given** any key in any module catalog
 - **When** the catalog test (ui 29 AC3) runs
-- **Then** the key has a `translated` value in `pt-BR`, `pt-PT`, `ru`, and `zh-Hans`
+- **Then** the key has a `translated` value in `pt-BR`, `pt-PT`, `ru`, `zh-Hans`, and `ja`
 - **And** each value has the same placeholders as English.
 
 ### AC4: Counted strings agree with the count
 
 - **Given** a string that shows a count, such as `%lld minutes`
 - **When** the count is 1, 2, 5, or 21
-- **Then** each language shows its correct plural form. English shows "1 minute" and "2 minutes". Russian shows "1 минута", "2 минуты", "5 минут", and "21 минута".
+- **Then** each language shows its correct plural form. English shows "1 minute" and "2 minutes". Russian shows "1 минута", "2 минуты", "5 минут", and "21 минута". Japanese, like Chinese, uses one form for every count.
 
 ### AC5: macOS picks the expected language
 
@@ -65,20 +66,21 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
 | Português (Portugal) | `pt-PT` |
 | Русский | `ru` |
 | 简体中文 | `zh-Hans` |
+| 日本語 | `ja` |
 | 繁體中文, or any other unsupported language | `en` |
 
 ### AC6: The packaged app declares its languages
 
 - **Given** the release build
 - **When** `Contents/Info.plist` is read
-- **Then** `CFBundleLocalizations` lists `en`, `de-DE`, `es-ES`, `es-MX`, `pt-BR`, `pt-PT`, `ru`, and `zh-Hans`
+- **Then** `CFBundleLocalizations` lists `en`, `de-DE`, `es-ES`, `es-MX`, `pt-BR`, `pt-PT`, `ru`, `zh-Hans`, and `ja`
 - **And** Filbert appears under System Settings › General › Language & Region › Applications.
 
 ### AC7: Layouts hold in every language
 
 - **Given** the longest translations (usually German, Russian, and Portuguese)
 - **When** the popover and each settings tab open at their default sizes
-- **Then** no label is truncated where English is not truncated. Chinese text uses full-width punctuation where it is normal.
+- **Then** no label is truncated where English is not truncated. Chinese and Japanese text use full-width punctuation where it is normal.
 
 ## Plan
 
@@ -114,11 +116,16 @@ Ship Filbert in correct Mexican Spanish and Spain Spanish, and add Brazilian Por
    - The gate passes: 1054 tests, also on the native build path with compiled catalogs.
    - The user checked AC5 (macOS picks the language; their Mac runs German and Filbert follows), AC6 (Filbert appears in Language & Region › Applications), and AC7 (no truncation in the popover and the settings tabs).
    - VoiceOver and the provider error states were not part of this check. (ui 32) Plan step 8 covers them.
+8. [ ] Japanese glossary. Add a `ja` column to the Conventions and Terms tables in `docs/localization-glossary.md`. Take each term from Apple's Mac User Guide in `ja-jp` and Google's docs with `hl=ja`. Record how Apple addresses the user and phrases buttons, its quotes (「…」), and whether it puts a space between Japanese and Latin letters or digits ("Mac の"). The user reviews the column before any translation.
+9. [ ] Japanese catalogs, one module at a time: App, Core, then each provider (AC3). Add `ja` to `SupportedLanguage.all` as "日本語". Add `"ja": ["other"]` to the catalog test's plural forms, so every counted string has one `other` form (AC4).
+10. [ ] Add `ja` to `CFBundleLocalizations` (AC6). Extend the language tables in `DisplayLanguageTests` (AC5, a lookup, and relative dates joined to Japanese text), `DisplayLocaleFormattingTests`, `ZAIWindowLabelTests`, and `AppLanguagePreferenceTests`.
+11. [ ] Run the validation gate. Then manually check AC5 and AC7 in Japanese: the popover, every settings tab, and Language & Region › Applications.
 
 ## Risks
 
-- The agent writes the translations and follows the sources of truth in `docs/localization-glossary.md`. The user arranges a native speaker's review of Russian, Simplified Chinese, and European Portuguese before a release.
-- The work changes about 330 keys in 8 catalogs, for 7 languages. Review the work module by module, not as one diff.
+- The agent writes the translations and follows the sources of truth in `docs/localization-glossary.md`. The user arranges a native speaker's review of Russian, Simplified Chinese, European Portuguese, and Japanese before a release.
+- The work changes about 357 keys in 9 catalogs, for 8 languages. Review the work module by module, not as one diff.
 - Russian and Portuguese text is long. Some rows can wrap or truncate (AC7).
+- Japanese has no spaces between words, so a long label can break at any character. Check the popover rows for odd breaks (AC7).
 - Plural variations change the catalog shape for the affected keys. Tests that read the catalog JSON must accept both a `stringUnit` value and a `variations` value.
 - Users who use `es-ES` and see Mexican text today will see different text after the release. This is the expected fix.

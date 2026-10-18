@@ -22,7 +22,7 @@ Let the user choose Filbert's display language in Settings, and update all of Fi
 - **Given** the General tab in Settings
 - **When** the user opens the Language picker
 - **Then** the first option is "System Default", in the current display language
-- **And** the other options are the supported languages (ui 31), each in its own language: English, Deutsch, Español (México), Español (España), Português (Brasil), Português (Portugal), Русский, 简体中文.
+- **And** the other options are the supported languages (ui 31), each in its own language: English, Deutsch, Español (México), Español (España), Português (Brasil), Português (Portugal), Русский, 简体中文, 日本語.
 
 ### AC2: A fresh install follows macOS
 
