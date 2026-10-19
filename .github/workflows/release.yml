@@ -194,36 +194,22 @@ jobs:
             --dmg "$dmg"
           unset SPARKLE_PRIVATE_KEY
 
-      - name: Upload stable appcast artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: stable-appcast
-          path: ${{ runner.temp }}/appcast-site
-          if-no-files-found: error
+      # pages.yml republishes this asset on every site deployment, so a
+      # landing-page change never removes the feed installed apps read.
+      - name: Upload validated appcast to the release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release upload --clobber "$TAG_NAME" "$RUNNER_TEMP/appcast-site/appcast.xml"
 
   publish-pages:
-    name: Publish stable appcast to GitHub Pages
+    name: Publish site and appcast to GitHub Pages
     needs: release
     if: ${{ needs.release.result == 'success' }}
-    runs-on: ubuntu-latest
     permissions:
+      contents: read
       pages: write
       id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - name: Download stable appcast
-        uses: actions/download-artifact@v4
-        with:
-          name: stable-appcast
-          path: site
-
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-      - name: Deploy Pages artifact
-        id: deployment
-        uses: actions/deploy-pages@v4
+    uses: ./.github/workflows/pages.yml
+    with:
+      tag: ${{ github.event.release.tag_name }}

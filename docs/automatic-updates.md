@@ -15,9 +15,31 @@ checks. The application never needs a GitHub token or an update server.
 4. Confirm that the public URL is
    `https://victorhqc.github.io/filbert/appcast.xml`.
 
-The `publish-pages` job has Pages write and OIDC permissions only. It receives
-the generated appcast as an Actions artifact after the release job succeeds; it
-does not receive Apple or Sparkle signing credentials.
+Pages also hosts the project landing page at
+`https://victorhqc.github.io/filbert/`. A Pages deployment replaces the whole
+site, so `.github/workflows/pages.yml` is the only workflow that deploys, and
+every deployment publishes the landing page and the appcast together. The
+release workflow calls it with the release tag. A push to `main` that changes
+`site/**` calls it for the latest stable release.
+
+`pages.yml` has Pages write, OIDC, and repository read permissions only. It
+downloads `appcast.xml` from the release assets and publishes it byte for byte;
+it never receives Apple or Sparkle signing credentials.
+`scripts/build-site.sh` refuses to build the site if the appcast is missing,
+malformed, or points to another release, so a landing-page change can never
+take the feed offline.
+
+### Bootstrap the release appcast asset
+
+Releases before the landing page did not attach `appcast.xml`. Before the
+first `pages.yml` run, copy the live feed to the latest release once. Check
+first that it references that release's DMG:
+
+```sh
+curl -fsSL https://victorhqc.github.io/filbert/appcast.xml -o appcast.xml
+grep -o 'releases/download/v[^"]*' appcast.xml
+gh release upload v<latest-version> appcast.xml
+```
 
 ### Create and protect the Sparkle key
 
@@ -102,7 +124,9 @@ tag (no prerelease or build suffix) can publish the stable appcast.
    URL, byte length, MIME type, publication date, release notes, and EdDSA
    signature — including verifying the enclosure and feed signatures against
    the public key embedded in shipped apps.
-8. A dependent job uploads only the static appcast directory to GitHub Pages.
+8. It uploads the validated `appcast.xml` to the same GitHub Release.
+9. A dependent job calls `pages.yml` with the tag. That workflow downloads the
+   release's `appcast.xml` and deploys it with the landing page.
 
 After the first updater-capable release has been manually installed and
 verified, remove the `BOOTSTRAP_UPDATE_RELEASE` environment variable. Do not claim that a
@@ -175,16 +199,18 @@ the XPC services, `Autoupdate`, and `Updater.app`.
 
 ## Recovery
 
-If a release build, notarization, artifact upload, signature, appcast
-validation, or Pages deployment fails, the Pages job does not run. The
-previous valid appcast remains available. Fix the cause and rerun the complete
+If a release build, notarization, artifact upload, signature, or appcast
+validation fails, the Pages job does not run. If the Pages deployment itself
+fails, the previous deployment stays live. Either way the previous valid
+appcast remains available. Fix the cause and rerun the complete
 release workflow. The release asset upload is idempotent and uses `--clobber`.
 
 If the appcast host is unavailable, Sparkle leaves Filbert running with its
 current version and data. A later scheduled check or an explicit manual check
 can recover. If a malformed feed is published, restore the previous
-`appcast.xml` from the successful workflow artifact or publish a corrected
-stable release; never replace the feed with an unsigned hand edit.
+`appcast.xml` by running the **Pages** workflow manually with the previous
+release tag, or publish a corrected stable release; never replace the feed
+with an unsigned hand edit.
 
 ## Key rotation
 

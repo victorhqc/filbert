@@ -10,6 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 VALIDATOR = ROOT / "scripts/validate-appcast.py"
 WORKFLOW = ROOT / ".github/workflows/release.yml"
+PAGES_WORKFLOW = ROOT / ".github/workflows/pages.yml"
+BUILD_SITE = ROOT / "scripts/build-site.sh"
 SPARKLE_NAMESPACE = "http://www.andymatuschak.org/xml-namespaces/sparkle"
 
 _spec = importlib.util.spec_from_file_location("validate_appcast", VALIDATOR)
@@ -79,7 +81,25 @@ class AutomaticUpdatesTests(unittest.TestCase):
         self.assertIn("github.event.release.prerelease", workflow)
         self.assertIn("github.event.release.draft", workflow)
         self.assertIn("needs: release", workflow)
-        self.assertIn("actions/deploy-pages@v4", workflow)
+        self.assertIn("uses: ./.github/workflows/pages.yml", workflow)
+
+    def test_release_persists_appcast_and_only_pages_workflow_deploys(self):
+        workflow = WORKFLOW.read_text()
+        pages = PAGES_WORKFLOW.read_text()
+
+        self.assertIn(
+            'gh release upload --clobber "$TAG_NAME" "$RUNNER_TEMP/appcast-site/appcast.xml"',
+            workflow,
+        )
+        self.assertIn("tag: ${{ github.event.release.tag_name }}", workflow)
+        self.assertNotIn("deploy-pages", workflow)
+        self.assertIn("actions/deploy-pages@v4", pages)
+        self.assertIn("--pattern appcast.xml", pages)
+        self.assertIn('--appcast "$RUNNER_TEMP/release/appcast.xml"', pages)
+        self.assertIn("cancel-in-progress: false", pages)
+        for other in (ROOT / ".github/workflows").glob("*.yml"):
+            if other != PAGES_WORKFLOW:
+                self.assertNotIn("deploy-pages", other.read_text(), other.name)
 
     def test_workflow_rejects_prerelease_suffixed_stable_tags(self):
         workflow = WORKFLOW.read_text()
@@ -216,6 +236,57 @@ class AutomaticUpdatesTests(unittest.TestCase):
         )
 
         self.assertNotEqual(result.returncode, 0)
+
+    def test_site_build_publishes_appcast_bytes_unchanged(self):
+        appcast = self._write_bytes(signed_appcast_bytes())
+        out = self._site_out()
+
+        result = self._run_build_site("1.2.3", out, appcast)
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual((out / "appcast.xml").read_bytes(), appcast.read_bytes())
+        page = (out / "index.html").read_text()
+        self.assertIn("releases/download/v1.2.3/Filbert-1.2.3-arm64.dmg", page)
+        self.assertNotIn("__FILBERT_VERSION__", page)
+
+    def test_site_build_rejects_appcast_for_another_release(self):
+        appcast = self._write_bytes(signed_appcast_bytes())
+        out = self._site_out()
+
+        result = self._run_build_site("1.2.4", out, appcast)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((out / "appcast.xml").exists())
+
+    def test_site_build_rejects_malformed_appcast(self):
+        appcast = self._write_bytes(b"<rss><channel>")
+        out = self._site_out()
+
+        result = self._run_build_site("1.2.3", out, appcast)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertFalse((out / "index.html").exists())
+
+    def _site_out(self):
+        directory = tempfile.TemporaryDirectory()
+        self.addCleanup(directory.cleanup)
+        return Path(directory.name) / "site"
+
+    def _run_build_site(self, version, out, appcast):
+        return subprocess.run(
+            [
+                str(BUILD_SITE),
+                "--version",
+                version,
+                "--out",
+                str(out),
+                "--appcast",
+                str(appcast),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
 
     def _write_appcast(self, content):
         return self._write_bytes(content.encode())
