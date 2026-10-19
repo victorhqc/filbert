@@ -244,7 +244,7 @@ final class SleepPreventionControllerTests: XCTestCase {
     }
 }
 
-private final class FakePowerManager: SleepPreventionPowerManaging {
+final class FakePowerManager: SleepPreventionPowerManaging {
     private let shouldFailToCreate: Bool
     private var nextID: UInt32 = 1
 
@@ -274,7 +274,7 @@ private enum FakePowerManagerError: Error {
 }
 
 @MainActor
-private final class FakeScheduler: SleepPreventionScheduling {
+final class FakeScheduler: SleepPreventionScheduling {
     private(set) var tasks: [FakeScheduledTask] = []
 
     func scheduleRepeating(
@@ -292,7 +292,7 @@ private final class FakeScheduler: SleepPreventionScheduling {
 }
 
 @MainActor
-private final class FakeScheduledTask: SleepPreventionScheduledTask {
+final class FakeScheduledTask: SleepPreventionScheduledTask {
     private let action: @MainActor () -> Void
     private(set) var isCancelled = false
 

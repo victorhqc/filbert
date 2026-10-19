@@ -5465,6 +5465,34 @@
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Filbert 面板中显示“保持唤醒”计时器" } }
       }
     },
+    "Remember “Until turned off”" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Bis zum Ausschalten“ merken" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Remember “Until turned off”" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Recordar «Hasta que se desactive»" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Recordar “Hasta que se desactive”" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“オフにするまで”を記憶" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Lembrar “Até desativar”" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Memorizar «Até desativar»" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Запоминать «До выключения»" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "记住“直到关闭”" } }
+      }
+    },
+    "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach einem Neustart schaltet Filbert „Wach halten“ wieder ein, wenn es auf „Bis zum Ausschalten“ stand." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tras un reinicio, Filbert vuelve a activar «Mantener activo» si estaba en «Hasta que se desactive»." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Después de reiniciar, Filbert vuelve a activar “Mantener activo” si estaba en “Hasta que se desactive”." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動後、“スリープさせない”が“オフにするまで”に設定されていた場合は、Filbertが再びオンにします。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Depois de reiniciar, o Filbert reativa “Manter ativo” se estava em “Até desativar”." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Após um reinício, o Filbert volta a ativar «Manter ativo» se estava definido como «Até desativar»." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "После перезапуска Filbert снова включит «Не засыпать», если был выбран режим «До выключения»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动后，如果“保持唤醒”设为“直到关闭”，Filbert 会重新开启它。" } }
+      }
+    },
     "Show Keep Awake" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -133,12 +133,30 @@ enum SleepPreventionPreferences {
         defaults.set(isVisible, forKey: Keys.isVisible)
     }
 
+    static var remembersUntilTurnedOff: Bool {
+        defaults.bool(forKey: Keys.remembersUntilTurnedOff)
+    }
+
+    static func setRemembersUntilTurnedOff(_ remembers: Bool) {
+        defaults.set(remembers, forKey: Keys.remembersUntilTurnedOff)
+    }
+
+    static var isUntilTurnedOffActive: Bool {
+        defaults.bool(forKey: Keys.isUntilTurnedOffActive)
+    }
+
+    static func setUntilTurnedOffActive(_ isActive: Bool) {
+        defaults.set(isActive, forKey: Keys.isUntilTurnedOffActive)
+    }
+
     static func setUserDefaults(_ defaults: UserDefaults) {
         Self.defaults = defaults
     }
 
     private enum Keys {
         static let isVisible = "sleep-prevention-visible"
+        static let remembersUntilTurnedOff = "sleep-prevention-remember-indefinite"
+        static let isUntilTurnedOffActive = "sleep-prevention-indefinite-active"
     }
 }
 
@@ -160,6 +178,7 @@ final class SleepPreventionController {
     private(set) var remainingSeconds = 0
     private(set) var didFailToActivate = false
     private(set) var isFeatureVisible: Bool
+    private(set) var remembersUntilTurnedOff: Bool
 
     init(
         powerManager: any SleepPreventionPowerManaging = IOKitSleepPreventionPowerManager(),
@@ -170,6 +189,8 @@ final class SleepPreventionController {
         self.scheduler = scheduler
         self.now = now
         isFeatureVisible = SleepPreventionPreferences.isVisible
+        remembersUntilTurnedOff = SleepPreventionPreferences.remembersUntilTurnedOff
+        restoreUntilTurnedOff()
     }
 
     var isActive: Bool {
@@ -220,8 +241,11 @@ final class SleepPreventionController {
         guard let interval = duration.timeInterval else {
             session = .untilTurnedOff
             remainingSeconds = 0
+            SleepPreventionPreferences.setUntilTurnedOffActive(true)
             return
         }
+
+        SleepPreventionPreferences.setUntilTurnedOffActive(false)
 
         let deadline = now().addingTimeInterval(interval)
         session = .timed(deadline: deadline)
@@ -237,6 +261,7 @@ final class SleepPreventionController {
         session = nil
         remainingSeconds = 0
         didFailToActivate = false
+        SleepPreventionPreferences.setUntilTurnedOffActive(false)
 
         if let assertionID {
             powerManager.releaseAssertion(assertionID)
@@ -265,6 +290,13 @@ final class SleepPreventionController {
         }
     }
 
+    func setRemembersUntilTurnedOff(_ remembers: Bool) {
+        guard remembersUntilTurnedOff != remembers else { return }
+
+        SleepPreventionPreferences.setRemembersUntilTurnedOff(remembers)
+        remembersUntilTurnedOff = remembers
+    }
+
     static func remainingTimeText(for remainingSeconds: Int) -> String {
         let hours = remainingSeconds / 3600
         let minutes = remainingSeconds % 3600 / 60
@@ -285,6 +317,17 @@ final class SleepPreventionController {
         formatter.unitsStyle = .full
         formatter.zeroFormattingBehavior = .dropAll
         return formatter.string(from: TimeInterval(remainingSeconds)) ?? ""
+    }
+
+    private func restoreUntilTurnedOff() {
+        guard isFeatureVisible,
+              remembersUntilTurnedOff,
+              SleepPreventionPreferences.isUntilTurnedOffActive
+        else {
+            SleepPreventionPreferences.setUntilTurnedOffActive(false)
+            return
+        }
+        start(.untilTurnedOff)
     }
 
     private func createAssertionIfNeeded() -> Bool {

@@ -49,22 +49,45 @@ struct AppearanceTab: View {
             }
 
             SettingsCard(heading: String(displayLocalized: "Keep Awake", bundle: .module)) {
-                Toggle(
-                    isOn: Binding(
-                        get: { sleepPrevention.isFeatureVisible },
-                        set: { sleepPrevention.setFeatureVisible($0) }
-                    )
-                ) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(String(displayLocalized: "Show Keep Awake", bundle: .module))
-                        Text(String(displayLocalized: "Show a keep-awake timer in Filbert's panel", bundle: .module))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
+                keepAwakeSettings
             }
         }
         .navigationTitle(String(displayLocalized: "Appearance", bundle: .module))
+    }
+
+    private var keepAwakeSettings: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Toggle(
+                isOn: Binding(
+                    get: { sleepPrevention.isFeatureVisible },
+                    set: { sleepPrevention.setFeatureVisible($0) }
+                )
+            ) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(displayLocalized: "Show Keep Awake", bundle: .module))
+                    Text(String(displayLocalized: "Show a keep-awake timer in Filbert's panel", bundle: .module))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+
+            Divider()
+
+            Toggle(
+                isOn: Binding(
+                    get: { sleepPrevention.remembersUntilTurnedOff },
+                    set: { sleepPrevention.setRemembersUntilTurnedOff($0) }
+                )
+            ) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(String(displayLocalized: "Remember “Until turned off”", bundle: .module))
+                    Text(rememberUntilTurnedOffSubtitle)
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            .disabled(!sleepPrevention.isFeatureVisible)
+        }
     }
 
     private var providerOrderRows: some View {
@@ -185,6 +208,13 @@ struct AppearanceTab: View {
     private var vintageMacSubtitle: String {
         String(
             displayLocalized: "Show a classic Happy / Sad Mac face instead of the ring in the menu bar",
+            bundle: .module
+        )
+    }
+
+    private var rememberUntilTurnedOffSubtitle: String {
+        String(
+            displayLocalized: "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off.",
             bundle: .module
         )
     }
