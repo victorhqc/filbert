@@ -80,8 +80,7 @@ On the first launch, show a Welcome window that introduces Filbert, lets the use
 
 - **Given** the third step
 - **When** the Filbert menu bar item is not visible on any screen, because the menu bar is full or the notch covers it
-- **Then** the step says that the menu bar has no space for the icon, and how to make space: hold ⌘ and drag other icons out of the menu bar
-- **And** it says that the user can open Filbert again from the Applications folder or Spotlight to open Settings.
+- **Then** the step says that the menu bar may be full, and how to make space: hold ⌘ and drag other icons out of the menu bar.
 
 ### AC9: Done closes the window for good
 
@@ -90,15 +89,18 @@ On the first launch, show a Welcome window that introduces Filbert, lets the use
 - **Then** Filbert saves the Welcome completion value
 - **And** the Welcome window does not open at the next launch.
 
-### AC10: Opening Filbert while it runs shows a window
+### AC10: Opening Filbert while it runs brings back an unfinished Welcome window
 
-This is not about the Welcome window for existing users. Today, when Filbert already runs and the user opens it again, for example a double-click in Applications, nothing visible happens. A user whose icon is hidden then has no way in.
-
-- **Given** Filbert runs
+- **Given** Filbert runs and the user has not completed the Welcome window
 - **When** the user opens Filbert again from Finder, Spotlight, or Launchpad
-- **Then** Filbert opens the Welcome window if the user has not completed it
-- **And** otherwise it opens Settings
-- **And** the window comes to the front.
+- **Then** the Welcome window opens, or comes to the front if it is open
+- **And** after the user completes it, opening Filbert again shows nothing, as before. Settings never opens on its own.
+
+### AC10a: A normal launch shows only the menu bar item
+
+- **Given** the user completed the Welcome window
+- **When** Filbert launches, by Launch at login or by the user
+- **Then** only the menu bar item appears. No window opens.
 
 ### AC11: The user can see the Welcome window again
 
@@ -143,16 +145,17 @@ This is not about the Welcome window for existing users. Today, when Filbert alr
 5. [x] The window and the launch (2026-10-19). An `NSWindow` that hosts `WelcomeView` in an `NSHostingView`, owned by `WelcomeWindowController`. A SwiftUI `Window` scene would need `openWindow` from a live view, and the reopen path starts in `AppDelegate`.
    - The controller opens the window on the tick after `didFinishLaunchingNotification`, after `AppDelegate` sets the accessory policy. Checked with `--show-welcome` on the debug build: the window opens at launch.
    - `NSWindow(contentViewController:)` binds the window title to the controller's title, and `navigationTitle` does not reach a plain `NSWindow`. The view sets the title itself, so it follows the language. Checked: "Welcome to Filbert".
-6. [x] Reopen (AC10). `applicationShouldHandleReopen` calls the controller. `WelcomeWindowBridge` sits in the menu bar label, which renders at launch, and hands over `openSettings`, which only a scene view can read. Its `onAppear` fires at launch (checked).
+6. [x] Reopen (AC10). `applicationShouldHandleReopen` calls the controller. `WelcomeWindowBridge` sits in the menu bar label, which renders at launch, and connects the handler, because `AppMain.init` cannot reach the delegate. Its `onAppear` fires at launch (checked).
+   - 2026-10-19: the user does not want Settings to open on a reopen. After the Welcome window is completed, a reopen does nothing, as before.
 7. [x] Hidden icon check (AC8), partly verified (2026-10-19).
    - A representable view in the menu bar label never gets a window. SwiftUI does not host the label's views in the status item. So `StatusItemVisibility` reads `NSApp.windows` at the `.statusBar` level instead. It skips panels and windows with no screen, because SwiftUI keeps an off-screen copy at `y = -33`.
    - On this Mac, the visible icon reads as visible. The hidden case is not checked yet; see step 10. The check runs when the menu bar step appears and on each occlusion change. With no status bar window, the tip shows in small text.
 8. [x] "Show Welcome Window" card on the General tab (AC11).
-9. [x] Strings (AC14). 18 new keys in every language. The catalog tests pass, including the deny lists. Two long sentences were shortened to keep lines under the lint limit. Needs a native review, as for (ui 31).
+9. [x] Strings (AC14). New keys in every language. The catalog tests pass, including the deny lists. Two long sentences were shortened to keep lines under the lint limit. The Settings hint was removed with the reopen change, which leaves 17 keys. Needs a native review, as for (ui 31).
 10. [ ] Manual check in the packaged app:
     - a fresh user account (AC1), and an updated install (AC2);
     - a full menu bar or the notch hiding the icon (AC8);
-    - a reopen from Finder before and after Done (AC10), with the popover's "Open Settings" while the Welcome window is open (AC12);
+    - a reopen from Finder before and after Done (AC10), a Launch at login start after Done (AC10a), and the popover's "Open Settings" while the Welcome window is open (AC12);
     - a language change on each step (AC4), VoiceOver and keyboard only (AC13).
 
 ## Risks
@@ -162,5 +165,4 @@ This is not about the Welcome window for existing users. Today, when Filbert alr
 - Plan step 3 changes Settings code. A wrong move can break the API key field, the base URL override, or the helper actions. The existing tests and a manual check of every provider card must pass before the Welcome window uses the shared view.
 - Under the `.accessory` policy, a window can open behind other apps or not take focus. Each open must activate the app.
 - The language rebuild resets text in an API key field that is not saved (ui 32 Risks). In the Welcome window, the language picker and the key field are on different steps, so this is rare.
-- `applicationShouldHandleReopen` changes how Filbert reacts when the user opens it again. Today nothing happens. Users who expect nothing to happen now see Settings.
 - The hidden icon check (AC8) finds the status item by its window level. Apple does not document that the status item is a window at that level. It can give a wrong answer on a future macOS version. A wrong answer shows or hides a tip. It does not block the user.

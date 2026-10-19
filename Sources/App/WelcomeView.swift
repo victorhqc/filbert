@@ -169,10 +169,6 @@ struct WelcomeView: View {
                 displayLocalized: "Hold ⌘ and drag other icons out of the menu bar to make room.",
                 bundle: .module
             ))
-            Text(String(
-                displayLocalized: "To open Settings, open Filbert again from the Applications folder or Spotlight.",
-                bundle: .module
-            ))
         }
         .font(isConfirmedHidden ? .callout : .caption)
         .foregroundStyle(isConfirmedHidden ? .primary : .secondary)

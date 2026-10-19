@@ -7,7 +7,6 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
     static let windowIdentifier = NSUserInterfaceItemIdentifier("filbert.welcome")
 
     let flow = WelcomeFlow()
-    var openSettings: (() -> Void)?
 
     private let state: WelcomeState
     private let viewModel: QuotaViewModel
@@ -59,9 +58,7 @@ final class WelcomeWindowController: NSObject, NSWindowDelegate {
         if let window {
             NSApp.activate(ignoringOtherApps: true)
             window.makeKeyAndOrderFront(nil)
-        } else if state.isCompleted {
-            openSettings?()
-        } else {
+        } else if !state.isCompleted {
             show()
         }
     }

@@ -1,24 +1,18 @@
 import AppKit
 import SwiftUI
 
-/// Sits in the menu bar label, which SwiftUI renders at launch and keeps for the app's lifetime.
-/// It hands over the Settings action, which only a view inside a scene can read.
+/// Sits in the menu bar label, which SwiftUI renders at launch. `AppMain.init` cannot reach the
+/// delegate that `NSApplicationDelegateAdaptor` creates, so the reopen handler is connected here.
 @MainActor
 struct WelcomeWindowBridge: View {
     let controller: WelcomeWindowController
     let appDelegate: AppDelegate
-
-    @Environment(\.openSettings) private var openSettings
 
     var body: some View {
         Color.clear
             .frame(width: 0, height: 0)
             .accessibilityHidden(true)
             .onAppear {
-                controller.openSettings = {
-                    openSettings()
-                    SettingsWindowLookup.raiseSettingsWindow()
-                }
                 appDelegate.onReopen = controller.handleReopen
             }
     }

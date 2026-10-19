@@ -6816,65 +6816,6 @@
         }
       }
     },
-    "To open Settings, open Filbert again from the Applications folder or Spotlight." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Um die Einstellungen zu öffnen, öffne Filbert erneut über den Ordner „Programme“ oder Spotlight."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "To open Settings, open Filbert again from the Applications folder or Spotlight."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para abrir Ajustes, vuelve a abrir Filbert desde la carpeta Aplicaciones o con Spotlight."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para abrir Configuración, vuelve a abrir Filbert desde la carpeta Aplicaciones o con Spotlight."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定を開くには、“アプリケーション”フォルダまたはSpotlightからFilbertをもう一度開いてください。"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para abrir os Ajustes, abra o Filbert novamente pela pasta Aplicativos ou pelo Spotlight."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Para abrir as Definições, abra novamente o Filbert a partir da pasta Aplicações ou do Spotlight."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Чтобы открыть настройки, снова откройте Filbert из папки «Программы» или через Spotlight."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "要打开设置，请从“应用程序”文件夹或聚焦搜索再次打开 Filbert。"
-          }
-        }
-      }
-    },
     "A menu bar with the Filbert icon marked" : {
       "extractionState" : "manual",
       "localizations" : {

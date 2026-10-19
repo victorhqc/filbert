@@ -106,7 +106,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// Filbert has no Dock icon, so a reopen from Finder or Spotlight would otherwise show nothing.
+    /// Brings back an unfinished Welcome window. After that, a reopen shows nothing, as before.
     func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
         MainActor.assumeIsolated {
             onReopen?()
