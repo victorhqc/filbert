@@ -6,9 +6,6 @@ import SwiftUI
 /// `.accessory` activation policy, so this modifier also activates Filbert and
 /// explicitly raises the Settings `NSWindow`.
 ///
-/// The window is matched by structural traits (titled, non-panel) rather than
-/// localized title text, so the lookup is stable across locales.
-///
 /// `@MainActor`: every touch here (`NSApp`, `windows`, `styleMask`) is
 /// MainActor-isolated AppKit.
 @MainActor
@@ -18,18 +15,9 @@ private struct OpenAndRaiseSettingsModifier: ViewModifier {
     func body(content: Content) -> some View {
         Button {
             openSettings()
-            raiseSettingsWindow()
+            SettingsWindowLookup.raiseSettingsWindow()
         } label: {
             content
-        }
-    }
-
-    /// Dispatched to the next run-loop tick because `openSettings()` does not
-    /// always create the window synchronously on first open.
-    private func raiseSettingsWindow() {
-        NSApp.activate(ignoringOtherApps: true)
-        DispatchQueue.main.async {
-            SettingsWindowLookup.settingsWindow?.makeKeyAndOrderFront(nil)
         }
     }
 }
@@ -38,11 +26,22 @@ private struct OpenAndRaiseSettingsModifier: ViewModifier {
 @MainActor
 enum SettingsWindowLookup {
     /// The menu-bar popover is an `NSPanel` without `.titled`; the Settings scene
-    /// is a regular titled `NSWindow`. Filtering on those structural traits keeps
-    /// the lookup locale-independent.
+    /// is a regular titled `NSWindow`. Matching structural traits and the Welcome
+    /// window's identifier keeps the lookup locale-independent.
     static var settingsWindow: NSWindow? {
         NSApp.windows.first { window in
-            window.styleMask.contains(.titled) && !(window is NSPanel)
+            window.styleMask.contains(.titled)
+                && !(window is NSPanel)
+                && window.identifier != WelcomeWindowController.windowIdentifier
+        }
+    }
+
+    /// Dispatched to the next run-loop tick because `openSettings()` does not
+    /// always create the window synchronously on first open.
+    static func raiseSettingsWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        DispatchQueue.main.async {
+            settingsWindow?.makeKeyAndOrderFront(nil)
         }
     }
 }
