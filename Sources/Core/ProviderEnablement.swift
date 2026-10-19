@@ -46,6 +46,10 @@ public enum ProviderEnablement {
         return initialValue
     }
 
+    public static var hasSavedValues: Bool {
+        defaults.object(forKey: storageKey) != nil
+    }
+
     public static func savedEnabled(for providerId: String) -> Bool? {
         savedValues()[providerId]
     }

@@ -21,6 +21,14 @@ final class ProviderEnablementTests: XCTestCase {
         super.tearDown()
     }
 
+    func testHasSavedValuesOnlyAfterAResolution() {
+        XCTAssertFalse(ProviderEnablement.hasSavedValues)
+
+        ProviderEnablement.setEnabled(false, for: "provider")
+
+        XCTAssertTrue(ProviderEnablement.hasSavedValues)
+    }
+
     func testMissingAPIKeyDefaultsToDisabledAndPersistsResolution() {
         let storage = InMemoryStorage()
         let keychain = Keychain(storage: storage, service: "enablement")

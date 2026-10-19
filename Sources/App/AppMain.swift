@@ -13,13 +13,17 @@ struct AppMain: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
 
     @State private var viewModel: QuotaViewModel
-    @State private var sleepPrevention = SleepPreventionController()
-    @State private var launchAtLogin = LaunchAtLoginController()
-    @State private var displayLanguage = DisplayLanguageModel()
+    @State private var sleepPrevention: SleepPreventionController
+    @State private var launchAtLogin: LaunchAtLoginController
+    @State private var displayLanguage: DisplayLanguageModel
     @State private var settingsTab = SettingsTab.general
     private let updateCoordinator: UpdateCoordinator
+    private let welcomeWindow: WelcomeWindowController
 
     init() {
+        let welcomeState = WelcomeState()
+        let showsWelcome = welcomeState.shouldShowOnLaunch
+
         let registry = ProviderRegistry()
         registry.register(ZAIProvider())
         registry.register(ClaudeCodeProvider())
@@ -28,11 +32,26 @@ struct AppMain: App {
         registry.register(OpenCodeGoProvider())
         registry.register(CursorProvider())
         registry.register(GeminiCLIProvider())
-        _viewModel = State(initialValue: QuotaViewModel(
+        let viewModel = QuotaViewModel(
             registry: registry,
             networkPath: SystemNetworkPathObserver()
-        ))
+        )
+        let sleepPrevention = SleepPreventionController()
+        let launchAtLogin = LaunchAtLoginController()
+        let displayLanguage = DisplayLanguageModel()
+        _viewModel = State(initialValue: viewModel)
+        _sleepPrevention = State(initialValue: sleepPrevention)
+        _launchAtLogin = State(initialValue: launchAtLogin)
+        _displayLanguage = State(initialValue: displayLanguage)
         updateCoordinator = UpdateCoordinator()
+        welcomeWindow = WelcomeWindowController(
+            state: welcomeState,
+            showsOnLaunch: showsWelcome,
+            viewModel: viewModel,
+            sleepPrevention: sleepPrevention,
+            launchAtLogin: launchAtLogin,
+            displayLanguage: displayLanguage
+        )
     }
 
     var body: some Scene {
@@ -48,6 +67,7 @@ struct AppMain: App {
         } label: {
             DisplayLanguageRoot(model: displayLanguage) {
                 MenuBarStatusIcon(viewModel: viewModel, sleepPrevention: sleepPrevention)
+                    .background(WelcomeWindowBridge(controller: welcomeWindow, appDelegate: appDelegate))
             }
         }
         .menuBarExtraStyle(.window)
@@ -60,6 +80,7 @@ struct AppMain: App {
                     sleepPrevention: sleepPrevention,
                     launchAtLogin: launchAtLogin,
                     displayLanguage: displayLanguage,
+                    welcomeWindow: welcomeWindow,
                     selectedTab: $settingsTab
                 )
             }
@@ -70,6 +91,8 @@ struct AppMain: App {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    var onReopen: (@MainActor () -> Void)?
+
     func applicationDidFinishLaunching(_ notification: Notification) {
         _ = notification
         NSApplication.shared.setActivationPolicy(.accessory)
@@ -81,5 +104,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         if let icon {
             NSApplication.shared.applicationIconImage = icon
         }
+    }
+
+    /// Filbert has no Dock icon, so a reopen from Finder or Spotlight would otherwise show nothing.
+    func applicationShouldHandleReopen(_: NSApplication, hasVisibleWindows _: Bool) -> Bool {
+        MainActor.assumeIsolated {
+            onReopen?()
+        }
+        return false
     }
 }
