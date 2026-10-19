@@ -4,6 +4,8 @@
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
+**Website:** [victorhqc.github.io/filbert](https://victorhqc.github.io/filbert/)
+
 <p align="center">
   <img src="assets/mascot-with-ai-logos.png" alt="filbert mascot" height="250">
 </p>

@@ -22,8 +22,8 @@ specs/
 ```
 
 - **Pick the closest existing topic folder or create one.** Current topics:
-  `core`, `providers`, `ui`, `widgets`, `ci`. Only create a new topic folder if
-  the work fits none of them.
+  `core`, `providers`, `ui`, `widgets`, `ci`, `site`. Only create a new topic
+  folder if the work fits none of them.
 - **Number sequentially _within that topic folder_.** List the folder's files,
   take the next number, zero-pad to two digits (`07`, not `7`).
 - **File name:** `NN-short-description.md` — kebab-case, intention-revealing,
@@ -38,6 +38,7 @@ specs/
 | `ui`         | Menu bar, popover, settings, app lifecycle            |
 | `widgets`    | Desktop widgets, Notification Center integration      |
 | `ci`         | GitHub Actions workflows, CI configuration, tooling   |
+| `site`       | Project website on GitHub Pages                       |
 
 ## 2. MLA cross-references (MANDATORY)
 

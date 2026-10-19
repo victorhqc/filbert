@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Filbert — AI usage in your Mac menu bar</title>
+  <meta name="description" content="Filbert shows how much of your AI usage is left before you hit a limit. A free, native macOS menu-bar app for Claude Code, Codex, Cursor, Gemini CLI, z.ai, DeepSeek, and OpenCode Go.">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#fbf7f1" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#16181d" media="(prefers-color-scheme: dark)">
+  <link rel="canonical" href="https://victorhqc.github.io/filbert/">
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+  <link rel="stylesheet" href="style.css">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Filbert">
+  <meta property="og:title" content="Filbert — AI usage in your Mac menu bar">
+  <meta property="og:description" content="Filbert shows how much of your AI usage is left before you hit a limit.">
+  <meta property="og:url" content="https://victorhqc.github.io/filbert/">
+  <meta property="og:image" content="https://victorhqc.github.io/filbert/images/social-card.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Filbert, a watercolor octopus, surrounded by AI provider logos">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Filbert — AI usage in your Mac menu bar">
+  <meta name="twitter:description" content="Filbert shows how much of your AI usage is left before you hit a limit.">
+  <meta name="twitter:image" content="https://victorhqc.github.io/filbert/images/social-card.jpg">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="container nav" aria-label="Main">
+      <a class="brand" href="./">
+        <img src="images/icon.webp" alt="" width="28" height="28">
+        <span>Filbert</span>
+      </a>
+      <ul class="nav-links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#providers">Providers</a></li>
+        <li><a href="#privacy">Privacy</a></li>
+        <li><a href="https://github.com/victorhqc/filbert">GitHub</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container hero-grid">
+        <div class="hero-copy">
+          <img class="hero-icon" src="images/icon.webp" alt="" width="112" height="112">
+          <p class="eyebrow">AI usage tracker for the macOS menu bar</p>
+          <h1>Filbert</h1>
+          <p class="lead">Filbert shows how much of your AI usage is left before you hit a limit.</p>
+          <div class="cta">
+            <a class="button" href="https://github.com/victorhqc/filbert/releases/download/v__FILBERT_VERSION__/Filbert-__FILBERT_VERSION__-arm64.dmg">
+              Download for macOS
+              <span class="button-version">v__FILBERT_VERSION__</span>
+            </a>
+            <a class="link-arrow" href="https://github.com/victorhqc/filbert">View on GitHub</a>
+          </div>
+          <p class="requirements">Free and open source · Apple Silicon · macOS 26 Tahoe or newer</p>
+        </div>
+        <div class="hero-shot">
+          <picture>
+            <source srcset="images/screenshots/hero-dark.webp" width="425" height="666" media="(prefers-color-scheme: dark)">
+            <img src="images/screenshots/hero.webp" width="427" height="667" alt="The Filbert panel open below its menu-bar icon, with Claude Code and OpenAI Codex usage, forecasts, and a DeepSeek balance">
+          </picture>
+        </div>
+      </div>
+    </section>
+
+    <section id="features" class="section">
+      <div class="container">
+        <h2>Every limit, one click away</h2>
+        <p class="section-lead">Coding plans, API balances, and subscriptions each keep their own limits. Filbert puts them all in one place.</p>
+        <ul class="features">
+          <li class="card">
+            <h3>Glance at the menu bar</h3>
+            <p>The menu bar shows what is left for the provider you are using right now.</p>
+          </li>
+          <li class="card">
+            <h3>See every provider</h3>
+            <p>Click the icon to see usage, limits, and reset times for all of your providers.</p>
+          </li>
+          <li class="card">
+            <h3>Know when it runs out</h3>
+            <p>At your current pace, Filbert tells you if an allowance should last until it resets, or when it runs out.</p>
+          </li>
+          <li class="card">
+            <h3>Smart refresh</h3>
+            <p>Turn it on and Filbert checks more often while your usage changes and slows down when it does not. It always respects provider rate limits.</p>
+          </li>
+          <li class="card">
+            <h3>Keep Awake</h3>
+            <p>Keep your Mac awake for a set time, or until you turn it off. Useful while a long agent run finishes.</p>
+          </li>
+          <li class="card">
+            <h3>Speaks your language</h3>
+            <p>English, German, Spanish, Portuguese, Russian, Chinese, and Japanese.</p>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section section-alt" aria-labelledby="screenshots-title">
+      <div class="container">
+        <h2 id="screenshots-title">Small panel, all the details</h2>
+        <p class="section-lead">Collapse providers for a quick look, or expand one to see each limit and when it resets.</p>
+        <div class="gallery">
+          <figure>
+            <picture>
+              <source srcset="images/screenshots/popover-collapsed-dark.webp" media="(prefers-color-scheme: dark)">
+              <img src="images/screenshots/popover-collapsed.webp" width="326" height="302" loading="lazy" alt="The Filbert panel with each provider collapsed to a single usage line">
+            </picture>
+            <figcaption>Collapsed for a quick look</figcaption>
+          </figure>
+          <figure>
+            <picture>
+              <source srcset="images/screenshots/popover-expanded-dark.webp" media="(prefers-color-scheme: dark)">
+              <img src="images/screenshots/popover-expanded.webp" width="326" height="676" loading="lazy" alt="The Filbert panel with Claude Code and OpenAI Codex expanded to show each limit, its reset time, and its forecast">
+            </picture>
+            <figcaption>Expanded for every limit</figcaption>
+          </figure>
+        </div>
+      </div>
+    </section>
+
+    <section id="providers" class="section">
+      <div class="container">
+        <h2>Works with the tools you use</h2>
+        <p class="section-lead">Add only the providers you use. Filbert reads an API key or the sign-in of a tool you already have.</p>
+        <ul class="providers">
+          <li><img src="images/providers/claudecode.png" alt="" width="24" height="24"><span><strong>Claude Code</strong> Plan usage</span></li>
+          <li><img src="images/providers/openaicodex.png" alt="" width="24" height="24"><span><strong>OpenAI Codex</strong> Subscription usage</span></li>
+          <li><img src="images/providers/cursor.png" alt="" width="24" height="24"><span><strong>Cursor</strong> Subscription and on-demand spend</span></li>
+          <li><img src="images/providers/geminicli.png" alt="" width="24" height="24"><span><strong>Gemini CLI</strong> Model quotas</span></li>
+          <li><img src="images/providers/zai.png" alt="" width="24" height="24"><span><strong>z.ai</strong> GLM Coding Plan</span></li>
+          <li><img src="images/providers/deepseek.png" alt="" width="24" height="24"><span><strong>DeepSeek</strong> Prepaid balance</span></li>
+          <li><img src="images/providers/opencodego.png" alt="" width="24" height="24"><span><strong>OpenCode Go</strong> Go subscription</span></li>
+        </ul>
+        <p class="note">Some providers need their CLI installed and signed in. <a href="https://github.com/victorhqc/filbert#supported-providers">Read the setup notes</a>.</p>
+      </div>
+    </section>
+
+    <section id="privacy" class="section section-alt">
+      <div class="container privacy-grid">
+        <div class="mascot">
+          <img src="images/mascot.webp" width="280" height="280" loading="lazy" alt="Filbert the octopus, asleep and content">
+        </div>
+        <div>
+          <h2>Private by design</h2>
+          <ul class="checklist">
+            <li><strong>Your keys stay on your Mac.</strong> Filbert keeps them in the macOS Keychain.</li>
+            <li><strong>No middleman.</strong> Filbert calls each provider directly over HTTPS. There is no Filbert server.</li>
+            <li><strong>No tracking.</strong> No telemetry, no analytics, no remote logging. This page has none either.</li>
+            <li><strong>Native and light.</strong> Built in Swift. No Electron, no Dock icon.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <h2>Get started in a minute</h2>
+        <p class="section-lead">On first launch, a short welcome guides you through language, your first provider, and where to find Filbert.</p>
+        <figure class="welcome-shot">
+          <picture>
+            <source srcset="images/screenshots/welcome-dark.webp" media="(prefers-color-scheme: dark)">
+            <img src="images/screenshots/welcome.webp" width="652" height="684" loading="lazy" alt="The Filbert welcome window, step 1 of 3: choose the language Filbert uses">
+          </picture>
+        </figure>
+        <ol class="steps">
+          <li class="card">
+            <h3>Download</h3>
+            <p>Get the DMG. Every release is signed with a Developer ID and notarized by Apple.</p>
+          </li>
+          <li class="card">
+            <h3>Install</h3>
+            <p>Open the DMG and drag Filbert to Applications.</p>
+          </li>
+          <li class="card">
+            <h3>Connect a provider</h3>
+            <p>Open Filbert. The welcome window helps you add your first provider. After that, Filbert lives in your menu bar.</p>
+          </li>
+        </ol>
+        <div class="cta cta-center">
+          <a class="button" href="https://github.com/victorhqc/filbert/releases/download/v__FILBERT_VERSION__/Filbert-__FILBERT_VERSION__-arm64.dmg">
+            Download for macOS
+            <span class="button-version">v__FILBERT_VERSION__</span>
+          </a>
+          <a class="link-arrow" href="https://github.com/victorhqc/filbert/releases">All releases</a>
+        </div>
+        <p class="note center">Filbert updates itself when a new version is out.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <p class="acronym"><strong>F</strong>riendly <strong>I</strong>con <strong>L</strong>etting <strong>B</strong>udgets <strong>E</strong>xplain <strong>R</strong>emaining <strong>T</strong>okens</p>
+      <ul class="footer-links">
+        <li><a href="https://github.com/victorhqc/filbert">GitHub</a></li>
+        <li><a href="https://github.com/victorhqc/filbert/releases">Releases</a></li>
+        <li><a href="https://github.com/victorhqc/filbert/blob/main/LICENSE">MIT License</a></li>
+      </ul>
+      <p class="copyright">© 2026 Victor Quiroz Castro</p>
+    </div>
+  </footer>
+</body>
+</html>

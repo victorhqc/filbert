@@ -1,0 +1,93 @@
+name: Pages
+
+# The only workflow that deploys GitHub Pages. A deployment replaces the whole
+# site, and installed apps read appcast.xml from it, so every deployment
+# publishes the landing page and the appcast of a stable release together.
+# docs/automatic-updates.md
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "site/**"
+      - "scripts/build-site.sh"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Stable release tag to publish (default is the latest release)
+        type: string
+        required: false
+  workflow_call:
+    inputs:
+      tag:
+        description: Stable release tag whose DMG and appcast the site publishes
+        type: string
+        required: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build and deploy site
+    runs-on: ubuntu-latest
+    concurrency:
+      group: github-pages
+      cancel-in-progress: false
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve release
+        id: release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          INPUT_TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          tag="${INPUT_TAG:-}"
+          if [[ -z "$tag" ]]; then
+            tag="$(gh release view --repo "$GITHUB_REPOSITORY" --json tagName --jq '.tagName')"
+          fi
+          [[ "$tag" =~ ^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$ ]] \
+            || { echo "Not a stable release tag: $tag"; exit 1; }
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+          echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Download release appcast
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ steps.release.outputs.tag }}
+        run: |
+          gh release download "$TAG_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --pattern appcast.xml \
+            --dir "$RUNNER_TEMP/release"
+
+      - name: Build site
+        env:
+          VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          scripts/build-site.sh \
+            --version "$VERSION" \
+            --appcast "$RUNNER_TEMP/release/appcast.xml" \
+            --out "$RUNNER_TEMP/site"
+          test -s "$RUNNER_TEMP/site/appcast.xml"
+          test -s "$RUNNER_TEMP/site/index.html"
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ runner.temp }}/site
+
+      - name: Deploy Pages artifact
+        id: deployment
+        uses: actions/deploy-pages@v4
