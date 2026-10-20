@@ -202,14 +202,25 @@ jobs:
           TAG_NAME: ${{ github.event.release.tag_name }}
         run: gh release upload --clobber "$TAG_NAME" "$RUNNER_TEMP/appcast-site/appcast.xml"
 
+  # deploy-pages keys a deployment on GITHUB_SHA. A release deploy whose commit
+  # was already published from main is accepted but never served, so dispatch
+  # the workflow instead: workflow_dispatch publishes correctly at any commit.
   publish-pages:
     name: Publish site and appcast to GitHub Pages
     needs: release
     if: ${{ needs.release.result == 'success' }}
+    runs-on: ubuntu-latest
     permissions:
+      actions: write
       contents: read
-      pages: write
-      id-token: write
-    uses: ./.github/workflows/pages.yml
-    with:
-      tag: ${{ github.event.release.tag_name }}
+    steps:
+      - name: Dispatch Pages workflow
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          gh workflow run pages.yml \
+            --repo "$GITHUB_REPOSITORY" \
+            --ref "$DEFAULT_BRANCH" \
+            -f tag="$TAG_NAME"

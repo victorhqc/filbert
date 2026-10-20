@@ -81,7 +81,17 @@ class AutomaticUpdatesTests(unittest.TestCase):
         self.assertIn("github.event.release.prerelease", workflow)
         self.assertIn("github.event.release.draft", workflow)
         self.assertIn("needs: release", workflow)
-        self.assertIn("uses: ./.github/workflows/pages.yml", workflow)
+
+    def test_release_dispatches_pages_instead_of_calling_it(self):
+        workflow = WORKFLOW.read_text()
+        pages = PAGES_WORKFLOW.read_text()
+
+        self.assertIn("gh workflow run pages.yml", workflow)
+        self.assertIn('-f tag="$TAG_NAME"', workflow)
+        self.assertIn("TAG_NAME: ${{ github.event.release.tag_name }}", workflow)
+        self.assertIn("actions: write", workflow)
+        self.assertNotIn("uses: ./.github/workflows/pages.yml", workflow)
+        self.assertNotIn("workflow_call", pages)
 
     def test_release_persists_appcast_and_only_pages_workflow_deploys(self):
         workflow = WORKFLOW.read_text()
@@ -91,15 +101,14 @@ class AutomaticUpdatesTests(unittest.TestCase):
             'gh release upload --clobber "$TAG_NAME" "$RUNNER_TEMP/appcast-site/appcast.xml"',
             workflow,
         )
-        self.assertIn("tag: ${{ github.event.release.tag_name }}", workflow)
-        self.assertNotIn("deploy-pages", workflow)
+        self.assertNotIn("actions/deploy-pages", workflow)
         self.assertIn("actions/deploy-pages@v4", pages)
         self.assertIn("--pattern appcast.xml", pages)
         self.assertIn('--appcast "$RUNNER_TEMP/release/appcast.xml"', pages)
         self.assertIn("cancel-in-progress: false", pages)
         for other in (ROOT / ".github/workflows").glob("*.yml"):
             if other != PAGES_WORKFLOW:
-                self.assertNotIn("deploy-pages", other.read_text(), other.name)
+                self.assertNotIn("actions/deploy-pages", other.read_text(), other.name)
 
     def test_workflow_rejects_prerelease_suffixed_stable_tags(self):
         workflow = WORKFLOW.read_text()
