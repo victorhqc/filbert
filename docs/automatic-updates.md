@@ -19,8 +19,8 @@ Pages also hosts the project landing page at
 `https://victorhqc.github.io/filbert/`. A Pages deployment replaces the whole
 site, so `.github/workflows/pages.yml` is the only workflow that deploys, and
 every deployment publishes the landing page and the appcast together. The
-release workflow calls it with the release tag. A push to `main` that changes
-`site/**` calls it for the latest stable release.
+release workflow dispatches it with the release tag. A push to `main` that
+changes `site/**` runs it for the latest stable release.
 
 `pages.yml` has Pages write, OIDC, and repository read permissions only. It
 downloads `appcast.xml` from the release assets and publishes it byte for byte;
@@ -125,8 +125,12 @@ tag (no prerelease or build suffix) can publish the stable appcast.
    signature — including verifying the enclosure and feed signatures against
    the public key embedded in shipped apps.
 8. It uploads the validated `appcast.xml` to the same GitHub Release.
-9. A dependent job calls `pages.yml` with the tag. That workflow downloads the
-   release's `appcast.xml` and deploys it with the landing page.
+9. A dependent job dispatches `pages.yml` on the default branch with the tag.
+   That workflow downloads the release's `appcast.xml` and deploys it with the
+   landing page. It dispatches instead of calling directly because
+   `deploy-pages` keys a deployment on the commit SHA, and GitHub accepts but
+   never serves a release deploy whose commit was already published from
+   `main`.
 
 After the first updater-capable release has been manually installed and
 verified, remove the `BOOTSTRAP_UPDATE_RELEASE` environment variable. Do not claim that a

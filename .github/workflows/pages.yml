@@ -18,12 +18,6 @@ on:
         description: Stable release tag to publish (default is the latest release)
         type: string
         required: false
-  workflow_call:
-    inputs:
-      tag:
-        description: Stable release tag whose DMG and appcast the site publishes
-        type: string
-        required: true
 
 permissions:
   contents: read
