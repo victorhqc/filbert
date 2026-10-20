@@ -105,6 +105,12 @@
             "state" : "translated",
             "value" : "%lld 分钟窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分鐘時段"
+          }
         }
       }
     },
@@ -163,6 +169,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "5 小时窗口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5小時時段"
           }
         }
       }
@@ -223,6 +235,12 @@
             "state" : "translated",
             "value" : "余额"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "餘額"
+          }
         }
       }
     },
@@ -281,6 +299,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未安装 Codex CLI"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未安裝Codex CLI"
           }
         }
       }
@@ -341,6 +365,12 @@
             "state" : "translated",
             "value" : "Codex 未及时响应。请重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex未及時回應。請再試一次。"
+          }
         }
       }
     },
@@ -399,6 +429,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Codex 返回了不受支持的用量限制响应。请更新 Codex，然后重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex傳回了不支援的用量上限回應。請更新Codex，然後再試一次。"
           }
         }
       }
@@ -459,6 +495,12 @@
             "state" : "translated",
             "value" : "Codex 在读取用量限制前已停止。请重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex在讀取用量上限前已停止。請再試一次。"
+          }
         }
       }
     },
@@ -517,6 +559,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "额度"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "點數"
           }
         }
       }
@@ -577,6 +625,12 @@
             "state" : "translated",
             "value" : "安装 Codex CLI"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安裝Codex CLI"
+          }
         }
       }
     },
@@ -635,6 +689,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "内部错误：意外的凭证类型。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "內部錯誤：非預期的憑證類型。"
           }
         }
       }
@@ -695,6 +755,12 @@
             "state" : "translated",
             "value" : "监控 Codex 订阅用量"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監控Codex訂閱項目的用量"
+          }
         }
       }
     },
@@ -753,6 +819,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未报告用量限制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未提供用量上限"
           }
         }
       }
@@ -813,6 +885,12 @@
             "state" : "translated",
             "value" : "运行 codex login 以登录 Codex。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請執行「codex login」來登入Codex。"
+          }
         }
       }
     },
@@ -871,6 +949,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请将 Codex 更新到支持用量限制的版本。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請將Codex更新至支援用量上限的版本。"
           }
         }
       }
@@ -931,6 +1015,12 @@
             "state" : "translated",
             "value" : "用量窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用量時段"
+          }
         }
       }
     },
@@ -990,6 +1080,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每周"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每週"
           }
         }
       }

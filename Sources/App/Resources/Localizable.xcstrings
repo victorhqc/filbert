@@ -12,7 +12,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Geral" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Geral" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Основные" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "通用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "通用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "一般" } }
       }
     },
     "Startup" : {
@@ -26,7 +27,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inicialização" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arranque" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Запуск" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启动" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启动" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "啟動" } }
       }
     },
     "Launch at login" : {
@@ -40,7 +42,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ao iniciar sessão" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ao iniciar sessão" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывать при входе" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录时打开" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录时打开" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "登入時打開" } }
       }
     },
     "Start Filbert in the menu bar after you sign in to your Mac." : {
@@ -54,7 +57,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert na barra de menus ao iniciar sessão no Mac." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert na barra de menus ao iniciar sessão no Mac." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Запускать Filbert в строке меню после входа в систему на Mac." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录 Mac 后在菜单栏中启动 Filbert。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录 Mac 后在菜单栏中启动 Filbert。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "登入Mac後，在選單列中啟動Filbert。" } }
       }
     },
     "Filbert will not start at login." : {
@@ -68,7 +72,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert não será aberto ao iniciar sessão." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert não será aberto ao iniciar sessão." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert не будет открываться при входе." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 不会在登录时打开。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 不会在登录时打开。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert不會在登入時打開。" } }
       }
     },
     "Filbert will start at login." : {
@@ -82,7 +87,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert será aberto ao iniciar sessão." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert será aberto ao iniciar sessão." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert будет открываться при входе." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 将在登录时打开。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 将在登录时打开。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert會在登入時打開。" } }
       }
     },
     "Filbert is registered, but macOS approval is required before it can start at login." : {
@@ -96,7 +102,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert está registrado, mas precisa da aprovação do macOS para abrir ao iniciar sessão." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert está registado, mas precisa da aprovação do macOS para abrir ao iniciar sessão." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert зарегистрирован, но для открытия при входе требуется разрешение macOS." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 已注册，但需要 macOS 批准才能在登录时打开。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 已注册，但需要 macOS 批准才能在登录时打开。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert已註冊，但需要macOS核准，才能在登入時打開。" } }
       }
     },
     "macOS could not find Filbert's login item. Enable Launch at login to register it." : {
@@ -110,7 +117,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O macOS não encontrou o item de início de sessão do Filbert. Ative “Abrir ao iniciar sessão” para registrá-lo." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O macOS não encontrou o elemento de início de sessão do Filbert. Ative «Abrir ao iniciar sessão» para o registar." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "macOS не удалось найти объект входа Filbert. Включите «Открывать при входе», чтобы зарегистрировать его." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "macOS 找不到 Filbert 的登录项。请打开“登录时打开”以注册它。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "macOS 找不到 Filbert 的登录项。请打开“登录时打开”以注册它。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "macOS找不到Filbert的登入項目。請開啟「登入時打開」來註冊。" } }
       }
     },
     "Launch at login requires an installed Filbert app." : {
@@ -124,7 +132,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir ao iniciar sessão, o app Filbert precisa estar instalado." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Para abrir ao iniciar sessão, a aplicação Filbert tem de estar instalada." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Для открытия при входе нужно установленное приложение Filbert." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“登录时打开”需要已安装的 Filbert App。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“登录时打开”需要已安装的 Filbert App。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "必須安裝Filbert App，才能使用「登入時打開」。" } }
       }
     },
     "Open Login Items Settings" : {
@@ -138,7 +147,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir ajustes de Itens de Início de Sessão" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir definições de início de sessão" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть настройки объектов входа" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开登录项设置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开登录项设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "打開「登入項目」設定" } }
       }
     },
     "Could not enable launch at login. Try again." : {
@@ -152,7 +162,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível ativar a abertura ao iniciar sessão. Tente novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível ativar a abertura ao iniciar sessão. Tente novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось включить открытие при входе. Повторите попытку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法启用“登录时打开”。请重试。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法启用“登录时打开”。请重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法啟用「登入時打開」。請再試一次。" } }
       }
     },
     "Could not disable launch at login. Try again." : {
@@ -166,7 +177,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível desativar a abertura ao iniciar sessão. Tente novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível desativar a abertura ao iniciar sessão. Tente novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось выключить открытие при входе. Повторите попытку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法停用“登录时打开”。请重试。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法停用“登录时打开”。请重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法停用「登入時打開」。請再試一次。" } }
       }
     },
     "Unable to clear the API key. Check Keychain access and try again." : {
@@ -225,6 +237,12 @@
             "state" : "translated",
             "value" : "无法清除 API 密钥。请检查钥匙串访问权限，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法清除API金鑰。請檢查鑰匙圈的取用權限，然後再試一次。"
+          }
         }
       }
     },
@@ -239,7 +257,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização cancelada. Selecione Atualizar para tentar novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização cancelada. Selecione Atualizar para tentar novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновление отменено. Нажмите «Обновить», чтобы повторить попытку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新已取消。选择“刷新”以重试。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新已取消。选择“刷新”以重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已取消重新整理。請選擇「重新整理」來再試一次。" } }
       }
     },
     "Show Logs" : {
@@ -253,7 +272,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registros" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar registos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показать журналы" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示日志" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示日志" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示記錄" } }
       }
     },
     "Reveal the error log in Finder." : {
@@ -267,7 +287,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar o registro de erros no Finder." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar o registo de erros no Finder." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показать журнал ошибок в Finder." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在访达中显示错误日志。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在访达中显示错误日志。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在Finder中顯示錯誤記錄。" } }
       }
     },
     "The error log is unavailable." : {
@@ -281,7 +302,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O registro de erros não está disponível." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O registo de erros não está disponível." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Журнал ошибок недоступен." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "错误日志不可用。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "错误日志不可用。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法使用錯誤記錄。" } }
       }
     },
     "Accessibility sentence format" : {
@@ -295,7 +317,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@. %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@。%2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@。%2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@。%2$@" } }
       }
     },
     "%@ left" : {
@@ -309,7 +332,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Tempo restante: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Tempo restante: %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "剩余 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "剩余 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "剩餘%@" } }
       }
     },
     "%@%% available until reset" : {
@@ -323,7 +347,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%% disponível até a redefinição" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%% disponível até à reposição" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До сброса доступно %@ %%" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重置前可用 %@%%" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重置前可用 %@%%" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重設前可用%@%%" } }
       }
     },
     "%@%% used" : {
@@ -337,7 +362,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%% usado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%% utilizado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Использовано %@ %%" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已使用 %@%%" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已使用 %@%%" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已使用%@%%" } }
       }
     },
     "%@: %@ remaining" : {
@@ -395,6 +421,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@：剩余 %2$@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：剩餘%2$@"
           }
         }
       }
@@ -455,6 +487,12 @@
             "state" : "translated",
             "value" : "%1$@：已使用 %2$lld%%"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@：已使用%2$lld%%"
+          }
         }
       }
     },
@@ -469,7 +507,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Recolher" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Recolher" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Свернуть" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "折叠" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "折叠" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "收合" } }
       }
     },
     "Collapsed" : {
@@ -483,7 +522,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Recolhido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Recolhido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Свёрнуто" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已折叠" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已折叠" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已收合" } }
       }
     },
     "About %@%%/day available" : {
@@ -497,7 +537,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/dia disponível aprox." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/dia disponível aprox." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "~%@ %%/день доступно" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@%%/天可用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@%%/天可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約%@%%/天可用" } }
       }
     },
     "About %@%%/week available" : {
@@ -511,7 +552,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/semana disponível aprox." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/semana disponível aprox." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "~%@ %%/нед. доступно" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@%%/周可用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@%%/周可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約%@%%/週可用" } }
       }
     },
     "Expand" : {
@@ -525,7 +567,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Expandir" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Развернуть" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "展开" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "展开" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "展開" } }
       }
     },
     "Expanded" : {
@@ -539,7 +582,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Expandido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Развёрнуто" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已展开" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已展开" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已展開" } }
       }
     },
     "Fast refresh active" : {
@@ -553,7 +597,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização rápida ativa" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização rápida ativa" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрое обновление включено" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速刷新已开启" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速刷新已开启" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速重新整理已開啟" } }
       }
     },
     "Within current allowance" : {
@@ -567,7 +612,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Dentro do ritmo sustentável" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Dentro do ritmo previsto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Темп в пределах нормы" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量未超出当前进度" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量未超出当前进度" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量未超前目前進度" } }
       }
     },
     "Over current allowance" : {
@@ -581,7 +627,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acima do ritmo sustentável" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Acima do ritmo previsto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Темп выше нормы" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量超出当前进度" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量超出当前进度" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量超前目前進度" } }
       }
     },
     "Show a classic Happy / Sad Mac face instead of the ring in the menu bar" : {
@@ -639,6 +686,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在菜单栏中显示经典的 Happy / Sad Mac 表情，而不是圆环"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在選單列中顯示經典的Happy / Sad Mac表情，而非圓環"
           }
         }
       }
@@ -699,6 +752,12 @@
             "state" : "translated",
             "value" : "复古 Mac"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "復古Mac"
+          }
         }
       }
     },
@@ -754,6 +813,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "Filbert"
@@ -817,6 +882,12 @@
             "state" : "translated",
             "value" : "退出"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "結束"
+          }
         }
       }
     },
@@ -875,6 +946,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "API 密钥"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API金鑰"
           }
         }
       }
@@ -935,6 +1012,12 @@
             "state" : "translated",
             "value" : "保存"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "儲存"
+          }
         }
       }
     },
@@ -993,6 +1076,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "清除密钥"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "清除金鑰"
           }
         }
       }
@@ -1053,6 +1142,12 @@
             "state" : "translated",
             "value" : "刷新"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新整理"
+          }
         }
       }
     },
@@ -1111,6 +1206,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重试"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再試一次"
           }
         }
       }
@@ -1171,6 +1272,12 @@
             "state" : "translated",
             "value" : "正在加载…"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "載入中⋯"
+          }
         }
       }
     },
@@ -1229,6 +1336,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "提供商要求 Filbert 等待。请在 %@后重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提供者要求Filbert等待。請在%@後再試一次。"
           }
         }
       }
@@ -1289,6 +1402,12 @@
             "state" : "translated",
             "value" : "上次由 %1$@ 更新：%2$@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次由%1$@更新：%2$@"
+          }
         }
       }
     },
@@ -1344,6 +1463,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "上次更新：%@"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "上次更新：%@"
@@ -1407,6 +1532,12 @@
             "state" : "translated",
             "value" : "提供商"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "提供者"
+          }
         }
       }
     },
@@ -1465,6 +1596,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "在“提供商”标签页中配置一个提供商以开始排序。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請在「提供者」標籤頁中設定提供者，即可開始排序。"
           }
         }
       }
@@ -1525,6 +1662,12 @@
             "state" : "translated",
             "value" : "已配置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已設定"
+          }
         }
       }
     },
@@ -1583,6 +1726,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法保存 API 密钥。请检查钥匙串访问权限，然后重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法儲存API金鑰。請檢查鑰匙圈的取用權限，然後再試一次。"
           }
         }
       }
@@ -1643,6 +1792,12 @@
             "state" : "translated",
             "value" : "未配置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定"
+          }
         }
       }
     },
@@ -1701,6 +1856,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有資料"
           }
         }
       }
@@ -1761,6 +1922,12 @@
             "state" : "translated",
             "value" : "未配置提供商"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定提供者"
+          }
         }
       }
     },
@@ -1819,6 +1986,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "打开设置以添加你的第一个 AI 提供商。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打開「設定」來加入你的第一個AI提供者。"
           }
         }
       }
@@ -1879,6 +2052,12 @@
             "state" : "translated",
             "value" : "打开设置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打開設定"
+          }
         }
       }
     },
@@ -1937,6 +2116,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "设置…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "設定⋯"
           }
         }
       }
@@ -1997,6 +2182,12 @@
             "state" : "translated",
             "value" : "高峰时段"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尖峰時段"
+          }
         }
       }
     },
@@ -2055,6 +2246,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辅助脚本已安装并已启用。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輔助腳本已安裝並啟用。"
           }
         }
       }
@@ -2115,6 +2312,12 @@
             "state" : "translated",
             "value" : "高峰时段中"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "尖峰時段中"
+          }
         }
       }
     },
@@ -2173,6 +2376,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "非高峰时段"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "離峰時段"
           }
         }
       }
@@ -2233,6 +2442,12 @@
             "state" : "translated",
             "value" : "即将生效的价格"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "即將生效的價格"
+          }
         }
       }
     },
@@ -2291,6 +2506,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ 起生效"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@起生效"
           }
         }
       }
@@ -2351,6 +2572,12 @@
             "state" : "translated",
             "value" : "%1$lld 倍"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$lld倍"
+          }
         }
       }
     },
@@ -2410,6 +2637,12 @@
             "state" : "translated",
             "value" : "%1$@（本地时间）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@（你的時區）"
+          }
         }
       }
     },
@@ -2465,6 +2698,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@ %2$@"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@ %2$@"
@@ -2528,6 +2767,12 @@
             "state" : "translated",
             "value" : "标准积分消耗"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "標準點數扣除比例"
+          }
         }
       }
     },
@@ -2587,6 +2832,12 @@
             "state" : "translated",
             "value" : "按标准的 %1$@ 消耗积分"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按標準的%1$@扣除點數"
+          }
         }
       }
     },
@@ -2642,6 +2893,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用量：%1$lld%%"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "用量：%1$lld%%"
@@ -2705,6 +2962,12 @@
             "state" : "translated",
             "value" : "高级"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "進階"
+          }
         }
       }
     },
@@ -2763,6 +3026,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自定义 URL"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自訂URL"
           }
         }
       }
@@ -2823,6 +3092,12 @@
             "state" : "translated",
             "value" : "自定义基础 URL（代理）"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "自訂基底URL（代理）"
+          }
         }
       }
     },
@@ -2882,6 +3157,12 @@
             "state" : "translated",
             "value" : "默认："
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "預設值："
+          }
         }
       }
     },
@@ -2940,6 +3221,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "移除辅助脚本"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "移除輔助腳本"
           }
         }
       }
@@ -3001,6 +3288,12 @@
             "state" : "translated",
             "value" : "使用默认值"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用預設值"
+          }
         }
       }
     },
@@ -3059,6 +3352,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "余额阈值"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "餘額門檻"
           }
         }
       }
@@ -3119,6 +3418,12 @@
             "state" : "translated",
             "value" : "偏低阈值"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "偏低門檻"
+          }
         }
       }
     },
@@ -3177,6 +3482,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正常阈值"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正常門檻"
           }
         }
       }
@@ -3237,6 +3548,12 @@
             "state" : "translated",
             "value" : "适用于所有提供商的货币（USD、CNY…）。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "適用於所有提供者的貨幣（USD、CNY等）。"
+          }
         }
       }
     },
@@ -3251,7 +3568,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sobre" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "О программе" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关于" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关于" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "簡介" } }
       }
     },
     "Claude, DeepSeek, and OpenCode provider glyphs are derived from Simple Icons." : {
@@ -3265,7 +3583,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Os ícones dos provedores Claude, DeepSeek e OpenCode são derivados do Simple Icons." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Os ícones dos fornecedores Claude, DeepSeek e OpenCode derivam do Simple Icons." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Значки провайдеров Claude, DeepSeek и OpenCode основаны на Simple Icons." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Claude、DeepSeek 和 OpenCode 的提供商图标源自 Simple Icons。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Claude、DeepSeek 和 OpenCode 的提供商图标源自 Simple Icons。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Claude、DeepSeek和OpenCode的提供者圖像源自Simple Icons。" } }
       }
     },
     "Filbert is a native macOS AI usage tracker." : {
@@ -3279,7 +3598,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é um app nativo do macOS que acompanha o uso de IA." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é uma aplicação nativa do macOS que acompanha a utilização de IA." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert — нативное приложение для macOS, которое отслеживает использование ИИ." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 是一款原生 macOS AI 用量追踪工具。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 是一款原生 macOS AI 用量追踪工具。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert是原生的macOS AI用量追蹤工具。" } }
       }
     },
     "Filbert is open source under the MIT License." : {
@@ -3293,7 +3613,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é de código aberto, sob a Licença MIT." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert é de código aberto, ao abrigo da Licença MIT." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert — программа с открытым исходным кодом под лицензией MIT." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 基于 MIT 许可证开源。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 基于 MIT 许可证开源。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert依MIT授權條款開放原始碼。" } }
       }
     },
     "Only https URLs are allowed." : {
@@ -3351,6 +3672,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "仅允许 https URL。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "只允許https URL。"
           }
         }
       }
@@ -3411,6 +3738,12 @@
             "state" : "translated",
             "value" : "打开 %@ 以刷新"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打開%@來重新整理"
+          }
         }
       }
     },
@@ -3425,7 +3758,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Filbert no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть Filbert на GitHub" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上打开 Filbert" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上打开 Filbert" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在GitHub上打開Filbert" } }
       }
     },
     "Open Simple Icons on GitHub" : {
@@ -3439,7 +3773,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Simple Icons no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o Simple Icons no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть Simple Icons на GitHub" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上打开 Simple Icons" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上打开 Simple Icons" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在GitHub上打開Simple Icons" } }
       }
     },
     "Open Source" : {
@@ -3453,7 +3788,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Código aberto" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Código aberto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открытый исходный код" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开源" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开源" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開放原始碼" } }
       }
     },
     "Open the MIT License on GitHub" : {
@@ -3467,7 +3803,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir a Licença MIT no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir a Licença MIT no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть лицензию MIT на GitHub" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上打开 MIT 许可证" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上打开 MIT 许可证" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在GitHub上打開MIT授權條款" } }
       }
     },
     "Project" : {
@@ -3481,7 +3818,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Projeto" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Projeto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проект" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "项目" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "專案" } }
       }
     },
     "View on GitHub" : {
@@ -3495,7 +3833,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ver no GitHub" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ver no GitHub" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть на GitHub" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上查看" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 GitHub 上查看" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在GitHub上檢視" } }
       }
     },
     "View the MIT License" : {
@@ -3509,7 +3848,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ver a Licença MIT" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ver a Licença MIT" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Посмотреть лицензию MIT" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "查看 MIT 许可证" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "查看 MIT 许可证" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢視MIT授權條款" } }
       }
     },
     "filbert development" : {
@@ -3523,7 +3863,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "filbert em desenvolvimento" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "filbert em desenvolvimento" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "filbert (разработка)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "filbert 开发版" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "filbert 开发版" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "filbert開發版" } }
       }
     },
     "Filbert reads your Claude Code usage by hooking into its status line." : {
@@ -3582,6 +3923,12 @@
             "state" : "translated",
             "value" : "Filbert 通过接入 Claude Code 的状态行读取其用量。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert透過串接Claude Code的狀態列來讀取其用量。"
+          }
         }
       }
     },
@@ -3596,7 +3943,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "filbert v%@" } }
       }
     },
     "under %lld" : {
@@ -3654,6 +4002,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "低于 %lld"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "低於%lld"
           }
         }
       }
@@ -3714,6 +4068,12 @@
             "state" : "translated",
             "value" : "%lld 及以上"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld以上"
+          }
         }
       }
     },
@@ -3728,7 +4088,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aparência" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Aspeto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Оформление" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "外观" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "外观" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "外觀" } }
       }
     },
     "Automatic" : {
@@ -3742,7 +4103,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動" } }
       }
     },
     "Automatic selection description" : {
@@ -3756,7 +4118,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Priorizar automaticamente os provedores ativos recentemente; quando a atividade diminuir, voltar à ordem salva." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Dar prioridade automaticamente aos fornecedores ativos recentemente; quando a atividade diminuir, voltar à ordem guardada." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически отдавать предпочтение недавно активным провайдерам; когда активность спадает, возвращаться к сохранённому порядку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动优先显示最近活跃的提供商；活跃度降低后，恢复已存储的顺序。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动优先显示最近活跃的提供商；活跃度降低后，恢复已存储的顺序。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動優先顯示最近活躍的提供者；活動減少後，恢復已儲存的順序。" } }
       }
     },
     "Automatic selection accessibility hint" : {
@@ -3770,7 +4133,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Priorizar automaticamente os provedores ativos recentemente; quando a atividade diminuir, voltar à ordem salva. Provedor atual na barra de menus: %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Dar prioridade automaticamente aos fornecedores ativos recentemente; quando a atividade diminuir, voltar à ordem guardada. Fornecedor atual na barra de menus: %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически отдавать предпочтение недавно активным провайдерам; когда активность спадает, возвращаться к сохранённому порядку. Текущий провайдер в строке меню: %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动优先显示最近活跃的提供商；活跃度降低后，恢复已存储的顺序。当前菜单栏提供商：%@。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动优先显示最近活跃的提供商；活跃度降低后，恢复已存储的顺序。当前菜单栏提供商：%@。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動優先顯示最近活躍的提供者；活動減少後，恢復已儲存的順序。目前的選單列提供者：%@。" } }
       }
     },
     "Drag providers to change their order." : {
@@ -3784,7 +4148,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste os provedores para mudar a ordem." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste os fornecedores para alterar a ordem." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетаскивайте провайдеров, чтобы изменить порядок." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移提供商以更改顺序。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移提供商以更改顺序。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "拖移提供者來更改順序。" } }
       }
     },
     "Drag to reorder providers" : {
@@ -3798,7 +4163,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar os provedores" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar os fornecedores" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетащите, чтобы изменить порядок провайдеров" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移以重新排列提供商" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移以重新排列提供商" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "拖移來重新排列提供者" } }
       }
     },
     "Error" : {
@@ -3812,7 +4178,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Erro" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Erro" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ошибка" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "错误" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "错误" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "錯誤" } }
       }
     },
     "Disabled" : {
@@ -3826,7 +4193,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Desativado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Desativado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выключен" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已停用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已停用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已停用" } }
       }
     },
     "Enable %@" : {
@@ -3840,7 +4208,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativar %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativar %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включить %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启用 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启用 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "啟用%@" } }
       }
     },
     "Enable this provider to view setup options." : {
@@ -3854,7 +4223,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative este provedor para ver as opções de configuração." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative este fornecedor para ver as opções de configuração." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите этого провайдера, чтобы увидеть параметры настройки." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启用此提供商以查看设置选项。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "启用此提供商以查看设置选项。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "啟用此提供者來檢視設定選項。" } }
       }
     },
     "Enabled" : {
@@ -3868,7 +4238,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включён" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已启用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已启用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已啟用" } }
       }
     },
     "Menu bar icon" : {
@@ -3882,7 +4253,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ícone da barra de menus" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ícone da barra de menus" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Значок в строке меню" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏图标" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏图标" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列圖像" } }
       }
     },
     "Menu bar automatically selects %@" : {
@@ -3896,7 +4268,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus seleciona automaticamente %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus seleciona automaticamente %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню автоматически выбирает %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏自动选择 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏自动选择 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列自動選擇%@" } }
       }
     },
     "Menu bar uses the first provider: %@" : {
@@ -3910,7 +4283,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus usa o primeiro provedor: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus usa o primeiro fornecedor: %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню использует первого провайдера: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏使用第一个提供商：%@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏使用第一个提供商：%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列使用第一個提供者：%@" } }
       }
     },
     "Move down" : {
@@ -3924,7 +4298,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mover para baixo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mover para baixo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Переместить вниз" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下移" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "下移" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "向下移動" } }
       }
     },
     "Move up" : {
@@ -3938,7 +4313,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mover para cima" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mover para cima" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Переместить вверх" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上移" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "上移" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "向上移動" } }
       }
     },
     "Not configured" : {
@@ -3952,7 +4328,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não configurado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não configurado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не настроен" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未配置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未配置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未設定" } }
       }
     },
     "Provider order" : {
@@ -3966,7 +4343,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ordem dos provedores" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ordem dos fornecedores" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Порядок провайдеров" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "提供商顺序" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "提供商顺序" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "提供者順序" } }
       }
     },
     "Ready" : {
@@ -3980,7 +4358,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Pronto" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Pronto" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Готов" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "就绪" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "就绪" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "準備就緒" } }
       }
     },
     "Setup needed" : {
@@ -3994,7 +4373,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Требуется настройка" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要设置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要設定" } }
       }
     },
     "Working…" : {
@@ -4008,7 +4388,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Processando…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A processar…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выполняется…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在处理…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在处理…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "運作中⋯" } }
       }
     },
     "Automatic refresh" : {
@@ -4022,7 +4403,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动刷新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动刷新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動重新整理" } }
       }
     },
     "Refresh mode" : {
@@ -4036,7 +4418,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Modo de atualização" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Modo de atualização" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新模式" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新模式" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新整理模式" } }
       }
     },
     "Regular" : {
@@ -4050,7 +4433,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обычный" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "常规" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "常规" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "標準" } }
       }
     },
     "Smart" : {
@@ -4064,7 +4448,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Умный" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "智能" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "智能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "智慧型" } }
       }
     },
     "Choose which providers refresh automatically. Mode and intervals control how often." : {
@@ -4078,7 +4463,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha quais provedores são atualizados automaticamente. O modo e os intervalos definem a frequência." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha que fornecedores são atualizados automaticamente. O modo e os intervalos definem a frequência." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, какие провайдеры обновляются автоматически. Режим и интервалы задают частоту." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择要自动刷新的提供商。模式和间隔决定刷新频率。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择要自动刷新的提供商。模式和间隔决定刷新频率。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇要自動重新整理的提供者。模式和間隔決定重新整理的頻率。" } }
       }
     },
     "Choose a shared cadence for opted-in providers." : {
@@ -4092,7 +4478,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha uma frequência comum para os provedores selecionados." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha uma frequência comum para os fornecedores selecionados." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите общую частоту для выбранных провайдеров." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为已选择的提供商设定统一的刷新频率。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为已选择的提供商设定统一的刷新频率。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為已選擇的提供者設定共用的頻率。" } }
       }
     },
     "Slow interval" : {
@@ -4106,7 +4493,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Медленный интервал" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "慢速间隔" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "慢速间隔" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "慢速間隔" } }
       }
     },
     "Fast interval" : {
@@ -4120,7 +4508,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрый интервал" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速间隔" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速间隔" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速間隔" } }
       }
     },
     "Turn on automatic refresh for each provider you want to check." : {
@@ -4134,7 +4523,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative a atualização automática para cada provedor que quiser verificar." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative a atualização automática para cada fornecedor que pretende verificar." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите автоматическое обновление для каждого провайдера, которого нужно проверять." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为每个要检查的提供商打开自动刷新。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为每个要检查的提供商打开自动刷新。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為每個要檢查的提供者開啟自動重新整理。" } }
       }
     },
     "Refresh Settings" : {
@@ -4148,7 +4538,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de atualização" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Definições de atualização" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Настройки обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新设置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新整理選項" } }
       }
     },
     "Regular refresh checks opted-in providers %@." : {
@@ -4163,7 +4554,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização regular verifica os provedores selecionados %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização regular verifica os fornecedores selecionados %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обычное обновление проверяет выбранных провайдеров %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "常规刷新%@检查一次已选择的提供商。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "常规刷新%@检查一次已选择的提供商。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "標準重新整理會%@檢查一次已選擇的提供者。" } }
       }
     },
     "Fast-check duration" : {
@@ -4178,7 +4570,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração das verificações rápidas" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração das verificações rápidas" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность быстрых проверок" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查时长" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查时长" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查持續時間" } }
       }
     },
     "Smart refresh checks %1$@. After a usage change, a provider checks %2$@ for %3$@, then %4$@ for another %3$@ before returning to the slow interval." : {
@@ -4193,7 +4586,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização inteligente verifica %1$@. Após uma mudança no uso, o provedor verifica %2$@ durante %3$@ e depois %4$@ por mais %3$@ antes de voltar ao intervalo lento." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização inteligente verifica %1$@. Após uma alteração na utilização, o fornecedor verifica %2$@ durante %3$@ e depois %4$@ durante mais %3$@ antes de voltar ao intervalo lento." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Умное обновление проверяет %1$@. После изменения использования провайдер проверяет %2$@ в течение заданного времени (%3$@), затем ещё столько же (%3$@) — %4$@, после чего возвращается к медленному интервалу." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "智能刷新%1$@检查一次。用量变化后，会在 %3$@内%2$@检查一次该提供商，然后在接下来的 %3$@内%4$@检查一次，之后恢复慢速间隔。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "智能刷新%1$@检查一次。用量变化后，会在 %3$@内%2$@检查一次该提供商，然后在接下来的 %3$@内%4$@检查一次，之后恢复慢速间隔。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "智慧型重新整理會%1$@檢查一次。用量變化後，提供者會在%3$@內%2$@檢查一次，然後在接下來的%3$@內%4$@檢查一次，之後恢復慢速間隔。" } }
       }
     },
     "Selected interval: %@" : {
@@ -4207,7 +4601,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo selecionado: %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo selecionado: %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выбранный интервал: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "所选间隔：%@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "所选间隔：%@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "所選間隔：%@" } }
       }
     },
     "Filbert runs %2$@ in the background to check %1$@ usage. These checks may use some of your %3$@ quota. Shorter Smart intervals can increase the number of checks." : {
@@ -4221,7 +4616,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert executa %2$@ em segundo plano para verificar o uso do %1$@. Essas verificações podem consumir parte da sua cota do %3$@. Intervalos inteligentes mais curtos podem aumentar o número de verificações." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert executa %2$@ em segundo plano para verificar a utilização do %1$@. Estas verificações podem consumir parte da sua quota do %3$@. Intervalos inteligentes mais curtos podem aumentar o número de verificações." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert запускает %2$@ в фоновом режиме, чтобы проверять использование %1$@. Эти проверки могут расходовать часть квоты %3$@. Более короткие интервалы умного режима могут увеличить число проверок." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 会在后台运行 %2$@ 以检查 %1$@ 用量。这些检查可能会消耗部分 %3$@ 配额。较短的智能刷新间隔可能会增加检查次数。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 会在后台运行 %2$@ 以检查 %1$@ 用量。这些检查可能会消耗部分 %3$@ 配额。较短的智能刷新间隔可能会增加检查次数。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert會在背景執行%2$@來檢查%1$@用量。這些檢查可能會消耗部分%3$@配額。較短的智慧型間隔可能會增加檢查次數。" } }
       }
     },
     "Automatic refresh for %@" : {
@@ -4235,7 +4631,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática para %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática para %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%@ 自动刷新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%@ 自动刷新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%@自動重新整理" } }
       }
     },
     "Toggle periodic refresh for this provider." : {
@@ -4249,7 +4646,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a atualização periódica deste provedor." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a atualização periódica deste fornecedor." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включает или выключает периодическое обновление этого провайдера." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开或关闭此提供商的定期刷新。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开或关闭此提供商的定期刷新。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟或關閉此提供者的定期重新整理。" } }
       }
     },
     "Automatic refresh is paused because this provider is disabled." : {
@@ -4263,7 +4661,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está pausada porque este provedor está desativado." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está em pausa porque este fornecedor está desativado." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление приостановлено, потому что этот провайдер выключен." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此提供商已停用，因此自动刷新已暂停。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此提供商已停用，因此自动刷新已暂停。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "此提供者已停用，因此自動重新整理已暫停。" } }
       }
     },
     "Automatic refresh is waiting for setup." : {
@@ -4277,7 +4676,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está aguardando a configuração." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está a aguardar a configuração." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление ожидает настройки." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动刷新正在等待设置。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动刷新正在等待设置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動重新整理正在等待設定。" } }
       }
     },
     "Fast checks are on due to recent activity." : {
@@ -4291,7 +4691,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas estão ativas devido à atividade recente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas estão ativas devido à atividade recente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые проверки включены из-за недавней активности." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "由于近期有活动，快速检查已开启。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "由于近期有活动，快速检查已开启。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "由於近期有活動，快速檢查已開啟。" } }
       }
     },
     "Fast and slow checks use the same interval, so fast checks are not more frequent." : {
@@ -4305,7 +4706,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas e lentas usam o mesmo intervalo, então as rápidas não são mais frequentes." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "As verificações rápidas e lentas usam o mesmo intervalo, pelo que as rápidas não são mais frequentes." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые и медленные проверки используют один интервал, поэтому быстрые проверки не чаще обычных." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查和慢速检查使用相同的间隔，因此快速检查并不会更频繁。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查和慢速检查使用相同的间隔，因此快速检查并不会更频繁。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查和慢速檢查使用相同的間隔，因此快速檢查不會更頻繁。" } }
       }
     },
     "Keep checking" : {
@@ -4319,7 +4721,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжить проверки" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续检查" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "繼續檢查" } }
       }
     },
     "Keep checking %@" : {
@@ -4334,7 +4737,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando o uso de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжить проверки (%@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续检查 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续检查 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "繼續檢查%@" } }
       }
     },
     "Fast checks for %@ more." : {
@@ -4348,7 +4752,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações rápidas por mais %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações rápidas durante mais %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До конца быстрых проверок: %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查还将持续 %@。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查还将持续 %@。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查還會持續%@。" } }
       }
     },
     "Checks %@ for the time you choose, even when usage does not change." : {
@@ -4363,7 +4768,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verifica %@ durante o tempo escolhido, mesmo quando o uso não muda." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verifica %@ durante o tempo escolhido, mesmo quando a utilização não se altera." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверяет %@ в течение выбранного времени, даже если использование не меняется." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在你选择的时间内%@检查一次，即使用量没有变化。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在你选择的时间内%@检查一次，即使用量没有变化。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "即使用量沒有變化，也會在你選擇的時間內%@檢查一次。" } }
       }
     },
     "Stop fast checks" : {
@@ -4377,7 +4783,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar verificações rápidas" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Parar verificações rápidas" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановить быстрые проверки" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止快速检查" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止快速检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止快速檢查" } }
       }
     },
     "Stopping ends the fast checks early. Automatic refresh stays on and the normal Smart timing resumes." : {
@@ -4391,7 +4798,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar encerra as verificações rápidas antes do tempo. A atualização automática continua ativa e o ritmo inteligente normal é retomado." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao parar, as verificações rápidas terminam mais cedo. A atualização automática mantém-se ativa e o ritmo normal do modo Inteligente é retomado." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановка досрочно завершает быстрые проверки. Автоматическое обновление остаётся включённым, и возобновляется обычный умный режим." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止会提前结束快速检查。自动刷新保持开启，并恢复正常的智能刷新节奏。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止会提前结束快速检查。自动刷新保持开启，并恢复正常的智能刷新节奏。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止後，快速檢查會提早結束。自動重新整理會保持開啟，並恢復一般的智慧型時程。" } }
       }
     },
     "Provider limit: checks no more often than %@." : {
@@ -4406,7 +4814,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite do provedor: no máximo uma verificação %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite do fornecedor: verifica no máximo %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Ограничение провайдера: не чаще чем %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "提供商限制：最多%@检查一次。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "提供商限制：最多%@检查一次。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "提供者限制：最多%@檢查一次。" } }
       }
     },
     "These checks may use some of your %@ quota." : {
@@ -4420,7 +4829,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Essas verificações podem consumir parte da sua cota do %@." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Estas verificações podem consumir parte da sua quota do %@." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Эти проверки могут расходовать часть квоты %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这些检查可能会消耗部分 %@ 配额。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这些检查可能会消耗部分 %@ 配额。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "這些檢查可能會消耗部分%@配額。" } }
       }
     },
     "The quota cost of these checks is unknown." : {
@@ -4434,7 +4844,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O consumo de cota dessas verificações é desconhecido." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O consumo de quota destas verificações é desconhecido." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Неизвестно, сколько квоты расходуют эти проверки." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这些检查消耗的配额未知。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "这些检查消耗的配额未知。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "這些檢查消耗的配額不明。" } }
       }
     },
     "These checks are documented as not using quota. Frequency limits may still apply." : {
@@ -4448,7 +4859,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Segundo a documentação, essas verificações não consomem cota. Ainda podem ser aplicados limites de frequência." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Segundo a documentação, estas verificações não consomem quota. Podem, ainda assim, aplicar-se limites de frequência." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Согласно документации, эти проверки не расходуют квоту. Ограничения частоты всё равно могут действовать." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "根据文档，这些检查不消耗配额，但仍可能受频率限制。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "根据文档，这些检查不消耗配额，但仍可能受频率限制。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "根據說明文件，這些檢查不會消耗配額，但仍可能受速率限制。" } }
       }
     },
     "%lld seconds" : {
@@ -4602,6 +5014,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%lld 秒"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld秒"
           }
         }
       }
@@ -4767,6 +5185,18 @@
                 "stringUnit" : {
                   "state" : "translated",
                   "value" : "每 %lld 秒"
+                }
+              }
+            }
+          }
+        },
+        "zh-Hant" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "每%lld秒"
                 }
               }
             }
@@ -4939,6 +5369,18 @@
               }
             }
           }
+        },
+        "zh-Hant" : {
+          "variations" : {
+            "plural" : {
+              "other" : {
+                "stringUnit" : {
+                  "state" : "translated",
+                  "value" : "每%lld分鐘"
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -4995,6 +5437,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%1$@至%2$@"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "%1$@至%2$@"
@@ -5154,6 +5602,12 @@
             "state" : "translated",
             "value" : "%lld 分钟"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld分鐘"
+          }
         }
       }
     },
@@ -5168,7 +5622,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "As atualizações automáticas estão disponíveis apenas em versões instaladas." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "As atualizações automáticas só estão disponíveis em versões instaladas." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматические обновления доступны только в установленных версиях." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动更新仅适用于已安装的版本。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动更新仅适用于已安装的版本。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "只有已安裝的版本可以使用自動更新。" } }
       }
     },
     "Check for a newer Filbert release" : {
@@ -5182,7 +5637,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar uma versão mais recente do Filbert" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar uma versão mais recente do Filbert" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить наличие новой версии Filbert" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查 Filbert 新版本" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查 Filbert 新版本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢查Filbert的新版本" } }
       }
     },
     "Check for Updates…" : {
@@ -5196,7 +5652,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar atualizações…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar atualizações…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить обновления…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查更新…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查更新…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢查更新項目⋯" } }
       }
     },
     "Check for updates automatically" : {
@@ -5210,7 +5667,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar atualizações automaticamente" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar atualizações automaticamente" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически проверять обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查更新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查更新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查更新項目" } }
       }
     },
     "Download updates automatically" : {
@@ -5224,7 +5682,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Baixar atualizações automaticamente" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Descarregar atualizações automaticamente" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически загружать обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动下载更新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动下载更新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動下載更新項目" } }
       }
     },
     "MIT License" : {
@@ -5238,7 +5697,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Licença MIT" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Licença MIT" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лицензия MIT" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "MIT 许可证" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "MIT 许可证" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "MIT授權條款" } }
       }
     },
     "Updates" : {
@@ -5252,7 +5712,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "更新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "更新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "更新項目" } }
       }
     },
     "1 hour" : {
@@ -5266,7 +5727,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "1 hora" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "1 час" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "1 小时" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "1 小时" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "1小時" } }
       }
     },
     "2 hours" : {
@@ -5280,7 +5742,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "2 horas" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "2 часа" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "2 小时" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "2 小时" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "2小時" } }
       }
     },
     "5 minutes" : {
@@ -5294,7 +5757,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "5 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "5 минут" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "5 分钟" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "5 分钟" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "5分鐘" } }
       }
     },
     "10 minutes" : {
@@ -5308,7 +5772,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "10 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "10 минут" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "10 分钟" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "10 分钟" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "10分鐘" } }
       }
     },
     "20 minutes" : {
@@ -5322,7 +5787,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "20 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "20 минут" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 分钟" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "20 分钟" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "20分鐘" } }
       }
     },
     "30 minutes" : {
@@ -5336,7 +5802,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "30 minutos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "30 минут" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "30 分钟" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "30 分钟" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "30分鐘" } }
       }
     },
     "Choose how long Filbert keeps your Mac awake" : {
@@ -5350,7 +5817,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha por quanto tempo o Filbert mantém o Mac ativo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha durante quanto tempo o Filbert mantém o Mac ativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, как долго Mac не будет засыпать" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择 Filbert 让 Mac 保持唤醒的时长" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择 Filbert 让 Mac 保持唤醒的时长" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇Filbert防止Mac睡眠的時間長度" } }
       }
     },
     "for %@" : {
@@ -5364,7 +5832,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "por %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "durante %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "ещё %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "剩余 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "剩余 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "剩餘%@" } }
       }
     },
     "for…" : {
@@ -5378,7 +5847,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "por…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "durante…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "на…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时长…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时长…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "時間長度⋯" } }
       }
     },
     "Inactive" : {
@@ -5392,7 +5862,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inativo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Inativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Неактивно" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未启用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未启用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未開啟" } }
       }
     },
     "Keep Awake active" : {
@@ -5406,7 +5877,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "“Manter ativo” ligado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "«Manter ativo» ligado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим «Не засыпать» включён" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持唤醒”已开启" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持唤醒”已开启" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「防止睡眠」已開啟" } }
       }
     },
     "Mac won't sleep for %@" : {
@@ -5420,7 +5892,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em repouso por %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em pausa durante %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Mac не уснёт ещё %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 将保持唤醒，剩余 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 将保持唤醒，剩余 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac不會進入睡眠，剩餘%@" } }
       }
     },
     "Mac won't sleep until turned off" : {
@@ -5434,7 +5907,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em repouso até você desativar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Mac não vai entrar em pausa até desativar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Mac не уснёт, пока вы не выключите режим" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 将保持唤醒，直到你关闭此功能" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Mac 将保持唤醒，直到你关闭此功能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac不會進入睡眠，直到你關閉此功能" } }
       }
     },
     "Keep Awake" : {
@@ -5448,7 +5922,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Manter ativo" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Manter ativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не засыпать" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "保持唤醒" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "保持唤醒" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "防止睡眠" } }
       }
     },
     "Show a keep-awake timer in Filbert's panel" : {
@@ -5462,7 +5937,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador de “Manter ativo” no painel do Filbert" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador «Manter ativo» no painel do Filbert" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать таймер «Не засыпать» на панели Filbert" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Filbert 面板中显示“保持唤醒”计时器" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Filbert 面板中显示“保持唤醒”计时器" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在Filbert面板中顯示「防止睡眠」計時器" } }
       }
     },
     "Remember “Until turned off”" : {
@@ -5476,7 +5952,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Lembrar “Até desativar”" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Memorizar «Até desativar»" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Запоминать «До выключения»" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "记住“直到关闭”" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "记住“直到关闭”" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "記住「直到關閉」" } }
       }
     },
     "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off." : {
@@ -5490,7 +5967,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Depois de reiniciar, o Filbert reativa “Manter ativo” se estava em “Até desativar”." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Após um reinício, o Filbert volta a ativar «Manter ativo» se estava definido como «Até desativar»." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "После перезапуска Filbert снова включит «Не засыпать», если был выбран режим «До выключения»." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动后，如果“保持唤醒”设为“直到关闭”，Filbert 会重新开启它。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动后，如果“保持唤醒”设为“直到关闭”，Filbert 会重新开启它。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新開機後，如果「防止睡眠」設為「直到關閉」，Filbert會重新開啟它。" } }
       }
     },
     "Show Keep Awake" : {
@@ -5504,7 +5982,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Manter ativo”" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Manter ativo»" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать «Не засыпать»" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示“保持唤醒”" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示“保持唤醒”" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示「防止睡眠」" } }
       }
     },
     "Keep Awake couldn't start. Try again." : {
@@ -5518,7 +5997,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar “Manter ativo”. Tente novamente." } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar «Manter ativo». Tente novamente." } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось включить «Не засыпать». Повторите попытку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法开启“保持唤醒”。请重试。" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法开启“保持唤醒”。请重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法開啟「防止睡眠」。請再試一次。" } }
       }
     },
     "Keep Awake duration" : {
@@ -5532,7 +6012,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração de “Manter ativo”" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração de «Manter ativo»" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность «Не засыпать»" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持唤醒”时长" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持唤醒”时长" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「防止睡眠」持續時間" } }
       }
     },
     "Turn Off" : {
@@ -5546,7 +6027,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Desativar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Desativar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выключить" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关闭" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关闭" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "關閉" } }
       }
     },
     "Until turned off" : {
@@ -5560,7 +6042,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Até desativar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Até desativar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До выключения" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "直到关闭" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "直到关闭" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "直到關閉" } }
       }
     },
     "Filbert %@ is available" : {
@@ -5574,7 +6057,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está disponível" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está disponível" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Доступен Filbert %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ 已可用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ 已可用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@已可供下載" } }
       }
     },
     "Update" : {
@@ -5589,7 +6073,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Instalar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установить" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "更新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "更新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "更新" } }
       }
     },
     "Update Filbert to version %@" : {
@@ -5603,7 +6088,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizar o Filbert para a versão %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizar o Filbert para a versão %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновить Filbert до версии %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将 Filbert 更新到版本 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "将 Filbert 更新到版本 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "將Filbert更新至%@版" } }
       }
     },
     "Downloading Filbert %@…" : {
@@ -5617,7 +6103,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Baixando o Filbert %@…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A descarregar o Filbert %@…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Загрузка Filbert %@…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在下载 Filbert %@…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在下载 Filbert %@…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在下載Filbert %@⋯" } }
       }
     },
     "Preparing Filbert %@…" : {
@@ -5631,7 +6118,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Preparando o Filbert %@…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A preparar o Filbert %@…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Подготовка Filbert %@…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在准备 Filbert %@…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在准备 Filbert %@…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在準備Filbert %@⋯" } }
       }
     },
     "Filbert %@ is ready to install" : {
@@ -5645,7 +6133,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está pronto para instalar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está pronto a instalar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ готов к установке" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ 已准备好安装" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ 已准备好安装" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@已準備好安裝" } }
       }
     },
     "Install Helper" : {
@@ -5704,6 +6193,12 @@
             "state" : "translated",
             "value" : "安装辅助脚本"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安裝輔助腳本"
+          }
         }
       }
     },
@@ -5718,7 +6213,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalando o Filbert %@…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A instalar o Filbert %@…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установка Filbert %@…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在安装 Filbert %@…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在安装 Filbert %@…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在安裝Filbert %@⋯" } }
       }
     },
     "Restart to Update" : {
@@ -5732,7 +6228,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar para atualizar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar para atualizar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перезапустить для обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动以更新" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动以更新" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新啟動以更新" } }
       }
     },
     "Restart and update Filbert to version %@" : {
@@ -5746,7 +6243,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar e atualizar o Filbert para a versão %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar e atualizar o Filbert para a versão %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перезапустить и обновить Filbert до версии %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动并将 Filbert 更新到版本 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动并将 Filbert 更新到版本 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新啟動並將Filbert更新至%@版" } }
       }
     },
     "Forecast headline format" : {
@@ -5760,7 +6258,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ · %2$@" } }
       }
     },
     "About %@ of use remaining" : {
@@ -5774,7 +6273,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@ de uso restante" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %@ de utilização restante" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось использования: примерно %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约可再使用 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约可再使用 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約可再使用%@" } }
       }
     },
     "Based on %@ of history" : {
@@ -5789,7 +6289,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "На основе истории (%@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "基于过去 %@的数据" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "基于过去 %@的数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "根據過去%@的資料" } }
       }
     },
     "Should last until reset" : {
@@ -5803,7 +6304,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Должно хватить до сброса" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "应可用到重置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "应可用到重置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "應可用到重設" } }
       }
     },
     "At your pace, based on %@ of history" : {
@@ -5818,7 +6320,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "No seu ritmo, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao seu ritmo, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При вашем темпе, на основе истории (%@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的使用速度" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的使用速度" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依你過去%@的使用速度" } }
       }
     },
     "About %1$@ of use remaining · %2$@ of history" : {
@@ -5833,7 +6336,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de uso restante · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de utilização restante · histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось использования: примерно %1$@ · история: %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约可再使用 %1$@ · 过去 %2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约可再使用 %1$@ · 过去 %2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約可再使用%1$@ · 過去%2$@" } }
       }
     },
     "Should last until reset · %@ of history" : {
@@ -5848,7 +6352,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição · histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição · histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Должно хватить до сброса · история: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "应可用到重置 · 过去 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "应可用到重置 · 过去 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "應可用到重設 · 過去%@" } }
       }
     },
     "Learning your usage rate…" : {
@@ -5862,7 +6367,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Aprendendo seu ritmo de uso…" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A aprender o seu ritmo de utilização…" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Изучение темпа использования…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在了解你的使用速度…" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在了解你的使用速度…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在瞭解你的使用速度⋯" } }
       }
     },
     "No recent consumption detected" : {
@@ -5876,7 +6382,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Nenhum consumo recente detectado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Nenhum consumo recente detetado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Недавнего расхода не обнаружено" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未检测到近期消耗" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未检测到近期消耗" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未偵測到近期用量" } }
       }
     },
     "Refreshes too far apart to estimate" : {
@@ -5890,7 +6397,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Leituras muito espaçadas para estimar" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações de dados demasiado espaçadas para estimar" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Данные обновляются слишком редко для оценки" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新间隔过长，无法估算" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新间隔过长，无法估算" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新整理間隔過長，無法估算" } }
       }
     },
     "Forecast paused until fresh data arrives" : {
@@ -5904,7 +6412,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Previsão pausada até chegarem dados novos" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Previsão em pausa até chegarem dados novos" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Прогноз приостановлен до получения новых данных" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预测已暂停，等待新数据" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "预测已暂停，等待新数据" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "預測已暫停，正在等待新資料" } }
       }
     },
     "About %1$@ of use remaining at recent pace, based on %2$@ of history" : {
@@ -5919,7 +6428,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de uso restante no ritmo recente, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cerca de %1$@ de utilização restante ao ritmo recente, com base no histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При недавнем темпе осталось использования: примерно %1$@, на основе истории (%2$@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按近期速度，约可再使用 %1$@（基于过去 %2$@）" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按近期速度，约可再使用 %1$@（基于过去 %2$@）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依近期速度，約可再使用%1$@（根據過去%2$@）" } }
       }
     },
     "Should last until reset at your pace, based on %@ of history" : {
@@ -5934,7 +6444,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição no seu ritmo, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição ao seu ritmo, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При вашем темпе должно хватить до сброса, на основе истории (%@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的使用速度，应可用到重置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的使用速度，应可用到重置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依你過去%@的使用速度，應可用到重設" } }
       }
     },
     "Runs out in about %@" : {
@@ -5948,7 +6459,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se em cerca de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: примерно %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@后用完" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@后用完" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約%@後用完" } }
       }
     },
     "At your average pace, based on %@ of history" : {
@@ -5963,7 +6475,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "No seu ritmo médio, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao seu ritmo médio, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе, на основе истории (%@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的平均速度" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的平均速度" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依你過去%@的平均速度" } }
       }
     },
     "Runs out in about %1$@ · %2$@ of history" : {
@@ -5978,7 +6491,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %1$@ · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se em cerca de %1$@ · histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "До исчерпания: примерно %1$@ · история: %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %1$@后用完 · 过去 %2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %1$@后用完 · 过去 %2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約%1$@後用完 · 過去%2$@" } }
       }
     },
     "Runs out in about %1$@ at your average pace, based on %2$@ of history" : {
@@ -5993,7 +6507,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acaba em cerca de %1$@ no seu ritmo médio, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Esgota-se em cerca de %1$@ ao seu ritmo médio, com base no histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе до исчерпания: примерно %1$@. Период наблюдения: %2$@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %2$@的平均速度，约 %1$@后用完" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %2$@的平均速度，约 %1$@后用完" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依你過去%2$@的平均速度，約%1$@後用完" } }
       }
     },
     "Should last until reset at your average pace, based on %@ of history" : {
@@ -6008,7 +6523,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até a redefinição no seu ritmo médio, com base no histórico de %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deve durar até à reposição ao seu ritmo médio, com base no histórico de %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При среднем темпе должно хватить до сброса, на основе истории (%@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的平均速度，应可用到重置" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按你过去 %@的平均速度，应可用到重置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依你過去%@的平均速度，應可用到重設" } }
       }
     },
     "This adds a small helper script to ~/.claude/." : {
@@ -6067,6 +6583,12 @@
             "state" : "translated",
             "value" : "这会在 ~/.claude/ 中添加一个小型辅助脚本。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "這會在~/.claude/中加入一個小型輔助腳本。"
+          }
         }
       }
     },
@@ -6081,7 +6603,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O tempo indicado é aproximado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A estimativa é aproximada" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Время приблизительное" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时间为估算值" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "时间为估算值" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "時間為估計值" } }
       }
     },
     "Unlimited" : {
@@ -6095,7 +6618,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ilimitado" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Без ограничений" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无限制" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无限制" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無限制" } }
       }
     },
     "Promoted pool value format" : {
@@ -6109,7 +6633,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：%2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：%2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：%2$@" } }
       }
     },
     "Using %@" : {
@@ -6123,7 +6648,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Usando %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A usar %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Используется: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在使用 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在使用 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在使用%@" } }
       }
     },
     "%@ limit reached" : {
@@ -6137,7 +6663,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@: limite atingido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@: limite atingido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%@: лимит исчерпан" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%@：已达上限" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%@：已达上限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%@：已達上限" } }
       }
     },
     "%1$@ limit reached, %2$@" : {
@@ -6151,7 +6678,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: limite atingido, %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: limite atingido, %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: лимит исчерпан, %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：已达上限，%2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：已达上限，%2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：已達上限，%2$@" } }
       }
     },
     "Limit reached · %@" : {
@@ -6165,7 +6693,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido · %@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido · %@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лимит исчерпан · %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已达上限 · %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已达上限 · %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已達上限 · %@" } }
       }
     },
     "%@: %@ credits remaining" : {
@@ -6179,7 +6708,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ créditos restantes" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@: %2$@ créditos restantes" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ — осталось кредитов: %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：剩余额度 %2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：剩余额度 %2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@：剩餘點數%2$@" } }
       }
     },
     "Limit reached" : {
@@ -6193,7 +6723,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лимит исчерпан" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已达上限" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已达上限" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已達上限" } }
       }
     },
     "Limit reached, no more use available until reset" : {
@@ -6207,7 +6738,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido, sem mais uso disponível até a redefinição" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Limite atingido, sem mais utilização disponível até à reposição" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лимит исчерпан, до сброса использование недоступно" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已达上限，重置前无法继续使用" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已达上限，重置前无法继续使用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已達上限，重設前無法繼續使用" } }
       }
     },
     "More than %@ of use remaining" : {
@@ -6221,7 +6753,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %@ de uso restante" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %@ de utilização restante" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось использования: %@ и более" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可再使用超过 %@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可再使用超过 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "可再使用超過%@" } }
       }
     },
     "More than %1$@ of use remaining · %2$@ of history" : {
@@ -6236,7 +6769,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de uso restante · histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de utilização restante · histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Осталось использования: %1$@ и более · история: %2$@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可再使用超过 %1$@ · 过去 %2$@" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可再使用超过 %1$@ · 过去 %2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "可再使用超過%1$@ · 過去%2$@" } }
       }
     },
     "More than %1$@ of use remaining at recent pace, based on %2$@ of history" : {
@@ -6251,7 +6785,8 @@
         "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de uso restante no ritmo recente, com base no histórico de %2$@" } },
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mais de %1$@ de utilização restante ao ritmo recente, com base no histórico de %2$@" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "При недавнем темпе осталось использования: %1$@ и более, на основе истории (%2$@)" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按近期速度，可再使用超过 %1$@（基于过去 %2$@）" } }
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "按近期速度，可再使用超过 %1$@（基于过去 %2$@）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "依近期速度，可再使用超過%1$@（根據過去%2$@）" } }
       }
     },
     "Language" : {
@@ -6309,6 +6844,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "语言"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "語言"
           }
         }
       }
@@ -6369,6 +6910,12 @@
             "state" : "translated",
             "value" : "选择 Filbert 使用的语言。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇Filbert使用的語言。"
+          }
         }
       }
     },
@@ -6427,6 +6974,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "跟随系统"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "系統預設值"
           }
         }
       }
@@ -6487,6 +7040,12 @@
             "state" : "translated",
             "value" : "部分系统对话框会在 Filbert 重新启动后切换语言。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分系統對話框會在Filbert重新啟動後切換語言。"
+          }
         }
       }
     },
@@ -6545,6 +7104,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "欢迎使用 Filbert"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歡迎使用Filbert"
           }
         }
       }
@@ -6605,6 +7170,12 @@
             "state" : "translated",
             "value" : "连接提供商"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "連接提供者"
+          }
         }
       }
     },
@@ -6663,6 +7234,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "选择一个你使用的 AI 提供商。之后可以在设置中添加更多。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選擇你使用的AI提供者。之後可以在「設定」中加入更多。"
           }
         }
       }
@@ -6723,6 +7300,12 @@
             "state" : "translated",
             "value" : "Filbert 位于菜单栏中"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert位於選單列中"
+          }
         }
       }
     },
@@ -6781,6 +7364,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "点按其图标即可查看用量。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按一下其圖像即可查看用量。"
           }
         }
       }
@@ -6841,6 +7430,12 @@
             "state" : "translated",
             "value" : "Filbert 没有程序坞图标，也没有主窗口。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert沒有Dock圖像，也沒有主視窗。"
+          }
         }
       }
     },
@@ -6899,6 +7494,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "菜单栏中突出显示了 Filbert 图标"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "選單列中標示了Filbert圖像"
           }
         }
       }
@@ -6959,6 +7560,12 @@
             "state" : "translated",
             "value" : "第 %1$lld 步，共 %2$lld 步"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "第%1$lld步，共%2$lld步"
+          }
         }
       }
     },
@@ -7014,6 +7621,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "返回"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "返回"
@@ -7077,6 +7690,12 @@
             "state" : "translated",
             "value" : "继续"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "繼續"
+          }
         }
       }
     },
@@ -7136,6 +7755,12 @@
             "state" : "translated",
             "value" : "暂时跳过"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "暫時略過"
+          }
         }
       }
     },
@@ -7191,6 +7816,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "完成"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "完成"
@@ -7254,6 +7885,12 @@
             "state" : "translated",
             "value" : "欢迎"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "歡迎使用"
+          }
         }
       }
     },
@@ -7312,6 +7949,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "再次查看 Filbert 简介。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "再次查看Filbert簡介。"
           }
         }
       }
@@ -7372,6 +8015,12 @@
             "state" : "translated",
             "value" : "显示欢迎窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "顯示歡迎視窗"
+          }
         }
       }
     },
@@ -7430,6 +8079,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Filbert 会显示你在达到上限前还剩多少 AI 用量。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Filbert會顯示你在達到上限前還剩多少AI用量。"
           }
         }
       }
@@ -7490,6 +8145,12 @@
             "state" : "translated",
             "value" : "看不到图标？菜单栏可能已满。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "看不到圖像？選單列可能已滿。"
+          }
         }
       }
     },
@@ -7548,6 +8209,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按住 ⌘ 并将其他图标拖出菜单栏以腾出空间。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "按住⌘並將其他圖像拖出選單列以騰出空間。"
           }
         }
       }

@@ -21,6 +21,7 @@ final class ZAIWindowLabelTests: XCTestCase {
             "pt-PT": ["Janela de 1 hora", "Janela de 5 horas"],
             "ru": ["1-часовое окно", "5-часовое окно"],
             "zh-Hans": ["1 小时窗口", "5 小时窗口"],
+            "zh-Hant": ["1小時時段", "5小時時段"],
             "ja": ["1時間枠", "5時間枠"],
         ]
         for (language, labels) in expected {

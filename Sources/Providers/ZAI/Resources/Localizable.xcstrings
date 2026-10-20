@@ -105,6 +105,12 @@
             "state" : "translated",
             "value" : "%lld 小时窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld小時時段"
+          }
         }
       }
     },
@@ -164,6 +170,12 @@
             "state" : "translated",
             "value" : "监控 API 用量和配额"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監控API用量和配額"
+          }
         }
       }
     },
@@ -222,6 +234,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每月 Web 工具调用次数"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每月網頁工具呼叫次數"
           }
         }
       }
@@ -283,6 +301,12 @@
             "state" : "translated",
             "value" : "每周"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每週"
+          }
         }
       }
     },
@@ -341,6 +365,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未配置 API 密钥。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未設定API金鑰。"
           }
         }
       }
@@ -401,6 +431,12 @@
             "state" : "translated",
             "value" : "认证失败。请检查你的 API 密钥。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認證失敗。請檢查你的API金鑰。"
+          }
         }
       }
     },
@@ -459,6 +495,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请求过于频繁。请稍后重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已達速率限制。請稍後再試一次。"
           }
         }
       }
@@ -519,6 +561,12 @@
             "state" : "translated",
             "value" : "网络错误。请检查你的网络连接。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "網路錯誤。請檢查你的網路連線。"
+          }
         }
       }
     },
@@ -577,6 +625,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "服务器返回了意外响应。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器傳回了非預期的回應。"
           }
         }
       }
@@ -637,6 +691,12 @@
             "state" : "translated",
             "value" : "无数据"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有資料"
+          }
         }
       }
     },
@@ -695,6 +755,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "内部错误：意外的凭证类型。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "內部錯誤：非預期的憑證類型。"
           }
         }
       }
