@@ -2,7 +2,7 @@
 import XCTest
 
 final class DisplayLanguageTests: XCTestCase {
-    private let available = ["en", "de-DE", "es-ES", "es-MX", "pt-BR", "pt-PT", "ru", "zh-Hans", "ja"]
+    private let available = ["en", "de-DE", "es-ES", "es-MX", "pt-BR", "pt-PT", "ru", "zh-Hans", "zh-Hant", "ja"]
 
     override func tearDown() {
         DisplayLanguage.selectedLanguageCode = nil
@@ -34,7 +34,8 @@ final class DisplayLanguageTests: XCTestCase {
         let expected = [
             "es": "es-ES", "es-ES": "es-ES", "es-MX": "es-MX", "es-419": "es-MX",
             "pt": "pt-BR", "pt-BR": "pt-BR", "pt-PT": "pt-PT",
-            "ru-RU": "ru", "zh-Hans-CN": "zh-Hans", "zh-CN": "zh-Hans",
+            "ru-RU": "ru", "zh-Hans-CN": "zh-Hans", "zh-CN": "zh-Hans", "zh-SG": "zh-Hans",
+            "zh-Hant": "zh-Hant", "zh-Hant-TW": "zh-Hant", "zh-TW": "zh-Hant", "zh-HK": "zh-Hant", "zh-MO": "zh-Hant",
             "ja": "ja", "ja-JP": "ja", "en-JP": "en",
         ]
         for (preferred, shown) in expected {
@@ -43,7 +44,7 @@ final class DisplayLanguageTests: XCTestCase {
     }
 
     func testUnsupportedLanguage_fallsBackToEnglish() {
-        for preferred in ["zh-Hant", "zh-Hant-TW", "zh-HK", "fr"] {
+        for preferred in ["fr", "fr-CA"] {
             assertLanguage(resolve(selectedLanguageCode: nil, preferences: [preferred]), "en")
         }
         assertLanguage(resolve(selectedLanguageCode: "fr", preferences: []), "en")
@@ -51,7 +52,8 @@ final class DisplayLanguageTests: XCTestCase {
 
     func testLookup_findsEachNewLanguage() {
         let expected = [
-            "pt-BR": "redefinindo…", "pt-PT": "a repor…", "ru": "сброс…", "zh-Hans": "正在重置…", "ja": "リセット中…",
+            "pt-BR": "redefinindo…", "pt-PT": "a repor…", "ru": "сброс…", "zh-Hans": "正在重置…", "zh-Hant": "正在重設⋯",
+            "ja": "リセット中…",
         ]
         for (language, text) in expected {
             DisplayLanguage.selectedLanguageCode = language
@@ -70,6 +72,7 @@ final class DisplayLanguageTests: XCTestCase {
             "pt-PT": "repõe-se dentro de 2 horas",
             "ru": "до сброса 2 часа",
             "zh-Hans": "2小时后重置",
+            "zh-Hant": "2小時後重設",
             "ja": "リセットまであと2時間",
         ]
         for (language, text) in expected {

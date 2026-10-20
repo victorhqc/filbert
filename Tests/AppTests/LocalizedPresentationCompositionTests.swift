@@ -115,21 +115,25 @@ final class LocalizedPresentationCompositionTests: AllowanceForecastPresentation
         )
 
         XCTAssertEqual(MenuBarProviderPresentation.accessibilityLabel(for: resolved), "Codex：剩余额度 1.00")
+
+        DisplayLanguage.selectedLanguageCode = "zh-Hant"
+        XCTAssertEqual(MenuBarProviderPresentation.accessibilityLabel(for: resolved), "Codex：剩餘點數1.00")
     }
 
     func testCreditChargePercentagesReferToTheStandardCharge() {
-        for language in ["de-DE", "zh-Hans"] {
+        let expected: [String: (fraction: (String) -> String, standard: String)] = [
+            "de-DE": ({ "\($0) des Standard-Credit-Tarifs" }, "Standard-Credit-Tarif"),
+            "zh-Hans": ({ "按标准的 \($0) 消耗积分" }, "标准积分消耗"),
+            "zh-Hant": ({ "按標準的\($0)扣除點數" }, "標準點數扣除比例"),
+        ]
+        for (language, text) in expected {
             DisplayLanguage.selectedLanguageCode = language
             let percentage = 0.5.formatted(.percent.precision(.fractionLength(0 ... 1)).locale(DisplayLanguage.locale))
 
             XCTAssertEqual(
-                PeakHoursPresentation.rateText(for: .fractionOfStandardRate(0.5)),
-                language == "de-DE" ? "\(percentage) des Standard-Credit-Tarifs" : "按标准的 \(percentage) 消耗积分"
+                PeakHoursPresentation.rateText(for: .fractionOfStandardRate(0.5)), text.fraction(percentage), language
             )
-            XCTAssertEqual(
-                PeakHoursPresentation.rateText(for: .fractionOfStandardRate(1)),
-                language == "de-DE" ? "Standard-Credit-Tarif" : "标准积分消耗"
-            )
+            XCTAssertEqual(PeakHoursPresentation.rateText(for: .fractionOfStandardRate(1)), text.standard, language)
         }
     }
 

@@ -57,6 +57,12 @@
             "state" : "translated",
             "value" : "未找到凭证。请登录此提供商，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到憑證。請登入此提供者，然後再試一次。"
+          }
         }
       }
     },
@@ -117,6 +123,12 @@
             "state" : "translated",
             "value" : "%@后重置"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@後重設"
+          }
         }
       }
     },
@@ -175,6 +187,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "正在重置…"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "正在重設⋯"
           }
         }
       }
@@ -235,6 +253,12 @@
             "state" : "translated",
             "value" : "此提供商不支持此操作。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此提供者不支援這項操作。"
+          }
         }
       }
     },
@@ -293,6 +317,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法读取凭证。请检查钥匙串访问权限，然后重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法讀取憑證。請檢查鑰匙圈的取用權限，然後再試一次。"
           }
         }
       }

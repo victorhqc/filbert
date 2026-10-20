@@ -57,6 +57,12 @@
             "state" : "translated",
             "value" : "5 小时窗口"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "5小時時段"
+          }
         }
       }
     },
@@ -115,6 +121,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "辅助脚本自动迁移失败。选择“安装辅助脚本”以重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "輔助腳本自動移轉失敗。請選擇「安裝輔助腳本」來再試一次。"
           }
         }
       }
@@ -175,6 +187,12 @@
             "state" : "translated",
             "value" : "未找到 Claude Code"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到Claude Code"
+          }
         }
       }
     },
@@ -233,6 +251,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未找到 Claude Code。请安装 Claude Code，然后重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到Claude Code。請安裝Claude Code，然後再試一次。"
           }
         }
       }
@@ -293,6 +317,12 @@
             "state" : "translated",
             "value" : "Claude Code 用量数据刷新失败，退出代码为 %d。请打开 Claude Code，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法重新整理Claude Code的用量資料，結束代碼為%d。請打開Claude Code，然後再試一次。"
+          }
         }
       }
     },
@@ -351,6 +381,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Claude Code 用量数据刷新超时。请重新刷新。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新整理Claude Code的用量資料逾時。請再重新整理一次。"
           }
         }
       }
@@ -411,6 +447,12 @@
             "state" : "translated",
             "value" : "Claude Code 未返回用量数据。请打开 Claude Code，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Claude Code沒有傳回用量資料。請打開Claude Code，然後再試一次。"
+          }
         }
       }
     },
@@ -469,6 +511,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法解码 Claude Code 用量数据。请刷新以重试。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法解碼Claude Code的用量資料。請重新整理來再試一次。"
           }
         }
       }
@@ -529,6 +577,12 @@
             "state" : "translated",
             "value" : "无法解析 ~/.claude/settings.json。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法解析~/.claude/settings.json。"
+          }
         }
       }
     },
@@ -587,6 +641,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法准备刷新 Claude Code 用量数据。请重新刷新。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法準備重新整理Claude Code的用量資料。請再重新整理一次。"
           }
         }
       }
@@ -647,6 +707,12 @@
             "state" : "translated",
             "value" : "无法读取 Claude Code 用量数据。请刷新以重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法讀取Claude Code的用量資料。請重新整理來再試一次。"
+          }
         }
       }
     },
@@ -705,6 +771,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无法验证辅助脚本的安装。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法確認輔助腳本是否已正確安裝。"
           }
         }
       }
@@ -765,6 +837,12 @@
             "state" : "translated",
             "value" : "在 App 包中找不到辅助可执行文件。请重新安装 Filbert，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "在App套件中找不到輔助執行檔。請重新安裝Filbert，然後再試一次。"
+          }
         }
       }
     },
@@ -823,6 +901,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "未安装辅助脚本"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未安裝輔助腳本"
           }
         }
       }
@@ -883,6 +967,12 @@
             "state" : "translated",
             "value" : "安装 Claude Code"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安裝Claude Code"
+          }
         }
       }
     },
@@ -941,6 +1031,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "内部错误：意外的凭证类型。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "內部錯誤：非預期的憑證類型。"
           }
         }
       }
@@ -1001,6 +1097,12 @@
             "state" : "translated",
             "value" : "监控 Claude Pro/Max 订阅用量"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監控Claude Pro/Max訂閱項目的用量"
+          }
         }
       }
     },
@@ -1059,6 +1161,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无数据"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有資料"
           }
         }
       }
@@ -1119,6 +1227,12 @@
             "state" : "translated",
             "value" : "打开 Claude Code 以载入用量数据"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "打開Claude Code來載入用量資料"
+          }
         }
       }
     },
@@ -1178,6 +1292,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "每周"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "每週"
           }
         }
       }

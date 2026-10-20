@@ -24,7 +24,7 @@ final class DisplayLocaleFormattingTests: XCTestCase {
     }
 
     func testDurationsOfAWeekOrMoreUseDays() {
-        let expected = ["en": "9d", "de-DE": "9d", "ru": "9 д.", "zh-Hans": "9天", "ja": "9日"]
+        let expected = ["en": "9d", "de-DE": "9d", "ru": "9 д.", "zh-Hans": "9天", "zh-Hant": "9天", "ja": "9日"]
         for (language, text) in expected {
             DisplayLanguage.selectedLanguageCode = language
 
@@ -37,6 +37,7 @@ final class DisplayLocaleFormattingTests: XCTestCase {
             "en": ["every second", "every 30 seconds", "every minute", "every 5 minutes"],
             "de-DE": ["jede Sekunde", "alle 30 Sekunden", "jede Minute", "alle 5 Minuten"],
             "ru": ["раз в 1 секунду", "раз в 30 секунд", "раз в 1 минуту", "раз в 5 минут"],
+            "zh-Hant": ["每1秒", "每30秒", "每1分鐘", "每5分鐘"],
             "ja": ["1秒ごと", "30秒ごと", "1分ごと", "5分ごと"],
         ]
         for (language, texts) in expected {
@@ -49,7 +50,7 @@ final class DisplayLocaleFormattingTests: XCTestCase {
     }
 
     func testRangesUseEachLanguagesRangeForm() {
-        let expected = ["de-DE": "Mo.–Fr.", "zh-Hans": "周一至周五", "ja": "月〜金"]
+        let expected = ["de-DE": "Mo.–Fr.", "zh-Hans": "周一至周五", "zh-Hant": "週一至週五", "ja": "月〜金"]
         for (language, text) in expected {
             DisplayLanguage.selectedLanguageCode = language
 
@@ -67,6 +68,7 @@ final class DisplayLocaleFormattingTests: XCTestCase {
             "pt-PT": ["1 segundo", "2 segundos", "1 minuto", "2 minutos", "5 minutos", "21 minutos"],
             "ru": ["1 секунда", "2 секунды", "1 минута", "2 минуты", "5 минут", "21 минута"],
             "zh-Hans": ["1 秒", "2 秒", "1 分钟", "2 分钟", "5 分钟", "21 分钟"],
+            "zh-Hant": ["1秒", "2秒", "1分鐘", "2分鐘", "5分鐘", "21分鐘"],
             "ja": ["1秒", "2秒", "1分", "2分", "5分", "21分"],
         ]
         for (language, texts) in expected {

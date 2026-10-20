@@ -94,7 +94,42 @@ final class StringCatalogCoverageTests: XCTestCase {
             "あなた", "[「」]", "[？！：]",
             #"[\u3040-\u30FF\u4E00-\u9FFF] [A-Za-z0-9%]"#, #"[A-Za-z0-9@] [\u3040-\u30FF\u4E00-\u9FFF]"#,
         ],
+        "zh-Hant": [
+            "設置", "默認", "菜單", "軟件", "信息", "網絡",
+            "賬號", "賬戶", "屏幕", "程序", "數據", "服務器",
+            "接口", "登錄", "質量", "優化", "鏈接", "用戶",
+            "保存", "加載", "刷新", "充值", "窗口", "提供商",
+            "密鑰", "激活", "運行", "實時", "在線", "緩存",
+            "圖標", "智能", "按需", "點擊", "鑰匙串", "您",
+            "[“”…]",
+            #"[\u3400-\u9FFF][,?!:;()]"#, #"[,?!:;()][\u3400-\u9FFF]"#,
+            #"[\u3400-\u9FFF] [A-Za-z0-9%]"#, #"[A-Za-z0-9@] [\u3400-\u9FFF]"#,
+        ],
     ]
+
+    /// Traditional characters that ICU's `Hans-Hant` transform changes anyway. Each one needs a source in
+    /// `docs/localization-glossary.md`.
+    private let traditionalChineseExceptions: Set<Character> = []
+
+    func testTraditionalChineseHasNoSimplifiedCharacters() throws {
+        var failures: [String] = []
+        for module in modules {
+            let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
+            for (key, entry) in catalog.strings.sorted(by: { $0.key < $1.key }) {
+                for value in entry.localizations?["zh-Hant"]?.units.map(\.value) ?? [] {
+                    // ICU converts some characters only in context (周 alone stays, 周一 becomes 週一).
+                    let traditional = value.applyingTransform(StringTransform("Hans-Hant"), reverse: false) ?? value
+                    let changed = zip(value, traditional).filter { original, converted in
+                        original != converted && !traditionalChineseExceptions.contains(original)
+                    }
+                    if value.count != traditional.count || !changed.isEmpty {
+                        failures.append("\(module.catalog) \"\(key)\" in zh-Hant: \(value) → \(traditional)")
+                    }
+                }
+            }
+        }
+        XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
+    }
 
     func testEveryLanguageAvoidsItsDeniedTerms() throws {
         let options: String.CompareOptions = [.regularExpression, .caseInsensitive]
@@ -117,6 +152,7 @@ final class StringCatalogCoverageTests: XCTestCase {
     private let pluralForms: [String: Set<String>] = [
         "ru": ["one", "few", "many", "other"],
         "zh-Hans": ["other"],
+        "zh-Hant": ["other"],
         "ja": ["other"],
     ]
 

@@ -57,6 +57,12 @@
             "state" : "translated",
             "value" : "剩余 %@"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "剩餘%@"
+          }
         }
       }
     },
@@ -112,6 +118,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "API"
@@ -175,6 +187,12 @@
             "state" : "translated",
             "value" : "认证失败"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "認證失敗"
+          }
         }
       }
     },
@@ -233,6 +251,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "自动"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Auto"
           }
         }
       }
@@ -293,6 +317,12 @@
             "state" : "translated",
             "value" : "赠金"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "贈送點數"
+          }
         }
       }
     },
@@ -352,6 +382,12 @@
             "state" : "translated",
             "value" : "未找到 Cursor CLI。请安装后运行“agent login”，或登录 Cursor App。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "找不到Cursor CLI。請安裝後執行「agent login」，或登入Cursor App。"
+          }
         }
       }
     },
@@ -407,6 +443,12 @@
           }
         },
         "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "包含用量"
+          }
+        },
+        "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
             "value" : "包含用量"
@@ -470,6 +512,12 @@
             "state" : "translated",
             "value" : "监控订阅和按需支出"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "監控訂閱項目和隨選支出"
+          }
         }
       }
     },
@@ -528,6 +576,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "网络错误。请检查你的网络连接。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "網路錯誤。請檢查你的網路連線。"
           }
         }
       }
@@ -588,6 +642,12 @@
             "state" : "translated",
             "value" : "无数据"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "沒有資料"
+          }
         }
       }
     },
@@ -646,6 +706,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "按需支出"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "隨選支出"
           }
         }
       }
@@ -706,6 +772,12 @@
             "state" : "translated",
             "value" : "共享支出"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "用量池支出"
+          }
         }
       }
     },
@@ -764,6 +836,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请求过于频繁"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已達速率限制"
           }
         }
       }
@@ -824,6 +902,12 @@
             "state" : "translated",
             "value" : "会话已过期"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工作階段已過期"
+          }
         }
       }
     },
@@ -882,6 +966,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "会话已过期——此提供商需要更新"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "工作階段已過期——此提供者需要更新"
           }
         }
       }
@@ -942,6 +1032,12 @@
             "state" : "translated",
             "value" : "登录 Cursor"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "登入Cursor"
+          }
         }
       }
     },
@@ -1000,6 +1096,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "此提供商使用未公开的 Cursor 端点，如果 Cursor 更改这些端点，可能会停止工作。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此提供者使用未公開的Cursor端點；如果Cursor變更這些端點，可能會停止運作。"
           }
         }
       }
@@ -1060,6 +1162,12 @@
             "state" : "translated",
             "value" : "服务器返回了意外响应。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "伺服器傳回了非預期的回應。"
+          }
         }
       }
     },
@@ -1118,6 +1226,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "无限制"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無限制"
           }
         }
       }
@@ -1178,6 +1292,12 @@
             "state" : "translated",
             "value" : "已存储的 Cursor 凭证不完整。请重新导入。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "已儲存的Cursor憑證不完整。請重新匯入。"
+          }
         }
       }
     },
@@ -1236,6 +1356,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "请登录 Cursor，然后导入凭证。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "請登入Cursor，然後匯入憑證。"
           }
         }
       }
@@ -1296,6 +1422,12 @@
             "state" : "translated",
             "value" : "无法访问已存储的 Cursor 凭证。请检查钥匙串访问权限，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法取用已儲存的Cursor憑證。請檢查鑰匙圈的取用權限，然後再試一次。"
+          }
         }
       }
     },
@@ -1354,6 +1486,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "重新导入 Cursor 凭证"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "重新匯入Cursor憑證"
           }
         }
       }
@@ -1414,6 +1552,12 @@
             "state" : "translated",
             "value" : "无法访问 Cursor 凭证。请检查钥匙串访问权限，然后重试。"
           }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "無法取用Cursor憑證。請檢查鑰匙圈的取用權限，然後再試一次。"
+          }
         }
       }
     },
@@ -1472,6 +1616,12 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Cursor 凭证无效。请登录 Cursor，然后重新导入。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Cursor憑證無效。請登入Cursor，然後重新匯入。"
           }
         }
       }

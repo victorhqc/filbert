@@ -56,6 +56,12 @@
             "state": "translated",
             "value": "%@ · %@"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · %@"
+          }
         }
       },
       "extractionState": "stale"
@@ -114,6 +120,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "已使用 %@"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已使用%@"
           }
         }
       },
@@ -174,6 +186,12 @@
             "state": "translated",
             "value": "已使用 %@ · %@"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已使用%@ · %@"
+          }
         }
       },
       "extractionState": "manual"
@@ -232,6 +250,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "允许 Filbert 读取 Gemini CLI 钥匙串项"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "允許Filbert讀取Gemini CLI的鑰匙圈項目"
           }
         }
       },
@@ -292,6 +316,12 @@
             "state": "translated",
             "value": "请完成 Gemini CLI 设置或配置 Google Cloud 项目，然后重试。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "請完成Gemini CLI設定或設定Google Cloud專案，然後再試一次。"
+          }
         }
       },
       "extractionState": "manual"
@@ -350,6 +380,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Filbert 无法读取 Gemini CLI 钥匙串项。请允许访问，然后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Filbert無法讀取Gemini CLI的鑰匙圈項目。請允許取用，然後再試一次。"
           }
         }
       },
@@ -410,6 +446,12 @@
             "state": "translated",
             "value": "需要设置 Gemini CLI 账户或项目。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "需要設定Gemini CLI帳戶或專案。"
+          }
         }
       },
       "extractionState": "manual"
@@ -468,6 +510,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI 认证失败。请重新登录。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI認證失敗。請重新登入。"
           }
         }
       },
@@ -528,6 +576,12 @@
             "state": "translated",
             "value": "不支持此 Gemini CLI 凭证。请更新 Gemini CLI，然后重新登录。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支援此Gemini CLI憑證。請更新Gemini CLI，然後重新登入。"
+          }
         }
       },
       "extractionState": "manual"
@@ -586,6 +640,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI 请求过于频繁。请稍后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI已達速率限制。請稍後再試一次。"
           }
         }
       },
@@ -646,6 +706,12 @@
             "state": "translated",
             "value": "Gemini CLI 已退出登录。请打开 Gemini CLI 并使用 Google 登录。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI已登出。請打開Gemini CLI並使用Google帳戶登入。"
+          }
         }
       },
       "extractionState": "manual"
@@ -704,6 +770,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI 返回了意外的用量响应。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI傳回了非預期的用量回應。"
           }
         }
       },
@@ -764,6 +836,12 @@
             "state": "translated",
             "value": "Gemini CLI 返回了 Filbert 无法读取的数据。请更新 Filbert，然后重试。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI傳回了Filbert無法讀取的資料。請更新Filbert，然後再試一次。"
+          }
         }
       },
       "extractionState": "manual"
@@ -822,6 +900,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "Gemini CLI 用量请求超时。请稍后重试。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI用量要求逾時。請稍後再試一次。"
           }
         }
       },
@@ -882,6 +966,12 @@
             "state": "translated",
             "value": "Gemini CLI 用量服务返回了意外错误。请稍后重试。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Gemini CLI用量服務傳回了非預期的錯誤。請稍後再試一次。"
+          }
         }
       },
       "extractionState": "manual"
@@ -940,6 +1030,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "输入 token"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輸入token"
           }
         }
       },
@@ -1000,6 +1096,12 @@
             "state": "translated",
             "value": "安装 Gemini CLI"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "安裝Gemini CLI"
+          }
         }
       },
       "extractionState": "manual"
@@ -1058,6 +1160,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "内部错误：意外的凭证类型。"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "內部錯誤：非預期的憑證類型。"
           }
         }
       },
@@ -1118,6 +1226,12 @@
             "state": "translated",
             "value": "未报告用量限制"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未提供用量上限"
+          }
         }
       },
       "extractionState": "manual"
@@ -1176,6 +1290,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "监控 Gemini CLI 模型配额"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "監控Gemini CLI模型配額"
           }
         }
       },
@@ -1236,6 +1356,12 @@
             "state": "translated",
             "value": "无法连接 Gemini CLI 用量服务。请检查你的网络连接，然后重试。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "無法連線至Gemini CLI用量服務。請檢查你的網路連線，然後再試一次。"
+          }
         }
       },
       "extractionState": "manual"
@@ -1294,6 +1420,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "输出 token"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "輸出token"
           }
         }
       },
@@ -1354,6 +1486,12 @@
             "state": "translated",
             "value": "配额"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "配額"
+          }
         }
       },
       "extractionState": "manual"
@@ -1412,6 +1550,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "剩余"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "剩餘"
           }
         }
       },
@@ -1472,6 +1616,12 @@
             "state": "translated",
             "value": "请求"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "要求數"
+          }
         }
       },
       "extractionState": "manual"
@@ -1530,6 +1680,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "登录 Gemini CLI"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "登入Gemini CLI"
           }
         }
       },
@@ -1590,6 +1746,12 @@
             "state": "translated",
             "value": "刷新用量前，请先登录 Gemini CLI。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重新整理用量前，請先登入Gemini CLI。"
+          }
         }
       },
       "extractionState": "manual"
@@ -1649,6 +1811,12 @@
             "state": "translated",
             "value": "此提供商使用 Google 的非公开 Code Assist 接口，如果 Google 更改该接口，可能需要更新。"
           }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此提供者使用Google非公開的Code Assist介面；如果Google變更該介面，可能需要更新。"
+          }
         }
       },
       "extractionState": "manual"
@@ -1707,6 +1875,12 @@
           "stringUnit": {
             "state": "translated",
             "value": "更新 Gemini CLI 并重新登录"
+          }
+        },
+        "zh-Hant": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更新Gemini CLI並重新登入"
           }
         }
       },
