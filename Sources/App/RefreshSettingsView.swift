@@ -8,20 +8,20 @@ struct RefreshSettingsView: View {
     var body: some View {
         SettingsScrollColumn {
             SettingsCard(
-                heading: String(displayLocalized: "Automatic refresh", bundle: .module),
+                heading: String(displayLocalized: "Automatic usage checks", bundle: .module),
                 description: String(
                     displayLocalized: """
-                    Choose which providers refresh automatically. Mode and intervals control how often.
+                    Choose which providers Filbert checks automatically. The schedule and intervals set how often.
                     """,
                     bundle: .module
                 )
             ) {
-                Picker(String(displayLocalized: "Refresh mode", bundle: .module), selection: modeBinding) {
+                Picker(String(displayLocalized: "Check schedule", bundle: .module), selection: modeBinding) {
                     Text(String(displayLocalized: "Regular", bundle: .module)).tag(AutoRefreshMode.regular)
                     Text(String(displayLocalized: "Smart", bundle: .module)).tag(AutoRefreshMode.smart)
                 }
                 .pickerStyle(.segmented)
-                .accessibilityLabel(String(displayLocalized: "Refresh mode", bundle: .module))
+                .accessibilityLabel(String(displayLocalized: "Check schedule", bundle: .module))
                 .accessibilityValue(modeDescription)
                 .help(String(displayLocalized: "Choose a shared cadence for opted-in providers.", bundle: .module))
 
@@ -57,7 +57,7 @@ struct RefreshSettingsView: View {
             SettingsCard(
                 heading: String(displayLocalized: "Providers", bundle: .module),
                 description: String(
-                    displayLocalized: "Turn on automatic refresh for each provider you want to check.",
+                    displayLocalized: "Turn on automatic checks for each provider you want to track.",
                     bundle: .module
                 )
             ) {
@@ -69,7 +69,7 @@ struct RefreshSettingsView: View {
                 }
             }
         }
-        .navigationTitle(String(displayLocalized: "Refresh Settings", bundle: .module))
+        .navigationTitle(String(displayLocalized: "Usage Checks", bundle: .module))
     }
 
     private var modeBinding: Binding<AutoRefreshMode> {
@@ -83,15 +83,15 @@ struct RefreshSettingsView: View {
         switch viewModel.autoRefreshMode {
         case .regular:
             String.localizedStringWithFormat(
-                String(displayLocalized: "Regular refresh checks opted-in providers %@.", bundle: .module),
+                String(displayLocalized: "The Regular schedule checks the selected providers %@.", bundle: .module),
                 refreshIntervalText(viewModel.autoRefreshSlowInterval)
             )
         case .smart:
             String.localizedStringWithFormat(
                 String(
                     displayLocalized: """
-                    Smart refresh checks %1$@. After a usage change, a provider checks %2$@ for %3$@, \
-                    then %4$@ for another %3$@ before returning to the slow interval.
+                    The Smart schedule checks %1$@. When usage changes, it checks that provider %2$@ for %3$@, \
+                    then %4$@ for another %3$@, and then returns to the slow interval.
                     """,
                     bundle: .module
                 ),

@@ -261,132 +261,132 @@
         }
       }
     },
-    "Claude Code refresh failed with exit code %d. Open Claude Code and retry." : {
+    "Couldn't check Claude Code usage (exit code %d). Open Claude Code and try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Claude-Code-Nutzungsdaten konnten nicht aktualisiert werden (Exit-Code %d). Öffne Claude Code und versuche es erneut."
+            "value" : "Die Nutzung von Claude Code konnte nicht geprüft werden (Exit-Code %d). Öffne Claude Code und versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code refresh failed with exit code %d. Open Claude Code and retry."
+            "value" : "Couldn't check Claude Code usage (exit code %d). Open Claude Code and try again."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se han podido actualizar los datos de Claude Code (código de salida %d). Abre Claude Code e inténtalo de nuevo."
+            "value" : "No se ha podido consultar el uso de Claude Code (código de salida %d). Abre Claude Code e inténtalo de nuevo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudieron actualizar los datos de Claude Code (código de salida %d). Abre Claude Code e inténtalo de nuevo."
+            "value" : "No se pudo consultar el uso de Claude Code (código de salida %d). Abre Claude Code e inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの使用量データを更新できませんでした（終了コード%d）。Claude Codeを開いて、やり直してください。"
+            "value" : "Claude Codeの使用量を確認できませんでした（終了コード%d）。Claude Codeを開いて、やり直してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização dos dados do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
+            "value" : "Não foi possível verificar o uso do Claude Code (código de saída %d). Abra o Claude Code e tente novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização dos dados do Claude Code falhou com o código de saída %d. Abra o Claude Code e tente novamente."
+            "value" : "Não foi possível verificar a utilização do Claude Code (código de saída %d). Abra o Claude Code e tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Не удалось обновить данные об использовании Claude Code: код завершения %d. Откройте Claude Code и повторите попытку."
+            "value" : "Не удалось проверить использование Claude Code: код завершения %d. Откройте Claude Code и повторите попытку."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code 用量数据刷新失败，退出代码为 %d。请打开 Claude Code，然后重试。"
+            "value" : "无法检查 Claude Code 用量，退出代码为 %d。请打开 Claude Code，然后重试。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法重新整理Claude Code的用量資料，結束代碼為%d。請打開Claude Code，然後再試一次。"
+            "value" : "無法檢查Claude Code的用量，結束代碼為%d。請打開Claude Code，然後再試一次。"
           }
         }
       }
     },
-    "Claude Code refresh timed out. Retry the refresh." : {
+    "The Claude Code usage check timed out. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Zeitüberschreitung beim Aktualisieren der Claude-Code-Nutzungsdaten. Versuche es erneut."
+            "value" : "Zeitüberschreitung bei der Nutzungsprüfung von Claude Code. Versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code refresh timed out. Retry the refresh."
+            "value" : "The Claude Code usage check timed out. Try again."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se ha agotado el tiempo de espera al actualizar los datos de Claude Code. Vuelve a actualizar."
+            "value" : "Se ha agotado el tiempo de espera al consultar el uso de Claude Code. Inténtalo de nuevo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Se agotó el tiempo de espera al actualizar los datos de Claude Code. Inténtalo de nuevo."
+            "value" : "Se agotó el tiempo de espera al consultar el uso de Claude Code. Inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの使用量データの更新がタイムアウトしました。もう一度更新してください。"
+            "value" : "Claude Codeの使用量の確認がタイムアウトしました。やり直してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização dos dados do Claude Code excedeu o tempo limite. Tente atualizar novamente."
+            "value" : "A verificação de uso do Claude Code excedeu o tempo limite. Tente novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "A atualização dos dados do Claude Code excedeu o tempo limite. Tente atualizar novamente."
+            "value" : "A verificação da utilização do Claude Code excedeu o tempo limite. Tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Время ожидания обновления данных об использовании Claude Code истекло. Повторите обновление данных."
+            "value" : "Время ожидания проверки использования Claude Code истекло. Повторите попытку."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Code 用量数据刷新超时。请重新刷新。"
+            "value" : "Claude Code 用量检查超时。请重试。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重新整理Claude Code的用量資料逾時。請再重新整理一次。"
+            "value" : "檢查Claude Code的用量逾時。請再試一次。"
           }
         }
       }
@@ -456,67 +456,67 @@
         }
       }
     },
-    "Could not decode Claude Code usage data. Refresh to retry." : {
+    "Claude Code usage data is in an unexpected format. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Nutzungsdaten von Claude Code konnten nicht decodiert werden. Aktualisiere, um es erneut zu versuchen."
+            "value" : "Die Nutzungsdaten von Claude Code haben ein unerwartetes Format. Versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Could not decode Claude Code usage data. Refresh to retry."
+            "value" : "Claude Code usage data is in an unexpected format. Try again."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se han podido decodificar los datos de uso de Claude Code. Actualiza para reintentar."
+            "value" : "Los datos de uso de Claude Code tienen un formato inesperado. Inténtalo de nuevo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudieron decodificar los datos de uso de Claude Code. Actualiza para reintentar."
+            "value" : "Los datos de uso de Claude Code tienen un formato inesperado. Inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの使用量データをデコードできませんでした。もう一度更新してください。"
+            "value" : "Claude Codeの使用量データの形式が想定外です。やり直してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível decodificar os dados de uso do Claude Code. Atualize para tentar novamente."
+            "value" : "Os dados de uso do Claude Code estão em um formato inesperado. Tente novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível descodificar os dados de utilização do Claude Code. Atualize para tentar novamente."
+            "value" : "Os dados de utilização do Claude Code estão num formato inesperado. Tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Не удалось декодировать данные об использовании Claude Code. Обновите, чтобы повторить попытку."
+            "value" : "Данные об использовании Claude Code имеют неожиданный формат. Повторите попытку."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法解码 Claude Code 用量数据。请刷新以重试。"
+            "value" : "Claude Code 用量数据格式异常。请重试。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法解碼Claude Code的用量資料。請重新整理來再試一次。"
+            "value" : "Claude Code的用量資料格式不符預期。請再試一次。"
           }
         }
       }
@@ -586,132 +586,132 @@
         }
       }
     },
-    "Could not prepare Claude Code refresh. Retry the refresh." : {
+    "Couldn't start the Claude Code usage check. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Aktualisierung der Claude-Code-Nutzungsdaten konnte nicht vorbereitet werden. Versuche es erneut."
+            "value" : "Die Nutzungsprüfung von Claude Code konnte nicht starten. Versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Could not prepare Claude Code refresh. Retry the refresh."
+            "value" : "Couldn't start the Claude Code usage check. Try again."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se ha podido preparar la actualización de los datos de Claude Code. Vuelve a actualizar."
+            "value" : "No se ha podido iniciar la consulta de uso de Claude Code. Inténtalo de nuevo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudo preparar la actualización de los datos de Claude Code. Inténtalo de nuevo."
+            "value" : "No se pudo iniciar la consulta de uso de Claude Code. Inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの使用量データの更新を準備できませんでした。もう一度更新してください。"
+            "value" : "Claude Codeの使用量の確認を開始できませんでした。やり直してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível preparar a atualização dos dados do Claude Code. Tente atualizar novamente."
+            "value" : "Não foi possível iniciar a verificação de uso do Claude Code. Tente novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível preparar a atualização dos dados do Claude Code. Tente atualizar novamente."
+            "value" : "Não foi possível iniciar a verificação da utilização do Claude Code. Tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Не удалось подготовить обновление данных об использовании Claude Code. Повторите обновление данных."
+            "value" : "Не удалось начать проверку использования Claude Code. Повторите попытку."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法准备刷新 Claude Code 用量数据。请重新刷新。"
+            "value" : "无法开始 Claude Code 用量检查。请重试。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法準備重新整理Claude Code的用量資料。請再重新整理一次。"
+            "value" : "無法開始檢查Claude Code的用量。請再試一次。"
           }
         }
       }
     },
-    "Could not read Claude Code usage data. Refresh to retry." : {
+    "Couldn't read Claude Code usage data. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Die Nutzungsdaten von Claude Code konnten nicht gelesen werden. Aktualisiere, um es erneut zu versuchen."
+            "value" : "Die Nutzungsdaten von Claude Code konnten nicht gelesen werden. Versuche es erneut."
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Could not read Claude Code usage data. Refresh to retry."
+            "value" : "Couldn't read Claude Code usage data. Try again."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se han podido leer los datos de uso de Claude Code. Actualiza para reintentar."
+            "value" : "No se han podido leer los datos de uso de Claude Code. Inténtalo de nuevo."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "No se pudieron leer los datos de uso de Claude Code. Actualiza para reintentar."
+            "value" : "No se pudieron leer los datos de uso de Claude Code. Inténtalo de nuevo."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Claude Codeの使用量データを読み取れませんでした。もう一度更新してください。"
+            "value" : "Claude Codeの使用量データを読み取れませんでした。やり直してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível ler os dados de uso do Claude Code. Atualize para tentar novamente."
+            "value" : "Não foi possível ler os dados de uso do Claude Code. Tente novamente."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Não foi possível ler os dados de utilização do Claude Code. Atualize para tentar novamente."
+            "value" : "Não foi possível ler os dados de utilização do Claude Code. Tente novamente."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Не удалось прочитать данные об использовании Claude Code. Обновите, чтобы повторить попытку."
+            "value" : "Не удалось прочитать данные об использовании Claude Code. Повторите попытку."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "无法读取 Claude Code 用量数据。请刷新以重试。"
+            "value" : "无法读取 Claude Code 用量数据。请重试。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "無法讀取Claude Code的用量資料。請重新整理來再試一次。"
+            "value" : "無法讀取Claude Code的用量資料。請再試一次。"
           }
         }
       }

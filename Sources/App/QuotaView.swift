@@ -120,7 +120,7 @@ struct QuotaView: View {
         }
         .buttonStyle(.borderless)
         .font(.caption)
-        .help(refreshHelp(for: providerId, defaultHelp: String(displayLocalized: "Refresh", bundle: .module)))
+        .help(refreshHelp(for: providerId, defaultHelp: String(displayLocalized: "Check usage now", bundle: .module)))
         .disabled(isRefreshDisabled(providerId: providerId, state: state))
     }
 
@@ -205,7 +205,7 @@ struct QuotaView: View {
             Text(String(displayLocalized: "Last updated by \(quota.providerName): \(relative)", bundle: .module))
                 .font(.caption2)
                 .foregroundColor(.secondary)
-            Text(String(displayLocalized: "Open \(quota.providerName) to refresh", bundle: .module))
+            Text(String(displayLocalized: "Open \(quota.providerName) to get newer usage", bundle: .module))
                 .font(.caption2)
                 .foregroundColor(.secondary)
         }
@@ -235,7 +235,7 @@ private extension QuotaView {
         if let info = viewModel.providerInfo(for: providerId) {
             let collapsed = viewModel.isCollapsed(providerId)
             let fastRefreshStatus = viewModel.isFastAutomaticRefreshActive(for: providerId)
-                ? String(displayLocalized: "Fast refresh active", bundle: .module)
+                ? String(displayLocalized: "Fast checks on", bundle: .module)
                 : nil
             VStack(alignment: .leading, spacing: 8) {
                 providerHeader(

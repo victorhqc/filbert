@@ -39,7 +39,7 @@ struct RefreshSettingsProviderRow: View {
                 .font(.headline)
             Spacer()
             Toggle(
-                String(displayLocalized: "Automatic refresh", bundle: .module),
+                String(displayLocalized: "Automatic usage checks", bundle: .module),
                 isOn: Binding(
                     get: { viewModel.isAutoRefreshEnabled(for: provider.id) },
                     set: { viewModel.setAutoRefreshEnabled($0, for: provider.id) }
@@ -48,7 +48,7 @@ struct RefreshSettingsProviderRow: View {
             .toggleStyle(.switch)
             .accessibilityLabel(
                 String.localizedStringWithFormat(
-                    String(displayLocalized: "Automatic refresh for %@", bundle: .module),
+                    String(displayLocalized: "Automatic usage checks for %@", bundle: .module),
                     provider.displayName
                 )
             )
@@ -58,10 +58,10 @@ struct RefreshSettingsProviderRow: View {
                     : String(displayLocalized: "Disabled", bundle: .module)
             )
             .accessibilityHint(disclosureText ?? String(
-                displayLocalized: "Toggle periodic refresh for this provider.",
+                displayLocalized: "Turn automatic usage checks on or off for this provider.",
                 bundle: .module
             ))
-            .help(String(displayLocalized: "Toggle periodic refresh for this provider.", bundle: .module))
+            .help(String(displayLocalized: "Turn automatic usage checks on or off for this provider.", bundle: .module))
         }
     }
 
@@ -165,12 +165,12 @@ struct RefreshSettingsProviderRow: View {
     private var providerStatus: String? {
         guard viewModel.isEnabled(provider.id) else {
             return String(
-                displayLocalized: "Automatic refresh is paused because this provider is disabled.",
+                displayLocalized: "Automatic checks are paused because this provider is disabled.",
                 bundle: .module
             )
         }
         guard QuotaViewModel.isConfiguredState(viewModel.providerStates[provider.id]) else {
-            return String(displayLocalized: "Automatic refresh is waiting for setup.", bundle: .module)
+            return String(displayLocalized: "Automatic checks start after setup.", bundle: .module)
         }
         return nil
     }
@@ -241,8 +241,8 @@ struct RefreshSettingsProviderRow: View {
     private var stopExplanation: String {
         String(
             displayLocalized: """
-            Stopping ends the fast checks early. Automatic refresh stays on and the normal \
-            Smart timing resumes.
+            Stopping ends the fast checks early. Automatic checks stay on, and the normal \
+            Smart schedule resumes.
             """,
             bundle: .module
         )

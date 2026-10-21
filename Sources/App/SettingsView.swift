@@ -47,7 +47,7 @@ struct SettingsView: View {
 
             RefreshSettingsView(viewModel: viewModel)
                 .tabItem {
-                    Label(String(displayLocalized: "Refresh Settings", bundle: .module), systemImage: "arrow.clockwise")
+                    Label(String(displayLocalized: "Usage Checks", bundle: .module), systemImage: "arrow.clockwise")
                 }
                 .tag(SettingsTab.refresh)
 

@@ -29,7 +29,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         XCTAssertEqual(resolved.status, .window(percentage: 20))
         XCTAssertTrue(resolved.isFastRefreshActive)
         XCTAssertEqual(symbolName(for: resolved.glyph), "sparkles")
-        XCTAssertTrue(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast refresh active"))
+        XCTAssertTrue(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast checks on"))
     }
 
     func testBalancePresentationUsesSelectedProviderGlyphWithoutFastStatus() throws {
@@ -46,7 +46,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         }
         XCTAssertFalse(resolved.isFastRefreshActive)
         XCTAssertEqual(symbolName(for: resolved.glyph), "dollarsign")
-        XCTAssertFalse(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast refresh active"))
+        XCTAssertFalse(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast checks on"))
     }
 
     func testBalanceAccessibilityLabelKeepsTheBalanceCurrency() throws {
@@ -123,7 +123,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
         )
 
         XCTAssertFalse(resolved.isFastRefreshActive)
-        XCTAssertFalse(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast refresh active"))
+        XCTAssertFalse(MenuBarProviderPresentation.accessibilityLabel(for: resolved).contains("Fast checks on"))
     }
 
     func testActiveSleepPreventionAppendsItsAccessibilityStatus() throws {
@@ -139,7 +139,7 @@ final class MenuBarProviderPresentationTests: XCTestCase {
             MenuBarProviderPresentation.accessibilityLabel(
                 for: resolved,
                 isSleepPreventionActive: true
-            ).contains("Keep Awake active")
+            ).contains("Keep Mac Awake active")
         )
     }
 

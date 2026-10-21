@@ -23,7 +23,7 @@ final class AllowanceForecastPresentationTests: AllowanceForecastPresentationTes
         let expectations: [(AllowanceForecast.State, String?)] = [
             (.learning, "Learning your usage rate…"),
             (.quiet, "No recent consumption detected"),
-            (.tooFarApart, "Refreshes too far apart to estimate"),
+            (.tooFarApart, "Checks too far apart to estimate"),
             (.paused, "Forecast paused until fresh data arrives"),
             (.exhausted, nil),
             (.insufficient, nil),

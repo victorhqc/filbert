@@ -1691,66 +1691,66 @@
       },
       "extractionState": "manual"
     },
-    "Sign in to Gemini CLI before refreshing usage.": {
+    "Sign in to Gemini CLI so Filbert can check its usage.": {
       "localizations": {
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sign in to Gemini CLI before refreshing usage."
+            "value": "Sign in to Gemini CLI so Filbert can check its usage."
           }
         },
         "de-DE": {
           "stringUnit": {
             "state": "translated",
-            "value": "Melde dich bei Gemini CLI an, bevor du die Nutzung aktualisierst."
+            "value": "Melde dich bei Gemini CLI an, damit Filbert die Nutzung prüfen kann."
           }
         },
         "es-ES": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inicia sesión en Gemini CLI antes de actualizar el uso."
+            "value": "Inicia sesión en Gemini CLI para que Filbert pueda consultar su uso."
           }
         },
         "es-MX": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inicia sesión en Gemini CLI antes de actualizar el uso."
+            "value": "Inicia sesión en Gemini CLI para que Filbert pueda consultar su uso."
           }
         },
         "ja": {
           "stringUnit": {
             "state": "translated",
-            "value": "使用量を更新する前に、Gemini CLIにサインインしてください。"
+            "value": "Filbertが使用量を確認できるように、Gemini CLIにサインインしてください。"
           }
         },
         "pt-BR": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inicie sessão no Gemini CLI antes de atualizar o uso."
+            "value": "Inicie sessão no Gemini CLI para que o Filbert possa verificar o uso."
           }
         },
         "pt-PT": {
           "stringUnit": {
             "state": "translated",
-            "value": "Inicie sessão no Gemini CLI antes de atualizar a utilização."
+            "value": "Inicie sessão no Gemini CLI para que o Filbert possa verificar a utilização."
           }
         },
         "ru": {
           "stringUnit": {
             "state": "translated",
-            "value": "Войдите в Gemini CLI, прежде чем обновлять данные об использовании."
+            "value": "Войдите в Gemini CLI, чтобы Filbert мог проверять его использование."
           }
         },
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "刷新用量前，请先登录 Gemini CLI。"
+            "value": "请登录 Gemini CLI，以便 Filbert 检查其用量。"
           }
         },
         "zh-Hant": {
           "stringUnit": {
             "state": "translated",
-            "value": "重新整理用量前，請先登入Gemini CLI。"
+            "value": "請登入Gemini CLI，讓Filbert可以檢查它的用量。"
           }
         }
       },
