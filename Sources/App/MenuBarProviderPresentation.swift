@@ -55,10 +55,10 @@ enum MenuBarProviderPresentation {
 
         var values = [status]
         if resolved.isFastRefreshActive {
-            values.append(String(displayLocalized: "Fast refresh active", bundle: .module))
+            values.append(String(displayLocalized: "Fast checks on", bundle: .module))
         }
         if isSleepPreventionActive {
-            values.append(String(displayLocalized: "Keep Awake active", bundle: .module))
+            values.append(String(displayLocalized: "Keep Mac Awake active", bundle: .module))
         }
         return values.joined(separator: ", ")
     }

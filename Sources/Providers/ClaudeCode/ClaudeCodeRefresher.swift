@@ -18,13 +18,13 @@ extension ClaudeCodeRefresherError: LocalizedError {
         case .binaryNotFound:
             String(displayLocalized: "Claude Code not found. Install Claude Code and retry.", bundle: .module)
         case .workingDirectoryUnavailable:
-            String(displayLocalized: "Could not prepare Claude Code refresh. Retry the refresh.", bundle: .module)
+            String(displayLocalized: "Couldn't start the Claude Code usage check. Try again.", bundle: .module)
         case let .processFailed(diagnostic):
             Self.processFailureDescription(exitStatus: diagnostic.exitStatus)
         case .timedOut:
-            String(displayLocalized: "Claude Code refresh timed out. Retry the refresh.", bundle: .module)
+            String(displayLocalized: "The Claude Code usage check timed out. Try again.", bundle: .module)
         case .outputCollectionIncomplete:
-            String(displayLocalized: "Claude Code refresh timed out. Retry the refresh.", bundle: .module)
+            String(displayLocalized: "The Claude Code usage check timed out. Try again.", bundle: .module)
         case .noUsageData:
             String(displayLocalized: "Claude Code returned no usage data. Open Claude Code and retry.", bundle: .module)
         }
@@ -32,7 +32,10 @@ extension ClaudeCodeRefresherError: LocalizedError {
 
     private static func processFailureDescription(exitStatus: Int32) -> String {
         String(
-            displayLocalized: "Claude Code refresh failed with exit code \(exitStatus). Open Claude Code and retry.",
+            displayLocalized: """
+            Couldn't check Claude Code usage (exit code \(exitStatus)). \
+            Open Claude Code and try again.
+            """,
             bundle: .module
         )
     }

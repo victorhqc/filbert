@@ -85,9 +85,9 @@ enum StatuslineCacheError: Error, LocalizedError, Equatable, DiagnosticError {
     var errorDescription: String? {
         switch self {
         case .readFailed:
-            String(displayLocalized: "Could not read Claude Code usage data. Refresh to retry.", bundle: .module)
+            String(displayLocalized: "Couldn't read Claude Code usage data. Try again.", bundle: .module)
         case .decodeFailed:
-            String(displayLocalized: "Could not decode Claude Code usage data. Refresh to retry.", bundle: .module)
+            String(displayLocalized: "Claude Code usage data is in an unexpected format. Try again.", bundle: .module)
         }
     }
 }

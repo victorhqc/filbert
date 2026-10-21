@@ -83,7 +83,7 @@ extension QuotaViewModel {
             lines: [],
             lastUpdated: Date(),
             error: DisplayText {
-                String(displayLocalized: "Refresh canceled. Select Refresh to try again.", bundle: .module)
+                String(displayLocalized: "Usage check canceled. Try again.", bundle: .module)
             }
         )), for: id)
     }

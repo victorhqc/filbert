@@ -95,17 +95,18 @@ your setup.
 
 Click the Filbert menu-bar icon and open **Settings** to add a provider. Enter
 its API key. The key goes straight into the Keychain. Filbert fetches usage
-once and then leaves further checks to automatic refresh, which you turn on per
-provider.
+once and then leaves further checks to automatic usage checks, which you turn on
+per provider.
 
 Four providers read from a local session instead of an API key. Set those up
 below.
 
-### Automatic refresh
+### Automatic usage checks
 
-Automatic refresh is opt-in for each provider and runs in one of two modes:
+Automatic usage checks are opt-in for each provider and run on one of two
+schedules:
 
-- **Regular** refreshes every provider at the shared slow interval (five
+- **Regular** checks every provider at the shared slow interval (five
   minutes by default), whether or not usage changed.
 - **Smart** starts a provider slow and moves it to the fast interval while its
   usage keeps changing. It returns the provider to slow through a time-based
@@ -270,9 +271,9 @@ Filbert includes the compiled helper. Installation does not require Xcode or
 Command Line Tools. If installation fails, select **Show Logs**, correct the
 reported problem, then select **Install Helper** again.
 
-> **You never run anything by hand.** When you click **Refresh**, Filbert runs
-> `claude -p "/usage"` in the background. It reads the figures and updates the
-> cache. This works even when you use Claude Code from an editor and never open
+> **You never run anything by hand.** When you click **Check usage now**,
+> Filbert runs `claude -p "/usage"` in the background. It reads the figures and
+> updates the cache. This works even when you use Claude Code from an editor and never open
 > its status line. During interactive sessions, the status-line helper keeps the
 > cache fresh.
 

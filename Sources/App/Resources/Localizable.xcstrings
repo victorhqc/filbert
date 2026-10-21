@@ -246,19 +246,19 @@
         }
       }
     },
-    "Refresh canceled. Select Refresh to try again." : {
+    "Usage check canceled. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierung abgebrochen. Wähle Aktualisieren, um es erneut zu versuchen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh canceled. Select Refresh to try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización cancelada. Selecciona Actualizar para intentarlo de nuevo." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新がキャンセルされました。やり直すには“更新”を選択してください。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização cancelada. Selecione Atualizar para tentar novamente." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização cancelada. Selecione Atualizar para tentar novamente." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновление отменено. Нажмите «Обновить», чтобы повторить попытку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新已取消。选择“刷新”以重试。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已取消重新整理。請選擇「重新整理」來再試一次。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nutzungsprüfung abgebrochen. Versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage check canceled. Try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consulta de uso cancelada. Inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Se canceló la consulta de uso. Inténtalo de nuevo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量の確認をキャンセルしました。やり直してください。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificação de uso cancelada. Tente novamente." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificação da utilização cancelada. Tente novamente." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка использования отменена. Повторите попытку." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量检查已取消。请重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已取消用量檢查。請再試一次。" } }
       }
     },
     "Show Logs" : {
@@ -586,19 +586,19 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已展開" } }
       }
     },
-    "Fast refresh active" : {
+    "Fast checks on" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelle Aktualisierung aktiv" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast refresh active" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizaci\u00f3n r\u00e1pida activa" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速更新中" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização rápida ativa" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização rápida ativa" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрое обновление включено" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速刷新已开启" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速重新整理已開啟" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelle Prüfungen aktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast checks on" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas rápidas activas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas rápidas activas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認がオン" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações rápidas ativas" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações rápidas ativas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые проверки включены" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查已开启" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查已開啟" } }
       }
     },
     "Within current allowance" : {
@@ -1086,67 +1086,67 @@
         }
       }
     },
-    "Refresh" : {
+    "Check usage now" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Refresh"
+            "value" : "Check usage now"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actualizar"
+            "value" : "Consultar uso ahora"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Actualizar"
+            "value" : "Consultar uso ahora"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Aktualisieren"
+            "value" : "Nutzung jetzt prüfen"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "更新"
+            "value" : "今すぐ使用量を確認"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Atualizar"
+            "value" : "Verificar uso agora"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Atualizar"
+            "value" : "Verificar utilização agora"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Обновить"
+            "value" : "Проверить использование"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "刷新"
+            "value" : "立即检查用量"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "重新整理"
+            "value" : "立即檢查用量"
           }
         }
       }
@@ -3682,67 +3682,67 @@
         }
       }
     },
-    "Open %@ to refresh" : {
+    "Open %@ to get newer usage" : {
       "extractionState" : "manual",
       "localizations" : {
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Öffne %@, um zu aktualisieren"
+            "value" : "Öffne %@, um neuere Nutzungsdaten zu erhalten"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Open %@ to refresh"
+            "value" : "Open %@ to get newer usage"
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre %@ para actualizar"
+            "value" : "Abre %@ para ver el uso más reciente"
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abre %@ para actualizar"
+            "value" : "Abre %@ para ver el uso más reciente"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "%@を開いて更新"
+            "value" : "%@を開くと最新の使用量を取得できます"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abra o %@ para atualizar"
+            "value" : "Abra o %@ para obter o uso mais recente"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Abra o %@ para atualizar"
+            "value" : "Abra o %@ para obter a utilização mais recente"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Откройте %@, чтобы обновить"
+            "value" : "Откройте %@, чтобы получить свежие данные об использовании"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打开 %@ 以刷新"
+            "value" : "打开 %@ 以获取最新用量"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "打開%@來重新整理"
+            "value" : "打開%@來取得最新用量"
           }
         }
       }
@@ -4392,34 +4392,34 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "運作中⋯" } }
       }
     },
-    "Automatic refresh" : {
+    "Automatic usage checks" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Aktualisierung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動更新" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动刷新" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動重新整理" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Nutzungsprüfung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic usage checks" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量の自動確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática de uso" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática da utilização" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка использования" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查用量" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查用量" } }
       }
     },
-    "Refresh mode" : {
+    "Check schedule" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungsmodus" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh mode" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Modo de actualización" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Modo de actualización" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新モード" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Modo de atualização" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Modo de atualização" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新模式" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新整理模式" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Prüfrhythmus" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check schedule" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Frecuencia de consulta" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Frecuencia de consulta" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認の頻度" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Frequência de verificação" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Frequência de verificação" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "График проверок" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查频率" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢查頻率" } }
       }
     },
     "Regular" : {
@@ -4452,19 +4452,19 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "智慧型" } }
       }
     },
-    "Choose which providers refresh automatically. Mode and intervals control how often." : {
+    "Choose which providers Filbert checks automatically. The schedule and intervals set how often." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, welche Anbieter automatisch aktualisiert werden. Modus und Intervalle bestimmen, wie oft." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose which providers refresh automatically. Mode and intervals control how often." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores se actualizan automáticamente. El modo y los intervalos controlan la frecuencia." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores se actualizan automáticamente. El modo y los intervalos controlan la frecuencia." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動的に更新するプロバイダを選択します。頻度はモードと間隔で決まります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha quais provedores são atualizados automaticamente. O modo e os intervalos definem a frequência." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha que fornecedores são atualizados automaticamente. O modo e os intervalos definem a frequência." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, какие провайдеры обновляются автоматически. Режим и интервалы задают частоту." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择要自动刷新的提供商。模式和间隔决定刷新频率。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇要自動重新整理的提供者。模式和間隔決定重新整理的頻率。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, welche Anbieter Filbert automatisch prüft. Rhythmus und Intervalle bestimmen, wie oft." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose which providers Filbert checks automatically. The schedule and intervals set how often." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores consulta Filbert automáticamente. La frecuencia y los intervalos determinan cada cuánto." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores consulta Filbert automáticamente. La frecuencia y los intervalos definen cada cuánto." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertが自動的に確認するプロバイダを選択します。確認する頻度は、確認の頻度と間隔の設定で決まります。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha quais provedores o Filbert verifica automaticamente. A frequência e os intervalos definem com que regularidade." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha que fornecedores o Filbert verifica automaticamente. A frequência e os intervalos definem com que regularidade." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, каких провайдеров Filbert проверяет автоматически. График и интервалы задают частоту." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择 Filbert 要自动检查哪些提供商。检查频率和间隔决定多久检查一次。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇Filbert要自動檢查哪些提供者。檢查頻率和間隔決定多久檢查一次。" } }
       }
     },
     "Choose a shared cadence for opted-in providers." : {
@@ -4512,50 +4512,50 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速間隔" } }
       }
     },
-    "Turn on automatic refresh for each provider you want to check." : {
+    "Turn on automatic checks for each provider you want to track." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere die automatische Aktualisierung für jeden Anbieter, den du prüfen möchtest." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn on automatic refresh for each provider you want to check." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa la actualización automática para cada proveedor que quieras consultar." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa la actualización automática para cada proveedor que quieras consultar." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認したいプロバイダごとに自動更新をオンにしてください。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative a atualização automática para cada provedor que quiser verificar." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative a atualização automática para cada fornecedor que pretende verificar." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите автоматическое обновление для каждого провайдера, которого нужно проверять." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为每个要检查的提供商打开自动刷新。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為每個要檢查的提供者開啟自動重新整理。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere die automatische Prüfung für jeden Anbieter, den du im Blick behalten möchtest." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn on automatic checks for each provider you want to track." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa las consultas automáticas para cada proveedor que quieras seguir." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa las consultas automáticas para cada proveedor que quieras seguir." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "追跡したいプロバイダごとに自動確認をオンにしてください。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative a verificação automática para cada provedor que quiser acompanhar." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative a verificação automática para cada fornecedor que pretende acompanhar." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите автоматическую проверку для каждого провайдера, за которым хотите следить." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为每个要关注的提供商打开自动检查。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為每個要追蹤的提供者開啟自動檢查。" } }
       }
     },
-    "Refresh Settings" : {
+    "Usage Checks" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungseinstellungen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refresh Settings" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de actualización" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración de actualización" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新設定" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ajustes de atualização" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Definições de atualização" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Настройки обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新设置" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新整理選項" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nutzungsprüfung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage Checks" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas de uso" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas de uso" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量の確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações de uso" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações da utilização" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка использования" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量檢查" } }
       }
     },
-    "Regular refresh checks opted-in providers %@." : {
+    "The Regular schedule checks the selected providers %@." : {
       "comment" : "Every %@ except a plain duration is an interval phrase from “every %lld minutes” / “every %lld seconds”, such as “every minute” or “every 5 minutes”.",
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anbieter mit automatischer Aktualisierung werden %@ geprüft." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular refresh checks opted-in providers %@." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados %@." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización normal consulta a los proveedores activados %@." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "標準の更新では、オンにしたプロバイダを%@に確認します。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização regular verifica os provedores selecionados %@." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização regular verifica os fornecedores selecionados %@." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обычное обновление проверяет выбранных провайдеров %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "常规刷新%@检查一次已选择的提供商。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "標準重新整理會%@檢查一次已選擇的提供者。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Rhythmus „Regelmäßig“ prüft Filbert die ausgewählten Anbieter %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Regular schedule checks the selected providers %@." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Normal consulta a los proveedores seleccionados %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Normal consulta a los proveedores seleccionados %@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“標準”では、選択したプロバイダを%@に確認します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Regular verifica os provedores selecionados %@." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Regular verifica os fornecedores selecionados %@." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "По графику «Обычный» Filbert проверяет выбранных провайдеров %@." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“常规”频率会%@检查一次已选择的提供商。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「標準」頻率會%@檢查一次已選擇的提供者。" } }
       }
     },
     "Fast-check duration" : {
@@ -4574,20 +4574,20 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查持續時間" } }
       }
     },
-    "Smart refresh checks %1$@. After a usage change, a provider checks %2$@ for %3$@, then %4$@ for another %3$@ before returning to the slow interval." : {
+    "The Smart schedule checks %1$@. When usage changes, it checks that provider %2$@ for %3$@, then %4$@ for another %3$@, and then returns to the slow interval." : {
       "comment" : "Every %@ except a plain duration is an interval phrase from “every %lld minutes” / “every %lld seconds”, such as “every minute” or “every 5 minutes”. %3$@ is a plain duration (“10 minutes”).",
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die intelligente Aktualisierung prüft %1$@. Nach einer Nutzungsänderung prüft ein Anbieter %3$@ lang %2$@, danach weitere %3$@ lang %4$@, bevor er zum langsamen Intervall zurückkehrt." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart refresh checks %1$@. After a usage change, a provider checks %2$@ for %3$@, then %4$@ for another %3$@ before returning to the slow interval." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente consulta %1$@. Tras un cambio de uso, un proveedor consulta %2$@ durante %3$@ y luego %4$@ durante %3$@ más antes de volver al intervalo lento." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización inteligente consulta %1$@. Tras un cambio de uso, un proveedor consulta %2$@ durante %3$@ y luego %4$@ durante %3$@ más antes de volver al intervalo lento." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スマート更新では%1$@に確認します。使用量が変化すると、プロバイダは%3$@間、%2$@に確認し、さらに%3$@間、%4$@に確認してから低速間隔に戻ります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização inteligente verifica %1$@. Após uma mudança no uso, o provedor verifica %2$@ durante %3$@ e depois %4$@ por mais %3$@ antes de voltar ao intervalo lento." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização inteligente verifica %1$@. Após uma alteração na utilização, o fornecedor verifica %2$@ durante %3$@ e depois %4$@ durante mais %3$@ antes de voltar ao intervalo lento." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Умное обновление проверяет %1$@. После изменения использования провайдер проверяет %2$@ в течение заданного времени (%3$@), затем ещё столько же (%3$@) — %4$@, после чего возвращается к медленному интервалу." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "智能刷新%1$@检查一次。用量变化后，会在 %3$@内%2$@检查一次该提供商，然后在接下来的 %3$@内%4$@检查一次，之后恢复慢速间隔。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "智慧型重新整理會%1$@檢查一次。用量變化後，提供者會在%3$@內%2$@檢查一次，然後在接下來的%3$@內%4$@檢查一次，之後恢復慢速間隔。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Rhythmus „Intelligent“ prüft Filbert %1$@. Ändert sich die Nutzung, prüft Filbert diesen Anbieter %3$@ lang %2$@, danach weitere %3$@ lang %4$@ und kehrt dann zum langsamen Intervall zurück." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Smart schedule checks %1$@. When usage changes, it checks that provider %2$@ for %3$@, then %4$@ for another %3$@, and then returns to the slow interval." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Inteligente consulta %1$@. Cuando el uso cambia, consulta a ese proveedor %2$@ durante %3$@, luego %4$@ durante %3$@ más y después vuelve al intervalo lento." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Inteligente consulta %1$@. Cuando el uso cambia, consulta a ese proveedor %2$@ durante %3$@, luego %4$@ durante %3$@ más y después vuelve al intervalo lento." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スマート”では%1$@に確認します。使用量が変化すると、そのプロバイダを%3$@間、%2$@に確認し、さらに%3$@間、%4$@に確認してから低速間隔に戻ります。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Inteligente verifica %1$@. Quando o uso muda, ela verifica esse provedor %2$@ durante %3$@, depois %4$@ por mais %3$@ e então volta ao intervalo lento." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Inteligente verifica %1$@. Quando a utilização muda, verifica esse fornecedor %2$@ durante %3$@, depois %4$@ durante mais %3$@ e então volta ao intervalo lento." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "По графику «Умный» Filbert проверяет провайдеров %1$@. Когда использование меняется, Filbert проверяет этого провайдера %2$@ в течение заданного времени (%3$@), затем ещё столько же (%3$@) — %4$@, после чего возвращается к медленному интервалу." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“智能”频率会%1$@检查一次。用量变化后，会在 %3$@内%2$@检查一次该提供商，然后在接下来的 %3$@内%4$@检查一次，之后恢复慢速间隔。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「智慧型」頻率會%1$@檢查一次。用量變化後，會在%3$@內%2$@檢查一次該提供者，然後在接下來的%3$@內%4$@檢查一次，之後恢復慢速間隔。" } }
       }
     },
     "Selected interval: %@" : {
@@ -4620,64 +4620,64 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert會在背景執行%2$@來檢查%1$@用量。這些檢查可能會消耗部分%3$@配額。較短的智慧型間隔可能會增加檢查次數。" } }
       }
     },
-    "Automatic refresh for %@" : {
+    "Automatic usage checks for %@" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Aktualisierung für %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh for %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática para %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualización automática para %@" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@の自動更新" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática para %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualização automática para %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%@ 自动刷新" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%@自動重新整理" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Nutzungsprüfung für %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic usage checks for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso para %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso para %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@の使用量の自動確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática de uso para %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática da utilização para %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка использования: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查 %@ 的用量" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查%@的用量" } }
       }
     },
-    "Toggle periodic refresh for this provider." : {
+    "Turn automatic usage checks on or off for this provider." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schalte die regelmäßige Aktualisierung für diesen Anbieter um." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Toggle periodic refresh for this provider." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva la actualización periódica para este proveedor." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva la actualización periódica para este proveedor." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダの定期的な更新をオンまたはオフにします。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a atualização periódica deste provedor." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a atualização periódica deste fornecedor." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включает или выключает периодическое обновление этого провайдера." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开或关闭此提供商的定期刷新。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟或關閉此提供者的定期重新整理。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schalte die automatische Nutzungsprüfung für diesen Anbieter ein oder aus." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn automatic usage checks on or off for this provider." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva las consultas automáticas de uso para este proveedor." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva las consultas automáticas de uso para este proveedor." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダの使用量の自動確認をオンまたはオフにします。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a verificação automática de uso deste provedor." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a verificação automática da utilização deste fornecedor." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включает или выключает автоматическую проверку использования этого провайдера." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开或关闭此提供商的自动用量检查。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟或關閉此提供者的自動用量檢查。" } }
       }
     },
-    "Automatic refresh is paused because this provider is disabled." : {
+    "Automatic checks are paused because this provider is disabled." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Aktualisierung ist pausiert, weil dieser Anbieter deaktiviert ist." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is paused because this provider is disabled." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está en pausa porque este proveedor está desactivado." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está en pausa porque este proveedor está desactivado." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダが無効なため、自動更新は一時停止しています。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está pausada porque este provedor está desativado." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está em pausa porque este fornecedor está desativado." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление приостановлено, потому что этот провайдер выключен." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此提供商已停用，因此自动刷新已暂停。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "此提供者已停用，因此自動重新整理已暫停。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Prüfung ist pausiert, weil dieser Anbieter deaktiviert ist." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic checks are paused because this provider is disabled." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas automáticas están en pausa porque este proveedor está desactivado." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas automáticas están en pausa porque este proveedor está desactivado." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダが無効なため、自動確認は一時停止しています。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A verificação automática está pausada porque este provedor está desativado." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A verificação automática está em pausa porque este fornecedor está desativado." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка приостановлена, потому что этот провайдер выключен." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此提供商已停用，因此自动检查已暂停。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "此提供者已停用，因此自動檢查已暫停。" } }
       }
     },
-    "Automatic refresh is waiting for setup." : {
+    "Automatic checks start after setup." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Aktualisierung wartet auf die Einrichtung." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic refresh is waiting for setup." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática está pendiente de configuración." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La actualización automática espera la configuración." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動更新は設定の完了を待っています。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está aguardando a configuração." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A atualização automática está a aguardar a configuração." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическое обновление ожидает настройки." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动刷新正在等待设置。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動重新整理正在等待設定。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Prüfung startet nach der Einrichtung." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic checks start after setup." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas automáticas empezarán tras la configuración." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas automáticas empiezan después de la configuración." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定が完了すると自動確認が始まります。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A verificação automática começa após a configuração." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A verificação automática começa após a configuração." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка начнётся после настройки." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完成设置后将开始自动检查。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "完成設定後就會開始自動檢查。" } }
       }
     },
     "Fast checks are on due to recent activity." : {
@@ -4787,19 +4787,19 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止快速檢查" } }
       }
     },
-    "Stopping ends the fast checks early. Automatic refresh stays on and the normal Smart timing resumes." : {
+    "Stopping ends the fast checks early. Automatic checks stay on, and the normal Smart schedule resumes." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Damit enden die schnellen Prüfungen vorzeitig. Die automatische Aktualisierung bleibt eingeschaltet, und der normale Rhythmus der intelligenten Aktualisierung gilt wieder." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stopping ends the fast checks early. Automatic refresh stays on and the normal Smart timing resumes." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al detenerlas, las consultas rápidas terminan antes. La actualización automática sigue activada y vuelve la frecuencia normal del modo Inteligente." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Si las detienes, las consultas rápidas terminan antes. La actualización automática sigue activada y se reanuda el ritmo inteligente normal." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "停止すると高速確認が早めに終了します。自動更新はオンのままで、通常のスマートのタイミングに戻ります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar encerra as verificações rápidas antes do tempo. A atualização automática continua ativa e o ritmo inteligente normal é retomado." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao parar, as verificações rápidas terminam mais cedo. A atualização automática mantém-se ativa e o ritmo normal do modo Inteligente é retomado." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановка досрочно завершает быстрые проверки. Автоматическое обновление остаётся включённым, и возобновляется обычный умный режим." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止会提前结束快速检查。自动刷新保持开启，并恢复正常的智能刷新节奏。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止後，快速檢查會提早結束。自動重新整理會保持開啟，並恢復一般的智慧型時程。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Damit enden die schnellen Prüfungen vorzeitig. Die automatische Prüfung bleibt eingeschaltet, und der normale Rhythmus „Intelligent“ gilt wieder." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stopping ends the fast checks early. Automatic checks stay on, and the normal Smart schedule resumes." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al detenerlas, las consultas rápidas terminan antes. Las consultas automáticas siguen activadas y vuelve la frecuencia Inteligente normal." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Si las detienes, las consultas rápidas terminan antes. Las consultas automáticas siguen activadas y se reanuda la frecuencia Inteligente normal." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "停止すると高速確認が早めに終了します。自動確認はオンのままで、通常の“スマート”の頻度に戻ります。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar encerra as verificações rápidas antes do tempo. A verificação automática continua ativa e a frequência Inteligente normal é retomada." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao parar, as verificações rápidas terminam mais cedo. A verificação automática mantém-se ativa e a frequência normal do modo Inteligente é retomada." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановка досрочно завершает быстрые проверки. Автоматическая проверка остаётся включённой, и возобновляется обычный график «Умный»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止会提前结束快速检查。自动检查保持开启，并恢复正常的“智能”频率。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止後，快速檢查會提早結束。自動檢查會保持開啟，並恢復一般的「智慧型」頻率。" } }
       }
     },
     "Provider limit: checks no more often than %@." : {
@@ -5818,7 +5818,7 @@
         "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha durante quanto tempo o Filbert mantém o Mac ativo" } },
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, как долго Mac не будет засыпать" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择 Filbert 让 Mac 保持唤醒的时长" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇Filbert防止Mac睡眠的時間長度" } }
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇Filbert防止Mac進入睡眠的時間長度" } }
       }
     },
     "for %@" : {
@@ -5866,19 +5866,19 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未開啟" } }
       }
     },
-    "Keep Awake active" : {
+    "Keep Mac Awake active" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ aktiv" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake active" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«Mantener activo» en marcha" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "“Mantener activo” encendido" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”がオン" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "“Manter ativo” ligado" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "«Manter ativo» ligado" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим «Не засыпать» включён" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持唤醒”已开启" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「防止睡眠」已開啟" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Mac wach halten“ aktiv" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Mac Awake active" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "«Mantener el Mac activo» en marcha" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "“Mantener la Mac activa” encendido" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“Macをスリープさせない”がオン" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "“Manter o Mac ativo” ligado" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "«Manter o Mac ativo» ligado" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Режим «Не давать Mac уснуть» включён" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持 Mac 唤醒”已开启" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「防止Mac進入睡眠」已開啟" } }
       }
     },
     "Mac won't sleep for %@" : {
@@ -5911,34 +5911,34 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Mac不會進入睡眠，直到你關閉此功能" } }
       }
     },
-    "Keep Awake" : {
+    "Keep Mac Awake" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wach halten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mantener activo" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スリープさせない" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Manter ativo" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Manter ativo" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не засыпать" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "保持唤醒" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "防止睡眠" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Mac wach halten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Mac Awake" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mantener el Mac activo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mantener la Mac activa" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Macをスリープさせない" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Manter o Mac ativo" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Manter o Mac ativo" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не давать Mac уснуть" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "保持 Mac 唤醒" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "防止Mac進入睡眠" } }
       }
     },
-    "Show a keep-awake timer in Filbert's panel" : {
+    "Show a Keep Mac Awake timer in Filbert's panel" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeige einen Wachhalte-Timer im Filbert-Bereich" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show a keep-awake timer in Filbert's panel" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activo el Mac en el panel de Filbert" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador para mantener activa la Mac en el panel de Filbert" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertのパネルに“スリープさせない”のタイマーを表示" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador de “Manter ativo” no painel do Filbert" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador «Manter ativo» no painel do Filbert" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать таймер «Не засыпать» на панели Filbert" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Filbert 面板中显示“保持唤醒”计时器" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在Filbert面板中顯示「防止睡眠」計時器" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeige einen Timer für „Mac wach halten“ im Filbert-Bereich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show a Keep Mac Awake timer in Filbert's panel" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador de «Mantener el Mac activo» en el panel de Filbert" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra un temporizador de “Mantener la Mac activa” en el panel de Filbert" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertのパネルに“Macをスリープさせない”のタイマーを表示" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador de “Manter o Mac ativo” no painel do Filbert" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar um temporizador «Manter o Mac ativo» no painel do Filbert" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать таймер «Не давать Mac уснуть» на панели Filbert" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在 Filbert 面板中显示“保持 Mac 唤醒”计时器" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在Filbert面板中顯示「防止Mac進入睡眠」計時器" } }
       }
     },
     "Remember “Until turned off”" : {
@@ -5956,64 +5956,64 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "記住「直到關閉」" } }
       }
     },
-    "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off." : {
+    "After a restart, Filbert turns Keep Mac Awake back on if it was set to Until turned off." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach einem Neustart schaltet Filbert „Wach halten“ wieder ein, wenn es auf „Bis zum Ausschalten“ stand." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tras un reinicio, Filbert vuelve a activar «Mantener activo» si estaba en «Hasta que se desactive»." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Después de reiniciar, Filbert vuelve a activar “Mantener activo” si estaba en “Hasta que se desactive”." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動後、“スリープさせない”が“オフにするまで”に設定されていた場合は、Filbertが再びオンにします。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Depois de reiniciar, o Filbert reativa “Manter ativo” se estava em “Até desativar”." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Após um reinício, o Filbert volta a ativar «Manter ativo» se estava definido como «Até desativar»." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "После перезапуска Filbert снова включит «Не засыпать», если был выбран режим «До выключения»." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动后，如果“保持唤醒”设为“直到关闭”，Filbert 会重新开启它。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新開機後，如果「防止睡眠」設為「直到關閉」，Filbert會重新開啟它。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nach einem Neustart schaltet Filbert „Mac wach halten“ wieder ein, wenn es auf „Bis zum Ausschalten“ stand." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "After a restart, Filbert turns Keep Mac Awake back on if it was set to Until turned off." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Tras un reinicio, Filbert vuelve a activar «Mantener el Mac activo» si estaba en «Hasta que se desactive»." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Después de reiniciar, Filbert vuelve a activar “Mantener la Mac activa” si estaba en “Hasta que se desactive”." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動後、“Macをスリープさせない”が“オフにするまで”に設定されていた場合は、Filbertが再びオンにします。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Depois de reiniciar, o Filbert reativa “Manter o Mac ativo” se estava em “Até desativar”." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Após um reinício, o Filbert volta a ativar «Manter o Mac ativo» se estava definido como «Até desativar»." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "После перезапуска Filbert снова включит «Не давать Mac уснуть», если был выбран режим «До выключения»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动后，如果“保持 Mac 唤醒”设为“直到关闭”，Filbert 会重新开启它。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新開機後，如果「防止Mac進入睡眠」設為「直到關閉」，Filbert會重新開啟它。" } }
       }
     },
-    "Show Keep Awake" : {
+    "Show Keep Mac Awake" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ anzeigen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Keep Awake" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Mantener activo»" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Mantener activo”" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”を表示" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Manter ativo”" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Manter ativo»" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать «Не засыпать»" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示“保持唤醒”" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示「防止睡眠」" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Mac wach halten“ anzeigen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show Keep Mac Awake" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Mantener el Mac activo»" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Mantener la Mac activa”" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“Macをスリープさせない”を表示" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar “Manter o Mac ativo”" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar «Manter o Mac ativo»" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать «Не давать Mac уснуть»" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示“保持 Mac 唤醒”" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示「防止Mac進入睡眠」" } }
       }
     },
-    "Keep Awake couldn't start. Try again." : {
+    "Keep Mac Awake couldn't start. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Wach halten“ konnte nicht starten. Versuche es erneut." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake couldn't start. Try again." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido iniciar «Mantener activo». Inténtalo de nuevo." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar “Mantener activo”. Inténtalo de nuevo." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”を開始できませんでした。やり直してください。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar “Manter ativo”. Tente novamente." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar «Manter ativo». Tente novamente." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось включить «Не засыпать». Повторите попытку." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法开启“保持唤醒”。请重试。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法開啟「防止睡眠」。請再試一次。" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "„Mac wach halten“ konnte nicht starten. Versuche es erneut." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Mac Awake couldn't start. Try again." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "No se ha podido iniciar «Mantener el Mac activo». Inténtalo de nuevo." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "No se pudo iniciar “Mantener la Mac activa”. Inténtalo de nuevo." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“Macをスリープさせない”を開始できませんでした。やり直してください。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar “Manter o Mac ativo”. Tente novamente." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Não foi possível iniciar «Manter o Mac ativo». Tente novamente." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не удалось включить «Не давать Mac уснуть». Повторите попытку." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "无法开启“保持 Mac 唤醒”。请重试。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "無法開啟「防止Mac進入睡眠」。請再試一次。" } }
       }
     },
-    "Keep Awake duration" : {
+    "Keep Mac Awake duration" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer für „Wach halten“" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Awake duration" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «Mantener activo»" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de “Mantener activo”" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スリープさせない”の時間" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração de “Manter ativo”" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração de «Manter ativo»" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность «Не засыпать»" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持唤醒”时长" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「防止睡眠」持續時間" } }
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer für „Mac wach halten“" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep Mac Awake duration" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de «Mantener el Mac activo»" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de “Mantener la Mac activa”" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“Macをスリープさせない”の時間" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração de “Manter o Mac ativo”" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração de «Manter o Mac ativo»" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность «Не давать Mac уснуть»" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“保持 Mac 唤醒”时长" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「防止Mac進入睡眠」持續時間" } }
       }
     },
     "Turn Off" : {
@@ -6386,19 +6386,19 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未偵測到近期用量" } }
       }
     },
-    "Refreshes too far apart to estimate" : {
+    "Checks too far apart to estimate" : {
       "extractionState" : "manual",
       "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktualisierungen zu selten für eine Schätzung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Refreshes too far apart to estimate" } },
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Prüfungen zu selten für eine Schätzung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Checks too far apart to estimate" } },
         "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas demasiado espaciadas para estimar" } },
         "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas demasiado espaciadas para estimar" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "更新の間隔が長すぎて推定できません" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Leituras muito espaçadas para estimar" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizações de dados demasiado espaçadas para estimar" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Данные обновляются слишком редко для оценки" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "刷新间隔过长，无法估算" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新整理間隔過長，無法估算" } }
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認の間隔が長すぎて推定できません" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações muito espaçadas para estimar" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações demasiado espaçadas para estimar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверки слишком редкие для оценки" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查间隔过长，无法估算" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢查間隔過長，無法估算" } }
       }
     },
     "Forecast paused until fresh data arrives" : {

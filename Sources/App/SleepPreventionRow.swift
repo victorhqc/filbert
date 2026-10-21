@@ -8,8 +8,8 @@ struct SleepPreventionRow: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             HStack(spacing: 6) {
-                Text(String(displayLocalized: "Keep Awake", bundle: .module))
-                    .font(.callout)
+                Text(String(displayLocalized: "Keep Mac Awake", bundle: .module))
+                    .font(.subheadline)
                     .lineLimit(1)
 
                 Spacer(minLength: 0)
@@ -38,7 +38,7 @@ struct SleepPreventionRow: View {
                     }
                     .contentShape(Rectangle())
                 }
-                .accessibilityLabel(String(displayLocalized: "Keep Awake duration", bundle: .module))
+                .accessibilityLabel(String(displayLocalized: "Keep Mac Awake duration", bundle: .module))
                 .accessibilityValue(controller.accessibilityValue)
                 .accessibilityHint(String(
                     displayLocalized: "Choose how long Filbert keeps your Mac awake",
@@ -48,7 +48,7 @@ struct SleepPreventionRow: View {
             }
 
             if controller.didFailToActivate {
-                Text(String(displayLocalized: "Keep Awake couldn't start. Try again.", bundle: .module))
+                Text(String(displayLocalized: "Keep Mac Awake couldn't start. Try again.", bundle: .module))
                     .font(.caption)
                     .foregroundStyle(.red)
             }

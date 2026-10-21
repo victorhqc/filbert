@@ -22,7 +22,7 @@ extension GeminiCLIError: LocalizedError {
         case .internalInconsistency:
             String(displayLocalized: "Internal error: unexpected credential type.", bundle: .module)
         case .missingCredentials:
-            String(displayLocalized: "Sign in to Gemini CLI before refreshing usage.", bundle: .module)
+            String(displayLocalized: "Sign in to Gemini CLI so Filbert can check its usage.", bundle: .module)
         case .invalidCredentials:
             String(
                 displayLocalized: "Gemini CLI credentials are unsupported. Update Gemini CLI and sign in again.",

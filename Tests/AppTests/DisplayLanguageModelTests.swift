@@ -29,7 +29,7 @@ final class DisplayLanguageModelTests: XCTestCase {
         wait(for: [changed], timeout: 1)
         XCTAssertEqual(model.locale.language.languageCode, "de")
         XCTAssertEqual(model.selectedLanguageCode, "de-DE")
-        XCTAssertEqual(String(displayLocalized: "Refresh", bundle: .module), "Aktualisieren")
+        XCTAssertEqual(String(displayLocalized: "Check usage now", bundle: .module), "Nutzung jetzt prüfen")
     }
 
     func testSelectingTheSameLanguageKeepsTheViews() {

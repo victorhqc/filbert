@@ -48,7 +48,7 @@ struct AppearanceTab: View {
                 }
             }
 
-            SettingsCard(heading: String(displayLocalized: "Keep Awake", bundle: .module)) {
+            SettingsCard(heading: String(displayLocalized: "Keep Mac Awake", bundle: .module)) {
                 keepAwakeSettings
             }
         }
@@ -64,8 +64,8 @@ struct AppearanceTab: View {
                 )
             ) {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(String(displayLocalized: "Show Keep Awake", bundle: .module))
-                    Text(String(displayLocalized: "Show a keep-awake timer in Filbert's panel", bundle: .module))
+                    Text(String(displayLocalized: "Show Keep Mac Awake", bundle: .module))
+                    Text(String(displayLocalized: "Show a Keep Mac Awake timer in Filbert's panel", bundle: .module))
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
@@ -214,7 +214,10 @@ struct AppearanceTab: View {
 
     private var rememberUntilTurnedOffSubtitle: String {
         String(
-            displayLocalized: "After a restart, Filbert turns Keep Awake back on if it was set to Until turned off.",
+            displayLocalized: """
+            After a restart, Filbert turns Keep Mac Awake back on \
+            if it was set to Until turned off.
+            """,
             bundle: .module
         )
     }
