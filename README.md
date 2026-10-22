@@ -32,7 +32,21 @@ you do not need to open several browser tabs to see what remains.
 
 ## Install
 
-Filbert requires Apple Silicon and macOS 26 (Tahoe) or newer.
+Filbert requires Apple Silicon and macOS 14 (Sonoma) or newer. It looks and
+works best on macOS 26 (Tahoe).
+
+### Homebrew
+
+```sh
+brew install --cask victorhqc/tap/filbert
+```
+
+Filbert updates itself, so `brew upgrade` skips it. To remove Filbert with its
+preferences, caches, and logs, run `brew uninstall --zap --cask filbert`. Your
+API keys stay in the Keychain. If you use Claude Code, first select **Remove
+Helper** in Filbert → Settings → Claude Code, so your statusline keeps working.
+
+### DMG
 
 1. Open the [latest Filbert release](https://github.com/victorhqc/filbert/releases/latest).
 2. Under **Assets**, download `Filbert-<version>-arm64.dmg`.

@@ -131,6 +131,9 @@ tag (no prerelease or build suffix) can publish the stable appcast.
    `deploy-pages` keys a deployment on the commit SHA, and GitHub accepts but
    never serves a release deploy whose commit was already published from
    `main`.
+10. A second dependent job renders the Homebrew cask from the released DMG and
+    pushes it to `victorhqc/homebrew-tap`. See
+    [`homebrew-tap.md`](homebrew-tap.md).
 
 After the first updater-capable release has been manually installed and
 verified, remove the `BOOTSTRAP_UPDATE_RELEASE` environment variable. Do not claim that a

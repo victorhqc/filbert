@@ -343,6 +343,17 @@ h1 {
   text-align: center;
 }
 
+.note + .note {
+  margin-top: 8px;
+}
+
+.note code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 0.9em;
+  color: var(--text);
+  user-select: all;
+}
+
 .privacy-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
