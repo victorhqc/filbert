@@ -1,6 +1,6 @@
 # Filbert
 
-[![Platform: macOS](https://img.shields.io/badge/platform-macOS%2026%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
+[![Platform: macOS](https://img.shields.io/badge/platform-macOS%2014%2B-000000?logo=apple&logoColor=white)](https://www.apple.com/macos/)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-F05138?logo=swift&logoColor=white)](https://www.swift.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
@@ -15,12 +15,12 @@ quotas, and spending across AI providers from a simple menu-bar app. The name
 stands for **F**riendly **I**con
 **L**etting **B**udgets **E**xplain **R**emaining **T**okens.
 
-Add the AI providers you use, and Filbert tracks their usage, quotas, and spend
-in one place.
-
 Most developers use more than one AI platform: a coding plan here, an API key
 there, and a subscription somewhere else. Filbert brings them into one view, so
 you do not need to open several browser tabs to see what remains.
+
+The [website](https://victorhqc.github.io/filbert/) has the full tour:
+features, screenshots, supported providers, and privacy.
 
 <table>
   <tr>
@@ -32,352 +32,74 @@ you do not need to open several browser tabs to see what remains.
 
 ## Install
 
-Filbert requires Apple Silicon and macOS 14 (Sonoma) or newer. It looks and
-works best on macOS 26 (Tahoe).
-
-### Homebrew
+Filbert needs Apple Silicon and macOS 14 (Sonoma) or newer. It looks and works
+best on macOS 26 (Tahoe).
 
 ```sh
 brew install --cask victorhqc/tap/filbert
 ```
 
-Filbert updates itself, so `brew upgrade` skips it. To remove Filbert with its
-preferences, caches, and logs, run `brew uninstall --zap --cask filbert`. Your
-API keys stay in the Keychain. If you use Claude Code, first select **Remove
-Helper** in Filbert → Settings → Claude Code, so your statusline keeps working.
+Or download the DMG from the
+[latest release](https://github.com/victorhqc/filbert/releases/latest). Filbert
+updates itself.
 
-### DMG
-
-1. Open the [latest Filbert release](https://github.com/victorhqc/filbert/releases/latest).
-2. Under **Assets**, download `Filbert-<version>-arm64.dmg`.
-3. Double-click the DMG, then drag Filbert to the `/Applications` shortcut.
-4. Launch Filbert from Applications. It appears in the menu bar, not the Dock.
+Read [`SETUP.md`](SETUP.md) for the DMG steps, provider setup, automatic usage
+checks, and how to uninstall.
 
 ## What you get
 
-- **Menu bar** — glance at your most-used provider's remaining quota.
-- **Popover** — click the icon for a full breakdown across every provider.
-- **Widgets** — pin a provider's stats to Notification Center or your desktop (WIP).
+- **Menu bar** — what is left for the provider you use right now.
+- **Popover** — usage, limits, reset times, and forecasts for every provider.
+- **Smart usage checks** — more frequent checks while usage changes, within
+  provider rate limits.
+- **Keep Mac Awake** — for a set time, or until you turn it off.
 
-Filbert is a native macOS app built to stay out of your way:
-
-- No Dock icon. No app-switcher entry. Just a menu-bar item.
-- No proxy. No Electron. It calls each provider's API directly with native `URLSession`.
-- Your API keys stay on your machine, in the **macOS Keychain**.
-- No telemetry. No analytics. No remote logging.
+See the [features](https://victorhqc.github.io/filbert/#features) on the
+website.
 
 ## Supported providers
 
-| Provider     | Status    | What it tracks                                             |
-|--------------|-----------|------------------------------------------------------------|
-| z.ai         | ✅ Done   | GLM Coding Plan quota — token or credits plans, peak hours |
-| Claude       | ✅ Done¹  | Claude Code plan usage via the `claude` CLI                |
-| Gemini CLI   | ✅ Done²  | Model quotas and reset times via local Google login        |
-| DeepSeek     | ✅ Done   | Prepaid balance — total, granted, topped-up                |
-| OpenAI Codex | ✅ Done³  | Subscription usage via the local `codex` CLI               |
-| Cursor       | ✅ Done⁴  | Subscription + on-demand spend via local token             |
-| OpenCode Go  | ✅ Done⁵  | Go subscription windows — rolling, weekly, monthly         |
-| Moonshot     | Planned   | API usage, token consumption                               |
-
-> ¹ Claude reads usage from the **Claude Code CLI**. See
-> [Claude Code setup](#claude-code-setup) below.
->
-> ² Gemini CLI reads model quotas from the local **Gemini CLI** Google login. See
-> [Gemini CLI setup](#gemini-cli-setup) below.
->
-> ³ OpenAI Codex reads usage from the local **Codex CLI**. See
-> [OpenAI Codex setup](#openai-codex-setup) below.
->
-> ⁴ Cursor reads usage from your local Cursor session token. See
-> [Cursor setup](#cursor-setup) below.
->
-> ⁵ OpenCode Go needs an OpenCode API key tied to a Go subscription. The API
-> reports usage percentages and reset times only — no dollar amounts — and
-> Filbert does not estimate spend.
-
-Add only the providers you use. The menu bar, popover, and widgets adapt to
-your setup.
-
-## Requirements
-
-- **Apple Silicon** (M1 or newer). The released DMG is arm64-only.
-- macOS **26 (Tahoe)** or newer. The app is built against the macOS 26 SDK.
-  Older systems render an outdated popover and are no longer supported.
-- API keys or signed-in local CLI sessions for the providers you want to track.
-
-## Use it
-
-Click the Filbert menu-bar icon and open **Settings** to add a provider. Enter
-its API key. The key goes straight into the Keychain. Filbert fetches usage
-once and then leaves further checks to automatic usage checks, which you turn on
-per provider.
-
-Four providers read from a local session instead of an API key. Set those up
-below.
-
-### Automatic usage checks
-
-Automatic usage checks are opt-in for each provider and run on one of two
-schedules:
-
-- **Regular** checks every provider at the shared slow interval (five
-  minutes by default), whether or not usage changed.
-- **Smart** starts a provider slow and moves it to the fast interval while its
-  usage keeps changing. It returns the provider to slow through a time-based
-  quiet window and a short cooldown, not a count of unchanged checks. A
-  **Keep checking** option can hold the fast interval for a chosen, finite
-  period.
-
-Provider limits and server rate limits always win. A provider with a minimum
-interval is never checked more often than it allows, and a `429` or
-`Retry-After` response pauses that provider until the server deadline passes.
-
-This behavior is defined by
-[`specs/core/11-smart-refresh-activity-windows.md`](specs/core/11-smart-refresh-activity-windows.md)
-and supersedes the count-based rule described in `specs/core/08`.
-
-## Security
-
-- API keys live as **Keychain generic-password items**. They are never written
-  to disk in plaintext and never logged.
-- Keys go **only to their respective provider APIs**, over HTTPS.
-- **No telemetry, no analytics, no remote logging.** The only outbound requests
-  are the provider API calls that fetch your usage.
-
-## Error logs
-
-Filbert records errors in `~/Library/Logs/Filbert/errors.log`.
-Select **Show Logs** beside an error to reveal the file in Finder.
-If Filbert cannot write the log, the error states that the log is unavailable.
-
-Successful operations and ordinary setup states do not produce log records.
-Records contain timestamps, operation names, and safe error codes.
-Records do not contain credentials, prompts, transcripts, or raw provider responses.
-Filbert retains the current log and one previous log, with a 1 MiB limit for each file.
-Logs remain on your Mac unless you choose to share them.
-
-## Why macOS asks for your password
-
-<img src="assets/screenshots/password.png" alt="macOS Keychain password prompt" height="250">
-
-macOS may show a system dialog asking for your login password or Touch ID when
-Filbert saves or reads credentials. This is the Keychain doing its job — not the
-app.
-
-Filbert stores every API key and token in the **macOS Keychain**, the encrypted
-store Safari and other Apple apps use for passwords. When an app first reads or
-writes a Keychain item in a session, macOS asks you to unlock it. Think of it as
-a safe's lock:
-
-- **Your credentials stay encrypted on disk** — only the Keychain can decrypt
-  them, and only after you approve it.
-- **No other app can read them** — the Keychain ties each item to the app that
-  created it. A random process on your machine cannot ask for Filbert's secrets.
-- **Filbert never sees the process** — the app asks the Keychain to store or
-  retrieve a value, and the Keychain handles encryption and access control
-  itself. Filbert never touches your password or Touch ID.
-
-You may see this prompt once per session after the app launches, when it loads
-saved keys. You may see it again when you save a new key in Settings. Cursor
-and Gemini CLI users see another prompt on first import because Filbert reads
-tokens that their own apps stored in the Keychain. macOS is granting
-permission, not asking for another set of credentials.
-
-**In short:** macOS shows this prompt to protect your credentials. Filbert does
-not receive your password or Touch ID.
-
-### OpenAI Codex setup
-
-*Only if you track Codex usage.*
-
-The OpenAI Codex provider reads subscription usage from the local `codex` CLI.
-Install it, then check the version:
-
-```sh
-curl -fsSL https://chatgpt.com/codex/install.sh | sh
-codex --version
-```
-
-Run `codex` from a project directory. On first launch, choose **Sign in with
-ChatGPT**. Filbert does not read, store, or manage your Codex credentials.
-For other install methods and troubleshooting, see the
-[official Codex CLI docs](https://developers.openai.com/codex/cli/).
-
-### Gemini CLI setup
-
-*Only if you track Gemini CLI usage.*
-
-The Gemini provider reads model quota and reset times from the Google login used
-by the local **Gemini CLI**. It does not track Gemini API, AI Studio, Vertex AI,
-or Google Cloud billing usage, and it never sends a model prompt.
-
-Install Gemini CLI by following the
-[official installation instructions](https://github.com/google-gemini/gemini-cli#installation),
-then run it and choose **Login with Google**. Use the Google account associated
-with the Gemini or Code Assist subscription you want to track. If Google asks
-for a project, follow Gemini CLI's setup instructions before enabling the
-provider in Filbert.
-
-Filbert reads the credential Gemini CLI stores in the macOS Keychain. It does
-not ask you to enter a Gemini API key, copy the credential into Filbert's
-Keychain, or read the legacy `~/.gemini/oauth_creds.json` file. macOS may show
-an access prompt the first time Filbert reads the Gemini CLI item.
-
-The quota request uses Google's private `v1internal` Code Assist interface.
-Google may change that interface or the credential format; if that happens,
-Filbert may need an update before Gemini usage appears again. See the
-[Gemini CLI authentication documentation](https://google-gemini.github.io/gemini-cli/docs/get-started/authentication.html)
-for setup and troubleshooting.
-
-### Cursor setup
-
-*Only if you track Cursor usage.*
-
-The Cursor provider reads subscription and on-demand spend from your local
-Cursor session token. It does not read from the Cursor website. You never enter
-a key — Filbert finds the token that Cursor's own apps already stored on your
-machine.
-
-**Make sure you are signed in to Cursor.** The provider reads tokens from two
-locations, in this order:
-
-1. **Keychain** — service `cursor-agent`, accounts `cursor-access-token` and
-   `cursor-refresh-token`. Populated by `agent login` (the Cursor CLI).
-2. **SQLite** — Cursor Desktop's `state.vscdb`. Populated when you sign into
-   the Cursor desktop app.
-
-No manual setup is needed. If you're signed into the Cursor desktop app or have
-run `agent login`, Filbert picks up the token on the next refresh.
-
-> **This provider uses undocumented Cursor endpoints.** It may stop working if
-> Cursor changes their API.
-
-### Claude Code setup
-
-*Only if you track Claude Code usage.*
-
-The Claude provider reads usage from the **Claude Code CLI** (`claude`). It does
-not read from the Claude desktop app or from editor plugins like Zed's Claude
-agent. Those are separate products. They share the Claude brand, but they do not
-feed Filbert.
-
-**Install the CLI.** Run this in your terminal:
-
-```sh
-curl -fsSL https://claude.ai/install.sh | bash
-```
-
-**Check it.** Open a *new* terminal so `PATH` reloads:
-
-```sh
-which claude
-# expected: /Users/<you>/.local/bin/claude
-```
-
-**Log in.** Make sure `claude` is logged in. Filbert reads the usage Claude
-Code already fetched for your account. It never handles your credentials.
-
-Then open Filbert → Settings → Claude Code and click **Install Helper**. The
-helper hooks into Claude Code's `statusLine` command. It writes a small cache
-file that Filbert reads during refresh.
-
-Filbert includes the compiled helper. Installation does not require Xcode or
-Command Line Tools. If installation fails, select **Show Logs**, correct the
-reported problem, then select **Install Helper** again.
-
-> **You never run anything by hand.** When you click **Check usage now**,
-> Filbert runs `claude -p "/usage"` in the background. It reads the figures and
-> updates the cache. This works even when you use Claude Code from an editor and never open
-> its status line. During interactive sessions, the status-line helper keeps the
-> cache fresh.
-
-The Claude desktop app (`/Applications/Claude.app`) is **not** a substitute. Its
-bundled `claude` binary sits under a versioned `~/Library/Application
-Support/Claude/...` path that changes on every update, and it is not meant to
-run on its own.
-
-## How it works
-
-Filbert uses an **orthogonal provider architecture**. Each provider is its own
-module behind a shared protocol. You can add or remove any provider without
-touching the others or the core app.
-
-```
-┌────────────────────────────────────────────┐
-│                  App Layer                   │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  │
-│  │ Menu Bar │  │ Popover  │  │ Widgets  │  │
-│  └────┬─────┘  └────┬─────┘  └────┬─────┘  │
-│       └──────────────┼──────────────┘       │
-│                      │                      │
-│  ┌───────────────────▼───────────────────┐  │
-│  │            Provider Hub               │  │
-│  │   (registry, refresh, aggregation)    │  │
-│  └───────────────────┬───────────────────┘  │
-│                      │                      │
-│     ┌────────────────┼────────────────┐     │
-│     ▼                ▼                ▼     │
-│  ┌──────┐  ┌──────┐  ┌──────┐  ┌──────────┐│
-│  │ z.ai │  │DeepSk│  │Claude│  │ OpenAI … ││
-│  └──────┘  └──────┘  └──────┘  └──────────┘│
-│           Provider implementations          │
-└────────────────────────────────────────────┘
-```
-
-- **Provider protocol** — one Swift protocol (`AIProvider`) that every provider
-  implements. It defines quota fetching, authentication, and display metadata.
-- **Provider hub** — owns the registry of active providers, runs the refresh
-  cadence, and hands aggregated data to the UI.
-- **UI layer** — the menu bar, popover, and widgets read the hub's published
-  state. They know nothing about a provider's API.
-
-To add a provider, implement the protocol and register it. Nothing else
-changes.
-
-## Build from source
-
-If you have an Intel Mac, want the latest `main`, or prefer to build it
-yourself:
-
-```bash
-git clone https://github.com/victorhqc/filbert.git
-cd filbert
-swift run
-```
-
-You'll need **Swift 5.9+**. Install the Xcode Command Line Tools with
-`xcode-select --install`.
-
-To create a DMG locally, first install `create-dmg`:
-
-```sh
-brew install create-dmg
-scripts/build-dmg.sh --version 0.1.0 --no-sign
-# → dist/Filbert-0.1.0-arm64.dmg
-```
-
-Local builds are **ad-hoc signed for development only** — macOS will ask you
-to confirm the first launch, and they are not the same artifact as the
-signed, notarized official releases. Maintainers who need to produce or
-verify a signed release locally can read
-[`docs/signing-and-notarization.md`](docs/signing-and-notarization.md).
+| Provider     | What it tracks                   | What it needs           |
+|--------------|----------------------------------|-------------------------|
+| Claude Code  | Plan usage                       | Claude Code CLI         |
+| OpenAI Codex | Subscription usage               | Codex CLI               |
+| Cursor       | Subscription and on-demand spend | Cursor sign-in          |
+| Gemini CLI   | Model quotas and reset times     | Gemini CLI Google login |
+| z.ai         | GLM Coding Plan quota            | API key                 |
+| DeepSeek     | Prepaid balance                  | API key                 |
+| OpenCode Go  | Go subscription windows          | API key                 |
+
+Moonshot is planned. Providers that read a local CLI or sign-in need a short
+setup. See [Provider setup](SETUP.md#provider-setup).
+
+## Privacy
+
+- API keys live in the **macOS Keychain**. They are never written to disk in
+  plaintext and never logged.
+- Filbert calls each provider's API directly over HTTPS. There is no Filbert
+  server.
+- **No telemetry, no analytics, no remote logging.**
+
+Read [Why macOS asks for your password](SETUP.md#why-macos-asks-for-your-password)
+for what the Keychain prompt means.
+
+## Documentation
+
+| Document                               | For                                                     |
+|----------------------------------------|---------------------------------------------------------|
+| [`SETUP.md`](SETUP.md)                 | Install, provider setup, usage checks, logs, uninstall  |
+| [`DEVELOPMENT.md`](DEVELOPMENT.md)     | Build from source, the validation gate, architecture    |
+| [`CONTRIBUTING.md`](CONTRIBUTING.md)   | Spec-first workflow, coding standards, commits, PRs     |
+| [`AGENTS.md`](AGENTS.md)               | Rules for AI coding agents                              |
+| [`specs/`](specs/)                     | The specs that drive the work                           |
+| [`docs/`](docs/)                       | Maintainer guides: signing, updates, Homebrew, l10n     |
 
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
 Claude, Gemini CLI, DeepSeek, OpenAI Codex, Cursor, and OpenCode Go providers
-are in place. The app builds and runs as a menu-bar item. Smart automatic
-refresh uses clock-driven activity windows instead of a count of unchanged
-checks. More providers and widgets come next.
-
-See [`specs/`](specs/) for the spec files that drive the work.
-
-## Contributing
-
-We follow a **spec-first** workflow: write the spec, implement one item, run the
-validation gate, then review. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) for the
-full workflow, coding standards, commit rules, and the validation gate. The
-deeper agent guide lives in [`AGENTS.md`](AGENTS.md).
+are in place. The app builds and runs as a menu-bar item. More providers and
+widgets come next.
 
 ## License
 

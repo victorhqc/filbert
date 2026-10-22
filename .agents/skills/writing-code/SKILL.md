@@ -146,7 +146,7 @@ pinned prebuilt binaries from GitHub releases and runs them directly
 (`swiftformat` / `swiftlint`). Locally you can use Homebrew (`swiftformat` /
 `swiftlint` directly), but your installed versions **must match** the `Mintfile`
 pins — otherwise a green local run will not predict a green CI run. If your
-versions drift, grab the pinned prebuilt binaries (see `CONTRIBUTING.md`).
+versions drift, grab the pinned prebuilt binaries (see `DEVELOPMENT.md`).
 
 Treat the gate as a literal checklist. Run each command, read its full output,
 and only move to the next when the previous is green. If any step fails, fix
@@ -173,7 +173,10 @@ swift test
 # 6. Workflow tests — CI step "Workflow tests"
 python3 scripts/test-automatic-updates.py
 
-# 7. Packaging tests — CI step "Local signing and startup tests"
+# 7. Cask tests — CI step "Homebrew cask tests"
+python3 scripts/test-homebrew-cask.py
+
+# 8. Packaging tests — CI step "Local signing and startup tests"
 python3 scripts/test-local-signing.py
 ```
 
@@ -188,14 +191,14 @@ python3 scripts/test-local-signing.py
 - **`swift build`** and **`swift build -c release`** must end with
   `Build complete!`.
 - **`swift test`** must show `0 failures`.
-- **Both Python test scripts** must report `OK` and exit with status `0`.
+- **All three Python test scripts** must report `OK` and exit with status `0`.
 
 ### When a tool isn't installed
 
 - If `swiftformat` or `swiftlint` is not installed, tell the user to install
   the version pinned in `Mintfile`. Either match it with Homebrew
   (`brew install swiftformat swiftlint`, then verify the version matches the
-  pin) or download the pinned prebuilt binaries (see `CONTRIBUTING.md`). Do
+  pin) or download the pinned prebuilt binaries (see `DEVELOPMENT.md`). Do
   not skip the gate — tell the user the gate is blocked.
 - If Swift itself is not available (`swift build` fails with "command not
   found"), tell the user to install Xcode Command Line Tools with
