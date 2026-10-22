@@ -59,9 +59,8 @@ This is the analogue of MLA's `(Author Page)` — here `(topic number)`.
   file path when you mean *another spec*. Those are non-compliant.
 - A path like `` `Sources/Core/ProviderHub.swift` `` pointing at **source code**
   is not a spec citation — leave those as file paths.
-- **The same form applies in production code.** When a code comment refers to a
-  spec, cite it the same way, e.g.
-  `// peak-hours window matches (providers 02)`.
+- **Citations stay in `specs/`.** Code, tests, scripts, and config never cite
+  a spec or an AC. See the [`writing-code`](../writing-code/SKILL.md) skill.
 
 **Fix on sight.** Existing specs may use non-compliant `spec 03` / `(spec 03)`
 forms. If you edit a spec that contains a non-compliant reference, convert it:

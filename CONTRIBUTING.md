@@ -1,13 +1,15 @@
 # Contributing to Filbert
 
 Thanks for helping build Filbert. This guide covers how we work: the
-spec-first workflow, the project layout, the coding standards, and the
-validation gate you must pass before you hand off a change.
+spec-first workflow, the coding standards, commits, and pull requests.
 
 This is a macOS menu-bar app. It makes network calls to AI provider APIs and
 stores API keys in the macOS Keychain. Be methodical. Network and Keychain code
 deserves extra care. No quick fixes or temporary hacks unless someone asks for
 one.
+
+To set up your Mac, build Filbert, and learn the project layout, read
+[`DEVELOPMENT.md`](DEVELOPMENT.md).
 
 ## Spec-first
 
@@ -17,26 +19,13 @@ has reviewed it. If there is no spec for your change, stop and write one first.
 The spec format lives in
 [`.agents/skills/writing-specs/SKILL.md`](.agents/skills/writing-specs/SKILL.md).
 
-## Project layout
-
-The project uses Swift Package Manager:
-
-- `Sources/App` — the macOS app target: menu bar, popover, widgets, app
-  lifecycle.
-- `Sources/Core` — the provider hub: the `AIProvider` protocol, the registry,
-  refresh scheduling, and data aggregation.
-- `Sources/Providers/<Name>` — one module per provider. Each implements
-  `AIProvider`.
-- `Tests/` — unit and integration tests that mirror the `Sources/` layout.
-
-A provider module depends only on `Core`. The app depends only on `Core` and on
-the providers it links. **Providers know nothing about each other.**
-
 ## Keep providers orthogonal
 
 The provider architecture is orthogonal. Adding a provider must not force a
 change in another provider or in the core app. To add one, you implement
-`AIProvider` and register it. Nothing else changes.
+`AIProvider` and register it. Nothing else changes. A provider module depends
+only on `Core`, and **providers know nothing about each other**. See
+[Architecture](DEVELOPMENT.md#architecture).
 
 When you write a provider module:
 
@@ -71,84 +60,41 @@ This app makes outbound HTTPS calls to provider APIs. Follow these rules:
 5. **Idiomatic Swift** — use `async/await`, `Result` types, and SwiftUI idioms.
 6. **Protocol-oriented** — each provider is a struct or actor that conforms to
    `AIProvider`. The hub talks to the protocol, never to a concrete provider.
-7. **Comments earn their place** — never restate the code. Comment a business
-   decision, a non-obvious "why", or a provider quirk. Never describe past
-   behavior or the change itself — no "used to", "previously", or "instead of".
-   When a comment cites a spec, use MLA form: `(providers 02)`.
+7. **Comments are a last resort** — follow the
+   [minimal-comments](#minimal-comments) rules. Do not cite specs or
+   acceptance criteria in code. Spec citations belong in `specs/`.
 8. **Dependencies** — add a package to `Package.swift` before you use it. Prefer
    Apple frameworks over third-party ones.
 9. **Concurrency** — use structured concurrency (`async/await`, `Task`,
    `@MainActor`). No bare `DispatchQueue` unless you bridge a callback API.
 
-## Code Quality
+## Minimal comments
 
-The gate needs three tools: the Swift toolchain, SwiftFormat, and SwiftLint.
-Install them once before you run it.
+The code is the comment. Write no comment by default. If you want to explain
+*what* the code does, rename or extract something instead. A comment is valid
+only for:
 
-```sh
-xcode-select --install
-```
+- a non-obvious domain or business rule,
+- an external system's quirk or contract,
+- a deliberate deviation from what a reader expects,
+- the reason for a necessary suppression or cast.
 
-SwiftFormat and SwiftLint are version-pinned in a `Mintfile` so CI and local
-runs agree. CI downloads the pinned prebuilt binaries; do the same locally for
-exact parity:
+Code, tests, scripts, and config never cite a spec or an acceptance criterion.
+If a spec drives a non-obvious decision, state the reason in plain words.
 
-- **Prebuilt binaries (recommended — identical to CI)** — download the exact
-  `Mintfile` versions from GitHub releases and drop them on your PATH:
-
-  ```sh
-  SF_VERSION=$(grep -Eo 'SwiftFormat@[0-9.]+' Mintfile | cut -d@ -f2)
-  SL_VERSION=$(grep -Eo 'SwiftLint@[0-9.]+' Mintfile | cut -d@ -f2)
-
-  curl -fsSL "https://github.com/nicklockwood/SwiftFormat/releases/download/${SF_VERSION}/swiftformat.zip" -o /tmp/swiftformat.zip
-  curl -fsSL "https://github.com/realm/SwiftLint/releases/download/${SL_VERSION}/portable_swiftlint.zip" -o /tmp/swiftlint.zip
-
-  # /usr/local/bin is on your PATH; drop the `sudo` if it's writable
-  sudo unzip -oj /tmp/swiftformat.zip swiftformat -d /usr/local/bin
-  sudo unzip -oj /tmp/swiftlint.zip swiftlint -d /usr/local/bin
-  ```
-
-- **Homebrew (simpler, if you keep the versions in sync)** — install the tools,
-  then make sure their versions match the `Mintfile` pins:
-
-  ```sh
-  brew install swiftformat swiftlint
-  swiftformat --version && swiftlint --version
-  ```
-
-- **Mint (builds the pinned versions from source)** — reads the `Mintfile` and
-  links the exact versions onto your PATH. Slower on first run (and can fail if
-  your local Swift toolchain can't build a pinned tool):
-
-  ```sh
-  brew install mint
-  mint bootstrap --link
-  ```
-
-The following commands should show if anything obvious is failing
+The full rules are in the
+[minimal-comments](https://github.com/victorhqc/skills.sh/tree/main/skills/minimal-comments)
+skill. AI agents in this repo follow it. Install it with:
 
 ```sh
-# 1. Format (SwiftFormat — version pinned in Mintfile)
-swiftformat --lint .
-
-# 2. Lint (SwiftLint — version pinned in Mintfile)
-swiftlint
-
-# 3. Build (debug)
-swift build
-
-# 4. Build (release) — catches optimizer-only failures
-swift build -c release
-
-# 5. Tests
-swift test
-
-# 6. Workflow tests
-python3 scripts/test-automatic-updates.py
-
-# 7. Local signing and startup tests
-python3 scripts/test-local-signing.py
+npx skills add victorhqc/skills.sh --skill minimal-comments
 ```
+
+## Validation gate
+
+Run the validation gate before you hand off a change. It formats, lints,
+builds, and tests the project, the same way CI does. The tool setup and the
+commands are in [`DEVELOPMENT.md`](DEVELOPMENT.md#validation-gate).
 
 ## Commits
 
@@ -191,10 +137,17 @@ docs: update mascot image in README
 
 Keep the PR body short and true. Say what the branch changes and why.
 
-Use the **pr-description** skill to write it. The skill reads the branch diff,
-then fills in a set template — Summary, Why, What changed, and Notes for review
-— in plain English. It lives at
-[`.agents/skills/pr-description/SKILL.md`](.agents/skills/pr-description/SKILL.md).
+Use the **pr-description** skill to write it. The skill writes a short Summary,
+a Mermaid diagram of the change, and a reading order for the files. It can open
+or update the PR with `gh` after you confirm, or give you a markdown block to
+paste.
+
+The skill is not in this repo. Install it from
+[victorhqc/skills.sh](https://github.com/victorhqc/skills.sh/tree/main/skills/pr-description):
+
+```sh
+npx skills add victorhqc/skills.sh --skill pr-description
+```
 
 ## License
 

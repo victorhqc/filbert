@@ -62,3 +62,19 @@ provider APIs. Follow these rules:
   exponentially.
 - **Never cache API keys outside the Keychain.** Keys are read from Keychain
   at request time and never stored in memory longer than needed.
+
+## 4. Comments
+
+All code follows the
+[`minimal-comments`](https://github.com/victorhqc/skills.sh/tree/main/skills/minimal-comments)
+skill. Code, tests, scripts, and config never cite a spec or an acceptance
+criterion; spec citations stay in `specs/`. See
+[`.agents/skills/writing-code/SKILL.md`](.agents/skills/writing-code/SKILL.md)
+for the rules this repo adds.
+
+The `minimal-comments` and `pr-description` skills are not in the repo.
+Install them with:
+
+```sh
+npx skills add victorhqc/skills.sh --skill minimal-comments --skill pr-description
+```
