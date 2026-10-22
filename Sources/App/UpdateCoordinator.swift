@@ -93,16 +93,12 @@ enum UpdatePhase: Equatable {
     case available(version: String)
     case downloading(version: String)
     case preparing(version: String)
-    case readyToInstall(version: String)
-    case installing(version: String)
 
     var version: String {
         switch self {
         case let .available(version),
              let .downloading(version),
-             let .preparing(version),
-             let .readyToInstall(version),
-             let .installing(version):
+             let .preparing(version):
             version
         }
     }
@@ -111,7 +107,6 @@ enum UpdatePhase: Equatable {
 struct PopoverUpdate: Equatable {
     enum Action: Equatable {
         case update
-        case restartToUpdate
     }
 
     let phase: UpdatePhase
@@ -126,9 +121,7 @@ struct PopoverUpdate: Equatable {
         switch phase {
         case .available:
             action = canCheckForUpdates ? .update : nil
-        case .readyToInstall:
-            action = .restartToUpdate
-        case .downloading, .preparing, .installing:
+        case .downloading, .preparing:
             action = nil
         }
     }
@@ -148,9 +141,6 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
 
     @ObservationIgnored
     private var updaterController: SPUStandardUpdaterController?
-
-    @ObservationIgnored
-    private var immediateInstallHandler: (() -> Void)?
 
     @ObservationIgnored
     private var updaterObservations: [NSKeyValueObservation] = []
@@ -182,15 +172,6 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         updaterController?.updater.checkForUpdates()
     }
 
-    func installNow() {
-        guard case let .readyToInstall(version) = updatePhase, let install = immediateInstallHandler else {
-            return
-        }
-        immediateInstallHandler = nil
-        updatePhase = .installing(version: version)
-        install()
-    }
-
     func setAutomaticChecksForUpdates(_ enabled: Bool) {
         guard let updater = updaterController?.updater else {
             return
@@ -216,6 +197,8 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
     func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: (any Error)?) {
         if ScheduledCheckGate.startsInformationCheck(after: updateCheck, error: error) {
             updater.checkForUpdateInformation()
+        } else {
+            recordUpdateCycleEnd(updateCheck)
         }
     }
 
@@ -243,16 +226,6 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         recordUpdateProgress(.preparationStarted)
     }
 
-    /// Returning true keeps Sparkle's install-on-quit and hands relaunch timing to the popover action.
-    func updater(
-        _: SPUUpdater,
-        willInstallUpdateOnQuit item: SUAppcastItem,
-        immediateInstallationBlock immediateInstallHandler: @escaping () -> Void
-    ) -> Bool {
-        recordReadyToInstall(version: item.displayVersionString, install: immediateInstallHandler)
-        return true
-    }
-
     func recordUpdateCheckResult(_ result: UpdateCheckResult) {
         switch result {
         case let .updateAvailable(version):
@@ -271,6 +244,15 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         recordUpdateCheckResult(.failed)
     }
 
+    /// Sparkle skips `didAbortWithError` when the user closes its window after the download,
+    /// so the end of the user check is the only signal that the work stopped.
+    func recordUpdateCycleEnd(_ updateCheck: SPUUpdateCheck) {
+        guard updateCheck == .updates else {
+            return
+        }
+        recordUpdateProgress(.interrupted)
+    }
+
     func recordUpdateProgress(_ progress: UpdateProgress) {
         guard let version = updatePhase?.version else {
             return
@@ -282,14 +264,8 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         case .preparationStarted:
             updatePhase = .preparing(version: version)
         case .interrupted:
-            immediateInstallHandler = nil
             updatePhase = .available(version: version)
         }
-    }
-
-    func recordReadyToInstall(version: String, install: @escaping () -> Void) {
-        immediateInstallHandler = install
-        updatePhase = .readyToInstall(version: version)
     }
 
     private func observeUpdaterState(_ updater: SPUUpdater) {

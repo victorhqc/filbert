@@ -171,10 +171,11 @@ The **About → Updates** card provides:
 - **Check for updates automatically**.
 
 The standard Sparkle interface shows release notes, downloads the update with
-a progress window, and offers **Install and Relaunch**. A background check never quits or relaunches Filbert by itself. If
-installation is deferred, Sparkle can apply it at its supported safe quit
-boundary. Settings, provider configuration, and Keychain items live outside
-the application bundle and are preserved.
+a progress window, and offers **Install and Relaunch**. A background check
+never quits or relaunches Filbert by itself. If installation is deferred,
+Sparkle can apply it at its supported safe quit boundary. Settings, provider
+configuration, and Keychain items live outside the application bundle and are
+preserved.
 
 Development executables, test hosts, and bundles with a missing or placeholder
 version, feed URL, or EdDSA key do not start Sparkle. This keeps `swift run`,
@@ -275,9 +276,9 @@ After two consecutive signed and notarized releases exist:
 6. Verify that the relaunched app reports the newer advertised version.
 7. Verify the provider settings, preferences, and Keychain items survived.
 8. Repeat with automatic checks enabled and let a background check run.
-   Confirm that the popover shows the newer version with **Update**, not
-   **Restart to Update**, that Console shows no Sparkle download, and that
-   Filbert does not terminate or relaunch without user action.
+   Confirm that the popover shows the newer version with **Update**, that
+   Console shows no Sparkle download, and that Filbert does not terminate or
+   relaunch without user action.
 
 This clean-account test is the evidence for live replacement. Unit tests,
 workflow tests, and ad-hoc packaging checks cannot prove the complete

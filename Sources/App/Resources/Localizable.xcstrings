@@ -6107,21 +6107,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在準備Filbert %@⋯" } }
       }
     },
-    "Filbert %@ is ready to install" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ ist bereit zur Installation" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ is ready to install" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ está listo para instalarse" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@をインストールする準備ができました" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está pronto para instalar" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert %@ está pronto a instalar" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ готов к установке" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ 已准备好安装" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@已準備好安裝" } }
-      }
-    },
     "Install Helper" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6185,51 +6170,6 @@
             "value" : "安裝輔助腳本"
           }
         }
-      }
-    },
-    "Installing Filbert %@…" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@ wird installiert…" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Installing Filbert %@…" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Instalando Filbert %@…" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Instalando Filbert %@…" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbert %@をインストール中…" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalando o Filbert %@…" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A instalar o Filbert %@…" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установка Filbert %@…" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在安装 Filbert %@…" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "正在安裝Filbert %@⋯" } }
-      }
-    },
-    "Restart to Update" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Neu starten" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restart to Update" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動してアップデート" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar para atualizar" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar para atualizar" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перезапустить для обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动以更新" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新啟動以更新" } }
-      }
-    },
-    "Restart and update Filbert to version %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert neu starten und auf Version %@ aktualisieren" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Restart and update Filbert to version %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar y actualizar Filbert a la versión %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar y actualizar Filbert a la versión %@" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "再起動してFilbertをバージョン%@にアップデート" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar e atualizar o Filbert para a versão %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Reiniciar e atualizar o Filbert para a versão %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перезапустить и обновить Filbert до версии %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重新启动并将 Filbert 更新到版本 %@" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重新啟動並將Filbert更新至%@版" } }
       }
     },
     "Forecast headline format" : {
