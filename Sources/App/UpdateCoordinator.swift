@@ -6,7 +6,7 @@ enum UpdateConfiguration {
     static let feedURLKey = "SUFeedURL"
     static let publicEDKey = "SUPublicEDKey"
     static let automaticChecksKey = "SUEnableAutomaticChecks"
-    static let automaticDownloadsKey = "SUAutomaticallyUpdate"
+    static let allowsAutomaticUpdatesKey = "SUAllowsAutomaticUpdates"
     static let checkIntervalKey = "SUScheduledCheckInterval"
     static let feedURL = "https://victorhqc.github.io/filbert/appcast.xml"
     static let defaultCheckInterval: TimeInterval = 4 * 60 * 60
@@ -47,6 +47,33 @@ enum UpdateEligibility {
             return false
         }
         return Data(base64Encoded: key)?.count == 32
+    }
+}
+
+/// Sparkle resumes a staged update on every later check without reading the feed,
+/// so a scheduled check must never download one. It becomes an information-only check.
+enum ScheduledCheckGate {
+    static let refusal = NSError(
+        domain: "com.victorhqc.filbert.ScheduledCheckGate",
+        code: 1,
+        userInfo: [
+            NSLocalizedDescriptionKey: "Filbert runs an information-only check in place of this scheduled check.",
+        ]
+    )
+
+    static func allows(_ updateCheck: SPUUpdateCheck) -> Bool {
+        updateCheck != .updatesInBackground
+    }
+
+    static func isRefusal(_ error: (any Error)?) -> Bool {
+        guard let error = error as NSError? else {
+            return false
+        }
+        return error.domain == refusal.domain && error.code == refusal.code
+    }
+
+    static func startsInformationCheck(after updateCheck: SPUUpdateCheck, error: (any Error)?) -> Bool {
+        updateCheck == .updatesInBackground && isRefusal(error)
     }
 }
 
@@ -116,8 +143,6 @@ struct PopoverUpdate: Equatable {
 final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
     private(set) var canCheckForUpdates = false
     private(set) var automaticallyChecksForUpdates = false
-    private(set) var automaticallyDownloadsUpdates = false
-    private(set) var allowsAutomaticUpdates = false
     private(set) var updatePhase: UpdatePhase?
     let isAvailable: Bool
 
@@ -174,14 +199,6 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         refreshState(from: updater)
     }
 
-    func setAutomaticDownloadsUpdates(_ enabled: Bool) {
-        guard let updater = updaterController?.updater, updater.allowsAutomaticUpdates else {
-            return
-        }
-        updater.automaticallyDownloadsUpdates = enabled
-        refreshState(from: updater)
-    }
-
     func updater(_: SPUUpdater, didFindValidUpdate item: SUAppcastItem) {
         recordUpdateCheckResult(.updateAvailable(version: item.displayVersionString))
     }
@@ -190,8 +207,20 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         recordUpdateCheckResult(.noUpdate)
     }
 
-    func updater(_: SPUUpdater, didAbortWithError _: any Error) {
-        recordUpdateCheckResult(.failed)
+    func updater(_: SPUUpdater, mayPerform updateCheck: SPUUpdateCheck) throws {
+        guard ScheduledCheckGate.allows(updateCheck) else {
+            throw ScheduledCheckGate.refusal
+        }
+    }
+
+    func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: (any Error)?) {
+        if ScheduledCheckGate.startsInformationCheck(after: updateCheck, error: error) {
+            updater.checkForUpdateInformation()
+        }
+    }
+
+    func updater(_: SPUUpdater, didAbortWithError error: any Error) {
+        recordUpdateAbort(error)
     }
 
     func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with _: NSMutableURLRequest) {
@@ -235,6 +264,13 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         }
     }
 
+    func recordUpdateAbort(_ error: any Error) {
+        guard !ScheduledCheckGate.isRefusal(error) else {
+            return
+        }
+        recordUpdateCheckResult(.failed)
+    }
+
     func recordUpdateProgress(_ progress: UpdateProgress) {
         guard let version = updatePhase?.version else {
             return
@@ -260,8 +296,6 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         let keyPaths: [KeyPath<SPUUpdater, Bool>] = [
             \.canCheckForUpdates,
             \.automaticallyChecksForUpdates,
-            \.automaticallyDownloadsUpdates,
-            \.allowsAutomaticUpdates,
         ]
         updaterObservations = keyPaths.map { keyPath in
             updater.observe(keyPath, options: [.initial, .new]) { [weak self] updater, _ in
@@ -275,7 +309,5 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
     private func refreshState(from updater: SPUUpdater) {
         canCheckForUpdates = updater.canCheckForUpdates
         automaticallyChecksForUpdates = updater.automaticallyChecksForUpdates
-        automaticallyDownloadsUpdates = updater.automaticallyDownloadsUpdates
-        allowsAutomaticUpdates = updater.allowsAutomaticUpdates
     }
 }

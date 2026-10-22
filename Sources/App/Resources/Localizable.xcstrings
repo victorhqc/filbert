@@ -5671,21 +5671,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查更新項目" } }
       }
     },
-    "Download updates automatically" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Updates automatisch laden" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Download updates automatically" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Descargar actualizaciones automáticamente" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Descargar actualizaciones automáticamente" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アップデートを自動的にダウンロード" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Baixar atualizações automaticamente" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Descarregar atualizações automaticamente" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически загружать обновления" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动下载更新" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動下載更新項目" } }
-      }
-    },
     "MIT License" : {
       "extractionState" : "manual",
       "localizations" : {

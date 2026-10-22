@@ -90,15 +90,6 @@ struct AboutSettingsView: View {
                 )
                 .disabled(!updateCoordinator.isAvailable)
 
-                Toggle(
-                    String(displayLocalized: "Download updates automatically", bundle: .module),
-                    isOn: Binding(
-                        get: { updateCoordinator.automaticallyDownloadsUpdates },
-                        set: { updateCoordinator.setAutomaticDownloadsUpdates($0) }
-                    )
-                )
-                .disabled(!updateCoordinator.allowsAutomaticUpdates)
-
                 if !updateCoordinator.isAvailable {
                     Text(String(
                         displayLocalized: "Automatic updates are available only in installed releases.",
