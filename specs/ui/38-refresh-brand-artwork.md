@@ -43,10 +43,10 @@ Use the refreshed source artwork consistently in the app icon, Settings About id
 
 ## Plan
 
-- [ ] Generate the macOS icon representations and replace the bundled `AppIcon.icns`.
-- [ ] Regenerate the bundled `Mascot.png` from `assets/mascot-with-ai-logos.png`, retaining the existing About loader and layout.
-- [ ] Regenerate the website branding images from the refreshed sources without adding image-tool dependencies to Pages deployment.
-- [ ] Validate icon representations, inspect the generated imagery, build a local website preview, and run the repository validation gate.
+- [x] Generate the macOS icon representations and replace the bundled `AppIcon.icns`.
+- [x] Regenerate the bundled `Mascot.png` from `assets/mascot-with-ai-logos.png`, retaining the existing About loader and layout.
+- [x] Regenerate the website branding images from the refreshed sources without adding image-tool dependencies to Pages deployment.
+- [x] Validate icon representations, inspect the generated imagery, build a local website preview, and run the repository validation gate.
 
 ## Risks
 
