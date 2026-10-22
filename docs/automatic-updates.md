@@ -148,22 +148,34 @@ version and can always install any older build manually.
 
 Installed release bundles start one `SPUStandardUpdaterController` for the
 application lifetime. Sparkle owns the persisted last-check date, four-hour
-interval, automatic-check setting, and automatic-download setting. Reopening
-Filbert does not create a second timer or reset that schedule.
+interval, and automatic-check setting. Reopening Filbert does not create a
+second timer or reset that schedule.
+
+Background checks only report. When Sparkle's scheduled check is due,
+`UpdateCoordinator` refuses it and starts an information-only check
+(`checkForUpdateInformation`) instead. The popover then shows the newest
+version in the feed with an **Update** button. Sparkle logs the refused check
+as an error in Console every four hours; this is intended.
+
+Filbert never downloads an update in the background. `SUAllowsAutomaticUpdates`
+is `NO`, so Sparkle ignores any stored automatic-download preference and hides
+its own checkbox. A staged update makes Sparkle resume it on every later check
+without reading the feed, so a user several versions behind would otherwise
+install one version per restart. With nothing staged, **Update** reads the
+feed at click time and installs the newest release in one restart.
 
 The **About → Updates** card provides:
 
 - **Check for Updates…**, which starts a user-initiated Sparkle check even when
   automatic checks are disabled or not yet due.
-- **Check for updates automatically**, independent of downloads.
-- **Download updates automatically**, enabled only when Sparkle allows that
-  setting.
+- **Check for updates automatically**.
 
-The standard Sparkle interface shows release notes and offers **Install and
-Relaunch**. A background check never quits or relaunches Filbert by itself. If
-installation is deferred, Sparkle can apply it at its supported safe quit
-boundary. Settings, provider configuration, and Keychain items live outside
-the application bundle and are preserved.
+The standard Sparkle interface shows release notes, downloads the update with
+a progress window, and offers **Install and Relaunch**. A background check
+never quits or relaunches Filbert by itself. If installation is deferred,
+Sparkle can apply it at its supported safe quit boundary. Settings, provider
+configuration, and Keychain items live outside the application bundle and are
+preserved.
 
 Development executables, test hosts, and bundles with a missing or placeholder
 version, feed URL, or EdDSA key do not start Sparkle. This keeps `swift run`,
@@ -263,8 +275,10 @@ After two consecutive signed and notarized releases exist:
    **Install and Relaunch** flow.
 6. Verify that the relaunched app reports the newer advertised version.
 7. Verify the provider settings, preferences, and Keychain items survived.
-8. Repeat with automatic downloads enabled and confirm that a background
-   discovery does not terminate or relaunch Filbert without user action.
+8. Repeat with automatic checks enabled and let a background check run.
+   Confirm that the popover shows the newer version with **Update**, that
+   Console shows no Sparkle download, and that Filbert does not terminate or
+   relaunch without user action.
 
 This clean-account test is the evidence for live replacement. Unit tests,
 workflow tests, and ad-hoc packaging checks cannot prove the complete

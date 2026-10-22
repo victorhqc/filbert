@@ -1,5 +1,6 @@
 @testable import App
 import Foundation
+import Sparkle
 import XCTest
 
 @MainActor
@@ -48,7 +49,123 @@ final class UpdateCoordinatorTests: XCTestCase {
         XCTAssertFalse(coordinator.isAvailable)
         XCTAssertFalse(coordinator.canCheckForUpdates)
         XCTAssertFalse(coordinator.automaticallyChecksForUpdates)
-        XCTAssertFalse(coordinator.automaticallyDownloadsUpdates)
+    }
+
+    func testGateRefusesOnlyScheduledChecks() {
+        XCTAssertFalse(ScheduledCheckGate.allows(.updatesInBackground))
+        XCTAssertTrue(ScheduledCheckGate.allows(.updateInformation))
+        XCTAssertTrue(ScheduledCheckGate.allows(.updates))
+    }
+
+    func testCoordinatorImplementsSparkleGateSelectors() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+
+        for selector in [
+            "updater:mayPerformUpdateCheck:error:",
+            "updater:didFinishUpdateCycleForUpdateCheck:error:",
+            "updater:didAbortWithError:",
+        ] {
+            XCTAssertTrue(coordinator.responds(to: NSSelectorFromString(selector)), selector)
+        }
+        XCTAssertFalse(coordinator.responds(
+            to: NSSelectorFromString("updater:willInstallUpdateOnQuit:immediateInstallationBlock:")
+        ))
+    }
+
+    func testRefusalStartsInformationCheckOnlyAfterScheduledCheck() {
+        let otherError = NSError(domain: SUSparkleErrorDomain, code: 1001)
+
+        XCTAssertTrue(ScheduledCheckGate.startsInformationCheck(
+            after: .updatesInBackground,
+            error: ScheduledCheckGate.refusal
+        ))
+        XCTAssertFalse(ScheduledCheckGate.startsInformationCheck(after: .updatesInBackground, error: nil))
+        XCTAssertFalse(ScheduledCheckGate.startsInformationCheck(after: .updatesInBackground, error: otherError))
+        XCTAssertFalse(ScheduledCheckGate.startsInformationCheck(after: .updateInformation, error: nil))
+        XCTAssertFalse(ScheduledCheckGate.startsInformationCheck(after: .updates, error: nil))
+    }
+
+    func testRefusalIsRecognizedAfterBeingThrown() {
+        let thrown: any Error
+        do {
+            try throwRefusal()
+            return XCTFail("Expected the refusal to be thrown")
+        } catch {
+            thrown = error
+        }
+
+        XCTAssertTrue(ScheduledCheckGate.isRefusal(thrown))
+        XCTAssertFalse(ScheduledCheckGate.isRefusal(nil))
+    }
+
+    func testRefusalNeverReachesPopoverPhase() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordUpdateProgress(.downloadStarted)
+
+        coordinator.recordUpdateAbort(ScheduledCheckGate.refusal)
+        coordinator.recordUpdateCycleEnd(.updatesInBackground)
+
+        XCTAssertEqual(coordinator.updatePhase, .downloading(version: "0.14.0"))
+    }
+
+    func testEndedUserCheckReturnsWorkToAvailable() {
+        for progress in [UpdateProgress.downloadStarted, .preparationStarted] {
+            let coordinator = UpdateCoordinator(bundle: .main)
+            coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+            coordinator.recordUpdateProgress(progress)
+
+            coordinator.recordUpdateCycleEnd(.updates)
+
+            XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"), "\(progress)")
+        }
+    }
+
+    func testEndedUserCheckKeepsAvailableAndEmptyPhase() {
+        let available = UpdateCoordinator(bundle: .main)
+        available.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        let empty = UpdateCoordinator(bundle: .main)
+
+        available.recordUpdateCycleEnd(.updates)
+        empty.recordUpdateCycleEnd(.updates)
+
+        XCTAssertEqual(available.updatePhase, .available(version: "0.14.0"))
+        XCTAssertNil(empty.updatePhase)
+    }
+
+    func testEndedBackgroundOrInformationCheckKeepsPhase() {
+        for updateCheck in [SPUUpdateCheck.updatesInBackground, .updateInformation] {
+            let coordinator = UpdateCoordinator(bundle: .main)
+            coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+            coordinator.recordUpdateProgress(.preparationStarted)
+
+            coordinator.recordUpdateCycleEnd(updateCheck)
+
+            XCTAssertEqual(coordinator.updatePhase, .preparing(version: "0.14.0"), "\(updateCheck)")
+        }
+    }
+
+    func testOtherAbortStillFallsBackToAvailable() {
+        let coordinator = UpdateCoordinator(bundle: .main)
+        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
+        coordinator.recordUpdateProgress(.downloadStarted)
+
+        coordinator.recordUpdateAbort(NSError(domain: SUSparkleErrorDomain, code: 2001))
+
+        XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
+    }
+
+    func testPackagedAppNeverDownloadsUpdatesInBackground() throws {
+        let url = URL(fileURLWithPath: #filePath)
+            .deletingLastPathComponent()
+            .appendingPathComponent("../../packaging/Info.plist")
+            .standardizedFileURL
+        let plist = try PropertyListSerialization.propertyList(from: Data(contentsOf: url), format: nil)
+        let info = try XCTUnwrap(plist as? [String: Any])
+
+        XCTAssertEqual(info[UpdateConfiguration.allowsAutomaticUpdatesKey] as? Bool, false)
+        XCTAssertNil(info["SUAutomaticallyUpdate"])
+        XCTAssertEqual(info[UpdateConfiguration.automaticChecksKey] as? Bool, true)
     }
 
     func testAvailableUpdateAppearsInPopover() {
@@ -73,20 +190,12 @@ final class UpdateCoordinatorTests: XCTestCase {
         for phase in [
             UpdatePhase.downloading(version: "0.14.0"),
             .preparing(version: "0.14.0"),
-            .installing(version: "0.14.0"),
         ] {
             let update = PopoverUpdate(phase: phase, canCheckForUpdates: true)
 
             XCTAssertNil(update?.action, "\(phase)")
             XCTAssertEqual(update?.showsProgress, true, "\(phase)")
         }
-    }
-
-    func testReadyUpdateOffersRestartEvenWhileSessionIsHeld() {
-        let update = PopoverUpdate(phase: .readyToInstall(version: "0.14.0"), canCheckForUpdates: false)
-
-        XCTAssertEqual(update?.action, .restartToUpdate)
-        XCTAssertEqual(update?.showsProgress, false)
     }
 
     func testPopoverUpdateIsAbsentWithoutPhase() {
@@ -111,7 +220,7 @@ final class UpdateCoordinatorTests: XCTestCase {
         XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
     }
 
-    func testSilentDownloadAdvancesThroughPhases() {
+    func testDownloadAdvancesThroughPhases() {
         let coordinator = UpdateCoordinator(bundle: .main)
         coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
 
@@ -120,9 +229,6 @@ final class UpdateCoordinatorTests: XCTestCase {
 
         coordinator.recordUpdateProgress(.preparationStarted)
         XCTAssertEqual(coordinator.updatePhase, .preparing(version: "0.14.0"))
-
-        coordinator.recordReadyToInstall(version: "0.14.0") {}
-        XCTAssertEqual(coordinator.updatePhase, .readyToInstall(version: "0.14.0"))
     }
 
     func testProgressWithoutKnownUpdateIsIgnored() {
@@ -153,48 +259,16 @@ final class UpdateCoordinatorTests: XCTestCase {
         XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
     }
 
-    func testInstallNowInvokesHandlerOnce() {
-        let coordinator = UpdateCoordinator(bundle: .main)
-        var installCount = 0
-        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
-        coordinator.recordReadyToInstall(version: "0.14.0") { installCount += 1 }
-
-        coordinator.installNow()
-        coordinator.installNow()
-
-        XCTAssertEqual(installCount, 1)
-        XCTAssertEqual(coordinator.updatePhase, .installing(version: "0.14.0"))
-    }
-
-    func testInstallNowDoesNothingBeforeUpdateIsReady() {
-        let coordinator = UpdateCoordinator(bundle: .main)
-        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
-        coordinator.recordUpdateProgress(.downloadStarted)
-
-        coordinator.installNow()
-
-        XCTAssertEqual(coordinator.updatePhase, .downloading(version: "0.14.0"))
-    }
-
-    func testInterruptionDiscardsPendingInstallHandler() {
-        let coordinator = UpdateCoordinator(bundle: .main)
-        var installCount = 0
-        coordinator.recordUpdateCheckResult(.updateAvailable(version: "0.14.0"))
-        coordinator.recordReadyToInstall(version: "0.14.0") { installCount += 1 }
-
-        coordinator.recordUpdateProgress(.interrupted)
-        coordinator.installNow()
-
-        XCTAssertEqual(installCount, 0)
-        XCTAssertEqual(coordinator.updatePhase, .available(version: "0.14.0"))
-    }
-
     func testConfigurationUsesCanonicalFeedAndFourHourInterval() {
         XCTAssertEqual(
             UpdateConfiguration.feedURL,
             "https://victorhqc.github.io/filbert/appcast.xml"
         )
         XCTAssertEqual(UpdateConfiguration.defaultCheckInterval, 4 * 60 * 60)
+    }
+
+    private func throwRefusal() throws {
+        throw ScheduledCheckGate.refusal
     }
 
     private func makeBundle(

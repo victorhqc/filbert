@@ -6,7 +6,7 @@ enum UpdateConfiguration {
     static let feedURLKey = "SUFeedURL"
     static let publicEDKey = "SUPublicEDKey"
     static let automaticChecksKey = "SUEnableAutomaticChecks"
-    static let automaticDownloadsKey = "SUAutomaticallyUpdate"
+    static let allowsAutomaticUpdatesKey = "SUAllowsAutomaticUpdates"
     static let checkIntervalKey = "SUScheduledCheckInterval"
     static let feedURL = "https://victorhqc.github.io/filbert/appcast.xml"
     static let defaultCheckInterval: TimeInterval = 4 * 60 * 60
@@ -50,6 +50,33 @@ enum UpdateEligibility {
     }
 }
 
+/// Sparkle resumes a staged update on every later check without reading the feed,
+/// so a scheduled check must never download one. It becomes an information-only check.
+enum ScheduledCheckGate {
+    static let refusal = NSError(
+        domain: "com.victorhqc.filbert.ScheduledCheckGate",
+        code: 1,
+        userInfo: [
+            NSLocalizedDescriptionKey: "Filbert runs an information-only check in place of this scheduled check.",
+        ]
+    )
+
+    static func allows(_ updateCheck: SPUUpdateCheck) -> Bool {
+        updateCheck != .updatesInBackground
+    }
+
+    static func isRefusal(_ error: (any Error)?) -> Bool {
+        guard let error = error as NSError? else {
+            return false
+        }
+        return error.domain == refusal.domain && error.code == refusal.code
+    }
+
+    static func startsInformationCheck(after updateCheck: SPUUpdateCheck, error: (any Error)?) -> Bool {
+        updateCheck == .updatesInBackground && isRefusal(error)
+    }
+}
+
 enum UpdateCheckResult: Equatable {
     case updateAvailable(version: String)
     case noUpdate
@@ -66,16 +93,12 @@ enum UpdatePhase: Equatable {
     case available(version: String)
     case downloading(version: String)
     case preparing(version: String)
-    case readyToInstall(version: String)
-    case installing(version: String)
 
     var version: String {
         switch self {
         case let .available(version),
              let .downloading(version),
-             let .preparing(version),
-             let .readyToInstall(version),
-             let .installing(version):
+             let .preparing(version):
             version
         }
     }
@@ -84,7 +107,6 @@ enum UpdatePhase: Equatable {
 struct PopoverUpdate: Equatable {
     enum Action: Equatable {
         case update
-        case restartToUpdate
     }
 
     let phase: UpdatePhase
@@ -99,9 +121,7 @@ struct PopoverUpdate: Equatable {
         switch phase {
         case .available:
             action = canCheckForUpdates ? .update : nil
-        case .readyToInstall:
-            action = .restartToUpdate
-        case .downloading, .preparing, .installing:
+        case .downloading, .preparing:
             action = nil
         }
     }
@@ -116,16 +136,11 @@ struct PopoverUpdate: Equatable {
 final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
     private(set) var canCheckForUpdates = false
     private(set) var automaticallyChecksForUpdates = false
-    private(set) var automaticallyDownloadsUpdates = false
-    private(set) var allowsAutomaticUpdates = false
     private(set) var updatePhase: UpdatePhase?
     let isAvailable: Bool
 
     @ObservationIgnored
     private var updaterController: SPUStandardUpdaterController?
-
-    @ObservationIgnored
-    private var immediateInstallHandler: (() -> Void)?
 
     @ObservationIgnored
     private var updaterObservations: [NSKeyValueObservation] = []
@@ -157,28 +172,11 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         updaterController?.updater.checkForUpdates()
     }
 
-    func installNow() {
-        guard case let .readyToInstall(version) = updatePhase, let install = immediateInstallHandler else {
-            return
-        }
-        immediateInstallHandler = nil
-        updatePhase = .installing(version: version)
-        install()
-    }
-
     func setAutomaticChecksForUpdates(_ enabled: Bool) {
         guard let updater = updaterController?.updater else {
             return
         }
         updater.automaticallyChecksForUpdates = enabled
-        refreshState(from: updater)
-    }
-
-    func setAutomaticDownloadsUpdates(_ enabled: Bool) {
-        guard let updater = updaterController?.updater, updater.allowsAutomaticUpdates else {
-            return
-        }
-        updater.automaticallyDownloadsUpdates = enabled
         refreshState(from: updater)
     }
 
@@ -190,8 +188,22 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         recordUpdateCheckResult(.noUpdate)
     }
 
-    func updater(_: SPUUpdater, didAbortWithError _: any Error) {
-        recordUpdateCheckResult(.failed)
+    func updater(_: SPUUpdater, mayPerform updateCheck: SPUUpdateCheck) throws {
+        guard ScheduledCheckGate.allows(updateCheck) else {
+            throw ScheduledCheckGate.refusal
+        }
+    }
+
+    func updater(_ updater: SPUUpdater, didFinishUpdateCycleFor updateCheck: SPUUpdateCheck, error: (any Error)?) {
+        if ScheduledCheckGate.startsInformationCheck(after: updateCheck, error: error) {
+            updater.checkForUpdateInformation()
+        } else {
+            recordUpdateCycleEnd(updateCheck)
+        }
+    }
+
+    func updater(_: SPUUpdater, didAbortWithError error: any Error) {
+        recordUpdateAbort(error)
     }
 
     func updater(_: SPUUpdater, willDownloadUpdate _: SUAppcastItem, with _: NSMutableURLRequest) {
@@ -214,16 +226,6 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         recordUpdateProgress(.preparationStarted)
     }
 
-    /// Returning true keeps Sparkle's install-on-quit and hands relaunch timing to the popover action.
-    func updater(
-        _: SPUUpdater,
-        willInstallUpdateOnQuit item: SUAppcastItem,
-        immediateInstallationBlock immediateInstallHandler: @escaping () -> Void
-    ) -> Bool {
-        recordReadyToInstall(version: item.displayVersionString, install: immediateInstallHandler)
-        return true
-    }
-
     func recordUpdateCheckResult(_ result: UpdateCheckResult) {
         switch result {
         case let .updateAvailable(version):
@@ -233,6 +235,22 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         case .failed:
             recordUpdateProgress(.interrupted)
         }
+    }
+
+    func recordUpdateAbort(_ error: any Error) {
+        guard !ScheduledCheckGate.isRefusal(error) else {
+            return
+        }
+        recordUpdateCheckResult(.failed)
+    }
+
+    /// Sparkle skips `didAbortWithError` when the user closes its window after the download,
+    /// so the end of the user check is the only signal that the work stopped.
+    func recordUpdateCycleEnd(_ updateCheck: SPUUpdateCheck) {
+        guard updateCheck == .updates else {
+            return
+        }
+        recordUpdateProgress(.interrupted)
     }
 
     func recordUpdateProgress(_ progress: UpdateProgress) {
@@ -246,22 +264,14 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
         case .preparationStarted:
             updatePhase = .preparing(version: version)
         case .interrupted:
-            immediateInstallHandler = nil
             updatePhase = .available(version: version)
         }
-    }
-
-    func recordReadyToInstall(version: String, install: @escaping () -> Void) {
-        immediateInstallHandler = install
-        updatePhase = .readyToInstall(version: version)
     }
 
     private func observeUpdaterState(_ updater: SPUUpdater) {
         let keyPaths: [KeyPath<SPUUpdater, Bool>] = [
             \.canCheckForUpdates,
             \.automaticallyChecksForUpdates,
-            \.automaticallyDownloadsUpdates,
-            \.allowsAutomaticUpdates,
         ]
         updaterObservations = keyPaths.map { keyPath in
             updater.observe(keyPath, options: [.initial, .new]) { [weak self] updater, _ in
@@ -275,7 +285,5 @@ final class UpdateCoordinator: NSObject, SPUUpdaterDelegate {
     private func refreshState(from updater: SPUUpdater) {
         canCheckForUpdates = updater.canCheckForUpdates
         automaticallyChecksForUpdates = updater.automaticallyChecksForUpdates
-        automaticallyDownloadsUpdates = updater.automaticallyDownloadsUpdates
-        allowsAutomaticUpdates = updater.allowsAutomaticUpdates
     }
 }

@@ -73,17 +73,6 @@ extension QuotaView {
                     version
                 )
             )
-        case .restartToUpdate:
-            Button(String(displayLocalized: "Restart to Update", bundle: .module)) {
-                updateCoordinator.installNow()
-            }
-            .controlSize(.small)
-            .accessibilityLabel(
-                String.localizedStringWithFormat(
-                    String(displayLocalized: "Restart and update Filbert to version %@", bundle: .module),
-                    version
-                )
-            )
         }
     }
 
@@ -95,10 +84,6 @@ extension QuotaView {
             String(displayLocalized: "Downloading Filbert %@…", bundle: .module)
         case .preparing:
             String(displayLocalized: "Preparing Filbert %@…", bundle: .module)
-        case .readyToInstall:
-            String(displayLocalized: "Filbert %@ is ready to install", bundle: .module)
-        case .installing:
-            String(displayLocalized: "Installing Filbert %@…", bundle: .module)
         }
         return String.localizedStringWithFormat(format, phase.version)
     }
