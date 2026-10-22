@@ -60,15 +60,35 @@ This app makes outbound HTTPS calls to provider APIs. Follow these rules:
 5. **Idiomatic Swift** — use `async/await`, `Result` types, and SwiftUI idioms.
 6. **Protocol-oriented** — each provider is a struct or actor that conforms to
    `AIProvider`. The hub talks to the protocol, never to a concrete provider.
-7. **Comments earn their place** — never restate the code. Comment a business
-   decision, a non-obvious "why", or a provider quirk. Never describe past
-   behavior or the change itself — no "used to", "previously", or "instead of".
-   Do not cite specs or acceptance criteria in code comments. Spec citations
-   belong in `specs/`.
+7. **Comments are a last resort** — follow the
+   [minimal-comments](#minimal-comments) rules. Do not cite specs or
+   acceptance criteria in code. Spec citations belong in `specs/`.
 8. **Dependencies** — add a package to `Package.swift` before you use it. Prefer
    Apple frameworks over third-party ones.
 9. **Concurrency** — use structured concurrency (`async/await`, `Task`,
    `@MainActor`). No bare `DispatchQueue` unless you bridge a callback API.
+
+## Minimal comments
+
+The code is the comment. Write no comment by default. If you want to explain
+*what* the code does, rename or extract something instead. A comment is valid
+only for:
+
+- a non-obvious domain or business rule,
+- an external system's quirk or contract,
+- a deliberate deviation from what a reader expects,
+- the reason for a necessary suppression or cast.
+
+Code, tests, scripts, and config never cite a spec or an acceptance criterion.
+If a spec drives a non-obvious decision, state the reason in plain words.
+
+The full rules are in the
+[minimal-comments](https://github.com/victorhqc/skills.sh/tree/main/skills/minimal-comments)
+skill. AI agents in this repo follow it. Install it with:
+
+```sh
+npx skills add victorhqc/skills.sh --skill minimal-comments
+```
 
 ## Validation gate
 

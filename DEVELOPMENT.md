@@ -173,8 +173,20 @@ The repo ships skills for AI coding agents in `.agents/skills/`:
   self-review checklist.
 - `release-notes` — the body text for a GitHub release.
 
-The `pr-description` skill is not in the repo. To install it, see
-[Pull requests](CONTRIBUTING.md#pull-requests).
+Two skills come from
+[victorhqc/skills.sh](https://github.com/victorhqc/skills.sh) and are not in
+the repo:
+
+- `minimal-comments` — when a comment is allowed. See
+  [Minimal comments](CONTRIBUTING.md#minimal-comments).
+- `pr-description` — the PR body. See
+  [Pull requests](CONTRIBUTING.md#pull-requests).
+
+Install both:
+
+```sh
+npx skills add victorhqc/skills.sh --skill minimal-comments --skill pr-description
+```
 
 ## Maintainer docs
 

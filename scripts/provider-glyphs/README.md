@@ -1,7 +1,7 @@
 # Provider glyphs
 
-This directory contains the vector inputs for the provider glyphs described by
-(ui 14 AC2). The generated PNGs are committed to each provider's `Resources`
+This directory contains the vector inputs for the provider glyphs. The
+generated PNGs are committed to each provider's `Resources`
 directory so the app only needs to load them at runtime.
 
 Run the generator from the repository root:
