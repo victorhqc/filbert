@@ -224,3 +224,118 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --ref "$DEFAULT_BRANCH" \
             -f tag="$TAG_NAME"
+
+  # The tap receives only the rendered cask. Its deploy key lives in its own
+  # environment so no job holding Apple or Sparkle secrets can push to it.
+  # docs/homebrew-tap.md
+  publish-homebrew-cask:
+    name: Publish Homebrew cask to the tap
+    needs: release
+    if: ${{ needs.release.result == 'success' }}
+    runs-on: macos-26
+    environment: homebrew-tap
+    permissions:
+      contents: read
+    concurrency:
+      group: homebrew-tap
+      cancel-in-progress: false
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      TAP_NAME: victorhqc/tap
+      TAP_REMOTE: git@github.com:victorhqc/homebrew-tap.git
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Require the tap deploy key
+        env:
+          HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+        run: |
+          [[ -n "$HOMEBREW_TAP_DEPLOY_KEY" ]] \
+            || { echo "HOMEBREW_TAP_DEPLOY_KEY is missing from homebrew-tap"; exit 1; }
+
+      - name: Download and verify the released DMG
+        id: dmg
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: |
+          set -euo pipefail
+          version="${TAG_NAME#v}"
+          dmg="Filbert-${version}-arm64.dmg"
+          assets="$RUNNER_TEMP/cask-assets"
+          mkdir -p "$assets"
+          gh release download "$TAG_NAME" \
+            --repo "$GITHUB_REPOSITORY" \
+            --dir "$assets" \
+            --pattern "$dmg" \
+            --pattern "$dmg.sha256"
+          published=$(awk '{ print $1 }' "$assets/$dmg.sha256")
+          downloaded=$(shasum -a 256 "$assets/$dmg" | awk '{ print $1 }')
+          [[ "$published" == "$downloaded" ]] \
+            || { echo "Released DMG does not match its .sha256 asset"; exit 1; }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "sha256=$downloaded" >> "$GITHUB_OUTPUT"
+
+      - name: Clone the tap
+        id: tap
+        env:
+          HOMEBREW_TAP_DEPLOY_KEY: ${{ secrets.HOMEBREW_TAP_DEPLOY_KEY }}
+        run: |
+          set -euo pipefail
+          ssh_dir="$RUNNER_TEMP/homebrew-tap-ssh"
+          mkdir -m 700 "$ssh_dir"
+          (umask 077 && printf '%s\n' "$HOMEBREW_TAP_DEPLOY_KEY" > "$ssh_dir/deploy_key")
+          # GitHub's published host key, so the push never trusts on first use.
+          echo "github.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOMqqnkVzrm0SdG6UOoqKLsabgH5C9okWi0dh2l9GKJl" \
+            > "$ssh_dir/known_hosts"
+          ssh_command="ssh -i $ssh_dir/deploy_key -o IdentitiesOnly=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$ssh_dir/known_hosts"
+
+          tap_dir="$(brew --repository)/Library/Taps/victorhqc/homebrew-tap"
+          GIT_SSH_COMMAND="$ssh_command" git clone "$TAP_REMOTE" "$tap_dir"
+          git -C "$tap_dir" config core.sshCommand "$ssh_command"
+          echo "dir=$tap_dir" >> "$GITHUB_OUTPUT"
+
+      - name: Render the cask
+        id: render
+        env:
+          VERSION: ${{ steps.dmg.outputs.version }}
+          SHA256: ${{ steps.dmg.outputs.sha256 }}
+          TAP_DIR: ${{ steps.tap.outputs.dir }}
+        run: |
+          set -euo pipefail
+          decision=$(python3 scripts/render-homebrew-cask.py \
+            --template packaging/homebrew/filbert.rb \
+            --version "$VERSION" \
+            --sha256 "$SHA256" \
+            --existing "$TAP_DIR/Casks/filbert.rb" \
+            --output "$TAP_DIR/Casks/filbert.rb")
+          echo "Cask decision for $VERSION: $decision"
+          echo "decision=$decision" >> "$GITHUB_OUTPUT"
+
+      - name: Audit the cask
+        if: ${{ steps.render.outputs.decision == 'update' }}
+        env:
+          TAP_DIR: ${{ steps.tap.outputs.dir }}
+        run: |
+          set -euo pipefail
+          brew style "$TAP_DIR/Casks/filbert.rb"
+          brew audit --cask --strict --online "$TAP_NAME/filbert"
+
+      - name: Push the cask
+        if: ${{ steps.render.outputs.decision == 'update' }}
+        env:
+          VERSION: ${{ steps.dmg.outputs.version }}
+          TAP_DIR: ${{ steps.tap.outputs.dir }}
+        run: |
+          set -euo pipefail
+          git -C "$TAP_DIR" add Casks/filbert.rb
+          git -C "$TAP_DIR" \
+            -c user.name="github-actions[bot]" \
+            -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -m "filbert $VERSION"
+          git -C "$TAP_DIR" push origin HEAD
+
+      - name: Remove the deploy key
+        if: ${{ always() }}
+        run: rm -rf "$RUNNER_TEMP/homebrew-tap-ssh"

@@ -83,5 +83,8 @@ jobs:
       - name: Workflow tests
         run: python3 scripts/test-automatic-updates.py
 
+      - name: Homebrew cask tests
+        run: python3 scripts/test-homebrew-cask.py
+
       - name: Local signing and startup tests
         run: python3 scripts/test-local-signing.py
