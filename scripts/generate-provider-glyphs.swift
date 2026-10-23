@@ -37,6 +37,10 @@ private let glyphs = [
         source: "scripts/provider-glyphs/kimi.svg",
         outputDirectory: "Sources/Providers/KimiAPI/Resources"
     ),
+    Glyph(
+        source: "scripts/provider-glyphs/kimi.svg",
+        outputDirectory: "Sources/Providers/KimiCode/Resources"
+    ),
 ]
 
 private let fileManager = FileManager.default

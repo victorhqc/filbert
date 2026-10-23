@@ -1,0 +1,9 @@
+{
+  "usages": { "limit_5h": {}, "limit_7d": {} },
+  "booster_wallet": {
+    "balance": { "type": "BOOSTER", "amount": "20000000000",
+                 "amountLeft": "10336703900", "unit": "UNIT_CURRENCY" },
+    "status": "STATUS_ACTIVE",
+    "monthlyUsed": { "currency": "CNY", "priceInCents": "9663" }
+  }
+}
