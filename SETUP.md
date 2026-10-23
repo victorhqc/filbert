@@ -49,6 +49,7 @@ provider.
 | Provider     | What it tracks                                             | What it needs                          |
 |--------------|------------------------------------------------------------|----------------------------------------|
 | z.ai         | GLM Coding Plan quota — token or credits plans, peak hours | API key                                |
+| z.ai API     | Pay-as-you-go balance — available, frozen, spent           | [Standard API key](#zai-api)           |
 | DeepSeek     | Prepaid balance — total, granted, topped-up                | API key                                |
 | Kimi API     | Prepaid balance — available, voucher, cash                 | [API key](#kimi-api)                   |
 | Kimi Code    | Membership usage — 5-hour, weekly, monthly                 | [API key](#kimi-code)                  |
@@ -195,6 +196,26 @@ provider and do not work here.
 > **This provider uses an undocumented Kimi endpoint.** It may stop working if
 > Kimi changes it. Kimi reports each window twice, and one of the two sometimes
 > stays at 0%. Filbert shows the higher one.
+
+### z.ai API
+
+The z.ai API provider reads the pay-as-you-go balance of a z.ai or BigModel
+account. For a GLM Coding Plan, use the z.ai provider.
+
+Create a Standard API key on the platform where you added your balance:
+
+- **International:** [z.ai API keys](https://z.ai/manage-apikey/apikey-list).
+  Balances are in US dollars. The default base URL works.
+- **China:** [BigModel API keys](https://bigmodel.cn/usercenter/proj-mgmt/apikeys).
+  Balances are in yuan. In Settings, set the base URL to
+  `https://open.bigmodel.cn`.
+
+A z.ai key also works on the BigModel host, so Filbert picks the currency from
+the base URL, not the key. Set the base URL to match the platform where you
+added your balance.
+
+> **This provider uses an undocumented z.ai endpoint.** It may stop working if
+> z.ai changes it.
 
 ## Automatic usage checks
 

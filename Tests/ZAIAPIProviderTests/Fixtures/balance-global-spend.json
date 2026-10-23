@@ -1,0 +1,1 @@
+{"code":200,"msg":"Operation successful","data":{"balance":2.999994150,"rechargeAmount":3.000000,"giveAmount":0.000000,"totalSpendAmount":0.000005850,"todaySpendAmount":null,"availableBalance":2.999994150,"frozenBalance":0E-9,"creditBalance":null,"availableCreditBalance":null,"creditStatus":"NOT_OPEN","modelSpendAmountList":null,"isKA":false},"success":true}

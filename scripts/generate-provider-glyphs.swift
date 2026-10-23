@@ -14,6 +14,10 @@ private let glyphs = [
         outputDirectory: "Sources/Providers/ZAI/Resources"
     ),
     Glyph(
+        source: "scripts/provider-glyphs/zai.svg",
+        outputDirectory: "Sources/Providers/ZAIAPI/Resources"
+    ),
+    Glyph(
         source: "scripts/provider-glyphs/claude-code.svg",
         outputDirectory: "Sources/Providers/ClaudeCode/Resources"
     ),

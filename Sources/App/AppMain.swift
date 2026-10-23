@@ -8,6 +8,7 @@ import KimiCodeProvider
 import OpenAICodexProvider
 import OpenCodeGoProvider
 import SwiftUI
+import ZAIAPIProvider
 import ZAIProvider
 
 @main
@@ -36,6 +37,7 @@ struct AppMain: App {
         registry.register(GeminiCLIProvider())
         registry.register(KimiAPIProvider())
         registry.register(KimiCodeProvider())
+        registry.register(ZAIAPIProvider())
         let viewModel = QuotaViewModel(
             registry: registry,
             networkPath: SystemNetworkPathObserver()
