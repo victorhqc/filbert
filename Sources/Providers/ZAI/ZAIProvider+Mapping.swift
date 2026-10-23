@@ -8,8 +8,8 @@ extension ZAIProvider {
     /// The five-hour and weekly windows each block usage once they are full.
     static let codingPlanLimitGroup = "coding-plan"
 
-    func map(_ response: ZAIQuotaResponse, subscriptionVersion: String?, receivedAt: Date) -> ProviderQuota {
-        let limits = response.data.limits
+    func map(_ data: ZAIData, subscriptionVersion: String?, receivedAt: Date) -> ProviderQuota {
+        let limits = data.limits
         var lines: [UsageLine] = []
         var fiveHourLimit: ZAILimit?
         var weeklyLimit: ZAILimit?
@@ -27,7 +27,8 @@ extension ZAIProvider {
 
         let headline = computeHeadline(
             fiveHourLimit: fiveHourLimit,
-            weeklyLimit: weeklyLimit
+            weeklyLimit: weeklyLimit,
+            hasLimits: !limits.isEmpty
         )
         let headlineUsageLineId = if fiveHourLimit != nil {
             Self.fiveHourLineId
@@ -190,7 +191,8 @@ extension ZAIProvider {
 
     private func computeHeadline(
         fiveHourLimit: ZAILimit?,
-        weeklyLimit: ZAILimit?
+        weeklyLimit: ZAILimit?,
+        hasLimits: Bool
     ) -> DisplayText {
         let primary = fiveHourLimit ?? weeklyLimit
 
@@ -203,6 +205,9 @@ extension ZAIProvider {
             return DisplayText { QuotaFormatting.percentage(pct) }
         }
 
+        guard hasLimits else {
+            return DisplayText { String(displayLocalized: "No usage windows reported", bundle: .module) }
+        }
         return DisplayText { String(displayLocalized: "No data", bundle: .module) }
     }
 }

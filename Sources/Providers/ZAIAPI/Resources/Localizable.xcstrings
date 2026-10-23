@@ -66,67 +66,67 @@
         }
       }
     },
-    "Use a Standard API key. Coding Plan usage is shown by the z.ai provider. For BigModel (%@) accounts, set the base URL to %@." : {
+    "Use a Standard API key. Coding Plan usage is shown by the z.ai Coding Plan provider. For BigModel (%@) accounts, set the base URL to %@." : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Use a Standard API key. Coding Plan usage is shown by the z.ai provider. For BigModel (%1$@) accounts, set the base URL to %2$@."
+            "value" : "Use a Standard API key. Coding Plan usage is shown by the z.ai Coding Plan provider. For BigModel (%1$@) accounts, set the base URL to %2$@."
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Verwende einen Standard-API-Schlüssel. Die Coding-Plan-Nutzung zeigt der Anbieter z.ai. Für BigModel-Konten (%1$@) setze die Basis-URL auf %2$@."
+            "value" : "Verwende einen Standard-API-Schlüssel. Die Coding-Plan-Nutzung zeigt der Anbieter z.ai Coding Plan. Für BigModel-Konten (%1$@) setze die Basis-URL auf %2$@."
           }
         },
         "es-ES" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usa una clave de API Standard. El uso del Coding Plan aparece en el proveedor z.ai. En las cuentas de BigModel (%1$@), establece la URL base en %2$@."
+            "value" : "Usa una clave de API Standard. El uso del Coding Plan aparece en el proveedor z.ai Coding Plan. En las cuentas de BigModel (%1$@), establece la URL base en %2$@."
           }
         },
         "es-MX" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Usa una clave de API Standard. El uso del Coding Plan se muestra en el proveedor z.ai. Para cuentas de BigModel (%1$@), configura la URL base como %2$@."
+            "value" : "Usa una clave de API Standard. El uso del Coding Plan se muestra en el proveedor z.ai Coding Plan. Para cuentas de BigModel (%1$@), configura la URL base como %2$@."
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Standard APIキーを使用してください。Coding Planの使用量はz.aiプロバイダに表示されます。BigModel（%1$@）のアカウントでは、ベースURLを%2$@に設定してください。"
+            "value" : "Standard APIキーを使用してください。Coding Planの使用量はz.ai Coding Planプロバイダに表示されます。BigModel（%1$@）のアカウントでは、ベースURLを%2$@に設定してください。"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Use uma chave de API Standard. O uso do Coding Plan aparece no provedor z.ai. Para contas BigModel (%1$@), defina a URL base como %2$@."
+            "value" : "Use uma chave de API Standard. O uso do Coding Plan aparece no provedor z.ai Coding Plan. Para contas BigModel (%1$@), defina a URL base como %2$@."
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Utilize uma chave de API Standard. A utilização do Coding Plan aparece no fornecedor z.ai. Para contas BigModel (%1$@), defina o URL base como %2$@."
+            "value" : "Utilize uma chave de API Standard. A utilização do Coding Plan aparece no fornecedor z.ai Coding Plan. Para contas BigModel (%1$@), defina o URL base como %2$@."
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Используйте ключ API типа Standard. Использование Coding Plan показывает провайдер z.ai. Для аккаунтов BigModel (%1$@) укажите базовый URL %2$@."
+            "value" : "Используйте ключ API типа Standard. Использование Coding Plan показывает провайдер z.ai Coding Plan. Для аккаунтов BigModel (%1$@) укажите базовый URL %2$@."
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "请使用标准 API 密钥。Coding Plan 用量由 z.ai 提供商显示。BigModel（%1$@）账户请将基础 URL 设置为 %2$@。"
+            "value" : "请使用标准 API 密钥。Coding Plan 用量由 z.ai Coding Plan 提供商显示。BigModel（%1$@）账户请将基础 URL 设置为 %2$@。"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "請使用標準API金鑰。Coding Plan用量會顯示在z.ai提供者中。BigModel（%1$@）帳號請將基底URL設為%2$@。"
+            "value" : "請使用標準API金鑰。Coding Plan用量會顯示在z.ai Coding Plan提供者中。BigModel（%1$@）帳號請將基底URL設為%2$@。"
           }
         }
       }

@@ -139,7 +139,9 @@ final class ZAIProviderTests: XCTestCase {
         let json = Data("""
         {
           "data": {
-            "limits": []
+            "limits": [
+              {"type": "UNKNOWN_LIMIT", "unit": 3, "percentage": 10}
+            ]
           }
         }
         """.utf8)

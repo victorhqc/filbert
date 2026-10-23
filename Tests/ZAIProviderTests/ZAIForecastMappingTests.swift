@@ -230,8 +230,8 @@ final class ZAIForecastMappingTests: XCTestCase {
     }
 
     private func map(data: Data, at receivedAt: Date) throws -> ProviderQuota {
-        let response = try JSONDecoder().decode(ZAIQuotaResponse.self, from: data)
-        return ZAIProvider().map(response, subscriptionVersion: nil, receivedAt: receivedAt)
+        let envelope = try JSONDecoder().decode(ZAIQuotaEnvelope.self, from: data)
+        return try ZAIProvider().map(XCTUnwrap(envelope.data), subscriptionVersion: nil, receivedAt: receivedAt)
     }
 
     private func metric(_ id: String, in quota: ProviderQuota) -> ProviderActivityMetric? {

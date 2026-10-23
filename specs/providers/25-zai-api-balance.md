@@ -4,7 +4,7 @@ Add a `ZAIAPIProvider` that reads a z.ai or BigModel pay-as-you-go account's pre
 
 ## Context
 
-- Status: implemented 2026-10-23, uncommitted. The user approved the spec that day, after a live capture from their z.ai account. This is a separate product from the GLM Coding Plan, which the z.ai provider tracks (providers 01, providers 11, providers 26).
+- Status: implemented 2026-10-23, merged in #102. The user approved the spec that day, after a live capture from their z.ai account. This is a separate product from the GLM Coding Plan, which the z.ai Coding Plan provider tracks (providers 01, providers 11, providers 26). (providers 26) renamed that provider, so the disclaimer in AC7 now names "the z.ai Coding Plan provider".
 - `Sources/Providers/ZAIAPI/` — new provider module: request, envelope handling, decoding, mapping, and errors. Follows the DeepSeek balance provider (providers 04). It shares no code with `Sources/Providers/ZAI/`.
 - `Sources/Providers/ZAIAPI/Resources/Localizable.xcstrings` — provider labels, setup text, and errors in every locale the app ships.
 - `Sources/Providers/ZAIAPI/Resources/ProviderGlyph.png` and `ProviderGlyph@2x.png` — the z.ai glyph, copied into this module (ui 14 AC1).

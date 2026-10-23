@@ -37,7 +37,7 @@ final class ZAIAPIProviderTests: ZAIAPIProviderTestCase {
         XCTAssertEqual(ZAIAPIProvider.providerDescription, "Monitor pay-as-you-go balance")
         XCTAssertEqual(
             ZAIAPIProvider.providerDisclaimer,
-            "Use a Standard API key. Coding Plan usage is shown by the z.ai provider. "
+            "Use a Standard API key. Coding Plan usage is shown by the z.ai Coding Plan provider. "
                 + "For BigModel (bigmodel.cn) accounts, set the base URL to https://open.bigmodel.cn."
         )
     }

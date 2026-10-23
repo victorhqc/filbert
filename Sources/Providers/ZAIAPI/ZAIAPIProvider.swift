@@ -12,7 +12,7 @@ public struct ZAIAPIProvider: AIProvider {
     public static var providerDisclaimer: String? {
         String(
             displayLocalized: """
-            Use a Standard API key. Coding Plan usage is shown by the z.ai provider. \
+            Use a Standard API key. Coding Plan usage is shown by the z.ai Coding Plan provider. \
             For BigModel (\(bigModelHost)) accounts, set the base URL to \(bigModelBaseURL.absoluteString).
             """,
             bundle: .module

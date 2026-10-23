@@ -46,18 +46,18 @@ provider.
 
 ## Provider setup
 
-| Provider     | What it tracks                                             | What it needs                          |
-|--------------|------------------------------------------------------------|----------------------------------------|
-| z.ai         | GLM Coding Plan quota — token or credits plans, peak hours | API key                                |
-| z.ai API     | Pay-as-you-go balance — available, frozen, spent           | [Standard API key](#zai-api)           |
-| DeepSeek     | Prepaid balance — total, granted, topped-up                | API key                                |
-| Kimi API     | Prepaid balance — available, voucher, cash                 | [API key](#kimi-api)                   |
-| Kimi Code    | Membership usage — 5-hour, weekly, monthly                 | [API key](#kimi-code)                  |
-| OpenCode Go  | Go subscription windows — rolling, weekly, monthly         | OpenCode API key tied to a Go plan     |
-| Claude Code  | Plan usage                                                 | [Claude Code CLI](#claude-code)        |
-| OpenAI Codex | Subscription usage                                         | [Codex CLI](#openai-codex)             |
-| Gemini CLI   | Model quotas and reset times                               | [Gemini CLI Google login](#gemini-cli) |
-| Cursor       | Subscription and on-demand spend                           | [Cursor sign-in](#cursor)              |
+| Provider         | What it tracks                                             | What it needs                          |
+|------------------|------------------------------------------------------------|----------------------------------------|
+| z.ai Coding Plan | GLM Coding Plan quota — token or credits plans, peak hours | [API key](#zai-coding-plan)            |
+| z.ai API         | Pay-as-you-go balance — available, frozen, spent           | [Standard API key](#zai-api)           |
+| DeepSeek         | Prepaid balance — total, granted, topped-up                | API key                                |
+| Kimi API         | Prepaid balance — available, voucher, cash                 | [API key](#kimi-api)                   |
+| Kimi Code        | Membership usage — 5-hour, weekly, monthly                 | [API key](#kimi-code)                  |
+| OpenCode Go      | Go subscription windows — rolling, weekly, monthly         | OpenCode API key tied to a Go plan     |
+| Claude Code      | Plan usage                                                 | [Claude Code CLI](#claude-code)        |
+| OpenAI Codex     | Subscription usage                                         | [Codex CLI](#openai-codex)             |
+| Gemini CLI       | Model quotas and reset times                               | [Gemini CLI Google login](#gemini-cli) |
+| Cursor           | Subscription and on-demand spend                           | [Cursor sign-in](#cursor)              |
 
 The OpenCode Go API reports usage percentages and reset times only, with no
 dollar amounts. Filbert does not estimate spend.
@@ -197,10 +197,29 @@ provider and do not work here.
 > Kimi changes it. Kimi reports each window twice, and one of the two sometimes
 > stays at 0%. Filbert shows the higher one.
 
+### z.ai Coding Plan
+
+The z.ai Coding Plan provider reads the quota of a GLM Coding Plan: the 5-hour
+and weekly windows, and the monthly web-tool calls. For the pay-as-you-go
+balance, use [z.ai API](#zai-api).
+
+z.ai issues separate key types
+([API key management](https://docs.z.ai/devpack/notice/api-key-management)).
+Find them in [z.ai API keys](https://z.ai/manage-apikey/apikey-list):
+
+- **Coding Plan and Compatible keys** go here. An account that ever had a
+  Coding Plan has Compatible keys.
+- **Standard keys** bill the account balance and never use Coding Plan quota.
+  Use them with [z.ai API](#zai-api).
+
+A key with no active plan shows "This key has no active GLM Coding Plan." A
+lapsed plan reads the same way. Team Plan keys are not supported yet and show
+the same message.
+
 ### z.ai API
 
 The z.ai API provider reads the pay-as-you-go balance of a z.ai or BigModel
-account. For a GLM Coding Plan, use the z.ai provider.
+account. For a GLM Coding Plan, use [z.ai Coding Plan](#zai-coding-plan).
 
 Create a Standard API key on the platform where you added your balance:
 
