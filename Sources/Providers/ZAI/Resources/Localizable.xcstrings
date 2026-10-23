@@ -114,67 +114,67 @@
         }
       }
     },
-    "Monitor API usage and quotas" : {
+    "Monitor GLM Coding Plan quota" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitor API usage and quotas"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supervisa el uso y las cuotas de la API"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Supervisa el uso y las cuotas de la API"
+            "value" : "Monitor GLM Coding Plan quota"
           }
         },
         "de-DE" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "API-Nutzung und Kontingente überwachen"
+            "value" : "GLM-Coding-Plan-Kontingent überwachen"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa la cuota del GLM Coding Plan"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Supervisa la cuota del GLM Coding Plan"
           }
         },
         "ja" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "APIの使用量と割り当てを監視"
+            "value" : "GLM Coding Planの割り当てを監視"
           }
         },
         "pt-BR" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitora o uso e as cotas da API"
+            "value" : "Monitora a cota do GLM Coding Plan"
           }
         },
         "pt-PT" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Monitoriza a utilização e as quotas da API"
+            "value" : "Monitoriza a quota do GLM Coding Plan"
           }
         },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Отслеживает использование и квоты API"
+            "value" : "Отслеживает квоту GLM Coding Plan"
           }
         },
         "zh-Hans" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "监控 API 用量和配额"
+            "value" : "监控 GLM Coding Plan 配额"
           }
         },
         "zh-Hant" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "監控API用量和配額"
+            "value" : "監控GLM Coding Plan配額"
           }
         }
       }
@@ -761,6 +761,136 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "內部錯誤：非預期的憑證類型。"
+          }
+        }
+      }
+    },
+    "This key has no active GLM Coding Plan. For pay-as-you-go balance, use the z.ai API provider with a Standard key." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "This key has no active GLM Coding Plan. For pay-as-you-go balance, use the z.ai API provider with a Standard key."
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Dieser Schlüssel hat keinen aktiven GLM Coding Plan. Für das Pay-as-you-go-Guthaben verwende den Anbieter z.ai API mit einem Standard-API-Schlüssel."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta clave no tiene un GLM Coding Plan activo. Para consultar el saldo de pago por uso, usa el proveedor z.ai API con una clave de API Standard."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta clave no tiene un GLM Coding Plan activo. Para ver el saldo de pago por uso, usa el proveedor z.ai API con una clave de API Standard."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "このキーには有効なGLM Coding Planがありません。従量課金の残高を確認するには、z.ai APIプロバイダでStandard APIキーを使用してください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta chave não tem um GLM Coding Plan ativo. Para ver o saldo de pagamento por uso, use o provedor z.ai API com uma chave de API Standard."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Esta chave não tem um GLM Coding Plan ativo. Para ver o saldo de pagamento por utilização, utilize o fornecedor z.ai API com uma chave de API Standard."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У этого ключа нет активного GLM Coding Plan. Чтобы видеть баланс с оплатой по мере использования, используйте провайдер z.ai API и ключ API типа Standard."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此密钥没有有效的 GLM Coding Plan。如需查看按量付费余额，请在 z.ai API 提供商中使用标准 API 密钥。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "此金鑰沒有有效的GLM Coding Plan。如需查看隨用隨付餘額，請在z.ai API提供者中使用標準API金鑰。"
+          }
+        }
+      }
+    },
+    "No usage windows reported" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No usage windows reported"
+          }
+        },
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Keine Nutzungsfenster gemeldet"
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se han indicado ventanas de uso"
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "No se informaron ventanas de uso"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "使用量の枠は報告されていません"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma janela de uso informada"
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Nenhuma janela de utilização comunicada"
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Окна использования не получены"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未报告用量窗口"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "未提供用量時段"
           }
         }
       }

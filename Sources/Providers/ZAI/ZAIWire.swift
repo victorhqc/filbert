@@ -9,8 +9,13 @@ enum ZAILimitType: String {
     case time = "TIME_LIMIT"
 }
 
-struct ZAIQuotaResponse: Decodable {
-    let data: ZAIData
+/// Failures arrive as HTTP 200 with `success: false` and a business code.
+/// Older plan bodies carry only `data`.
+struct ZAIQuotaEnvelope: Decodable {
+    let code: Int?
+    let msg: String?
+    let success: Bool?
+    let data: ZAIData?
 }
 
 struct ZAIData: Decodable {

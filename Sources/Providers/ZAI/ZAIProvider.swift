@@ -6,15 +6,21 @@ import Foundation
 public enum ZAIError: Error, Equatable, Sendable {
     case missingKey
     case http(Int)
+    case noCodingPlan
+    case business(Int)
     case network(Error)
     case decoding(Error)
     case internalInconsistency
 
+    static let authenticationCodes: Set = [401, 1000, 1001, 1002]
+
     public static func == (lhs: ZAIError, rhs: ZAIError) -> Bool {
         switch (lhs, rhs) {
         case (.missingKey, .missingKey): true
+        case (.noCodingPlan, .noCodingPlan): true
         case (.internalInconsistency, .internalInconsistency): true
         case let (.http(lhsVal), .http(rhsVal)): lhsVal == rhsVal
+        case let (.business(lhsVal), .business(rhsVal)): lhsVal == rhsVal
         case let (.network(lhsVal), .network(rhsVal)): lhsVal.localizedDescription == rhsVal.localizedDescription
         case let (.decoding(lhsVal), .decoding(rhsVal)): lhsVal.localizedDescription == rhsVal.localizedDescription
         default: false
@@ -28,16 +34,30 @@ extension ZAIError: LocalizedError {
         case .missingKey:
             String(displayLocalized: "No API key configured.", bundle: .module)
         case .http(401):
-            String(displayLocalized: "Authentication failed. Check your API key.", bundle: .module)
+            Self.authenticationFailed
+        case let .business(code) where Self.authenticationCodes.contains(code):
+            Self.authenticationFailed
+        case .noCodingPlan:
+            String(
+                displayLocalized: """
+                This key has no active GLM Coding Plan. \
+                For pay-as-you-go balance, use the z.ai API provider with a Standard key.
+                """,
+                bundle: .module
+            )
         case let .http(code) where code == 429:
             String(displayLocalized: "Rate limited. Try again later.", bundle: .module)
         case .network:
             String(displayLocalized: "Network error. Check your connection.", bundle: .module)
         case .internalInconsistency:
             String(displayLocalized: "Internal error: unexpected credential type.", bundle: .module)
-        case .decoding, .http:
+        case .decoding, .http, .business:
             String(displayLocalized: "Unexpected response from server.", bundle: .module)
         }
+    }
+
+    private static var authenticationFailed: String {
+        String(displayLocalized: "Authentication failed. Check your API key.", bundle: .module)
     }
 }
 
@@ -78,10 +98,10 @@ public enum ZAIPeakHours {
 
 public struct ZAIProvider: AIProvider {
     public static let providerId = "zai"
-    public static let providerName = "z.ai"
+    public static let providerName = "z.ai Coding Plan"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {
-        String(displayLocalized: "Monitor API usage and quotas", bundle: .module)
+        String(displayLocalized: "Monitor GLM Coding Plan quota", bundle: .module)
     }
 
     /// Host root for z.ai requests; path segments live in `fetchQuota`.
@@ -122,13 +142,13 @@ public struct ZAIProvider: AIProvider {
             throw ZAIError.missingKey
         }
 
-        let quotaResponse = try await fetchQuotaResponse(baseURL: baseURL, apiKey: apiKey)
+        let quotaData = try await fetchQuotaData(baseURL: baseURL, apiKey: apiKey)
         let receivedAt = Date()
         let subscriptionVersion = try await fetchSubscriptionVersion(baseURL: baseURL, apiKey: apiKey)
-        return map(quotaResponse, subscriptionVersion: subscriptionVersion, receivedAt: receivedAt)
+        return map(quotaData, subscriptionVersion: subscriptionVersion, receivedAt: receivedAt)
     }
 
-    private func fetchQuotaResponse(baseURL: URL, apiKey: String) async throws -> ZAIQuotaResponse {
+    private func fetchQuotaData(baseURL: URL, apiKey: String) async throws -> ZAIData {
         let endpoint = baseURL
             .appendingPathComponent("api")
             .appendingPathComponent("monitor")
@@ -137,11 +157,38 @@ public struct ZAIProvider: AIProvider {
             .appendingPathComponent("limit")
         let data = try await get(endpoint: endpoint, apiKey: apiKey)
 
+        let envelope: ZAIQuotaEnvelope
         do {
-            return try JSONDecoder().decode(ZAIQuotaResponse.self, from: data)
+            envelope = try JSONDecoder().decode(ZAIQuotaEnvelope.self, from: data)
         } catch {
             throw ZAIError.decoding(error)
         }
+        if let data = envelope.data, envelope.success != false {
+            return data
+        }
+        throw failure(for: envelope)
+    }
+
+    /// The server's `msg` is matched but never logged.
+    private func failure(for envelope: ZAIQuotaEnvelope) -> ZAIError {
+        guard let code = envelope.code else {
+            return .decoding(DecodingError.valueNotFound(
+                ZAIData.self,
+                DecodingError.Context(codingPath: [], debugDescription: "No data and no code")
+            ))
+        }
+        if code == 500, envelope.msg?.range(of: "coding plan", options: .caseInsensitive) != nil {
+            return .noCodingPlan
+        }
+        if !ZAIError.authenticationCodes.contains(code) {
+            errorLog.record(
+                component: "ZAIProvider",
+                operation: "fetchQuota",
+                code: "quota_business_code_\(code)",
+                providerID: Self.providerId
+            )
+        }
+        return .business(code)
     }
 
     /// Best-effort: any failure except a rate limit degrades to `nil`, which
@@ -191,10 +238,7 @@ public struct ZAIProvider: AIProvider {
     private func get(endpoint: URL, apiKey: String) async throws -> Data {
         var request = URLRequest(url: endpoint)
         request.httpMethod = "GET"
-        // z.ai's monitor endpoints expect the raw token, NOT an
-        // "Authorization: Bearer …" scheme. Sending a "Bearer " prefix is
-        // rejected as unauthenticated. This holds for both regular API and
-        // Coding Plan keys — the endpoints are plan-agnostic.
+        // z.ai rejects a "Bearer " prefix as unauthenticated.
         request.setValue(apiKey, forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Accept")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")

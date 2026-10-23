@@ -59,18 +59,18 @@ website.
 
 ## Supported providers
 
-| Provider     | What it tracks                   | What it needs           |
-|--------------|----------------------------------|-------------------------|
-| Claude Code  | Plan usage                       | Claude Code CLI         |
-| OpenAI Codex | Subscription usage               | Codex CLI               |
-| Cursor       | Subscription and on-demand spend | Cursor sign-in          |
-| Gemini CLI   | Model quotas and reset times     | Gemini CLI Google login |
-| z.ai         | GLM Coding Plan quota            | API key                 |
-| z.ai API     | Pay-as-you-go balance            | API key                 |
-| DeepSeek     | Prepaid balance                  | API key                 |
-| Kimi API     | Prepaid balance                  | API key                 |
-| Kimi Code    | Membership usage windows         | API key                 |
-| OpenCode Go  | Go subscription windows          | API key                 |
+| Provider         | What it tracks                   | What it needs           |
+|------------------|----------------------------------|-------------------------|
+| Claude Code      | Plan usage                       | Claude Code CLI         |
+| OpenAI Codex     | Subscription usage               | Codex CLI               |
+| Cursor           | Subscription and on-demand spend | Cursor sign-in          |
+| Gemini CLI       | Model quotas and reset times     | Gemini CLI Google login |
+| z.ai Coding Plan | GLM Coding Plan quota            | API key                 |
+| z.ai API         | Pay-as-you-go balance            | API key                 |
+| DeepSeek         | Prepaid balance                  | API key                 |
+| Kimi API         | Prepaid balance                  | API key                 |
+| Kimi Code        | Membership usage windows         | API key                 |
+| OpenCode Go      | Go subscription windows          | API key                 |
 
 Providers that read a local CLI or sign-in need a short setup. See
 [Provider setup](SETUP.md#provider-setup).
@@ -99,9 +99,9 @@ for what the Keychain prompt means.
 
 ## Status
 
-**Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
-z.ai API, Claude, Gemini CLI, DeepSeek, Kimi API, Kimi Code, OpenAI Codex,
-Cursor, and OpenCode Go providers are in place. The app builds and runs as a menu-bar item. More
+**Early development.** The Core protocol, the Keychain wrapper, and the z.ai
+Coding Plan, z.ai API, Claude, Gemini CLI, DeepSeek, Kimi API, Kimi Code,
+OpenAI Codex, Cursor, and OpenCode Go providers are in place. The app builds and runs as a menu-bar item. More
 providers and widgets come next.
 
 ## License
