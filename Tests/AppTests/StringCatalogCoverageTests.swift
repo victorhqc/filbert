@@ -12,6 +12,7 @@ final class StringCatalogCoverageTests: XCTestCase {
         "Sources/Providers/Cursor",
         "Sources/Providers/DeepSeek",
         "Sources/Providers/GeminiCLI",
+        "Sources/Providers/KimiAPI",
         "Sources/Providers/OpenAICodex",
         "Sources/Providers/OpenCodeGo",
         "Sources/Providers/ZAI",
