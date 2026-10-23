@@ -17,6 +17,7 @@ final class StringCatalogCoverageTests: XCTestCase {
         "Sources/Providers/OpenAICodex",
         "Sources/Providers/OpenCodeGo",
         "Sources/Providers/ZAI",
+        "Sources/Providers/ZAIAPI",
     ].map { Module(sources: $0, catalog: "\($0)/Resources/Localizable.xcstrings") }
 
     private let bypassingLookups = [

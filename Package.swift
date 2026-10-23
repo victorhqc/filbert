@@ -97,6 +97,13 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: strictSourceSettings
         ),
+        .target(
+            name: "ZAIAPIProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/ZAIAPI",
+            resources: [.process("Resources")],
+            swiftSettings: strictSourceSettings
+        ),
         .executableTarget(
             name: "App",
             dependencies: [
@@ -112,6 +119,7 @@ let package = Package(
                 "GeminiCLIProvider",
                 "KimiAPIProvider",
                 "KimiCodeProvider",
+                "ZAIAPIProvider",
             ],
             resources: [.process("Resources")],
             swiftSettings: strictSourceSettings
@@ -171,6 +179,12 @@ let package = Package(
             name: "KimiCodeProviderTests",
             dependencies: ["KimiCodeProvider"],
             path: "Tests/KimiCodeProviderTests",
+            resources: [.process("Fixtures")]
+        ),
+        .testTarget(
+            name: "ZAIAPIProviderTests",
+            dependencies: ["ZAIAPIProvider"],
+            path: "Tests/ZAIAPIProviderTests",
             resources: [.process("Fixtures")]
         ),
         .testTarget(
