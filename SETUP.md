@@ -51,6 +51,7 @@ provider.
 | z.ai         | GLM Coding Plan quota — token or credits plans, peak hours | API key                                |
 | DeepSeek     | Prepaid balance — total, granted, topped-up                | API key                                |
 | Kimi API     | Prepaid balance — available, voucher, cash                 | [API key](#kimi-api)                   |
+| Kimi Code    | Membership usage — 5-hour, weekly, monthly                 | [API key](#kimi-code)                  |
 | OpenCode Go  | Go subscription windows — rolling, weekly, monthly         | OpenCode API key tied to a Go plan     |
 | Claude Code  | Plan usage                                                 | [Claude Code CLI](#claude-code)        |
 | OpenAI Codex | Subscription usage                                         | [Codex CLI](#openai-codex)             |
@@ -165,8 +166,7 @@ run `agent login`, Filbert picks up the token on the next usage check.
 ### Kimi API
 
 The Kimi API provider reads the prepaid balance of a pay-as-you-go Kimi Open
-Platform (Moonshot) account. It does not track Kimi membership plans or Kimi
-Code.
+Platform (Moonshot) account. For a Kimi membership, use [Kimi Code](#kimi-code).
 
 Create an API key on the platform where you added your balance:
 
@@ -177,6 +177,24 @@ Create an API key on the platform where you added your balance:
 
 A key only works on its own platform. A China key on the default base URL
 fails with an authentication error.
+
+### Kimi Code
+
+The Kimi Code provider reads the usage windows of a Kimi membership with Kimi
+Code access. New plans (Plus and higher) show a 5-hour window and a monthly
+pool. Legacy plans show a 5-hour window and a weekly window.
+
+Create a Kimi Code API key in the
+[Kimi Code Console](https://www.kimi.com/code/console). Open Platform keys from
+platform.kimi.ai or platform.kimi.com belong to the [Kimi API](#kimi-api)
+provider and do not work here.
+
+- **International:** the default base URL works.
+- **China:** In Settings, set the base URL to `https://api.kimi.com`.
+
+> **This provider uses an undocumented Kimi endpoint.** It may stop working if
+> Kimi changes it. Kimi reports each window twice, and one of the two sometimes
+> stays at 0%. Filbert shows the higher one.
 
 ## Automatic usage checks
 

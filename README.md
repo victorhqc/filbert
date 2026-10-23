@@ -68,10 +68,11 @@ website.
 | z.ai         | GLM Coding Plan quota            | API key                 |
 | DeepSeek     | Prepaid balance                  | API key                 |
 | Kimi API     | Prepaid balance                  | API key                 |
+| Kimi Code    | Membership usage windows         | API key                 |
 | OpenCode Go  | Go subscription windows          | API key                 |
 
-Kimi Code is planned. Providers that read a local CLI or sign-in need a short
-setup. See [Provider setup](SETUP.md#provider-setup).
+Providers that read a local CLI or sign-in need a short setup. See
+[Provider setup](SETUP.md#provider-setup).
 
 ## Privacy
 
@@ -98,8 +99,8 @@ for what the Keychain prompt means.
 ## Status
 
 **Early development.** The Core protocol, the Keychain wrapper, and the z.ai,
-Claude, Gemini CLI, DeepSeek, Kimi API, OpenAI Codex, Cursor, and OpenCode Go
-providers are in place. The app builds and runs as a menu-bar item. More
+Claude, Gemini CLI, DeepSeek, Kimi API, Kimi Code, OpenAI Codex, Cursor, and
+OpenCode Go providers are in place. The app builds and runs as a menu-bar item. More
 providers and widgets come next.
 
 ## License

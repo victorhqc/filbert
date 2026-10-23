@@ -4,6 +4,7 @@ import CursorProvider
 import DeepSeekProvider
 import GeminiCLIProvider
 import KimiAPIProvider
+import KimiCodeProvider
 import OpenAICodexProvider
 import OpenCodeGoProvider
 import SwiftUI
@@ -34,6 +35,7 @@ struct AppMain: App {
         registry.register(CursorProvider())
         registry.register(GeminiCLIProvider())
         registry.register(KimiAPIProvider())
+        registry.register(KimiCodeProvider())
         let viewModel = QuotaViewModel(
             registry: registry,
             networkPath: SystemNetworkPathObserver()
