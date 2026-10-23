@@ -33,6 +33,10 @@ private let glyphs = [
         source: "scripts/provider-glyphs/gemini.svg",
         outputDirectory: "Sources/Providers/GeminiCLI/Resources"
     ),
+    Glyph(
+        source: "scripts/provider-glyphs/kimi.svg",
+        outputDirectory: "Sources/Providers/KimiAPI/Resources"
+    ),
 ]
 
 private let fileManager = FileManager.default

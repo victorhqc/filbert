@@ -50,6 +50,7 @@ provider.
 |--------------|------------------------------------------------------------|----------------------------------------|
 | z.ai         | GLM Coding Plan quota — token or credits plans, peak hours | API key                                |
 | DeepSeek     | Prepaid balance — total, granted, topped-up                | API key                                |
+| Kimi API     | Prepaid balance — available, voucher, cash                 | [API key](#kimi-api)                   |
 | OpenCode Go  | Go subscription windows — rolling, weekly, monthly         | OpenCode API key tied to a Go plan     |
 | Claude Code  | Plan usage                                                 | [Claude Code CLI](#claude-code)        |
 | OpenAI Codex | Subscription usage                                         | [Codex CLI](#openai-codex)             |
@@ -160,6 +161,22 @@ run `agent login`, Filbert picks up the token on the next usage check.
 
 > **This provider uses undocumented Cursor endpoints.** It may stop working if
 > Cursor changes their API.
+
+### Kimi API
+
+The Kimi API provider reads the prepaid balance of a pay-as-you-go Kimi Open
+Platform (Moonshot) account. It does not track Kimi membership plans or Kimi
+Code.
+
+Create an API key on the platform where you added your balance:
+
+- **International:** [platform.kimi.ai](https://platform.kimi.ai). Balances
+  are in US dollars. The default base URL works.
+- **China:** [platform.kimi.com](https://platform.kimi.com). Balances are in
+  yuan. In Settings, set the base URL to `https://api.moonshot.cn`.
+
+A key only works on its own platform. A China key on the default base URL
+fails with an authentication error.
 
 ## Automatic usage checks
 

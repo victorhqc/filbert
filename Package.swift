@@ -83,6 +83,13 @@ let package = Package(
             resources: [.process("Resources")],
             swiftSettings: strictSourceSettings
         ),
+        .target(
+            name: "KimiAPIProvider",
+            dependencies: ["Core"],
+            path: "Sources/Providers/KimiAPI",
+            resources: [.process("Resources")],
+            swiftSettings: strictSourceSettings
+        ),
         .executableTarget(
             name: "App",
             dependencies: [
@@ -96,6 +103,7 @@ let package = Package(
                 "OpenCodeGoProvider",
                 "CursorProvider",
                 "GeminiCLIProvider",
+                "KimiAPIProvider",
             ],
             resources: [.process("Resources")],
             swiftSettings: strictSourceSettings
@@ -143,6 +151,12 @@ let package = Package(
             name: "GeminiCLIProviderTests",
             dependencies: ["GeminiCLIProvider"],
             path: "Tests/GeminiCLIProviderTests",
+            resources: [.process("Fixtures")]
+        ),
+        .testTarget(
+            name: "KimiAPIProviderTests",
+            dependencies: ["KimiAPIProvider"],
+            path: "Tests/KimiAPIProviderTests",
             resources: [.process("Fixtures")]
         ),
         .testTarget(

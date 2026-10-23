@@ -22,6 +22,10 @@ declared outputs.
 - `deepseek.svg` is the DeepSeek glyph from Simple Icons 16.21.0. Simple Icons
   is distributed under CC0 1.0, but its trademark disclaimer still applies.
   Source: <https://github.com/simple-icons/simple-icons>
+- `kimi.svg` is the Kimi glyph from Simple Icons at revision
+  `c53db5666567f6469e4cc14750bb6a43a8f50964`. Simple Icons is distributed
+  under CC0 1.0, but its trademark disclaimer still applies. Source:
+  <https://github.com/simple-icons/simple-icons/blob/c53db5666567f6469e4cc14750bb6a43a8f50964/icons/kimi.svg>
 - `opencode.svg` is the OpenCode glyph from Simple Icons at revision
   `34c22501f9ac9f22b12f825677ccbab1fb22e14b`. Simple Icons is distributed
   under CC0 1.0, but its trademark disclaimer still applies. Source:
