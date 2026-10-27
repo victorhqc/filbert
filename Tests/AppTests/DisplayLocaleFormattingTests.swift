@@ -80,6 +80,7 @@ final class DisplayLocaleFormattingTests: XCTestCase {
 
     func testNumbersUseTheDisplayLanguage() throws {
         XCTAssertEqual(QuotaFormatting.percentage(42), "42\u{00A0}%")
+        XCTAssertEqual(QuotaFormatting.percentage(43.72, fractionLength: 2), "43,72\u{00A0}%")
         XCTAssertEqual(PeakHoursPresentation.rateText(for: .multiplier(2)), "2× Multiplikator")
         let amount = try XCTUnwrap(Decimal(string: "1159.57"))
         let credits = UsageBalance(amount: .finite(amount), unit: .credits)
