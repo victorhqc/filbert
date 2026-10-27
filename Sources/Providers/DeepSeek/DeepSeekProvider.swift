@@ -95,6 +95,8 @@ public enum DeepSeekPeakHours {
 
 public struct DeepSeekProvider: AIProvider {
     public static let providerId = "deepseek"
+    public static let accountLink = URL(string: "https://platform.deepseek.com/usage")
+        .map { ProviderAccountLink(url: $0) }
     public static let providerName = "DeepSeek"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {

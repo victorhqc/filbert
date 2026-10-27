@@ -42,6 +42,8 @@ public struct ClaudeCodeProvider: AIProvider {
     // MARK: - AIProvider metadata
 
     public static let providerId = "claude-code"
+    public static let accountLink = URL(string: "https://claude.ai/settings/usage")
+        .map { ProviderAccountLink(url: $0) }
     public static let providerName = "Claude Code"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {

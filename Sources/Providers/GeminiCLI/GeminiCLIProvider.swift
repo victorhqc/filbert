@@ -20,6 +20,8 @@ struct GeminiQuotaBucket: Decodable, Sendable {
 
 public struct GeminiCLIProvider: AIProvider {
     public static let providerId = "gemini-cli"
+    public static let accountLink = URL(string: "https://one.google.com/settings")
+        .map { ProviderAccountLink(url: $0, destination: .account) }
     public static let providerName = "Gemini CLI"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {

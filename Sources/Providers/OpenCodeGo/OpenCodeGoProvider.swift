@@ -139,6 +139,8 @@ actor OpenCodeGoRateLimitBackoff {
 
 public struct OpenCodeGoProvider: AIProvider {
     public static let providerId = "opencode-go"
+    public static let accountLink = URL(string: "https://opencode.ai/console/")
+        .map { ProviderAccountLink(url: $0) }
     public static let providerName = "OpenCode Go"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {

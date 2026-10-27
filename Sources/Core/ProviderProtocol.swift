@@ -230,6 +230,7 @@ public protocol AIProvider: Sendable {
     /// Non-payload discriminator the registry branches on so it never
     /// materializes a key it should not see.
     static var authShape: ProviderAuth.Shape { get }
+    static var accountLink: ProviderAccountLink? { get }
     static var setupHelp: ProviderSetupHelp? { get }
     /// `nil` means this provider has no external credential source.
     static var credentialImportActionTitle: String? { get }
@@ -283,6 +284,10 @@ public extension AIProvider {
 
     static var authShape: ProviderAuth.Shape {
         .apiKey
+    }
+
+    static var accountLink: ProviderAccountLink? {
+        nil
     }
 
     static var setupHelp: ProviderSetupHelp? {

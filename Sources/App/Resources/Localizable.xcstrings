@@ -1,6 +1,36 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Go to Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zum Dashboard" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Go to Dashboard" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ir al panel" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ir al panel" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ダッシュボードを開く" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ir para o painel" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ir para o painel" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перейти к панели" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "前往仪表盘" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "前往儀表板" } }
+      }
+    },
+    "%1$@ for %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ für %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ for %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ de %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ de %2$@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%2$@の%1$@" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ para o %2$@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ para o %2$@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "%2$@: %1$@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@（%2$@）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@（%2$@）" } }
+      }
+    },
     "General" : {
       "extractionState" : "manual",
       "localizations" : {

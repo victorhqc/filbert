@@ -28,6 +28,8 @@ extension OpenAICodexError: DiagnosticError {
 
 public struct OpenAICodexProvider: AIProvider {
     public static let providerId = "openai-codex"
+    public static let accountLink = URL(string: "https://chatgpt.com/settings/general-settings")
+        .map { ProviderAccountLink(url: $0, destination: .account) }
     public static let providerName = "OpenAI Codex"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {

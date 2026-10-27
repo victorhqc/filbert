@@ -3,6 +3,8 @@ import Foundation
 
 public struct CursorProvider: AIProvider {
     public static let providerId = "cursor"
+    public static let accountLink = URL(string: "https://cursor.com/dashboard")
+        .map { ProviderAccountLink(url: $0) }
     public static let providerName = "Cursor"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {
