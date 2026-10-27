@@ -54,7 +54,6 @@ struct APIKeyFreeSettingsRow: View {
                         if canRemove {
                             removeButton
                         }
-                        credentialImportButton
                     }
                 case .loaded:
                     if canRemove {
@@ -85,6 +84,44 @@ struct APIKeyFreeSettingsRow: View {
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
+            }
+            if hasManagementAction || (isEnabled && provider.accountLink != nil) {
+                HStack(spacing: 8) {
+                    managementActions
+                    Spacer(minLength: 8)
+                    ProviderAccountButton(provider: provider, isEnabled: isEnabled)
+                }
+                .controlSize(.small)
+            }
+        }
+    }
+
+    private var hasManagementAction: Bool {
+        guard isEnabled else { return false }
+        switch state {
+        case .loaded: return true
+        case .setup: return canInstall || credentialImportActionTitle != nil
+        case .error: return credentialImportActionTitle != nil
+        case .loading, .unconfigured: return false
+        }
+    }
+
+    @ViewBuilder
+    private var managementActions: some View {
+        if isEnabled {
+            switch state {
+            case .loaded:
+                Button(String(localized: "Remove Helper"), role: .destructive, action: onRemove)
+            case .setup:
+                if canInstall {
+                    Button(String(localized: "Install Helper"), action: onInstall)
+                        .buttonStyle(.borderedProminent)
+                }
+                credentialImportButton
+            case .error:
+                credentialImportButton
+            case .loading, .unconfigured:
+                EmptyView()
             }
         }
     }

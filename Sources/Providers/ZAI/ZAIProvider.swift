@@ -98,6 +98,8 @@ public enum ZAIPeakHours {
 
 public struct ZAIProvider: AIProvider {
     public static let providerId = "zai"
+    public static let accountLink = URL(string: "https://z.ai/manage-apikey/coding-plan/personal/usage")
+        .map { ProviderAccountLink(url: $0) }
     public static let providerName = "z.ai Coding Plan"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
     public static var providerDescription: String {

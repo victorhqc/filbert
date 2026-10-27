@@ -34,6 +34,7 @@ public final class ProviderRegistry {
                 defaultBaseURL: type(of: provider).baseURL,
                 authShape: type(of: provider).authShape,
                 setupHelp: type(of: provider).setupHelp,
+                accountLink: type(of: provider).accountLink,
                 credentialImportActionTitle: type(of: provider).credentialImportActionTitle
             )
         }

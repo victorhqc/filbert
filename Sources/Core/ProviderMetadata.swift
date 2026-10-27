@@ -20,6 +20,21 @@ public struct ProviderAutomaticRefreshDisclosure: Sendable, Equatable {
     }
 }
 
+public struct ProviderAccountLink: Sendable, Equatable {
+    public enum Destination: Sendable {
+        case dashboard
+        case account
+    }
+
+    public let url: URL
+    public let destination: Destination
+
+    public init(url: URL, destination: Destination = .dashboard) {
+        self.url = url
+        self.destination = destination
+    }
+}
+
 public struct ProviderInfo: Sendable, Identifiable {
     public let id: String
     public let displayName: String
@@ -32,6 +47,7 @@ public struct ProviderInfo: Sendable, Identifiable {
     /// Payload-free discriminator so the App layer can dispatch row variants
     /// without inspecting a provider ID string.
     public let authShape: ProviderAuth.Shape
+    public let accountLink: ProviderAccountLink?
     public let setupHelp: ProviderSetupHelp?
     public let credentialImportActionTitle: String?
 
@@ -46,6 +62,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         defaultBaseURL: URL,
         authShape: ProviderAuth.Shape,
         setupHelp: ProviderSetupHelp? = nil,
+        accountLink: ProviderAccountLink? = nil,
         credentialImportActionTitle: String? = nil
     ) {
         self.id = id
@@ -57,6 +74,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         self.refreshCharacteristics = refreshCharacteristics
         self.defaultBaseURL = defaultBaseURL
         self.authShape = authShape
+        self.accountLink = accountLink
         self.setupHelp = setupHelp
         self.credentialImportActionTitle = credentialImportActionTitle
     }

@@ -133,6 +133,12 @@ private struct ProviderSettingsRow: View {
                 configuredContent
             } else {
                 keyEntry
+                if isEnabled, provider.accountLink != nil {
+                    HStack {
+                        Spacer(minLength: 0)
+                        ProviderAccountButton(provider: provider, isEnabled: isEnabled)
+                    }
+                }
             }
             advancedDisclosure
         }
@@ -159,8 +165,14 @@ private struct ProviderSettingsRow: View {
                     .foregroundStyle(.secondary)
             }
         }
-        Button(String(displayLocalized: "Clear Key", bundle: .module), role: .destructive) {
-            clearKey()
+        HStack {
+            Button(String(displayLocalized: "Clear Key", bundle: .module), role: .destructive) {
+                clearKey()
+            }
+            if isEnabled, provider.accountLink != nil {
+                Spacer(minLength: 8)
+                ProviderAccountButton(provider: provider, isEnabled: true)
+            }
         }
         .controlSize(.small)
         if let errorMessage = apiKeyEntryState.errorMessage {

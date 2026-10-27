@@ -1,6 +1,42 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Go to Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zum Dashboard" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Go to Dashboard" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ir al panel" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ir al panel" } }
+      }
+    },
+    "Open Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Dashboard" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir panel" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir panel" } }
+      }
+    },
+    "Open Account" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Konto öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Account" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir cuenta" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir cuenta" } }
+      }
+    },
+    "%1$@ for %2$@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ für %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ for %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ de %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@ de %2$@" } }
+      }
+    },
     "General" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -118,35 +118,10 @@ struct SettingsCardHeader: View {
                         .font(.headline)
                         .lineLimit(2)
                         .layoutPriority(1)
-
                     Spacer(minLength: 4)
-
                     VStack(alignment: .trailing, spacing: 4) {
                         ProviderStatusPill(status: status)
-                        Toggle(
-                            String(displayLocalized: "Enabled", bundle: .module),
-                            isOn: Binding(
-                                get: { isEnabled },
-                                set: { enabled in
-                                    onEnabledChange(enabled)
-                                }
-                            )
-                        )
-                        .toggleStyle(.switch)
-                        .controlSize(.small)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                        .accessibilityLabel(
-                            String.localizedStringWithFormat(
-                                String(displayLocalized: "Enable %@", bundle: .module),
-                                provider.displayName
-                            )
-                        )
-                        .accessibilityValue(
-                            isEnabled
-                                ? String(displayLocalized: "Enabled", bundle: .module)
-                                : String(displayLocalized: "Disabled", bundle: .module)
-                        )
+                        enablementToggle
                         if let supplementaryLabel {
                             Text(supplementaryLabel)
                                 .font(.caption2.monospaced())
@@ -161,6 +136,56 @@ struct SettingsCardHeader: View {
                     .lineLimit(3)
                     .fixedSize(horizontal: false, vertical: true)
             }
+        }
+    }
+
+    private var enablementToggle: some View {
+        Toggle(
+            String(localized: "Enabled"),
+            isOn: Binding(
+                get: { isEnabled },
+                set: { onEnabledChange($0) }
+            )
+        )
+        .toggleStyle(.switch)
+        .controlSize(.small)
+        .font(.caption)
+        .foregroundStyle(.secondary)
+        .fixedSize()
+        .accessibilityLabel(
+            String.localizedStringWithFormat(
+                String(localized: "Enable %@"),
+                provider.displayName
+            )
+        )
+        .accessibilityValue(
+            isEnabled ? String(localized: "Enabled") : String(localized: "Disabled")
+        )
+    }
+}
+
+struct ProviderAccountButton: View {
+    let provider: ProviderInfo
+    let isEnabled: Bool
+
+    @Environment(\.openURL) private var openURL
+
+    var body: some View {
+        if isEnabled, let accountLink = provider.accountLink {
+            Button {
+                openURL(accountLink.url)
+            } label: {
+                Label(String(localized: "Go to Dashboard"), systemImage: "globe")
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            .accessibilityLabel(
+                String.localizedStringWithFormat(
+                    String(localized: "%1$@ for %2$@"),
+                    String(localized: "Go to Dashboard"),
+                    provider.displayName
+                )
+            )
         }
     }
 }
