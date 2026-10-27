@@ -33,7 +33,7 @@ private struct StandardUsageLineRow: View {
                     .fontWeight(.medium)
                 Spacer()
                 if let percentage = QuotaStatusResolver.percentage(for: line) {
-                    Text(QuotaFormatting.percentage(percentage))
+                    Text(QuotaFormatting.percentage(percentage, fractionLength: line.percentageFractionLength))
                         .font(.subheadline.monospacedDigit())
                         .foregroundColor(percentageColor(percentage))
                 } else if let amount = QuotaStatusResolver.amountText(for: line) {

@@ -11,7 +11,9 @@ struct PacedUsageLineText: Equatable {
     init(pace: BudgetPace, forecast: AllowanceForecastPresentation.Line?) {
         used = String.localizedStringWithFormat(
             String(displayLocalized: "%@%% used", bundle: .module),
-            pace.usedPercentage.formatted(.number.precision(.fractionLength(0)).locale(DisplayLanguage.locale))
+            pace.usedPercentage.formatted(
+                .number.precision(.fractionLength(pace.usedPercentageFractionLength)).locale(DisplayLanguage.locale)
+            )
         )
         let leftFormat = String(displayLocalized: "%@ left", bundle: .module)
         remainingTime = String.localizedStringWithFormat(

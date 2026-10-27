@@ -57,6 +57,7 @@ struct BudgetPace: Equatable {
 
     let configuration: Configuration
     let usedPercentage: Double
+    let usedPercentageFractionLength: Int
     let remainingPercentage: Double
     let usedFraction: Double
     let elapsedFraction: Double
@@ -87,6 +88,7 @@ struct BudgetPace: Equatable {
 
         self.configuration = configuration
         self.usedPercentage = usedPercentage
+        usedPercentageFractionLength = line.percentageFractionLength
         self.remainingPercentage = remainingPercentage
         self.usedFraction = usedFraction
         self.elapsedFraction = elapsedFraction
