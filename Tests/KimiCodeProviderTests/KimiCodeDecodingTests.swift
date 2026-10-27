@@ -131,4 +131,24 @@ final class KimiCodeDecodingTests: KimiCodeProviderTestCase {
         assertPercentages(quota, [90])
         XCTAssertEqual(quota.lines.first?.resetDate, try date("2099-01-02T00:00:00Z"))
     }
+
+    func testReadingsUnderOnePointApartKeepTheLowerRatio() async throws {
+        let quota = try await fetch(json: """
+        {"limits":[{"window":{"duration":300,"timeUnit":"TIME_UNIT_MINUTE"},
+                    "detail":{"limit":"100","used":"51","resetTime":"2099-01-01T00:00:00Z"}}],
+         "usages":{"limit_5h":{"used_ratio":0.5001}}}
+        """)
+
+        assertPercentages(quota, [50.01])
+        XCTAssertEqual(quota.lines.first?.resetDate, try date("2099-01-01T00:00:00Z"))
+    }
+
+    func testReadingsOnePointApartKeepTheHigher() async throws {
+        let quota = try await fetch(json: """
+        {"limits":[{"window":{"duration":300,"timeUnit":"TIME_UNIT_MINUTE"},"detail":{"limit":"100","used":"51"}}],
+         "usages":{"limit_5h":{"used_ratio":0.5}}}
+        """)
+
+        assertPercentages(quota, [51])
+    }
 }

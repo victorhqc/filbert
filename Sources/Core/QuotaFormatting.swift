@@ -42,6 +42,12 @@ public enum QuotaFormatting {
 
     /// `percentage` runs from 0 to 100. Rounds half to even, like `%.0f`.
     public static func percentage(_ percentage: Double) -> String {
-        percentage.formatted(.percent.scale(1).precision(.fractionLength(0)).locale(DisplayLanguage.locale))
+        self.percentage(percentage, fractionLength: 0)
+    }
+
+    public static func percentage(_ percentage: Double, fractionLength: Int) -> String {
+        percentage.formatted(
+            .percent.scale(1).precision(.fractionLength(fractionLength)).locale(DisplayLanguage.locale)
+        )
     }
 }

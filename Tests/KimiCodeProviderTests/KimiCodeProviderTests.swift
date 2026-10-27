@@ -38,16 +38,26 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
             date("2026-10-06T13:23:46.915474Z"),
             date("2026-10-22T14:26:29Z"),
         ])
-        XCTAssertEqual(quota.headline.resolved, "100% · resetting…")
+        XCTAssertEqual(quota.headline.resolved, "100.00% · resetting…")
         XCTAssertEqual(quota.headlineUsageLineId, "five-hour-usage")
     }
 
-    func testAgreeingReadingsKeepTheLegacyCount() async throws {
+    func testAgreeingReadingsKeepTheRatioDecimals() async throws {
         let quota = try await fetch(fixture("usages-monthly-plan"))
 
         XCTAssertEqual(quota.lines.map(\.id), ["five-hour-usage", "monthly-usage"])
-        assertPercentages(quota, [44, 78.77])
-        XCTAssertEqual(quota.lines.first?.resetDate, try date("2026-09-23T06:47:09.122865Z"))
+        assertPercentages(quota, [43.72, 78.77])
+        XCTAssertEqual(quota.lines.first?.resetDate, try date("2026-09-23T06:47:08Z"))
+    }
+
+    func testLiveNewPlanReadsTheRatios() async throws {
+        let quota = try await fetch(fixture("usages-live-new-plan"))
+
+        XCTAssertEqual(quota.lines.map(\.id), ["five-hour-usage", "monthly-usage"])
+        assertPercentages(quota, [8.41, 3.3])
+        let fiveHourReset = try date("2026-10-27T11:15:50Z")
+        XCTAssertEqual(quota.lines.map(\.resetDate), try [fiveHourReset, date("2026-11-27T00:00:00Z")])
+        XCTAssertEqual(quota.headline.resolved, "8.41% · \(QuotaFormatting.countdown(to: fiveHourReset))")
     }
 
     func testExhaustedWeeklyCounterBeatsAZeroRatio() async throws {
@@ -92,6 +102,7 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
             [UsageWindowDuration.fiveHours, UsageWindowDuration.week, UsageWindowDuration.month]
         )
         XCTAssertEqual(quota.lines.map(\.limitGroup), ["membership", "membership", "membership"])
+        XCTAssertEqual(quota.lines.map(\.percentageFractionLength), [2, 2, 2])
         XCTAssertTrue(quota.lines.allSatisfy { $0.used == nil && $0.total == nil && $0.balance == nil })
     }
 
@@ -104,14 +115,14 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
         """)
 
         let resetDate = try date("2099-01-01T00:00:00Z")
-        XCTAssertEqual(quota.headline.resolved, "20% · \(QuotaFormatting.countdown(to: resetDate))")
+        XCTAssertEqual(quota.headline.resolved, "20.00% · \(QuotaFormatting.countdown(to: resetDate))")
         XCTAssertEqual(quota.headlineUsageLineId, "weekly-usage")
     }
 
     func testHeadlineWithoutAResetShowsThePercentageAlone() async throws {
         let quota = try await fetch(json: #"{"usages":{"limit_month_total":{"used_ratio":0.5}}}"#)
 
-        XCTAssertEqual(quota.headline.resolved, "50%")
+        XCTAssertEqual(quota.headline.resolved, "50.00%")
         XCTAssertEqual(quota.headlineUsageLineId, "monthly-usage")
     }
 
@@ -121,6 +132,7 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
         let quota = try await fetch(fixture("usages-monthly-plan"))
 
         let observation = try XCTUnwrap(quota.activityObservation)
+        XCTAssertEqual(observation.metrics.first?.value, .number(Decimal(0.4372 * 100)))
         XCTAssertEqual(observation.freshness, .fresh)
         XCTAssertEqual(observation.metrics.map(\.id), ["five-hour-usage", "monthly-usage"])
         XCTAssertEqual(observation.metrics.map(\.kind), [.usage, .usage])

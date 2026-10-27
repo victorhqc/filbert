@@ -111,7 +111,7 @@ Filbert does not reuse the CLI's login in `~/.kimi-code/credentials/`. Access to
   - weekly: `usage`, and `usages.limit_7d`
   - monthly: `usages.limit_month_total`
 - **And** a legacy reading's percentage is `used / limit × 100`, where `used` is `limit − remaining` when missing. A ratio reading's percentage is `used_ratio × 100`. Both are clamped to 0…100
-- **And** when a window has two readings, the higher percentage wins. Its reset date is used, or the other reading's when it has none
+- **And** when a window has two readings, the higher percentage wins. Its reset date is used, or the other reading's when it has none. Superseded for readings under 1 point apart by (providers 27 AC3)
 - **And** other `limits[]` windows are ignored.
 
 ### AC4: Windows map to lines

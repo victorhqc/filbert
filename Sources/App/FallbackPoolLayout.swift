@@ -38,6 +38,7 @@ struct FallbackPoolLayout {
             used: pool.used,
             total: pool.total,
             percentage: pool.percentage,
+            percentageFractionLength: pool.percentageFractionLength,
             unit: pool.unit,
             balance: pool.balance,
             resetDate: pool.resetDate,

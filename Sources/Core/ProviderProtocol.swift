@@ -130,6 +130,7 @@ public struct UsageLine: Sendable {
     /// The limit of `used`, never a balance.
     public let total: Double?
     public let percentage: Double?
+    public let percentageFractionLength: Int
     /// The currency code of `used` and `total`.
     public let unit: String?
     public let balance: UsageBalance?
@@ -148,6 +149,7 @@ public struct UsageLine: Sendable {
         used: Double? = nil,
         total: Double? = nil,
         percentage: Double? = nil,
+        percentageFractionLength: Int = 0,
         unit: String? = nil,
         balance: UsageBalance? = nil,
         resetDate: Date? = nil,
@@ -165,6 +167,7 @@ public struct UsageLine: Sendable {
         self.used = used
         self.total = total
         self.percentage = percentage
+        self.percentageFractionLength = percentageFractionLength
         self.unit = unit
         self.balance = balance
         self.resetDate = resetDate

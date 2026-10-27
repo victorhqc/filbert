@@ -7,10 +7,21 @@ extension KimiCodeProvider {
     static let monthlyLineId = "monthly-usage"
     /// Any window blocks Kimi Code once it is full.
     static let membershipLimitGroup = "membership"
+    /// Ratios arrive with four decimals, which is a percentage with two.
+    static let percentageFractionLength = 2
+    /// Legacy counters round the ratio to the nearest whole percent, so
+    /// readings closer than this describe the same usage.
+    private static let agreementTolerance = 1.0
+
+    private enum ReadingSource {
+        case legacyCounter
+        case ratio
+    }
 
     private struct Reading {
         let percentage: Double
         let resetDate: Date?
+        let source: ReadingSource
     }
 
     private struct Window {
@@ -26,6 +37,7 @@ extension KimiCodeProvider {
             UsageLine(
                 label: window.label,
                 percentage: window.reading.percentage,
+                percentageFractionLength: Self.percentageFractionLength,
                 resetDate: window.reading.resetDate,
                 windowDuration: window.duration,
                 id: window.id,
@@ -75,23 +87,32 @@ extension KimiCodeProvider {
         }
     }
 
-    /// The ratio map often reads 0 while the legacy counter for the same
-    /// window is exhausted, and the exhausted one is enforced, so the higher
-    /// reading wins.
+    /// Agreeing readings keep the ratio for its decimals. Otherwise the
+    /// ratio map often reads 0 while the legacy counter for the same window
+    /// is exhausted, and the exhausted one is enforced, so the higher reading
+    /// wins.
     private static func merge(_ readings: [Reading]) -> Reading? {
         guard let highest = readings.max(by: { $0.percentage < $1.percentage }) else { return nil }
+        let lowest = readings.min { $0.percentage < $1.percentage } ?? highest
+        let agree = highest.percentage - lowest.percentage < agreementTolerance
+        let chosen = agree ? readings.first { $0.source == .ratio } ?? highest : highest
         return Reading(
-            percentage: highest.percentage,
-            resetDate: highest.resetDate ?? readings.lazy.compactMap(\.resetDate).first
+            percentage: chosen.percentage,
+            resetDate: chosen.resetDate ?? readings.lazy.compactMap(\.resetDate).first,
+            source: chosen.source
         )
     }
 
     private static func reading(_ counter: KimiCodeCounter) -> Reading {
-        Reading(percentage: clamped(counter.used / counter.limit * 100), resetDate: counter.resetDate)
+        Reading(
+            percentage: clamped(counter.used / counter.limit * 100),
+            resetDate: counter.resetDate,
+            source: .legacyCounter
+        )
     }
 
     private static func reading(_ ratio: KimiCodeRatio) -> Reading {
-        Reading(percentage: clamped(ratio.usedRatio * 100), resetDate: ratio.resetDate)
+        Reading(percentage: clamped(ratio.usedRatio * 100), resetDate: ratio.resetDate, source: .ratio)
     }
 
     private static func clamped(_ percentage: Double) -> Double {
@@ -103,11 +124,13 @@ extension KimiCodeProvider {
             return DisplayText { String(displayLocalized: "No data", bundle: .module) }
         }
         let percentage = reading.percentage
+        let fractionLength = Self.percentageFractionLength
         guard let resetDate = reading.resetDate else {
-            return DisplayText { QuotaFormatting.percentage(percentage) }
+            return DisplayText { QuotaFormatting.percentage(percentage, fractionLength: fractionLength) }
         }
         return DisplayText {
-            "\(QuotaFormatting.percentage(percentage)) · \(QuotaFormatting.countdown(to: resetDate))"
+            let percentageText = QuotaFormatting.percentage(percentage, fractionLength: fractionLength)
+            return "\(percentageText) · \(QuotaFormatting.countdown(to: resetDate))"
         }
     }
 
