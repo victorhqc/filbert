@@ -109,6 +109,7 @@ Guard-test deny lists (ui 31 AC1). Only unambiguous words go here. Spain also us
 
 | English | de-DE | es-MX | es-ES | pt-BR | pt-PT | ru | zh-Hans | zh-Hant | ja |
 |---|---|---|---|---|---|---|---|---|---|
+| dashboard | Dashboard ⚠︎ | panel ⚠︎ | panel ⚠︎ | painel ⚠︎ | painel ⚠︎ | панель ⚠︎ | 仪表盘 ⚠︎ | 儀表板 ⚠︎ | ダッシュボード ⚠︎ |
 | Settings (Filbert's window) | Einstellungen | Configuración | Ajustes | Ajustes | Definições | Настройки | 设置 | 設定 | 設定 |
 | System Settings | Systemeinstellungen | Configuración del Sistema | Ajustes del Sistema | Ajustes do Sistema | Definições do Sistema | Системные настройки | 系统设置 | 系統設定 | システム設定 |
 | General (tab) | Allgemein | General | General | Geral | Geral | Основные | 通用 | 一般 | 一般 |

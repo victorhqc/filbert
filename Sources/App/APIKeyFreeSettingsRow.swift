@@ -111,10 +111,10 @@ struct APIKeyFreeSettingsRow: View {
         if isEnabled {
             switch state {
             case .loaded:
-                Button(String(localized: "Remove Helper"), role: .destructive, action: onRemove)
+                Button(String(displayLocalized: "Remove Helper", bundle: .module), role: .destructive, action: onRemove)
             case .setup:
                 if canInstall {
-                    Button(String(localized: "Install Helper"), action: onInstall)
+                    Button(String(displayLocalized: "Install Helper", bundle: .module), action: onInstall)
                         .buttonStyle(.borderedProminent)
                 }
                 credentialImportButton

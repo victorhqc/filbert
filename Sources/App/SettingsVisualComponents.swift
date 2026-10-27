@@ -141,7 +141,7 @@ struct SettingsCardHeader: View {
 
     private var enablementToggle: some View {
         Toggle(
-            String(localized: "Enabled"),
+            String(displayLocalized: "Enabled", bundle: .module),
             isOn: Binding(
                 get: { isEnabled },
                 set: { onEnabledChange($0) }
@@ -154,12 +154,14 @@ struct SettingsCardHeader: View {
         .fixedSize()
         .accessibilityLabel(
             String.localizedStringWithFormat(
-                String(localized: "Enable %@"),
+                String(displayLocalized: "Enable %@", bundle: .module),
                 provider.displayName
             )
         )
         .accessibilityValue(
-            isEnabled ? String(localized: "Enabled") : String(localized: "Disabled")
+            isEnabled
+                ? String(displayLocalized: "Enabled", bundle: .module)
+                : String(displayLocalized: "Disabled", bundle: .module)
         )
     }
 }
@@ -175,14 +177,14 @@ struct ProviderAccountButton: View {
             Button {
                 openURL(accountLink.url)
             } label: {
-                Label(String(localized: "Go to Dashboard"), systemImage: "globe")
+                Label(String(displayLocalized: "Go to Dashboard", bundle: .module), systemImage: "globe")
             }
             .buttonStyle(.bordered)
             .controlSize(.small)
             .accessibilityLabel(
                 String.localizedStringWithFormat(
-                    String(localized: "%1$@ for %2$@"),
-                    String(localized: "Go to Dashboard"),
+                    String(displayLocalized: "%1$@ for %2$@", bundle: .module),
+                    String(displayLocalized: "Go to Dashboard", bundle: .module),
                     provider.displayName
                 )
             )
