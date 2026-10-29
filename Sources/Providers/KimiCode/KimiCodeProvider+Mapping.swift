@@ -28,6 +28,7 @@ extension KimiCodeProvider {
         let id: String
         let label: DisplayText
         let duration: TimeInterval
+        let forecastPeriodLength: TimeInterval?
         let reading: Reading
     }
 
@@ -53,7 +54,7 @@ extension KimiCodeProvider {
             headline: headline(for: headlineWindow?.reading),
             lines: lines,
             lastUpdated: receivedAt,
-            activityObservation: activityObservation(for: windows),
+            activityObservation: activityObservation(for: windows, receivedAt: receivedAt),
             headlineUsageLineId: headlineWindow?.id
         )
     }
@@ -65,24 +66,35 @@ extension KimiCodeProvider {
                 id: Self.fiveHourLineId,
                 label: DisplayText { String(displayLocalized: "5-hour window", bundle: .module) },
                 duration: UsageWindowDuration.fiveHours,
+                // Kimi calls this window rolling, but it is a fixed block on a
+                // 5-hour grid that does not start at the first request.
+                forecastPeriodLength: TimeInterval?(UsageWindowDuration.fiveHours),
                 readings: [fiveHourCounter.map(Self.reading), response.usages["limit_5h"].map(Self.reading)]
             ),
             (
                 id: Self.weeklyLineId,
                 label: DisplayText { String(displayLocalized: "Weekly", bundle: .module) },
                 duration: UsageWindowDuration.week,
+                forecastPeriodLength: nil,
                 readings: [response.usage.map(Self.reading), response.usages["limit_7d"].map(Self.reading)]
             ),
             (
                 id: Self.monthlyLineId,
                 label: DisplayText { String(displayLocalized: "Monthly", bundle: .module) },
                 duration: UsageWindowDuration.month,
+                forecastPeriodLength: nil,
                 readings: [response.usages["limit_month_total"].map(Self.reading)]
             ),
         ]
         return candidates.compactMap { candidate in
             Self.merge(candidate.readings.compactMap(\.self)).map { reading in
-                Window(id: candidate.id, label: candidate.label, duration: candidate.duration, reading: reading)
+                Window(
+                    id: candidate.id,
+                    label: candidate.label,
+                    duration: candidate.duration,
+                    forecastPeriodLength: candidate.forecastPeriodLength,
+                    reading: reading
+                )
             }
         }
     }
@@ -134,15 +146,27 @@ extension KimiCodeProvider {
         }
     }
 
-    private func activityObservation(for windows: [Window]) -> ProviderActivityObservation {
+    private func activityObservation(for windows: [Window], receivedAt: Date) -> ProviderActivityObservation {
         let metrics = windows.map { window in
             ProviderActivityMetric(
                 id: window.id,
                 kind: .usage,
-                value: .number(Decimal(window.reading.percentage))
+                value: .number(Decimal(window.reading.percentage)),
+                forecastDescriptor: forecastDescriptor(for: window, receivedAt: receivedAt)
             )
         }
         // Each request reads the live usage.
         return ProviderActivityObservation(metrics: metrics, freshness: .fresh)
+    }
+
+    private func forecastDescriptor(for window: Window, receivedAt: Date) -> AllowanceForecastDescriptor? {
+        guard let length = window.forecastPeriodLength, let resetDate = window.reading.resetDate else { return nil }
+        return AllowanceForecastDescriptor(
+            accounting: .fixedPeriod(limit: 100, resetsAt: resetDate, length: length),
+            unit: .percentagePoints,
+            resolution: Decimal(sign: .plus, exponent: -Self.percentageFractionLength, significand: 1),
+            timing: .receipt(receivedAt),
+            usageLineId: window.id
+        )
     }
 }
