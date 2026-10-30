@@ -194,7 +194,7 @@ Filbert does not reuse the CLI's login in `~/.kimi-code/credentials/`. Access to
 
 ## Out of scope
 
-- Allowance forecasting. Follow-up specs decide which windows are fixed periods (core 12 AC2). The 5-hour window is a fixed block on a 5-hour grid, despite the docs' "rolling" (providers 29). The weekly and monthly windows have subscription-anchored resets (providers 28).
+- Allowance forecasting. Follow-up specs decide which windows are fixed periods (core 12 AC2). The 5-hour window is a fixed block on a 5-hour grid, despite the docs' "rolling" (providers 29). The weekly and monthly windows are fixed periods with subscription-anchored resets, and the monthly one follows the calendar month (providers 28).
 - The Kimi/code split of the monthly pool. The `limit_month_code` share has no place in `UsageLine` without a breakdown concept.
 - The booster wallet and monthly charge limit. Its key is `booster_wallet` in live bodies, `boosterWallet` in fixtures, and its fixed-point units come from source code only.
 - The plan name from `GET /coding/v1/me`.

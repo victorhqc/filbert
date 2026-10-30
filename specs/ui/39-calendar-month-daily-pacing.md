@@ -4,7 +4,7 @@ Pace monthly rows over their real calendar-month length, and show the sustainabl
 
 ## Context
 
-- Status: implemented, 2026-10-30, uncommitted. The manual check in Plan step 6 is open. Supersedes (ui 22 AC2, AC3, AC4, AC6), and parts of (ui 22 AC1, AC5, AC11), where they fix the month at 30 days and the allowance at one week. Keeps (ui 19) for weekly rows.
+- Status: implemented and on `main` (#107). The manual check in Plan step 6 is open. Supersedes (ui 22 AC2, AC3, AC4, AC6), and parts of (ui 22 AC1, AC5, AC11), where they fix the month at 30 days and the allowance at one week. Keeps (ui 19) for weekly rows.
 - The user asked on 2026-10-27 for the Kimi Code "Monthly" row to read like the Codex "Weekly" row: a pace bar, an elapsed marker, the time left, and "About N.N%/day available". They chose a daily allowance for monthly rows over the weekly one from (ui 22).
 - Why the Kimi row shows a plain bar today:
   - Kimi's monthly pool resets on the subscription day at 00:00 UTC. The live capture of 2026-10-27 reads `reset_time` `2026-11-27T00:00:00Z`, so this period is 31 days (providers 27, Live capture).

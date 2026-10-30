@@ -4,7 +4,7 @@ Decide from a live capture whether Kimi Code's five-hour window is a fixed block
 
 ## Context
 
-- Status: implemented, 2026-10-30, uncommitted. The manual check in Plan step 6 is open. The capture is done, and the verdict is a fixed block (Evidence). Builds on (core 12) only. It lands before (providers 28), which adds the weekly and monthly descriptors and needs the calendar-month rule from (ui 39). A 5-hour period needs neither.
+- Status: implemented and on `main` (#106). The manual check in Plan step 6 is open. The capture is done, and the verdict is a fixed block (Evidence). Builds on (core 12) only. It lands before (providers 28), which adds the weekly and monthly descriptors and needs the calendar-month rule from (ui 39). A 5-hour period needs neither.
 - Why it matters: a sliding window drops old usage without a reset and moves its reset with each use. Core reads each drop as a correction and each move as a new period (core 12 AC3), and a straight-line forecast ignores the usage that expires. So a sliding window cannot carry a descriptor (core 12 AC2).
 - Evidence before the capture was inconclusive:
   - Kimi's docs call the window "rolling" (providers 24, Evidence). A label alone does not decide (core 12 AC2).

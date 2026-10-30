@@ -90,7 +90,7 @@ final class MonthlyBudgetPaceTests: XCTestCase {
 
     func testAThirtyDayLineIsACalendarMonth() throws {
         let pace = try XCTUnwrap(BudgetPace(
-            line: line(duration: UsageWindowDuration.month, usedPercentage: 30, remainingTime: 26 * day),
+            line: line(duration: 30 * day, usedPercentage: 30, remainingTime: 26 * day),
             now: now
         ))
 
