@@ -13,7 +13,7 @@ final class BudgetPaceTests: XCTestCase {
         XCTAssertEqual(pace.usedFraction, 0.3, accuracy: 0.000_1)
         XCTAssertEqual(pace.elapsedFraction, 1.0 / 7.0, accuracy: 0.000_1)
         XCTAssertEqual(
-            try XCTUnwrap(allowancePercentage(of: pace, unit: .day)),
+            try XCTUnwrap(perDay(pace)),
             70.0 / 6.0,
             accuracy: 0.000_1
         )
@@ -29,7 +29,7 @@ final class BudgetPaceTests: XCTestCase {
         let pace = try XCTUnwrap(pace(usedPercentage: 3, remainingDays: 6 + 23.0 / 24.0))
 
         XCTAssertGreaterThan(pace.usedFraction, pace.elapsedFraction)
-        XCTAssertEqual(try XCTUnwrap(allowancePercentage(of: pace, unit: .day)), 13.94, accuracy: 0.01)
+        XCTAssertEqual(try XCTUnwrap(perDay(pace)), 13.94, accuracy: 0.01)
         XCTAssertEqual(pace.warningBoundary, 14.54, accuracy: 0.01)
         XCTAssertEqual(pace.tier, .good)
     }
@@ -106,15 +106,8 @@ final class BudgetPaceTests: XCTestCase {
         )
     }
 
-    private func allowancePercentage(
-        of pace: BudgetPace,
-        unit: BudgetPace.AllowanceUnit
-    ) -> Double? {
-        guard case let .perUnit(percentage, allowanceUnit) = pace.allowance,
-              allowanceUnit == unit
-        else {
-            return nil
-        }
+    private func perDay(_ pace: BudgetPace) -> Double? {
+        guard case let .perDay(percentage) = pace.allowance else { return nil }
         return percentage
     }
 

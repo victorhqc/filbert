@@ -12,9 +12,19 @@ Turn 30-day quota rows into an at-a-glance budget pace visualization that shows 
 - `Tests/CoreTests/ProviderProtocolTests.swift`, `Tests/OpenCodeGoProviderTests/OpenCodeGoProviderTests.swift`, and `Tests/AppTests/WeeklyBudgetPaceTests.swift` — cover duration metadata, provider mapping, calculations, boundaries, and compact-tier parity.
 - `Sources/App/Resources/Localizable.xcstrings` — localizes the new weekly-allowance and accessibility text.
 
+> **Partly superseded by (ui 39).** Monthly rows now pace over their real
+> calendar-month length, 28 to 31 days, and show a daily allowance. It
+> supersedes AC2, AC3, AC4, and AC6, and parts of AC1, AC5, and AC11. The
+> shared calculation, compact parity, local refresh, safe fallbacks, and
+> orthogonality requirements (AC7–AC10, AC12) remain in effect.
+
 ## Acceptance Criteria
 
 ### AC1: Monthly duration is generic metadata
+
+> **Partly superseded by (ui 39 AC1, AC2).** OpenCode Go now declares the
+> calendar-month length from `UsageWindowDuration.calendarMonth(endingAt:)`.
+> The shared 30-day `month` stays for providers that still declare it.
 
 - **Given** Core describes supported usage-window durations
 - **When** a provider reports the existing 30-day monthly window
@@ -24,12 +34,18 @@ Turn 30-day quota rows into an at-a-glance budget pace visualization that shows 
 
 ### AC2: Only complete 30-day data enables monthly pacing
 
+> **Superseded by (ui 39 AC3).** Any line whose duration is within
+> `calendarMonths` gets monthly pacing.
+
 - **Given** a percentage-based `UsageLine`
 - **When** its duration is exactly `UsageWindowDuration.month`, its reset is in the future, and its remaining time does not exceed 30 days
 - **Then** the row uses the monthly budget pace presentation
 - **And** a line with missing, unsupported, expired, non-finite, or inconsistent timing or percentage data keeps the existing standard percentage bar and reset presentation from (ui 18)
 
 ### AC3: The row answers the monthly budget questions
+
+> **Superseded by (ui 39 AC4).** The footer shows a daily allowance, and the
+> until-reset text below 24 hours.
 
 - **Given** an eligible monthly line
 - **When** it renders
@@ -40,6 +56,9 @@ Turn 30-day quota rows into an at-a-glance budget pace visualization that shows 
 
 ### AC4: The monthly calculation uses exact remaining time
 
+> **Superseded by (ui 39 AC3, AC4).** The allowance is per day, and the
+> marker uses the line's own duration.
+
 - **Given** `usedPercentage`, `resetDate`, a 30-day `windowDuration`, and a supplied `now`
 - **When** the app calculates monthly pace
 - **Then** `remainingPercentage = max(100 - usedPercentage, 0)`
@@ -49,6 +68,9 @@ Turn 30-day quota rows into an at-a-glance budget pace visualization that shows 
 - **And** calculations use unrounded values while display formatting rounds only the localized final result
 
 ### AC5: The bar marks real weekly boundaries within the month
+
+> **Partly superseded by (ui 39 AC6).** Dividers sit at days 7, 14, 21, and
+> 28 of the line's own duration, so a 28-day month has three.
 
 - **Given** an eligible 30-day line
 - **When** its pace bar renders
@@ -70,6 +92,9 @@ Monthly                                 30% used
 The four dividers mark completed seven-day intervals. The shorter final segment is the remaining two days in the 30-day window; the diagram is illustrative and spacing may change to fit native SwiftUI rendering.
 
 ### AC6: Color uses the current weekly allowance
+
+> **Superseded by (ui 39 AC5).** The warning boundary uses the daily
+> allowance.
 
 - **Given** an eligible monthly line with clamped usage and a valid elapsed marker
 - **When** at least one week remains
@@ -111,6 +136,9 @@ The four dividers mark completed seven-day intervals. The shorter final segment 
 - **Then** it falls back to the existing standard and raw-percentage behavior without presenting invented pace information
 
 ### AC11: Accessibility and localization carry the same meaning
+
+> **Partly superseded by (ui 39 AC7).** VoiceOver announces the daily or
+> until-reset allowance.
 
 - **Given** VoiceOver or a non-English locale
 - **When** an eligible monthly row renders

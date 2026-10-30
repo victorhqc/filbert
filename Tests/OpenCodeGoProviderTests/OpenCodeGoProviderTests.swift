@@ -68,7 +68,7 @@ final class OpenCodeGoProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines[2].resetDate, date("2026-09-01T00:00:00.000Z"))
         XCTAssertEqual(quota.lines[0].windowDuration, UsageWindowDuration.fiveHours)
         XCTAssertEqual(quota.lines[1].windowDuration, UsageWindowDuration.week)
-        XCTAssertEqual(quota.lines[2].windowDuration, UsageWindowDuration.month)
+        XCTAssertEqual(quota.lines[2].windowDuration, 31 * 24 * 60 * 60)
         XCTAssertTrue(quota.lines.allSatisfy { $0.used == nil && $0.total == nil && $0.unit == nil })
         let metrics = try XCTUnwrap(quota.activityObservation?.metrics)
         XCTAssertEqual(metrics.map(\.id), ["rolling-window-usage", "weekly-window-usage", "monthly-window-usage"])

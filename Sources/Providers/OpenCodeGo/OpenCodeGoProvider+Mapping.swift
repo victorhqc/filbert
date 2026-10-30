@@ -11,7 +11,7 @@ extension OpenCodeGoProvider {
     private struct Window {
         let id: String
         let label: DisplayText
-        let duration: TimeInterval
+        let duration: TimeInterval?
         let usage: OpenCodeGoUsageWindow
         /// `nil` for the rolling window, which slides with the latest usage.
         let periodLength: TimeInterval?
@@ -19,6 +19,7 @@ extension OpenCodeGoProvider {
 
     func map(_ response: OpenCodeGoUsageResponse, receivedAt: Date) -> ProviderQuota {
         let usage = response.usage
+        let monthLength = UsageWindowDuration.calendarMonth(endingAt: usage.monthly.resetsAt)
         let windows = [
             Window(
                 id: Self.rollingWindowLineId,
@@ -37,9 +38,9 @@ extension OpenCodeGoProvider {
             Window(
                 id: Self.monthlyWindowLineId,
                 label: DisplayText { String(displayLocalized: "Monthly", bundle: .module) },
-                duration: UsageWindowDuration.month,
+                duration: monthLength,
                 usage: usage.monthly,
-                periodLength: Self.monthlyPeriodLength(resetsAt: usage.monthly.resetsAt)
+                periodLength: monthLength
             ),
         ]
 
@@ -65,23 +66,6 @@ extension OpenCodeGoProvider {
                 freshness: .fresh
             )
         )
-    }
-
-    /// The service anchors each month to the subscription's UTC day and time,
-    /// capped at the month's last day. A reset on a month's last day fits
-    /// several subscription days, so the period starts at the latest of them.
-    static func monthlyPeriodLength(resetsAt: Date) -> TimeInterval? {
-        var calendar = Calendar(identifier: .gregorian)
-        calendar.timeZone = .gmt
-        guard let previousMonth = calendar.date(byAdding: .month, value: -1, to: resetsAt),
-              let daysInMonth = calendar.range(of: .day, in: .month, for: resetsAt)?.count,
-              let daysInPreviousMonth = calendar.range(of: .day, in: .month, for: previousMonth)?.count
-        else {
-            return nil
-        }
-        let resetDay = calendar.component(.day, from: resetsAt)
-        let startDay = resetDay == daysInMonth ? daysInPreviousMonth : min(resetDay, daysInPreviousMonth)
-        return TimeInterval(daysInPreviousMonth - startDay + resetDay) * 24 * 60 * 60
     }
 
     private func metric(for window: Window, receivedAt: Date) -> ProviderActivityMetric {
