@@ -571,21 +571,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約%@%%/天可用" } }
       }
     },
-    "About %@%%/week available" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ca. %@ %%/Woche verfügbar" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "About %@%%/week available" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%@ %%/semana disponible aprox." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/semana disponible aprox." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "約%@%%/週を利用可能" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/semana disponível aprox." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%@%%/semana disponível aprox." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "~%@ %%/нед. доступно" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "约 %@%%/周可用" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "約%@%%/週可用" } }
-      }
-    },
     "Expand" : {
       "extractionState" : "manual",
       "localizations" : {

@@ -41,17 +41,13 @@ struct PacedUsageLineText: Equatable {
 
     private static func allowanceText(_ allowance: BudgetPace.Allowance) -> String {
         switch allowance {
-        case let .perUnit(percentage, unit):
-            let format = switch unit {
-            case .day: String(displayLocalized: "About %@%%/day available", bundle: .module)
-            case .week: String(displayLocalized: "About %@%%/week available", bundle: .module)
-            }
-            return String.localizedStringWithFormat(
-                format,
+        case let .perDay(percentage):
+            String.localizedStringWithFormat(
+                String(displayLocalized: "About %@%%/day available", bundle: .module),
                 percentage.formatted(.number.precision(.fractionLength(1)).locale(DisplayLanguage.locale))
             )
         case let .untilReset(percentage):
-            return String.localizedStringWithFormat(
+            String.localizedStringWithFormat(
                 String(displayLocalized: "%@%% available until reset", bundle: .module),
                 percentage.formatted(.number.precision(.fractionLength(0)).locale(DisplayLanguage.locale))
             )

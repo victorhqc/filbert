@@ -41,6 +41,7 @@ final class OpenCodeGoForecastMappingTests: XCTestCase {
             timing: .receipt(receivedAt),
             usageLineId: monthly
         ))
+        XCTAssertEqual(quota.lines.map(\.windowDuration), [UsageWindowDuration.fiveHours, 7 * day, 30 * day])
         XCTAssertEqual(quota.activityObservation?.freshness, .fresh)
         XCTAssertEqual(quota.lastUpdated, receivedAt)
     }
@@ -52,32 +53,6 @@ final class OpenCodeGoForecastMappingTests: XCTestCase {
         XCTAssertEqual(quota.activityObservation?.metrics.map(\.id), [rolling, weekly, monthly])
         XCTAssertEqual(Set(quota.lines.map(\.limitGroup)), [OpenCodeGoProvider.subscriptionLimitGroup])
         XCTAssertNil(quota.headlineUsageLineId)
-    }
-
-    func testTheMonthlyPeriodRunsFromTheSubscriptionAnchorInThePreviousMonth() {
-        let expectedDays: [(reset: String, days: Double)] = [
-            ("2026-10-21T08:15:00.734Z", 30),
-            ("2026-09-01T00:00:00.000Z", 31),
-            ("2026-03-15T12:00:00.000Z", 28),
-            ("2026-03-30T12:00:00.000Z", 30),
-            ("2026-03-31T12:00:00.000Z", 31),
-            ("2027-01-31T12:00:00.000Z", 31),
-        ]
-        for (reset, days) in expectedDays {
-            XCTAssertEqual(OpenCodeGoProvider.monthlyPeriodLength(resetsAt: date(reset)), days * day, reset)
-        }
-    }
-
-    func testAResetOnTheLastDayOfAMonthStartsOnTheLastDayOfThePreviousMonth() {
-        let expectedDays: [(reset: String, days: Double)] = [
-            ("2026-02-28T12:00:00.000Z", 28),
-            ("2028-02-29T12:00:00.000Z", 29),
-            ("2026-04-30T12:00:00.000Z", 30),
-            ("2026-05-31T12:00:00.000Z", 31),
-        ]
-        for (reset, days) in expectedDays {
-            XCTAssertEqual(OpenCodeGoProvider.monthlyPeriodLength(resetsAt: date(reset)), days * day, reset)
-        }
     }
 
     func testResetJitterKeepsOnePeriodAndIsNoChange() throws {

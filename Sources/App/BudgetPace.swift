@@ -2,25 +2,13 @@ import Core
 import Foundation
 
 struct BudgetPace: Equatable {
-    enum AllowanceUnit: Equatable {
-        case day
-        case week
-
-        var duration: TimeInterval {
-            switch self {
-            case .day: 24 * 60 * 60
-            case .week: 7 * 24 * 60 * 60
-            }
-        }
-    }
-
     enum Allowance: Equatable {
-        case perUnit(percentage: Double, unit: AllowanceUnit)
+        case perDay(percentage: Double)
         case untilReset(percentage: Double)
 
         var percentage: Double {
             switch self {
-            case let .perUnit(percentage, _): percentage
+            case let .perDay(percentage): percentage
             case let .untilReset(percentage): percentage
             }
         }
@@ -28,7 +16,6 @@ struct BudgetPace: Equatable {
 
     struct Configuration: Equatable {
         let windowDuration: TimeInterval
-        let allowanceUnit: AllowanceUnit
         let segmentDuration: TimeInterval
 
         var dividerFractions: [Double] {
@@ -37,22 +24,16 @@ struct BudgetPace: Equatable {
         }
     }
 
-    static let supported: [Configuration] = [BudgetPace.weekly, BudgetPace.monthly]
-
-    static let weekly = Configuration(
-        windowDuration: UsageWindowDuration.week,
-        allowanceUnit: .day,
-        segmentDuration: 24 * 60 * 60
-    )
-
-    static let monthly = Configuration(
-        windowDuration: UsageWindowDuration.month,
-        allowanceUnit: .week,
-        segmentDuration: 7 * 24 * 60 * 60
-    )
+    private static let day: TimeInterval = 24 * 60 * 60
 
     static func configuration(for windowDuration: TimeInterval) -> Configuration? {
-        supported.first { $0.windowDuration == windowDuration }
+        if windowDuration == UsageWindowDuration.week {
+            return Configuration(windowDuration: windowDuration, segmentDuration: day)
+        }
+        if UsageWindowDuration.calendarMonths.contains(windowDuration) {
+            return Configuration(windowDuration: windowDuration, segmentDuration: 7 * day)
+        }
+        return nil
     }
 
     let configuration: Configuration
@@ -94,12 +75,8 @@ struct BudgetPace: Equatable {
         self.elapsedFraction = elapsedFraction
         self.remainingTime = remainingTime
 
-        let unitDuration = configuration.allowanceUnit.duration
-        allowance = remainingTime >= unitDuration
-            ? .perUnit(
-                percentage: remainingPercentage / (remainingTime / unitDuration),
-                unit: configuration.allowanceUnit
-            )
+        allowance = remainingTime >= Self.day
+            ? .perDay(percentage: remainingPercentage / (remainingTime / Self.day))
             : .untilReset(percentage: remainingPercentage)
         warningBoundary = min(elapsedFraction * 100 + allowance.percentage, 100)
 

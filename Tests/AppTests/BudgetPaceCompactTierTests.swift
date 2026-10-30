@@ -51,7 +51,7 @@ final class BudgetPaceCompactTierTests: XCTestCase {
             lines: [line],
             lastUpdated: now
         )
-        let later = now.addingTimeInterval(7 * 24 * 60 * 60)
+        let later = now.addingTimeInterval(14 * 24 * 60 * 60)
 
         XCTAssertEqual(try XCTUnwrap(BudgetPace(line: line, now: now)).tier, .warn)
         XCTAssertEqual(QuotaStatusResolver.compactTier(for: quota, at: now), .warn)
@@ -113,7 +113,7 @@ final class BudgetPaceCompactTierTests: XCTestCase {
             label: DisplayText(verbatim: "Monthly"),
             percentage: usedPercentage,
             resetDate: resetDate,
-            windowDuration: UsageWindowDuration.month
+            windowDuration: 31 * 24 * 60 * 60
         )
     }
 
