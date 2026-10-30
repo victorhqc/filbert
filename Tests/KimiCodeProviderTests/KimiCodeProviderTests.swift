@@ -99,7 +99,7 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
         XCTAssertEqual(quota.lines.map(\.label.resolved), ["5-hour window", "Weekly", "Monthly"])
         XCTAssertEqual(
             quota.lines.map(\.windowDuration),
-            [UsageWindowDuration.fiveHours, UsageWindowDuration.week, UsageWindowDuration.month]
+            [UsageWindowDuration.fiveHours, UsageWindowDuration.week, nil]
         )
         XCTAssertEqual(quota.lines.map(\.limitGroup), ["membership", "membership", "membership"])
         XCTAssertEqual(quota.lines.map(\.percentageFractionLength), [2, 2, 2])
@@ -140,6 +140,6 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
             observation.metrics.map(\.value),
             quota.lines.compactMap { $0.percentage.map { .number(Decimal($0)) } }
         )
-        XCTAssertEqual(observation.metrics.map { $0.forecastDescriptor != nil }, [true, false])
+        XCTAssertEqual(observation.metrics.map { $0.forecastDescriptor != nil }, [true, true])
     }
 }

@@ -44,7 +44,7 @@ final class PercentagePrecisionTests: XCTestCase {
             percentage: 43.72,
             percentageFractionLength: fractionLength,
             resetDate: now.addingTimeInterval(10 * 24 * 3600),
-            windowDuration: UsageWindowDuration.month
+            windowDuration: 31 * 24 * 3600
         )
     }
 

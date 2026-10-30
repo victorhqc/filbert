@@ -82,7 +82,6 @@ final class ProviderProtocolTests: XCTestCase {
     func testUsageWindowDuration_definesSharedDurations() {
         XCTAssertEqual(UsageWindowDuration.fiveHours, 5 * 60 * 60)
         XCTAssertEqual(UsageWindowDuration.week, 7 * 24 * 60 * 60)
-        XCTAssertEqual(UsageWindowDuration.month, 30 * 24 * 60 * 60)
     }
 
     func testUsageDetail_roundtripsLabelAndValue() {

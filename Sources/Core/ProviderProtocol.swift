@@ -121,7 +121,6 @@ public enum ProviderAvailability: Equatable, Sendable {
 public enum UsageWindowDuration {
     public static let fiveHours: TimeInterval = 5 * 60 * 60
     public static let week: TimeInterval = 7 * 24 * 60 * 60
-    public static let month: TimeInterval = 30 * 24 * 60 * 60
 }
 
 public struct UsageLine: Sendable {

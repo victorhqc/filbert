@@ -347,6 +347,8 @@ Estimate how long each supported allowance would last at the user's recent pace,
     - [x] OpenCode Go weekly and monthly windows (providers 20), #81
     - [x] z.ai weekly window (providers 21), #82. The live capture stays open in (providers 21).
     - [ ] Cursor included usage (providers 22)
+    - [x] Kimi Code five-hour window (providers 29), #106
+    - [ ] Kimi Code weekly and monthly windows (providers 28). Implemented, not yet merged.
 12. [x] Learning starts with consumption (AC14), from the manual check of 2026-10-12 with Codex credits (providers 18). A flat credits row showed "Learning your usage rate…" with nothing to learn.
     - [x] Record the time of the first consumption after each baseline in `AllowanceHistory`. Without it and without a rate, the state is insufficient. With it, learning lasts the maximum horizon from that time.
     - [x] Update the Core tests that expect learning right after a flat baseline, and add the tests from (AC12).
