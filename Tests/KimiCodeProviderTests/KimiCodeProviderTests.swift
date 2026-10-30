@@ -140,6 +140,6 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
             observation.metrics.map(\.value),
             quota.lines.compactMap { $0.percentage.map { .number(Decimal($0)) } }
         )
-        XCTAssertTrue(observation.metrics.allSatisfy { $0.forecastDescriptor == nil })
+        XCTAssertEqual(observation.metrics.map { $0.forecastDescriptor != nil }, [true, false])
     }
 }
