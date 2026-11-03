@@ -33,6 +33,10 @@ final class ZAIProviderTests: XCTestCase {
 
     // MARK: - Authenticated requests
 
+    func testHasNoTabLabel() {
+        XCTAssertNil(ZAIProvider.providerTabLabel)
+    }
+
     func testFetchQuota_issuesCorrectRequests() async throws {
         MockURLProtocol.handler = { _ in
             (200, Self.validResponseJSON())

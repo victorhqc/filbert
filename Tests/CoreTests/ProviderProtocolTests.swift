@@ -190,6 +190,24 @@ final class ProviderProtocolTests: XCTestCase {
         XCTAssertEqual(name, "sparkles")
     }
 
+    @MainActor
+    func testRegistry_transportsProviderTabLabel() throws {
+        let registry = ProviderRegistry()
+        registry.register(GlyphProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+        XCTAssertEqual(info.tabLabel, "Beta")
+    }
+
+    @MainActor
+    func testRegistry_tabLabelDefaultsToNil() throws {
+        let registry = ProviderRegistry()
+        registry.register(SetupHelpProvider())
+
+        let info = try XCTUnwrap(registry.registeredProviders.first)
+        XCTAssertNil(info.tabLabel)
+    }
+
     func testProviderGlyph_defaultsToNeutralPlaceholder() {
         guard case let .sfSymbol(name) = SetupHelpProvider.providerGlyph else {
             return XCTFail("Expected the default SF Symbol glyph")
@@ -254,6 +272,7 @@ private struct GlyphProvider: AIProvider {
     static let providerId = "glyph-test"
     static let providerName = "Glyph Test"
     static let providerGlyph = ProviderGlyph.sfSymbol("sparkles")
+    static let providerTabLabel: String? = "Beta"
     static let providerDescription = "Test provider"
     static let baseURL = URL(string: "https://example.com")!
 

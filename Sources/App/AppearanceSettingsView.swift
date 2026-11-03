@@ -28,6 +28,10 @@ struct AppearanceTab: View {
                 }
             }
 
+            SettingsCard(heading: String(displayLocalized: "Panel layout", bundle: .module)) {
+                panelLayoutSettings
+            }
+
             SettingsCard(heading: String(displayLocalized: "Balance thresholds", bundle: .module)) {
                 BalanceThresholdsSettingsRow()
             }
@@ -53,6 +57,36 @@ struct AppearanceTab: View {
             }
         }
         .navigationTitle(String(displayLocalized: "Appearance", bundle: .module))
+    }
+
+    private var panelLayoutSettings: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Picker(
+                String(displayLocalized: "Panel layout", bundle: .module),
+                selection: Binding(
+                    get: { viewModel.panelLayout },
+                    set: { viewModel.setPanelLayout($0) }
+                )
+            ) {
+                Text(String(displayLocalized: "Stacked", bundle: .module)).tag(PanelLayout.stacked)
+                Text(String(displayLocalized: "Tabs", bundle: .module)).tag(PanelLayout.tabs)
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+
+            Text(panelLayoutDescription)
+                .font(.caption)
+                .foregroundColor(.secondary)
+        }
+    }
+
+    private var panelLayoutDescription: String {
+        switch viewModel.panelLayout {
+        case .stacked:
+            String(displayLocalized: "Show every provider as a card.", bundle: .module)
+        case .tabs:
+            String(displayLocalized: "Show one provider at a time. Select a tab to see its details.", bundle: .module)
+        }
     }
 
     private var keepAwakeSettings: some View {

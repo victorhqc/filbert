@@ -5,6 +5,7 @@ public struct KimiAPIProvider: AIProvider {
     public static let providerId = "kimi-api"
     public static let providerName = "Kimi API"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
+    public static let providerTabLabel: String? = "API"
     public static var providerDescription: String {
         String(displayLocalized: "Monitor prepaid balance", bundle: .module)
     }

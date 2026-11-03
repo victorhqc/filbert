@@ -34,6 +34,31 @@ extension QuotaViewModel {
         isVintageMacIconEnabled = isEnabled
     }
 
+    var panelLayout: PanelLayout {
+        panel.layout
+    }
+
+    func setPanelLayout(_ layout: PanelLayout) {
+        guard panel.layout != layout else { return }
+        PanelLayoutPreferences.setLayout(layout)
+        panel.layout = layout
+    }
+
+    var selectedTabProviderId: String? {
+        Self.resolvedSelectedTab(saved: panel.savedSelectedTabProviderId, configured: configuredProviderIds)
+    }
+
+    func selectTab(_ providerId: String) {
+        guard panel.savedSelectedTabProviderId != providerId else { return }
+        PanelLayoutPreferences.setSelectedTabProviderId(providerId)
+        panel.savedSelectedTabProviderId = providerId
+    }
+
+    static func resolvedSelectedTab(saved: String?, configured: [String]) -> String? {
+        guard let saved, configured.contains(saved) else { return configured.first }
+        return saved
+    }
+
     func isCollapsed(_ providerId: String) -> Bool {
         _ = collapseStateRevision
         return Self.resolvedCollapseState(
@@ -76,4 +101,9 @@ extension QuotaViewModel {
         }
         orderedProviderIds = ProviderOrder.effectiveOrder(for: sortedByName.map(\.id))
     }
+}
+
+struct PanelPresentation {
+    var layout = PanelLayoutPreferences.layout
+    var savedSelectedTabProviderId = PanelLayoutPreferences.selectedTabProviderId
 }

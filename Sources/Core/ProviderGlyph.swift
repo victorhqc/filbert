@@ -7,3 +7,13 @@ public enum ProviderGlyph: @unchecked Sendable {
     case sfSymbol(String)
     case asset(name: String, bundle: Bundle)
 }
+
+public extension AIProvider {
+    static var providerGlyph: ProviderGlyph {
+        .sfSymbol("cpu")
+    }
+
+    static var providerTabLabel: String? {
+        nil
+    }
+}
