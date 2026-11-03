@@ -6,7 +6,7 @@ extension QuotaView {
     var tabbedProviders: some View {
         let selectedId = viewModel.selectedTabProviderId
 
-        ProviderTabFlowLayout {
+        ProviderTabFlowLayout(spacing: 4) {
             ForEach(viewModel.configuredProviderIds, id: \.self) { providerId in
                 providerTab(providerId: providerId, isSelected: providerId == selectedId)
             }
@@ -21,16 +21,17 @@ extension QuotaView {
     private func providerTab(providerId: String, isSelected: Bool) -> some View {
         if let info = viewModel.providerInfo(for: providerId), let state = viewModel.providerStates[providerId] {
             ProviderTab(
-                viewModel: viewModel,
                 info: info,
                 state: state,
+                errorMessage: viewModel.headerErrorMessage(providerId: providerId, state: state),
                 isSelected: isSelected,
                 accessibilityLabel: headerAccessibilityLabel(
                     info: info,
                     state: state,
                     collapsed: true,
                     fastRefreshStatus: fastRefreshStatus(for: providerId)
-                )
+                ),
+                onSelect: { viewModel.selectTab(providerId) }
             )
         }
     }
@@ -41,7 +42,8 @@ extension QuotaView {
             providerCard(providerId: providerId, state: state, showsBody: true) {
                 HStack(spacing: 6) {
                     providerTitle(info: info, fastRefreshStatus: fastRefreshStatus(for: providerId))
-                    Spacer(minLength: 0)
+                    Spacer(minLength: 4)
+                    headerTrailingControls(providerId: providerId, state: state)
                 }
             }
         }

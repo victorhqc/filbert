@@ -34,6 +34,7 @@ enum ProviderVisualStyle {
 
 struct ProviderLogoBadge: View {
     let glyph: ProviderGlyph
+    var showsContainer = true
 
     var body: some View {
         Group {
@@ -58,7 +59,7 @@ struct ProviderLogoBadge: View {
         )
         .padding(ProviderVisualStyle.badgeInset)
         .background(
-            .secondary.opacity(0.14),
+            .secondary.opacity(showsContainer ? 0.14 : 0),
             in: RoundedRectangle(cornerRadius: ProviderVisualStyle.badgeCornerRadius)
         )
         .accessibilityHidden(true)

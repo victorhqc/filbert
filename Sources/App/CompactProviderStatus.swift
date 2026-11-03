@@ -20,8 +20,8 @@ struct CompactProviderStatus: View {
         case let .window(percentage):
             if let tier {
                 HStack(spacing: 4) {
-                    compactRing(
-                        percentage: percentage,
+                    UsageRing(
+                        fraction: QuotaStatusResolver.clampedFraction(percentage / 100),
                         color: ProviderVisualStyle.tierColor(tier, scheme: colorScheme)
                     )
                     Text(QuotaFormatting.percentage(percentage))
@@ -48,18 +48,5 @@ struct CompactProviderStatus: View {
         case .fallback:
             EmptyView()
         }
-    }
-
-    private func compactRing(percentage: Double, color: Color) -> some View {
-        let fraction = QuotaStatusResolver.clampedFraction(percentage / 100)
-        return ZStack {
-            Circle()
-                .stroke(.secondary.opacity(0.2), lineWidth: 2)
-            Circle()
-                .trim(from: 0, to: fraction)
-                .stroke(color, style: StrokeStyle(lineWidth: 2, lineCap: .round))
-                .rotationEffect(.degrees(-90))
-        }
-        .frame(width: 14, height: 14)
     }
 }

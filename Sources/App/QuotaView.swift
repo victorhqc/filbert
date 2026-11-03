@@ -17,7 +17,7 @@ struct QuotaView: View {
             if !viewModel.hasAnyConfiguredProvider {
                 emptyState
             } else {
-                // No ScrollView: MenuBarExtra's window-style popover collapses it to zero height.
+                // No vertical ScrollView: MenuBarExtra's window-style popover collapses it to zero height.
                 switch viewModel.panelLayout {
                 case .stacked:
                     ForEach(viewModel.configuredProviderIds, id: \.self) { providerId in
@@ -287,15 +287,20 @@ extension QuotaView {
                 viewModel.toggleCollapsed(info.id)
             }
 
-            if let message = viewModel.headerErrorMessage(providerId: info.id, state: state) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.yellow)
-                    .font(.caption2)
-                    .help(message)
-            }
-
-            ProviderRefreshButton(viewModel: viewModel, providerId: info.id, state: state)
+            headerTrailingControls(providerId: info.id, state: state)
         }
+    }
+
+    @ViewBuilder
+    func headerTrailingControls(providerId: String, state: ProviderState) -> some View {
+        if let message = viewModel.headerErrorMessage(providerId: providerId, state: state) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.yellow)
+                .font(.caption2)
+                .help(message)
+        }
+
+        ProviderRefreshButton(viewModel: viewModel, providerId: providerId, state: state)
     }
 
     private func providerHeaderLabel(
