@@ -72,6 +72,12 @@ jobs:
               )
           PY
 
+      # The highlights ship inside the app, so they must be committed at the tag.
+      - name: Validate release highlights
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
+        run: python3 scripts/validate-release-highlights.py --require-version "$VERSION"
+
       - name: Build signed and notarized DMG
         env:
           VERSION: ${{ steps.version.outputs.version }}
@@ -169,7 +175,7 @@ jobs:
             || { echo "SPARKLE_PRIVATE_KEY is missing from release-signing"; exit 1; }
 
           dmg="dist/Filbert-${VERSION}-arm64.dmg"
-          notes="dist/Filbert-${VERSION}-arm64.release-notes.md"
+          notes="dist/Filbert-${VERSION}-arm64.appcast-notes.md"
           input="$RUNNER_TEMP/appcast-input"
           site="$RUNNER_TEMP/appcast-site"
           mkdir -p "$input" "$site"
@@ -191,7 +197,8 @@ jobs:
             --version "$VERSION" \
             --download-url "$download_url" \
             --public-key "$SPARKLE_PUBLIC_ED_KEY" \
-            --dmg "$dmg"
+            --dmg "$dmg" \
+            --release-notes "$notes"
           unset SPARKLE_PRIVATE_KEY
 
       # pages.yml republishes this asset on every site deployment, so a

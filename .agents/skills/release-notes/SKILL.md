@@ -134,3 +134,11 @@ user should know what to expect after reading this.>
 - [ ] The Changes list includes every PR in the range, in the original format.
 - [ ] Sentences are short. Words are simple.
 - [ ] A user can read it in under a minute and know what changed.
+
+## 6. Next: the in-app highlights
+
+The app shows a short version of Features and Bug Fixes after an update. The
+release workflow fails if `Sources/App/Resources/ReleaseHighlights.json` has no
+entry for the version. After these notes, tell the user to run the
+[`release-highlights`](../release-highlights/SKILL.md) skill and to merge its
+change **before** they publish the release.

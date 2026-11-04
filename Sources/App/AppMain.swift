@@ -22,10 +22,17 @@ struct AppMain: App {
     @State private var settingsTab = SettingsTab.general
     private let updateCoordinator: UpdateCoordinator
     private let welcomeWindow: WelcomeWindowController
+    private let whatsNewWindow: WhatsNewWindowController
 
     init() {
         let welcomeState = WelcomeState()
         let showsWelcome = welcomeState.shouldShowOnLaunch
+        let welcomeCompleted = welcomeState.isCompleted
+        let whatsNewState = WhatsNewState(hasExistingInstall: {
+            welcomeCompleted || ProviderEnablement.hasSavedValues
+        })
+        let highlights = ReleaseHighlights.bundled
+        let announcedReleases = whatsNewState.resolveLaunchAnnouncement(in: highlights)
 
         let registry = ProviderRegistry()
         registry.register(ZAIProvider())
@@ -58,6 +65,12 @@ struct AppMain: App {
             launchAtLogin: launchAtLogin,
             displayLanguage: displayLanguage
         )
+        whatsNewWindow = WhatsNewWindowController(
+            state: whatsNewState,
+            announcedReleases: announcedReleases,
+            highlights: highlights,
+            displayLanguage: displayLanguage
+        )
     }
 
     var body: some Scene {
@@ -66,7 +79,8 @@ struct AppMain: App {
                 QuotaView(
                     viewModel: viewModel,
                     sleepPrevention: sleepPrevention,
-                    updateCoordinator: updateCoordinator
+                    updateCoordinator: updateCoordinator,
+                    whatsNewWindow: whatsNewWindow
                 )
                 .frame(width: 280)
             }
@@ -87,6 +101,7 @@ struct AppMain: App {
                     launchAtLogin: launchAtLogin,
                     displayLanguage: displayLanguage,
                     welcomeWindow: welcomeWindow,
+                    whatsNewWindow: whatsNewWindow,
                     selectedTab: $settingsTab
                 )
             }

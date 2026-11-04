@@ -80,7 +80,7 @@ final class StringCatalogCoverageTests: XCTestCase {
     }
 
     /// The deny lists in `docs/localization-glossary.md`.
-    private let deniedTerms = [
+    static let deniedTerms = [
         "es-MX": [
             #"\bajustes\b"#, #"\bordenador"#, #"\bañad"#, #"\bicono"#, #"\bcompr(?:ob|ueb)"#, #"\bhoras? punta\b"#,
             #"\b\w+(?:áis|éis)\b"#, #"\bvosotr"#, #"\bvuestr"#, #"\bllave de API\b"#, #"\brefresc"#,
@@ -112,7 +112,7 @@ final class StringCatalogCoverageTests: XCTestCase {
 
     /// Traditional characters that ICU's `Hans-Hant` transform changes anyway. Each one needs a source in
     /// `docs/localization-glossary.md`.
-    private let traditionalChineseExceptions: Set<Character> = []
+    private static let traditionalChineseExceptions: Set<Character> = []
 
     func testTraditionalChineseHasNoSimplifiedCharacters() throws {
         var failures: [String] = []
@@ -120,12 +120,7 @@ final class StringCatalogCoverageTests: XCTestCase {
             let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
             for (key, entry) in catalog.strings.sorted(by: { $0.key < $1.key }) {
                 for value in entry.localizations?["zh-Hant"]?.units.map(\.value) ?? [] {
-                    // ICU converts some characters only in context (周 alone stays, 周一 becomes 週一).
-                    let traditional = value.applyingTransform(StringTransform("Hans-Hant"), reverse: false) ?? value
-                    let changed = zip(value, traditional).filter { original, converted in
-                        original != converted && !traditionalChineseExceptions.contains(original)
-                    }
-                    if value.count != traditional.count || !changed.isEmpty {
+                    if let traditional = Self.traditionalChineseCorrection(of: value) {
                         failures.append("\(module.catalog) \"\(key)\" in zh-Hant: \(value) → \(traditional)")
                     }
                 }
@@ -134,13 +129,23 @@ final class StringCatalogCoverageTests: XCTestCase {
         XCTAssertEqual(failures, [], failures.joined(separator: "\n"))
     }
 
+    /// The Traditional form of `value`, or `nil` when it has no Simplified characters.
+    static func traditionalChineseCorrection(of value: String) -> String? {
+        // ICU converts some characters only in context (周 alone stays, 周一 becomes 週一).
+        let traditional = value.applyingTransform(StringTransform("Hans-Hant"), reverse: false) ?? value
+        let changed = zip(value, traditional).filter { original, converted in
+            original != converted && !traditionalChineseExceptions.contains(original)
+        }
+        return value.count != traditional.count || !changed.isEmpty ? traditional : nil
+    }
+
     func testEveryLanguageAvoidsItsDeniedTerms() throws {
         let options: String.CompareOptions = [.regularExpression, .caseInsensitive]
         var failures: [String] = []
         for module in modules {
             let catalog = try JSONDecoder().decode(Catalog.self, from: Data(contentsOf: url(module.catalog)))
             for (key, entry) in catalog.strings.sorted(by: { $0.key < $1.key }) {
-                for (language, patterns) in deniedTerms {
+                for (language, patterns) in Self.deniedTerms {
                     let values = entry.localizations?[language]?.units.map(\.value) ?? []
                     failures += patterns
                         .filter { pattern in values.contains { $0.range(of: pattern, options: options) != nil } }

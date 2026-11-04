@@ -9,6 +9,7 @@ struct QuotaView: View {
     let viewModel: QuotaViewModel
     let sleepPrevention: SleepPreventionController
     let updateCoordinator: UpdateCoordinator
+    let whatsNewWindow: WhatsNewWindowController
 
     @Environment(\.colorScheme) private var colorScheme: ColorScheme
 

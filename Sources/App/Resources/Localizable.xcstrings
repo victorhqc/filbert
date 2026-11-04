@@ -1,6 +1,141 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "What's New in Filbert" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Neuerungen in Filbert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "What's New in Filbert" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Novedades de Filbert" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Novedades de Filbert" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertの新機能" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Novidades do Filbert" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Novidades do Filbert" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Что нового в Filbert" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 新功能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert新功能" } }
+      }
+    },
+    "What's New" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Neuerungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "What's New" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Novedades" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Novedades" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "新機能" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Novidades" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Novidades" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Что нового" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新功能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新功能" } }
+      }
+    },
+    "Version %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Version %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Version %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Versión %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Versión %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "バージョン%@" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Versão %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Versão %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Версия %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "版本 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "版本%@" } }
+      }
+    },
+    "New Features" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Neue Funktionen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "New Features" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Funciones nuevas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Funciones nuevas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "新しい機能" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Novos recursos" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Novas funcionalidades" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Новые функции" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新增功能" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新增功能" } }
+      }
+    },
+    "Bug Fixes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Fehlerbehebungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Bug Fixes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Correcciones de errores" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Correcciones de errores" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "不具合の修正" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Correções de bugs" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Correções de erros" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Исправления ошибок" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "问题修复" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "錯誤修正" } }
+      }
+    },
+    "Full release notes" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Vollständige Versionshinweise" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Full release notes" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Notas de la versión completas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Notas de la versión completas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リリースノート全文" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Notas da versão completas" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Notas de versão completas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Полные примечания к выпуску" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完整发布说明" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "完整版本說明" } }
+      }
+    },
+    "Updated to %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Update auf %@ installiert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Updated to %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Actualizado a %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Actualizado a %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@にアップデートしました" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Atualizado para %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Atualizado para %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обновлено до %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已更新到 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已更新至%@" } }
+      }
+    },
+    "Dismiss" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ausblenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dismiss" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Descartar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Descartar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "閉じる" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Dispensar" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ignorar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Скрыть" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关闭" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "關閉" } }
+      }
+    },
+    "Show the new features and fixes in recent versions" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zeigt neue Funktionen und Fehlerbehebungen der letzten Versionen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show the new features and fixes in recent versions" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Muestra las funciones nuevas y las correcciones de las versiones recientes" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Muestra las funciones nuevas y las correcciones de las versiones recientes" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最近のバージョンの新機能と不具合の修正を表示します" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostra os novos recursos e correções das versões recentes" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostra as novas funcionalidades e correções das versões recentes" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывает новые функции и исправления последних версий" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示近期版本的新功能和问题修复" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示近期版本的新功能與錯誤修正" } }
+      }
+    },
     "Go to Dashboard" : {
       "extractionState" : "manual",
       "localizations" : {

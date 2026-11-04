@@ -10,6 +10,8 @@ apps before the feed is published.
 import argparse
 import base64
 import hashlib
+import html
+import re
 import xml.etree.ElementTree as ElementTree
 
 SPARKLE_NAMESPACE = "http://www.andymatuschak.org/xml-namespaces/sparkle"
@@ -184,6 +186,24 @@ def sparkle_version_value(item, enclosure, sparkle, name):
     return item_value or enclosure_value
 
 
+def normalized_text(value):
+    without_tags = re.sub(r"<[^>]+>", " ", html.unescape(value))
+    return " ".join(html.unescape(without_tags).split())
+
+
+def verify_highlights(description, notes_path):
+    """Every highlight line in the embedded notes must survive Sparkle's conversion."""
+    try:
+        lines = open(notes_path, encoding="utf-8").read().splitlines()
+    except OSError as error:
+        fail(f"Could not read release notes: {error}")
+    embedded = normalized_text(description)
+    highlights = [line[2:] for line in lines if line.startswith("- ")]
+    missing = [text for text in highlights if normalized_text(text) not in embedded]
+    if missing:
+        fail("Appcast release notes are missing highlights: " + "; ".join(missing))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--appcast", required=True)
@@ -196,6 +216,10 @@ def main():
     parser.add_argument(
         "--dmg",
         help="path to the release DMG; enables enclosure verification",
+    )
+    parser.add_argument(
+        "--release-notes",
+        help="Markdown notes given to generate_appcast; each highlight must be embedded",
     )
     args = parser.parse_args()
 
@@ -249,6 +273,9 @@ def main():
 
     if not enclosure.get("type"):
         fail("Appcast enclosure is missing its MIME type")
+
+    if args.release_notes:
+        verify_highlights(item.findtext("description") or "", args.release_notes)
 
     if args.public_key:
         public_key = decode_public_key(args.public_key)

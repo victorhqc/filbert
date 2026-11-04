@@ -18,6 +18,7 @@ struct SettingsView: View {
     let launchAtLogin: LaunchAtLoginController
     let displayLanguage: DisplayLanguageModel
     let welcomeWindow: WelcomeWindowController
+    let whatsNewWindow: WhatsNewWindowController
     /// Lives above the language rebuild, so a language change keeps the open tab.
     @Binding var selectedTab: SettingsTab
 
@@ -51,7 +52,7 @@ struct SettingsView: View {
                 }
                 .tag(SettingsTab.refresh)
 
-            AboutSettingsView(updateCoordinator: updateCoordinator)
+            AboutSettingsView(updateCoordinator: updateCoordinator, whatsNewWindow: whatsNewWindow)
                 .tabItem {
                     Label(String(displayLocalized: "About", bundle: .module), systemImage: "info.circle")
                 }
