@@ -1,0 +1,22 @@
+[
+  {
+    "version": "0.26.0",
+    "items": [
+      {
+        "kind": "feature",
+        "text": {
+          "en": "After an update, Filbert shows what is new in each version.",
+          "de-DE": "Nach einem Update zeigt Filbert, was in jeder Version neu ist.",
+          "es-MX": "Después de una actualización, Filbert muestra las novedades de cada versión.",
+          "es-ES": "Después de una actualización, Filbert muestra las novedades de cada versión.",
+          "pt-BR": "Depois de uma atualização, o Filbert mostra as novidades de cada versão.",
+          "pt-PT": "Depois de uma atualização, o Filbert mostra as novidades de cada versão.",
+          "ru": "После обновления Filbert показывает, что нового в каждой версии.",
+          "zh-Hans": "更新后，Filbert 会显示每个版本的新功能。",
+          "zh-Hant": "更新後，Filbert會顯示每個版本的新功能。",
+          "ja": "アップデート後、Filbertに各バージョンの新機能が表示されます。"
+        }
+      }
+    ]
+  }
+]

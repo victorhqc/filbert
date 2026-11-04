@@ -14,6 +14,7 @@ enum AboutMascot {
 
 struct AboutSettingsView: View {
     let updateCoordinator: UpdateCoordinator
+    let whatsNewWindow: WhatsNewWindowController
 
     var body: some View {
         SettingsScrollColumn {
@@ -80,6 +81,14 @@ struct AboutSettingsView: View {
                 }
                 .disabled(!updateCoordinator.canCheckForUpdates)
                 .accessibilityHint(String(displayLocalized: "Check for a newer Filbert release", bundle: .module))
+
+                Button(String(displayLocalized: "What's New", bundle: .module)) {
+                    whatsNewWindow.showRecent()
+                }
+                .accessibilityHint(String(
+                    displayLocalized: "Show the new features and fixes in recent versions",
+                    bundle: .module
+                ))
 
                 Toggle(
                     String(displayLocalized: "Check for updates automatically", bundle: .module),

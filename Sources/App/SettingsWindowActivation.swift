@@ -26,13 +26,14 @@ private struct OpenAndRaiseSettingsModifier: ViewModifier {
 @MainActor
 enum SettingsWindowLookup {
     /// The menu-bar popover is an `NSPanel` without `.titled`; the Settings scene
-    /// is a regular titled `NSWindow`. Matching structural traits and the Welcome
-    /// window's identifier keeps the lookup locale-independent.
+    /// is a regular titled `NSWindow`. Matching structural traits and the identifiers
+    /// of Filbert's other windows keeps the lookup locale-independent.
     static var settingsWindow: NSWindow? {
         NSApp.windows.first { window in
             window.styleMask.contains(.titled)
                 && !(window is NSPanel)
                 && window.identifier != WelcomeWindowController.windowIdentifier
+                && window.identifier != WhatsNewWindowController.windowIdentifier
         }
     }
 

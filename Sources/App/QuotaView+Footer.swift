@@ -30,10 +30,46 @@ extension QuotaView {
                 .layoutPriority(1)
             }
 
+            if let version = whatsNewWindow.announcedVersion {
+                whatsNewRow(version: version)
+            }
+
             if let update = updateCoordinator.popoverUpdate {
                 updateAvailabilityRow(update)
             }
         }
+    }
+
+    private func whatsNewRow(version: ReleaseVersion) -> some View {
+        HStack(spacing: 8) {
+            Text(String.localizedStringWithFormat(
+                String(displayLocalized: "Updated to %@", bundle: .module),
+                version.description
+            ))
+            .font(.caption2)
+            .foregroundStyle(.secondary)
+            .lineLimit(1)
+            .minimumScaleFactor(0.8)
+            .layoutPriority(1)
+
+            Spacer(minLength: 0)
+
+            Button(String(displayLocalized: "What's New", bundle: .module)) {
+                whatsNewWindow.showAnnouncement()
+            }
+            .controlSize(.small)
+
+            Button {
+                whatsNewWindow.dismissAnnouncement()
+            } label: {
+                Image(systemName: "xmark")
+                    .font(.caption2.weight(.semibold))
+            }
+            .buttonStyle(.borderless)
+            .foregroundStyle(.secondary)
+            .accessibilityLabel(String(displayLocalized: "Dismiss", bundle: .module))
+        }
+        .accessibilityElement(children: .contain)
     }
 
     private func updateAvailabilityRow(_ update: PopoverUpdate) -> some View {

@@ -101,8 +101,15 @@ edit this environment and require an approval for its deployments.
 Only a published, non-draft, non-prerelease release with a plain `vX.Y.Z`
 tag (no prerelease or build suffix) can publish the stable appcast.
 
-1. Create a draft release with a `v<version>` tag.
-2. Before the first updater-capable release, set
+1. Create a draft release with a `v<version>` tag. Write its text with the
+   `release-notes` skill. Do not create the tag yet; GitHub creates it from
+   `main` when the release is published.
+2. Run the `release-highlights` skill. It adds the version's entry to
+   `Sources/App/Resources/ReleaseHighlights.json`. Review the English and the
+   translations, then merge the change to `main`. The highlights ship inside
+   the app, so the tag must include them. The release fails before the build
+   when the entry is missing.
+3. Before the first updater-capable release, set
    `BOOTSTRAP_UPDATE_RELEASE` to `true` in the `release-signing` environment.
    Its generated notes tell users of older Filbert versions to install this
    release manually:
@@ -110,28 +117,28 @@ tag (no prerelease or build suffix) can publish the stable appcast.
    ```sh
    gh variable set BOOTSTRAP_UPDATE_RELEASE --env release-signing --body true
    ```
-3. Publish the release. Publishing, rather than pushing a bare tag, starts the
+4. Publish the release. Publishing, rather than pushing a bare tag, starts the
    workflow.
-4. The workflow builds the arm64 app, embeds the public key and feed URL, and
+5. The workflow builds the arm64 app, embeds the public key and feed URL, and
    runs the existing Developer ID signing, notarization, stapling, and mounted
    DMG verification checks.
-5. After those checks pass, it uploads the exact DMG, its SHA-256 file, and
+6. After those checks pass, it uploads the exact DMG, its SHA-256 file, and
    generated release notes to that exact GitHub Release tag.
-6. It generates an appcast entry whose enclosure points to the versioned
+7. It generates an appcast entry whose enclosure points to the versioned
    `releases/download/<tag>/...dmg` URL. It does not use the mutable `latest`
    URL.
-7. The appcast validator checks the installed version, release version, asset
+8. The appcast validator checks the installed version, release version, asset
    URL, byte length, MIME type, publication date, release notes, and EdDSA
    signature — including verifying the enclosure and feed signatures against
    the public key embedded in shipped apps.
-8. It uploads the validated `appcast.xml` to the same GitHub Release.
-9. A dependent job dispatches `pages.yml` on the default branch with the tag.
+9. It uploads the validated `appcast.xml` to the same GitHub Release.
+10. A dependent job dispatches `pages.yml` on the default branch with the tag.
    That workflow downloads the release's `appcast.xml` and deploys it with the
    landing page. It dispatches instead of calling directly because
    `deploy-pages` keys a deployment on the commit SHA, and GitHub accepts but
    never serves a release deploy whose commit was already published from
    `main`.
-10. A second dependent job renders the Homebrew cask from the released DMG and
+11. A second dependent job renders the Homebrew cask from the released DMG and
     pushes it to `victorhqc/homebrew-tap`. See
     [`homebrew-tap.md`](homebrew-tap.md).
 
@@ -172,6 +179,17 @@ The **About → Updates** card provides:
 - **Check for Updates…**, which starts a user-initiated Sparkle check even when
   automatic checks are disabled or not yet due.
 - **Check for updates automatically**.
+- **What's New**, which opens the highlights of the three newest versions.
+
+Sparkle's update dialog shows the new version's English highlights, rendered
+from `ReleaseHighlights.json` into `<dmg>.appcast-notes.md`. The DMG name,
+checksum, and install steps stay on the GitHub Release.
+
+After an update, the popover shows **Updated to X.Y.Z** with a **What's New**
+button. It opens a small window with the highlights of every version since the
+last one the user saw, in the display language. Opening or dismissing it saves
+the running version as `whats-new-last-seen-version`. A new install saves its
+version silently. Launch with `--show-whats-new` to open the window on demand.
 
 The standard Sparkle interface shows release notes, downloads the update with
 a progress window, and offers **Install and Relaunch**. A background check

@@ -130,10 +130,13 @@ swift test
 # 6. Workflow tests — CI step "Workflow tests"
 python3 scripts/test-automatic-updates.py
 
-# 7. Cask tests — CI step "Homebrew cask tests"
+# 7. Highlights tests — CI step "Release highlights tests"
+python3 scripts/test-release-highlights.py
+
+# 8. Cask tests — CI step "Homebrew cask tests"
 python3 scripts/test-homebrew-cask.py
 
-# 8. Packaging tests — CI step "Local signing and startup tests"
+# 9. Packaging tests — CI step "Local signing and startup tests"
 python3 scripts/test-local-signing.py
 ```
 
@@ -148,7 +151,7 @@ python3 scripts/test-local-signing.py
 - **`swift build`** and **`swift build -c release`** must end with
   `Build complete!`.
 - **`swift test`** must show `0 failures`.
-- **All three Python test scripts** must report `OK` and exit with status `0`.
+- **All four Python test scripts** must report `OK` and exit with status `0`.
 
 ### When a tool isn't installed
 
