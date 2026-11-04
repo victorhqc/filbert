@@ -27,6 +27,7 @@ public final class ProviderRegistry {
                 id: type(of: provider).providerId,
                 displayName: type(of: provider).providerName,
                 glyph: type(of: provider).providerGlyph,
+                tabLabel: type(of: provider).providerTabLabel,
                 description: type(of: provider).providerDescription,
                 disclaimer: type(of: provider).providerDisclaimer,
                 automaticRefreshDisclosure: type(of: provider).automaticRefreshDisclosure,

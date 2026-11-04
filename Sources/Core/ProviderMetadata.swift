@@ -39,6 +39,8 @@ public struct ProviderInfo: Sendable, Identifiable {
     public let id: String
     public let displayName: String
     public let glyph: ProviderGlyph
+    /// Tells apart providers that share a glyph where no name is shown.
+    public let tabLabel: String?
     public let description: String
     public let disclaimer: String?
     public let automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure?
@@ -55,6 +57,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         id: String,
         displayName: String,
         glyph: ProviderGlyph = .sfSymbol("cpu"),
+        tabLabel: String? = nil,
         description: String,
         disclaimer: String? = nil,
         automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? = nil,
@@ -68,6 +71,7 @@ public struct ProviderInfo: Sendable, Identifiable {
         self.id = id
         self.displayName = displayName
         self.glyph = glyph
+        self.tabLabel = tabLabel
         self.description = description
         self.disclaimer = disclaimer
         self.automaticRefreshDisclosure = automaticRefreshDisclosure

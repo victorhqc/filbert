@@ -5,6 +5,7 @@ public struct ZAIAPIProvider: AIProvider {
     public static let providerId = "zai-api"
     public static let providerName = "z.ai API"
     public static let providerGlyph = ProviderGlyph.asset(name: "ProviderGlyph", bundle: .module)
+    public static let providerTabLabel: String? = "API"
     public static var providerDescription: String {
         String(displayLocalized: "Monitor pay-as-you-go balance", bundle: .module)
     }

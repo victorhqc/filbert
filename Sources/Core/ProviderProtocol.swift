@@ -217,6 +217,7 @@ public protocol AIProvider: Sendable {
     static var providerId: String { get }
     static var providerName: String { get }
     static var providerGlyph: ProviderGlyph { get }
+    static var providerTabLabel: String? { get }
     static var providerDescription: String { get }
     static var providerDisclaimer: String? { get }
     static var automaticRefreshDisclosure: ProviderAutomaticRefreshDisclosure? { get }
@@ -277,10 +278,6 @@ public protocol AIProvider: Sendable {
 // MARK: - AIProvider defaults
 
 public extension AIProvider {
-    static var providerGlyph: ProviderGlyph {
-        .sfSymbol("cpu")
-    }
-
     static var authShape: ProviderAuth.Shape {
         .apiKey
     }

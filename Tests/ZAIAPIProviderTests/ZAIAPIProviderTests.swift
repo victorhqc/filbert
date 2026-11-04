@@ -27,6 +27,10 @@ final class ZAIAPIProviderTests: ZAIAPIProviderTestCase {
         )
     }
 
+    func testTabLabelTellsItApartFromTheCodingPlan() {
+        XCTAssertEqual(ZAIAPIProvider.providerTabLabel, "API")
+    }
+
     func testAuthShapeIsAPIKey() {
         guard case .apiKey = ZAIAPIProvider.authShape else {
             return XCTFail("Expected an API key provider")

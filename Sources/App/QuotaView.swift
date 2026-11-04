@@ -17,11 +17,16 @@ struct QuotaView: View {
             if !viewModel.hasAnyConfiguredProvider {
                 emptyState
             } else {
-                // No ScrollView: MenuBarExtra's window-style popover collapses it to zero height.
-                ForEach(viewModel.configuredProviderIds, id: \.self) { providerId in
-                    if let state = viewModel.providerStates[providerId] {
-                        providerSection(providerId: providerId, state: state)
+                // No vertical ScrollView: MenuBarExtra's window-style popover collapses it to zero height.
+                switch viewModel.panelLayout {
+                case .stacked:
+                    ForEach(viewModel.configuredProviderIds, id: \.self) { providerId in
+                        if let state = viewModel.providerStates[providerId] {
+                            providerSection(providerId: providerId, state: state)
+                        }
                     }
+                case .tabs:
+                    tabbedProviders
                 }
             }
 
@@ -112,50 +117,6 @@ struct QuotaView: View {
         .padding(.bottom, 4)
     }
 
-    private func refreshButton(for providerId: String, state: ProviderState) -> some View {
-        Button {
-            viewModel.manualRefresh(for: providerId)
-        } label: {
-            RefreshIcon(isRefreshing: viewModel.isRefreshing[providerId] ?? false)
-        }
-        .buttonStyle(.borderless)
-        .font(.caption)
-        .help(refreshHelp(for: providerId, defaultHelp: String(displayLocalized: "Check usage now", bundle: .module)))
-        .disabled(isRefreshDisabled(providerId: providerId, state: state))
-    }
-
-    private func isRefreshDisabled(providerId: String, state: ProviderState) -> Bool {
-        if viewModel.isRefreshing[providerId] == true {
-            return true
-        }
-        if case .loading = state {
-            return true
-        }
-        return viewModel.manualRefreshWaitRemaining(for: providerId) != nil
-    }
-
-    private func refreshHelp(for providerId: String, defaultHelp: String) -> String {
-        guard let remaining = viewModel.manualRefreshWaitRemaining(for: providerId) else {
-            return defaultHelp
-        }
-        let wholeMinutes = max((remaining / 60).rounded(.up), 1) * 60
-        let duration = CoarseDurationFormatting.string(from: wholeMinutes, unitsStyle: .full)
-        return String(
-            displayLocalized: "The provider asked Filbert to wait. Try again in \(duration).",
-            bundle: .module
-        )
-    }
-
-    private func headerErrorMessage(providerId: String, state: ProviderState) -> String? {
-        if let refreshError = viewModel.refreshErrors[providerId] {
-            return refreshError.resolved
-        }
-        if case let .error(message) = state {
-            return message.resolved
-        }
-        return nil
-    }
-
     private func errorContent(_ message: String, providerId: String) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 6) {
@@ -174,7 +135,12 @@ struct QuotaView: View {
                 Button(String(displayLocalized: "Retry", bundle: .module)) {
                     viewModel.manualRefresh(for: providerId)
                 }
-                .help(refreshHelp(for: providerId, defaultHelp: String(displayLocalized: "Retry", bundle: .module)))
+                .help(
+                    viewModel.refreshHelp(
+                        for: providerId,
+                        defaultHelp: String(displayLocalized: "Retry", bundle: .module)
+                    )
+                )
                 .disabled(
                     viewModel.isRefreshing[providerId] == true
                         || viewModel.manualRefreshWaitRemaining(for: providerId) != nil
@@ -229,44 +195,58 @@ struct QuotaView: View {
 
 // MARK: - Per-provider card
 
-private extension QuotaView {
+extension QuotaView {
     @ViewBuilder
-    func providerSection(providerId: String, state: ProviderState) -> some View {
+    private func providerSection(providerId: String, state: ProviderState) -> some View {
         if let info = viewModel.providerInfo(for: providerId) {
             let collapsed = viewModel.isCollapsed(providerId)
-            let fastRefreshStatus = viewModel.isFastAutomaticRefreshActive(for: providerId)
-                ? String(displayLocalized: "Fast checks on", bundle: .module)
-                : nil
-            VStack(alignment: .leading, spacing: 8) {
+            providerCard(providerId: providerId, state: state, showsBody: !collapsed) {
                 providerHeader(
                     info: info,
                     state: state,
                     collapsed: collapsed,
-                    fastRefreshStatus: fastRefreshStatus
+                    fastRefreshStatus: fastRefreshStatus(for: providerId)
                 )
-
-                if !collapsed {
-                    providerBody(providerId: providerId, state: state)
-                } else if case let .error(message) = state {
-                    errorContent(message.resolved, providerId: providerId)
-                }
-
-                if let message = viewModel.refreshErrors[providerId] {
-                    Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                    ErrorLogLink(errorLog: viewModel.errorLog)
-                }
             }
-            .padding(8)
-            .background(
-                ProviderVisualStyle.neutralContainerFill,
-                in: RoundedRectangle(cornerRadius: ProviderVisualStyle.cardCornerRadius)
-            )
         }
     }
 
-    func providerHeader(
+    func providerCard(
+        providerId: String,
+        state: ProviderState,
+        showsBody: Bool,
+        @ViewBuilder header: () -> some View
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            header()
+
+            if showsBody {
+                providerBody(providerId: providerId, state: state)
+            } else if case let .error(message) = state {
+                errorContent(message.resolved, providerId: providerId)
+            }
+
+            if let message = viewModel.refreshErrors[providerId] {
+                Label(message.resolved, systemImage: "exclamationmark.triangle.fill")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                ErrorLogLink(errorLog: viewModel.errorLog)
+            }
+        }
+        .padding(8)
+        .background(
+            ProviderVisualStyle.neutralContainerFill,
+            in: RoundedRectangle(cornerRadius: ProviderVisualStyle.cardCornerRadius)
+        )
+    }
+
+    func fastRefreshStatus(for providerId: String) -> String? {
+        viewModel.isFastAutomaticRefreshActive(for: providerId)
+            ? String(displayLocalized: "Fast checks on", bundle: .module)
+            : nil
+    }
+
+    private func providerHeader(
         info: ProviderInfo,
         state: ProviderState,
         collapsed: Bool,
@@ -307,15 +287,20 @@ private extension QuotaView {
                 viewModel.toggleCollapsed(info.id)
             }
 
-            if let message = headerErrorMessage(providerId: info.id, state: state) {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.yellow)
-                    .font(.caption2)
-                    .help(message)
-            }
-
-            refreshButton(for: info.id, state: state)
+            headerTrailingControls(providerId: info.id, state: state)
         }
+    }
+
+    @ViewBuilder
+    func headerTrailingControls(providerId: String, state: ProviderState) -> some View {
+        if let message = viewModel.headerErrorMessage(providerId: providerId, state: state) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .foregroundColor(.yellow)
+                .font(.caption2)
+                .help(message)
+        }
+
+        ProviderRefreshButton(viewModel: viewModel, providerId: providerId, state: state)
     }
 
     private func providerHeaderLabel(
@@ -325,21 +310,7 @@ private extension QuotaView {
         fastRefreshStatus: String?
     ) -> some View {
         HStack(spacing: 7) {
-            ProviderLogoBadge(glyph: info.glyph)
-
-            VStack(alignment: .leading, spacing: 2) {
-                Text(info.displayName)
-                    .font(.headline)
-                    .lineLimit(1)
-                    .truncationMode(.tail)
-
-                if let fastRefreshStatus {
-                    Label(fastRefreshStatus, systemImage: "bolt.fill")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
-                        .lineLimit(1)
-                }
-            }
+            providerTitle(info: info, fastRefreshStatus: fastRefreshStatus)
 
             Spacer(minLength: 4)
 
@@ -356,8 +327,28 @@ private extension QuotaView {
         .contentShape(Rectangle())
     }
 
+    func providerTitle(info: ProviderInfo, fastRefreshStatus: String?) -> some View {
+        HStack(spacing: 7) {
+            ProviderLogoBadge(glyph: info.glyph)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(info.displayName)
+                    .font(.headline)
+                    .lineLimit(1)
+                    .truncationMode(.tail)
+
+                if let fastRefreshStatus {
+                    Label(fastRefreshStatus, systemImage: "bolt.fill")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+    }
+
     @ViewBuilder
-    func providerBody(providerId: String, state: ProviderState) -> some View {
+    private func providerBody(providerId: String, state: ProviderState) -> some View {
         switch state {
         case .unconfigured:
             EmptyView()

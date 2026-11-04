@@ -49,6 +49,10 @@ final class KimiAPIProviderTests: XCTestCase {
         XCTAssertEqual(quota.lines.first?.balance?.unit, .currency("USD"))
     }
 
+    func testTabLabelTellsItApartFromKimiCode() {
+        XCTAssertEqual(KimiAPIProvider.providerTabLabel, "API")
+    }
+
     func testAuthShapeIsAPIKey() {
         guard case .apiKey = KimiAPIProvider.authShape else {
             return XCTFail("Expected an API key provider")

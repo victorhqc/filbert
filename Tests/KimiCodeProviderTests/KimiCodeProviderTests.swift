@@ -21,6 +21,10 @@ final class KimiCodeProviderTests: KimiCodeProviderTestCase {
         XCTAssertEqual(MockURLProtocol.lastRequest?.url?.absoluteString, "https://api.kimi.com/coding/v1/usages")
     }
 
+    func testHasNoTabLabel() {
+        XCTAssertNil(KimiCodeProvider.providerTabLabel)
+    }
+
     func testAuthShapeIsAPIKey() {
         guard case .apiKey = KimiCodeProvider.authShape else {
             return XCTFail("Expected an API key provider")

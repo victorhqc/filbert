@@ -66,6 +66,8 @@ final class QuotaViewModel {
 
     var isVintageMacIconEnabled = VintageMacIcon.isEnabled
 
+    var panel = PanelPresentation()
+
     /// Changing this token tells SwiftUI to re-resolve the UserDefaults-backed
     /// collapse values that live in Core.
     var collapseStateRevision = 0
