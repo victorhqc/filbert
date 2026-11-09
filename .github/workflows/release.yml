@@ -327,6 +327,9 @@ jobs:
         run: |
           set -euo pipefail
           brew style "$TAP_DIR/Casks/filbert.rb"
+          # Homebrew 7 refuses to load a cask from a non-official tap until it is
+          # trusted. `brew install` trusts a fully qualified name; `brew audit` does not.
+          brew trust --cask "$TAP_NAME/filbert"
           brew audit --cask --strict --online "$TAP_NAME/filbert"
 
       - name: Push the cask

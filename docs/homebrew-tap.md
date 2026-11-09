@@ -149,7 +149,8 @@ update, publish the cask by hand as described above.
 | `HOMEBREW_TAP_DEPLOY_KEY is missing from homebrew-tap` | The environment or the secret is absent | Repeat "Create the deploy key", then re-run the job |
 | `Permission denied (publickey)` in "Clone the tap" or "Push the cask" | The deploy key was removed, rotated, or added without write access | Repeat "Create the deploy key" |
 | `Released DMG does not match its .sha256 asset` | A release asset was replaced or corrupted | Re-run the release workflow so it uploads a matching pair |
-| `brew audit` fails | A cask error or a new Homebrew rule | Fix the template, then re-run the job. The tap is unchanged |
+| `brew audit` fails | A cask error or a new Homebrew rule | Fix the template or the workflow on `main`. A re-run uses the tagged commit, so publish this release by hand as in "Publish the first cask". The tap is unchanged |
+| `Refusing to load cask … from untrusted tap` in "Audit the cask" | Homebrew 7 needs `brew trust` before it loads a cask from a non-official tap | The job runs `brew trust --cask` before `brew audit`. Releases tagged before that change need a manual publish |
 | The tap is one version behind | The job failed after the release was published | Re-run the job. Installs still work, and Sparkle updates them |
 
 ## Key rotation

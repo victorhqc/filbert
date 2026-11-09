@@ -112,7 +112,7 @@ Publish a `filbert` cask in a project-owned Homebrew tap, updated by each stable
    - download the DMG and `.sha256` with `gh release download`, then compare the hashes
    - write the deploy key to a temporary file, pin GitHub's SSH host key, and clone the tap into Homebrew's taps directory with `core.sshCommand` set
    - render the cask; stop when the renderer prints `skip`
-   - run `brew style` and `brew audit --cask --strict --online victorhqc/tap/filbert`
+   - run `brew style`, then `brew trust --cask victorhqc/tap/filbert`, then `brew audit --cask --strict --online victorhqc/tap/filbert`
    - commit as `github-actions[bot]` and push to the tap's default branch
 4. Add the tests and the CI step.
 5. Write `docs/homebrew-tap.md`. The maintainer creates the tap, adds the deploy key with write access, and stores the private key in the `homebrew-tap` environment. Then they push the first cask for the current release, which they render locally with the same script.
@@ -137,3 +137,4 @@ A deploy key is used rather than a personal access token. GitHub limits it to on
 - The cask rendered for v0.22.0 passed `brew style`, `brew audit --cask --strict --online`, and `brew livecheck` (`0.22.0 ==> 0.22.0`) in a temporary local tap on 2026-10-22.
 - `HOMEBREW_NO_INSTALL_FROM_API=1` makes `brew audit` clone `homebrew/core` (1.5 GB). The workflow does not set it.
 - AC1, AC5, AC6, AC8, and AC9 need a published release and are marked `[~]`.
+- 2026-11-09: the v0.26.0 job failed in "Audit the cask" with "Refusing to load cask victorhqc/tap/filbert from untrusted tap victorhqc/tap". The v0.25.0 job passed on 2026-10-30. Homebrew 7 now refuses to load a cask from a non-official tap until `brew trust` records it. `brew install`, `reinstall`, and `upgrade` trust a fully qualified name such as `victorhqc/tap/filbert` on their own, so the documented install command still works. `brew audit` does not, so the job now runs `brew trust --cask` first. A local check with a temporary trust store reproduced the error, and the rendered 0.26.0 cask passed `brew audit --cask --strict --online` once trusted. A release event runs the workflow from the tagged commit, so re-running the failed v0.26.0 job does not pick up the fix. v0.26.0 goes to the tap by hand, with the steps in `docs/homebrew-tap.md`.
