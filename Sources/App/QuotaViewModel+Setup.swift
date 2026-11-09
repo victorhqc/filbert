@@ -80,6 +80,7 @@ extension QuotaViewModel {
         } else {
             setState(state, for: providerId)
             startAutoRefresh(for: providerId)
+            syncActivitySignalSubscription(for: providerId)
         }
     }
 }

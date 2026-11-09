@@ -90,6 +90,7 @@ extension QuotaViewModel {
         fetchTasks[providerId] = nil
         setRefreshing(false, for: providerId)
         guard !isReadyToFetch(providerId) else { return }
+        cancelActivitySignalSubscription(for: providerId)
         if registry.configurationError(for: providerId) != nil {
             applyConfigurationError(for: providerId)
         } else {

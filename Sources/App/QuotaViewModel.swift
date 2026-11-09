@@ -30,6 +30,12 @@ final class SatisfiedNetworkPath: NetworkPathObserving {
     }
 }
 
+struct ScheduledRefresh {
+    let task: Task<Void, Never>
+    /// On the `smartRefreshElapsed` clock.
+    let deadline: TimeInterval
+}
+
 @MainActor
 @Observable
 final class QuotaViewModel {
@@ -80,7 +86,7 @@ final class QuotaViewModel {
 
     // MARK: - Auto-refresh
 
-    var refreshLoops: [String: Task<Void, Never>] = [:]
+    var refreshLoops: [String: ScheduledRefresh] = [:]
 
     var fetchTasks: [String: Task<Void, Never>] = [:]
 
@@ -89,6 +95,8 @@ final class QuotaViewModel {
     var lifecycleRevisions: [String: Int] = [:]
 
     var schedulingRevisions: [String: Int] = [:]
+
+    var activitySignalTasks: [String: Task<Void, Never>] = [:]
 
     var smartRefreshPolicy = SmartRefreshPolicy()
 
@@ -254,11 +262,6 @@ final class QuotaViewModel {
             slowInterval: AutoRefreshPreferences.slowInterval,
             fastInterval: AutoRefreshPreferences.fastInterval
         )
-    }
-
-    func isAutoRefreshEnabled(for providerId: String) -> Bool {
-        _ = autoRefreshSettingsRevision
-        return AutoRefreshPreferences.isEnabled(for: providerId)
     }
 
     func isFastAutomaticRefreshActive(for providerId: String) -> Bool {
