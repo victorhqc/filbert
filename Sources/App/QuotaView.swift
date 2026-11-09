@@ -43,6 +43,9 @@ struct QuotaView: View {
         }
         .padding()
         .frame(width: 280)
+        .background(WindowKeyObserver {
+            Task { await viewModel.activityDetection.refreshStatuses(for: viewModel.configuredProviderIds) }
+        })
     }
 
     // MARK: - Empty state
@@ -113,6 +116,14 @@ struct QuotaView: View {
                     .foregroundStyle(.secondary)
             } else {
                 lastUpdatedLabel(quota)
+            }
+
+            if viewModel.showsActivityDetectionNotice(for: providerId) {
+                ActivityDetectionNotice(
+                    model: viewModel.activityDetection,
+                    providerId: providerId,
+                    providerName: quota.providerName
+                )
             }
         }
         .padding(.bottom, 4)

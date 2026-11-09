@@ -57,7 +57,9 @@ struct APIKeyFreeSettingsRow: View {
                     }
                 case .loaded:
                     if canRemove {
-                        removeHelperView
+                        Text(String(displayLocalized: "Helper installed and active.", bundle: .module))
+                            .font(.caption)
+                            .foregroundColor(.secondary)
                     }
                     if let refreshError {
                         Label(refreshError, systemImage: "exclamationmark.triangle.fill")
@@ -77,7 +79,6 @@ struct APIKeyFreeSettingsRow: View {
                         if canRemove {
                             removeButton
                         }
-                        credentialImportButton
                     }
                 case .unconfigured:
                     Text(String(displayLocalized: "Not configured", bundle: .module))
@@ -85,7 +86,7 @@ struct APIKeyFreeSettingsRow: View {
                         .foregroundColor(.secondary)
                 }
             }
-            if hasManagementAction || (isEnabled && provider.accountLink != nil) {
+            if !managementActionKinds.isEmpty || (isEnabled && provider.accountLink != nil) {
                 HStack(spacing: 8) {
                     managementActions
                     Spacer(minLength: 8)
@@ -96,32 +97,26 @@ struct APIKeyFreeSettingsRow: View {
         }
     }
 
-    private var hasManagementAction: Bool {
-        guard isEnabled else { return false }
-        switch state {
-        case .loaded: return true
-        case .setup: return canInstall || credentialImportActionTitle != nil
-        case .error: return credentialImportActionTitle != nil
-        case .loading, .unconfigured: return false
-        }
+    private var managementActionKinds: [APIKeyFreeManagementAction] {
+        APIKeyFreeManagementAction.actions(
+            for: state,
+            isEnabled: isEnabled,
+            canInstall: canInstall,
+            canRemove: canRemove,
+            canImportCredentials: credentialImportActionTitle != nil
+        )
     }
 
-    @ViewBuilder
     private var managementActions: some View {
-        if isEnabled {
-            switch state {
-            case .loaded:
+        ForEach(managementActionKinds, id: \.self) { action in
+            switch action {
+            case .installHelper:
+                Button(String(displayLocalized: "Install Helper", bundle: .module), action: onInstall)
+                    .buttonStyle(.borderedProminent)
+            case .removeHelper:
                 Button(String(displayLocalized: "Remove Helper", bundle: .module), role: .destructive, action: onRemove)
-            case .setup:
-                if canInstall {
-                    Button(String(displayLocalized: "Install Helper", bundle: .module), action: onInstall)
-                        .buttonStyle(.borderedProminent)
-                }
+            case .importCredentials:
                 credentialImportButton
-            case .error:
-                credentialImportButton
-            case .loading, .unconfigured:
-                EmptyView()
             }
         }
     }
@@ -139,8 +134,6 @@ struct APIKeyFreeSettingsRow: View {
             Text(String(displayLocalized: "This adds a small helper script to ~/.claude/.", bundle: .module))
                 .font(.caption)
                 .foregroundColor(.secondary)
-
-            installButton
         }
     }
 
@@ -182,19 +175,37 @@ struct APIKeyFreeSettingsRow: View {
         }
     }
 
-    private var removeHelperView: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            Text(String(displayLocalized: "Helper installed and active.", bundle: .module))
-                .font(.caption)
-                .foregroundColor(.secondary)
-
-            removeButton
-        }
-    }
-
     private var removeButton: some View {
         Button(String(displayLocalized: "Remove Helper", bundle: .module), role: .destructive) {
             onRemove()
         }
+    }
+}
+
+/// Each management action appears once, in the card's bottom action row.
+enum APIKeyFreeManagementAction: Hashable {
+    case installHelper
+    case removeHelper
+    case importCredentials
+
+    static func actions(
+        for state: ProviderState,
+        isEnabled: Bool,
+        canInstall: Bool,
+        canRemove: Bool,
+        canImportCredentials: Bool
+    ) -> [Self] {
+        guard isEnabled else { return [] }
+        let candidates: [(Self, Bool)] = switch state {
+        case .loaded:
+            [(.removeHelper, canRemove)]
+        case .setup:
+            [(.installHelper, canInstall), (.importCredentials, canImportCredentials)]
+        case .error:
+            [(.importCredentials, canImportCredentials)]
+        case .loading, .unconfigured:
+            []
+        }
+        return candidates.filter(\.1).map(\.0)
     }
 }

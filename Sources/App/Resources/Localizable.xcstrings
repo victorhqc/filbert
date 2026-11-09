@@ -1,6 +1,261 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "About activity detection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Über die Aktivitätserkennung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About activity detection" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de la detección de actividad" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de la detección de actividad" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティビティ検出について" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sobre a detecção de atividade" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Sobre a deteção de atividade" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Об отслеживании активности" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关于活动检测" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "關於活動偵測" } }
+      }
+    },
+    "Optional. Filbert can add a small helper to %@ that tells it when you start and finish a task. With it, the Smart schedule checks your usage while you work, so the numbers stay up to date. Without it, Filbert checks on its normal schedule." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Optional. Filbert kann für %@ einen kleinen Helfer einrichten, der meldet, wann du eine Aufgabe beginnst und beendest. Damit prüft der Rhythmus „Intelligent“ deine Nutzung, während du arbeitest, und die Werte bleiben aktuell. Ohne ihn prüft Filbert nach dem normalen Rhythmus." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Optional. Filbert can add a small helper to %@ that tells it when you start and finish a task. With it, the Smart schedule checks your usage while you work, so the numbers stay up to date. Without it, Filbert checks on its normal schedule." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. Filbert puede añadir un pequeño ayudante a %@ que le avisa de cuándo empiezas y terminas una tarea. Con él, la frecuencia Inteligente consulta tu uso mientras trabajas, para que los datos estén al día. Sin él, Filbert consulta con su frecuencia normal." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. Filbert puede agregar un pequeño ayudante a %@ que le avisa cuándo empiezas y terminas una tarea. Con él, la frecuencia Inteligente consulta tu uso mientras trabajas, para que los datos estén al día. Sin él, Filbert consulta con su frecuencia normal." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オプション。Filbertは%@に小さなヘルパーを追加して、タスクの開始と終了を知らせるようにできます。これにより、“スマート”の頻度で作業中に使用量を確認し、数値を最新に保ちます。追加しない場合は、通常の頻度で確認します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. O Filbert pode adicionar um pequeno auxiliar em %@ que avisa quando uma tarefa começa e termina. Com ele, a frequência Inteligente verifica o uso durante o trabalho, e os números ficam atualizados. Sem ele, o Filbert verifica na frequência normal." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. O Filbert pode adicionar um pequeno auxiliar em %@ que avisa quando uma tarefa começa e termina. Com ele, a frequência do modo Inteligente verifica a utilização durante o trabalho, e os números ficam atualizados. Sem ele, o Filbert verifica na frequência normal." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Необязательно. Filbert может добавить в %@ небольшой помощник, который сообщает, когда вы начинаете и заканчиваете задачу. С ним график «Умный» проверяет использование, пока вы работаете, и данные остаются актуальными. Без него Filbert проверяет по обычному графику." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可选。Filbert 可以为 %@ 添加一个小助手，在你开始和完成任务时通知 Filbert。有了它，“智能”频率会在你工作时检查用量，让数据保持最新。没有它，Filbert 会按正常频率检查。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選用。Filbert可以為%@加入一個小幫手，在你開始和完成任務時通知Filbert。有了它，「智慧型」頻率會在你工作時檢查用量，讓資料保持最新。沒有它，Filbert會依一般頻率檢查。" } }
+      }
+    },
+    "Installed. Finish setup in %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Installiert. Einrichtung in %@ abschließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Installed. Finish setup in %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Instalado. Termina la configuración en %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Instalado. Termina la configuración en %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "インストール済み。%@で設定を完了してください" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalado. Conclua a configuração em %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Instalado. Conclua a configuração em %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установлено. Завершите настройку в %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已安装。请在 %@ 中完成设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已安裝。請在%@中完成設定" } }
+      }
+    },
+    "Activity detection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktivitätserkennung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Activity detection" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detección de actividad" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detección de actividad" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティビティ検出" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Detecção de atividade" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deteção de atividade" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отслеживание активности" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "活动检测" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "活動偵測" } }
+      }
+    },
+    "Off" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aus" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Off" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Desactivada" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Desactivada" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オフ" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Desativada" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Desativada" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выключено" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已关闭" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已關閉" } }
+      }
+    },
+    "On" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ein" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "On" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activada" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activada" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オン" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativada" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativada" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включено" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已开启" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已開啟" } }
+      }
+    },
+    "Install" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Installieren" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Install" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Instalar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Instalar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "インストール" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalar" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Instalar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установить" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "安装" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "安裝" } }
+      }
+    },
+    "Remove" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Entfernen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Remove" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quitar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quitar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "削除" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Remover" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Remover" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Удалить" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "移除" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "移除" } }
+      }
+    },
+    "Activity detection works only with automatic checks on the Smart schedule." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Aktivitätserkennung wirkt nur, wenn die automatische Prüfung den Rhythmus „Intelligent“ verwendet." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Activity detection works only with automatic checks on the Smart schedule." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La detección de actividad solo funciona con las consultas automáticas en la frecuencia Inteligente." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La detección de actividad solo funciona con las consultas automáticas en la frecuencia Inteligente." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティビティ検出は、使用量の自動確認が“スマート”の頻度のときにのみ機能します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A detecção de atividade só funciona com a verificação automática na frequência Inteligente." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A deteção de atividade só funciona com a verificação automática na frequência do modo Inteligente." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отслеживание активности работает только при автоматической проверке по графику «Умный»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "活动检测仅在自动检查使用“智能”频率时生效。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "活動偵測只在自動檢查使用「智慧型」頻率時生效。" } }
+      }
+    },
+    "Opens the Usage Checks settings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet die Einstellungen „Nutzungsprüfung“." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Opens the Usage Checks settings." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abre los ajustes de Consultas de uso." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abre la configuración de Consultas de uso." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“使用量の確認”の設定を開きます。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abre os ajustes de Verificações de uso." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abre as definições de Verificações da utilização." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывает настройки «Проверка использования»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开“用量检查”设置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "打開「用量檢查」設定。" } }
+      }
+    },
+    "Activity detection for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktivitätserkennung für %@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Activity detection for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Detección de actividad de %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Detección de actividad de %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@のアクティビティ検出" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Detecção de atividade de %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Deteção de atividade de %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отслеживание активности: %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%@ 的活动检测" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%@的活動偵測" } }
+      }
+    },
+    "Finish setting up activity detection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einrichtung der Aktivitätserkennung abschließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Finish setting up activity detection" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Termina de configurar la detección de actividad" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Termina de configurar la detección de actividad" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティビティ検出の設定を完了してください" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Conclua a configuração da detecção de atividade" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Conclua a configuração da deteção de atividade" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Завершите настройку отслеживания активности" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完成活动检测设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "完成活動偵測設定" } }
+      }
+    },
+    "Finish setting up activity detection for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einrichtung der Aktivitätserkennung für %@ abschließen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Finish setting up activity detection for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Termina de configurar la detección de actividad de %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Termina de configurar la detección de actividad de %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@のアクティビティ検出の設定を完了してください" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Conclua a configuração da detecção de atividade de %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Conclua a configuração da deteção de atividade de %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Завершите настройку отслеживания активности (%@)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "完成 %@ 的活动检测设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "完成%@的活動偵測設定" } }
+      }
+    },
+    "Set Up…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einrichten …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Set Up…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configurar…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configurar…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定…" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configurar…" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configurar…" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Настроить…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定⋯" } }
+      }
+    },
+    "Set up activity detection for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktivitätserkennung für %@ einrichten" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Set up activity detection for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configurar la detección de actividad de %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configurar la detección de actividad de %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@のアクティビティ検出を設定" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configurar a detecção de atividade de %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configurar a deteção de atividade de %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Настроить отслеживание активности (%@)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "设置 %@ 的活动检测" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "設定%@的活動偵測" } }
+      }
+    },
+    "Not Now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nicht jetzt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not Now" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ahora no" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ahora no" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今はしない" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Agora não" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Agora não" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не сейчас" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "以后再说" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "現在不要" } }
+      }
+    },
+    "Hide the activity detection notice for %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Hinweis zur Aktivitätserkennung für %@ ausblenden" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Hide the activity detection notice for %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ocultar el aviso de detección de actividad de %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ocultar el aviso de detección de actividad de %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@のアクティビティ検出の通知を非表示" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ocultar o aviso de detecção de atividade de %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ocultar o aviso de deteção de atividade de %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Скрыть уведомление об отслеживании активности (%@)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "隐藏 %@ 的活动检测提示" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "隱藏%@的活動偵測提示" } }
+      }
+    },
     "What's New in Filbert" : {
       "extractionState" : "manual",
       "localizations" : {

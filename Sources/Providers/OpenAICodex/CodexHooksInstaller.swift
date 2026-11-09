@@ -100,28 +100,43 @@ struct CodexHooksInstaller: Sendable {
 
     func status() -> ActivitySignalStatus {
         do {
-            guard let root = try readRoot() else { return .notInstalled(nil) }
+            guard let root = try readRoot() else { return .notInstalled(Self.installDescription) }
             let hooks = try hooksTable(in: root)
             for event in Self.events {
                 guard try containsFilbertHandler(groups(for: event, in: hooks)) else {
-                    return .notInstalled(nil)
+                    return .notInstalled(Self.installDescription)
                 }
             }
         } catch {
             return .notInstalled(DisplayText(describing: error))
         }
         guard FileManager.default.fileExists(atPath: signalURL.path) else {
-            return .awaitingFirstSignal(DisplayText {
-                String(
-                    displayLocalized: """
-                    Trust Filbert's two hooks with /hooks in the Codex CLI, or in Settings > Hooks in the Codex app. \
-                    If hooks are off in Codex, turn them on first.
-                    """,
-                    bundle: .module
-                )
-            })
+            return .awaitingFirstSignal(Self.nextSteps)
         }
         return .active
+    }
+
+    private static let installDescription = DisplayText {
+        String(
+            displayLocalized: """
+            Install adds two hooks to ~/.codex/hooks.json. Each hook only updates a file in ~/.cache/filbert. \
+            Filbert does not read your prompts or send anything.
+            """,
+            bundle: .module
+        )
+    }
+
+    private static let nextSteps = DisplayText {
+        String(
+            displayLocalized: """
+            Codex runs new hooks only after you approve them.
+            1. In the Codex CLI, type /hooks and trust both Filbert hooks. In the Codex app, use Settings > Hooks.
+            2. Send any prompt in Codex. Activity detection turns on after that.
+            You approve once for every Codex app on this Mac, such as the CLI, the Codex app, and Zed. \
+            If hooks are turned off in ~/.codex/config.toml, turn them on first.
+            """,
+            bundle: .module
+        )
     }
 
     private var filbertHandler: [String: AnyJSON] {
