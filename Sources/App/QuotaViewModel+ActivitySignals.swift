@@ -57,3 +57,22 @@ extension QuotaViewModel {
         startAutoRefresh(for: providerId)
     }
 }
+
+extension QuotaViewModel {
+    /// Only an install that is still waiting for its first signal asks for
+    /// attention, so the popover never prompts a user who has not opted in.
+    func showsActivityDetectionNotice(for providerId: String) -> Bool {
+        guard isEnabled(providerId),
+              case .loaded = providerStates[providerId],
+              activityDetectionTakesEffect(for: providerId)
+        else {
+            return false
+        }
+        return activityDetection.isAwaitingFirstSignal(providerId)
+            && !activityDetection.dismissedProviderIds.contains(providerId)
+    }
+
+    func activityDetectionTakesEffect(for providerId: String) -> Bool {
+        autoRefreshMode == .smart && isAutoRefreshEnabled(for: providerId)
+    }
+}

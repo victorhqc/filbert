@@ -3,16 +3,36 @@ import Core
 import SwiftUI
 
 @MainActor
-struct ProviderSetupCard: View {
+struct ProviderSetupCard<Supplement: View>: View {
     let viewModel: QuotaViewModel
     let provider: ProviderInfo
+    let isHighlighted: Bool
+    let supplement: Supplement
+
+    init(
+        viewModel: QuotaViewModel,
+        provider: ProviderInfo,
+        isHighlighted: Bool = false,
+        @ViewBuilder supplement: () -> Supplement
+    ) {
+        self.viewModel = viewModel
+        self.provider = provider
+        self.isHighlighted = isHighlighted
+        self.supplement = supplement()
+    }
 
     var body: some View {
         let state = viewModel.providerStates[provider.id] ?? .unconfigured
         let isEnabled = viewModel.isEnabled(provider.id)
         SettingsCard {
             providerSettingsRow(for: provider, state: state, isEnabled: isEnabled)
+            supplement
             providerDisclaimer(for: provider)
+        }
+        .overlay {
+            RoundedRectangle(cornerRadius: ProviderVisualStyle.cardCornerRadius)
+                .strokeBorder(Color.accentColor, lineWidth: 2)
+                .opacity(isHighlighted ? 1 : 0)
         }
     }
 
@@ -97,6 +117,12 @@ struct ProviderSetupCard: View {
                 .foregroundColor(.secondary)
                 .fixedSize(horizontal: false, vertical: true)
         }
+    }
+}
+
+extension ProviderSetupCard where Supplement == EmptyView {
+    init(viewModel: QuotaViewModel, provider: ProviderInfo) {
+        self.init(viewModel: viewModel, provider: provider) { EmptyView() }
     }
 }
 

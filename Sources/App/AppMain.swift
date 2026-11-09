@@ -19,7 +19,7 @@ struct AppMain: App {
     @State private var sleepPrevention: SleepPreventionController
     @State private var launchAtLogin: LaunchAtLoginController
     @State private var displayLanguage: DisplayLanguageModel
-    @State private var settingsTab = SettingsTab.general
+    @State private var settingsNavigation = SettingsNavigation()
     private let updateCoordinator: UpdateCoordinator
     private let welcomeWindow: WelcomeWindowController
     private let whatsNewWindow: WhatsNewWindowController
@@ -83,6 +83,7 @@ struct AppMain: App {
                     whatsNewWindow: whatsNewWindow
                 )
                 .frame(width: 280)
+                .environment(settingsNavigation)
             }
         } label: {
             DisplayLanguageRoot(model: displayLanguage) {
@@ -102,7 +103,7 @@ struct AppMain: App {
                     displayLanguage: displayLanguage,
                     welcomeWindow: welcomeWindow,
                     whatsNewWindow: whatsNewWindow,
-                    selectedTab: $settingsTab
+                    navigation: settingsNavigation
                 )
             }
         }

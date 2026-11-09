@@ -439,6 +439,71 @@
         }
       }
     },
+    "Codex runs new hooks only after you approve them.\n1. In the Codex CLI, type /hooks and trust both Filbert hooks. In the Codex app, use Settings > Hooks.\n2. Send any prompt in Codex. Activity detection turns on after that.\nYou approve once for every Codex app on this Mac, such as the CLI, the Codex app, and Zed. If hooks are turned off in ~/.codex/config.toml, turn them on first." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex führt neue Hooks erst aus, nachdem du sie genehmigt hast.\n1. Gib in der Codex CLI /hooks ein und vertraue beiden Hooks von Filbert. In der Codex-App nutzt du dafür „Settings > Hooks“.\n2. Sende in Codex einen beliebigen Prompt. Danach ist die Aktivitätserkennung eingeschaltet.\nDu genehmigst die Hooks einmal für jede Codex-App auf diesem Mac, etwa die CLI, die Codex-App und Zed. Wenn Hooks in ~/.codex/config.toml deaktiviert sind, aktiviere sie zuerst."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex runs new hooks only after you approve them.\n1. In the Codex CLI, type /hooks and trust both Filbert hooks. In the Codex app, use Settings > Hooks.\n2. Send any prompt in Codex. Activity detection turns on after that.\nYou approve once for every Codex app on this Mac, such as the CLI, the Codex app, and Zed. If hooks are turned off in ~/.codex/config.toml, turn them on first."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex ejecuta los hooks nuevos solo después de que los apruebes.\n1. En la CLI de Codex, escribe /hooks y confía en los dos hooks de Filbert. En la app de Codex, usa «Settings > Hooks».\n2. Envía cualquier prompt en Codex. Después, la detección de actividad se activa.\nLos apruebas una sola vez para todas las apps de Codex en este Mac, como la CLI, la app de Codex y Zed. Si los hooks están desactivados en ~/.codex/config.toml, actívalos primero."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex ejecuta los hooks nuevos solo después de que los apruebes.\n1. En la CLI de Codex, escribe /hooks y confía en los dos hooks de Filbert. En la app de Codex, usa “Settings > Hooks”.\n2. Envía cualquier prompt en Codex. Después, la detección de actividad se activa.\nLos apruebas una sola vez para todas las apps de Codex en esta Mac, como la CLI, la app de Codex y Zed. Si los hooks están desactivados en ~/.codex/config.toml, actívalos primero."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codexは、承認された新しいフックだけを実行します。\n1. Codex CLIで/hooksと入力し、Filbertの2つのフックを信頼してください。Codexアプリでは“Settings > Hooks”を使用します。\n2. Codexで任意のプロンプトを送信します。その後、アクティビティ検出がオンになります。\n承認は一度だけで、このMac上のすべてのCodexアプリ（CLI、Codexアプリ、Zedなど）に適用されます。~/.codex/config.tomlでフックがオフになっている場合は、先にオンにしてください。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Codex só executa hooks novos depois de aprovados.\n1. Na CLI do Codex, digite /hooks e confie nos dois hooks do Filbert. No app do Codex, use “Settings > Hooks”.\n2. Envie qualquer prompt no Codex. Depois disso, a detecção de atividade é ativada.\nUma única aprovação vale para todos os apps do Codex neste Mac, como a CLI, o app do Codex e o Zed. Se os hooks estiverem desativados em ~/.codex/config.toml, ative-os primeiro."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "O Codex só executa hooks novos depois de aprovados.\n1. Na CLI do Codex, escreva /hooks e confie nos dois hooks do Filbert. Na app do Codex, use «Settings > Hooks».\n2. Envie um prompt qualquer no Codex. A deteção de atividade fica ativa a seguir.\nUma única aprovação vale para todas as apps do Codex neste Mac, como a CLI, a app do Codex e o Zed. Se os hooks estiverem desativados em ~/.codex/config.toml, ative-os primeiro."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex запускает новые хуки только после вашего одобрения.\n1. В Codex CLI введите /hooks и подтвердите доверие обоим хукам Filbert. В приложении Codex используйте раздел «Settings > Hooks».\n2. Отправьте любой промпт в Codex. После этого отслеживание активности включится.\nОдобрение действует для всех приложений Codex на этом Mac, например CLI, приложения Codex и Zed. Если хуки выключены в ~/.codex/config.toml, сначала включите их."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex 只会在你批准后运行新的 hook。\n1. 在 Codex CLI 中输入 /hooks，并信任 Filbert 的两个 hook。在 Codex 应用中，请使用“Settings > Hooks”。\n2. 在 Codex 中发送任意提示词。之后活动检测就会开启。\n只需批准一次，即可用于这台 Mac 上的所有 Codex 应用，例如 CLI、Codex 应用和 Zed。如果 ~/.codex/config.toml 中关闭了 hook，请先将其开启。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Codex只會在你核准後執行新的hook。\n1. 在Codex CLI中輸入「/hooks」，並信任Filbert的兩個hook。在Codex應用程式中，請使用「Settings > Hooks」。\n2. 在Codex中傳送任意提示詞。之後活動偵測就會開啟。\n只需核准一次，就能套用到這台Mac上的所有Codex應用程式，例如CLI、Codex應用程式和Zed。如果~/.codex/config.toml中關閉了hook，請先開啟。"
+          }
+        }
+      }
+    },
     "Codex stopped before usage limits could be read. Try again." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -699,6 +764,71 @@
         }
       }
     },
+    "Install adds two hooks to ~/.codex/hooks.json. Each hook only updates a file in ~/.cache/filbert. Filbert does not read your prompts or send anything." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "„Installieren“ fügt ~/.codex/hooks.json zwei Hooks hinzu. Jeder Hook aktualisiert nur eine Datei in ~/.cache/filbert. Filbert liest deine Prompts nicht und sendet nichts."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Install adds two hooks to ~/.codex/hooks.json. Each hook only updates a file in ~/.cache/filbert. Filbert does not read your prompts or send anything."
+          }
+        },
+        "es-ES" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar añade dos hooks a ~/.codex/hooks.json. Cada hook solo actualiza un archivo en ~/.cache/filbert. Filbert no lee tus prompts ni envía nada."
+          }
+        },
+        "es-MX" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar agrega dos hooks a ~/.codex/hooks.json. Cada hook solo actualiza un archivo en ~/.cache/filbert. Filbert no lee tus prompts ni envía nada."
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "インストールすると、~/.codex/hooks.jsonに2つのフックが追加されます。各フックは~/.cache/filbert内のファイルを更新するだけです。Filbertがプロンプトを読み取ったり、何かを送信したりすることはありません。"
+          }
+        },
+        "pt-BR" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar adiciona dois hooks a ~/.codex/hooks.json. Cada hook apenas atualiza um arquivo em ~/.cache/filbert. O Filbert não lê seus prompts nem envia nada."
+          }
+        },
+        "pt-PT" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Instalar adiciona dois hooks a ~/.codex/hooks.json. Cada hook apenas atualiza um ficheiro em ~/.cache/filbert. O Filbert não lê os seus prompts nem envia nada."
+          }
+        },
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Установка добавляет два хука в ~/.codex/hooks.json. Каждый хук только обновляет файл в ~/.cache/filbert. Filbert не читает ваши промпты и ничего не отправляет."
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安装会在 ~/.codex/hooks.json 中添加两个 hook。每个 hook 只会更新 ~/.cache/filbert 中的一个文件。Filbert 不会读取你的提示词，也不会发送任何内容。"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "安裝會在~/.codex/hooks.json中加入兩個hook。每個hook只會更新~/.cache/filbert中的一個檔案。Filbert不會讀取你的提示詞，也不會傳送任何內容。"
+          }
+        }
+      }
+    },
     "Internal error: unexpected credential type." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -955,71 +1085,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "請執行「codex login」來登入Codex。"
-          }
-        }
-      }
-    },
-    "Trust Filbert's two hooks with /hooks in the Codex CLI, or in Settings > Hooks in the Codex app. If hooks are off in Codex, turn them on first." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Vertraue den zwei Hooks von Filbert mit /hooks in der Codex CLI oder unter „Settings > Hooks“ in der Codex-App. Wenn Hooks in Codex deaktiviert sind, aktiviere sie zuerst."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Trust Filbert's two hooks with /hooks in the Codex CLI, or in Settings > Hooks in the Codex app. If hooks are off in Codex, turn them on first."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confía en los dos hooks de Filbert con /hooks en la CLI de Codex o en «Settings > Hooks» de la app de Codex. Si los hooks están desactivados en Codex, actívalos primero."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confía en los dos hooks de Filbert con /hooks en la CLI de Codex o en “Settings > Hooks” de la app de Codex. Si los hooks están desactivados en Codex, actívalos primero."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Codex CLIの/hooks、またはCodexアプリの“Settings > Hooks”で、Filbertの2つのフックを信頼してください。Codexでフックがオフになっている場合は、先にオンにしてください。"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confie nos dois hooks do Filbert com /hooks na CLI do Codex ou em “Settings > Hooks” no app do Codex. Se os hooks estiverem desativados no Codex, ative-os primeiro."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Confie nos dois hooks do Filbert com /hooks na CLI do Codex ou em «Settings > Hooks» na app do Codex. Se os hooks estiverem desativados no Codex, ative-os primeiro."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Подтвердите доверие двум хукам Filbert командой /hooks в Codex CLI или в разделе «Settings > Hooks» приложения Codex. Если хуки в Codex выключены, сначала включите их."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "请使用 Codex CLI 中的 /hooks，或在 Codex 应用的“Settings > Hooks”中信任 Filbert 的两个 hook。如果 Codex 中的 hook 已关闭，请先将其开启。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請使用Codex CLI中的「/hooks」，或在Codex應用程式的「Settings > Hooks」中信任Filbert的兩個hook。如果Codex中的hook已關閉，請先開啟。"
           }
         }
       }

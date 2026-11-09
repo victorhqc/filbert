@@ -44,6 +44,7 @@ final class QuotaViewModel {
     private let keychain: Keychain
     let registry: ProviderRegistry
     let errorLog: ErrorLog
+    let activityDetection: ActivityDetectionModel
     let autoRefreshSleeper: @Sendable (TimeInterval) async throws -> Void
     let smartRefreshElapsed: @Sendable () -> TimeInterval
     let smartRefreshBoundarySleeper: @Sendable (TimeInterval) async throws -> Void
@@ -167,6 +168,7 @@ final class QuotaViewModel {
         self.keychain = keychain
         self.registry = registry
         self.errorLog = errorLog ?? registry.errorLog
+        activityDetection = ActivityDetectionModel(registry: registry, errorLog: self.errorLog)
         self.autoRefreshSleeper = autoRefreshSleeper
         self.smartRefreshBoundarySleeper = smartRefreshBoundarySleeper
         self.smartRefreshElapsed = smartRefreshElapsed

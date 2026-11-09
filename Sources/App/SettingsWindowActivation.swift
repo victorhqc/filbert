@@ -10,10 +10,16 @@ import SwiftUI
 /// MainActor-isolated AppKit.
 @MainActor
 private struct OpenAndRaiseSettingsModifier: ViewModifier {
+    let destination: SettingsDestination?
+
     @Environment(\.openSettings) private var openSettings
+    @Environment(SettingsNavigation.self) private var navigation: SettingsNavigation?
 
     func body(content: Content) -> some View {
         Button {
+            if let destination {
+                navigation?.open(destination)
+            }
             openSettings()
             SettingsWindowLookup.raiseSettingsWindow()
         } label: {
@@ -48,7 +54,7 @@ enum SettingsWindowLookup {
 }
 
 extension View {
-    func openAndRaiseSettings() -> some View {
-        modifier(OpenAndRaiseSettingsModifier())
+    func openAndRaiseSettings(at destination: SettingsDestination? = nil) -> some View {
+        modifier(OpenAndRaiseSettingsModifier(destination: destination))
     }
 }

@@ -19,11 +19,11 @@ struct SettingsView: View {
     let displayLanguage: DisplayLanguageModel
     let welcomeWindow: WelcomeWindowController
     let whatsNewWindow: WhatsNewWindowController
-    /// Lives above the language rebuild, so a language change keeps the open tab.
-    @Binding var selectedTab: SettingsTab
+    let navigation: SettingsNavigation
 
     var body: some View {
-        TabView(selection: $selectedTab) {
+        @Bindable var navigation = navigation
+        TabView(selection: $navigation.selectedTab) {
             GeneralSettingsView(
                 launchAtLogin: launchAtLogin,
                 displayLanguage: displayLanguage,
@@ -34,7 +34,7 @@ struct SettingsView: View {
             }
             .tag(SettingsTab.general)
 
-            providersTab
+            ProvidersSettingsTab(viewModel: viewModel, navigation: navigation)
                 .tabItem {
                     Label(String(displayLocalized: "Providers", bundle: .module), systemImage: "key.fill")
                 }
@@ -66,17 +66,9 @@ struct SettingsView: View {
             idealHeight: 520,
             maxHeight: .infinity
         )
+        .environment(navigation)
         .onAppear {
             NSApp.activate(ignoringOtherApps: true)
         }
-    }
-
-    private var providersTab: some View {
-        SettingsScrollColumn {
-            ForEach(viewModel.registeredProvidersOrdered) { provider in
-                ProviderSetupCard(viewModel: viewModel, provider: provider)
-            }
-        }
-        .navigationTitle(String(displayLocalized: "Providers", bundle: .module))
     }
 }
