@@ -1,5 +1,25 @@
 [
   {
+    "version": "0.27.0",
+    "items": [
+      {
+        "kind": "feature",
+        "text": {
+          "en": "Install Codex activity detection again in Settings so Smart usage checks also run sooner while a long Codex turn is still working.",
+          "de-DE": "Installiere die Aktivitätserkennung für Codex in den Einstellungen erneut, damit die Nutzungsprüfung im Rhythmus „Intelligent“ auch früher läuft, während Codex lange an einer Aufgabe arbeitet.",
+          "es-MX": "Vuelve a instalar la detección de actividad de Codex en Configuración para que las consultas de uso con la frecuencia Inteligente también se hagan antes mientras Codex trabaja en una tarea larga.",
+          "es-ES": "Vuelve a instalar la detección de actividad de Codex en Ajustes para que las consultas de uso con la frecuencia Inteligente también se hagan antes mientras Codex trabaja en una tarea larga.",
+          "pt-BR": "Instale novamente a detecção de atividade do Codex em Ajustes para que a verificação de uso na frequência Inteligente também aconteça mais cedo enquanto o Codex trabalha em uma tarefa longa.",
+          "pt-PT": "Volte a instalar a deteção de atividade do Codex nas Definições para que a verificação da utilização no modo Inteligente também aconteça mais cedo enquanto o Codex trabalha numa tarefa longa.",
+          "ru": "Заново установите отслеживание активности для Codex в настройках, чтобы при графике «Умный» проверка использования выполнялась раньше, даже пока Codex долго работает над задачей.",
+          "zh-Hans": "在设置中重新安装 Codex 的活动检测，Codex 长时间处理任务时，“智能”频率下的用量检查也会更早进行。",
+          "zh-Hant": "在「設定」中重新安裝Codex的活動偵測，Codex長時間處理任務時，「智慧型」頻率下的用量檢查也會更早進行。",
+          "ja": "設定でCodexのアクティビティ検出をもう一度インストールすると、Codexが長いタスクを処理している間も“スマート”の頻度の使用量の確認が早めに行われます。"
+        }
+      }
+    ]
+  },
+  {
     "version": "0.26.0",
     "items": [
       {
