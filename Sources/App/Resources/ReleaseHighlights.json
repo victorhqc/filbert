@@ -5,6 +5,36 @@
       {
         "kind": "feature",
         "text": {
+          "en": "Choose the Tabs panel layout in Settings to show each provider as an icon tab with its usage ring.",
+          "de-DE": "Wähle in den Einstellungen das Layout „Tabs“, um jeden Anbieter als Tab mit Symbol und Nutzungsring anzuzeigen.",
+          "es-MX": "Elige el diseño “Pestañas” en Configuración para ver cada proveedor como una pestaña con su ícono y su anillo de uso.",
+          "es-ES": "Elige el diseño «Pestañas» en Ajustes para ver cada proveedor como una pestaña con su icono y su anillo de uso.",
+          "pt-BR": "Escolha o layout “Abas” em Ajustes para ver cada provedor como uma aba com seu ícone e anel de uso.",
+          "pt-PT": "Escolha a disposição «Separadores» nas Definições para ver cada fornecedor como um separador com o seu ícone e anel de utilização.",
+          "ru": "Выберите вид панели «Вкладки» в настройках, чтобы видеть каждого провайдера как вкладку со значком и кольцом использования.",
+          "zh-Hans": "在设置中选择“标签页”面板布局，每个提供商会显示为带有图标和用量环的标签页。",
+          "zh-Hant": "在「設定」中選擇「標籤頁」面板版面配置，每個提供者都會顯示為帶有圖像和用量環的標籤頁。",
+          "ja": "設定でパネルのレイアウトを“タブ”にすると、各プロバイダが使用量のリング付きのアイコンタブで表示されます。"
+        }
+      },
+      {
+        "kind": "feature",
+        "text": {
+          "en": "Set up activity detection for Codex in Settings, so Smart usage checks run sooner when you work in Codex.",
+          "de-DE": "Richte in den Einstellungen die Aktivitätserkennung für Codex ein, damit die Nutzungsprüfung im Rhythmus „Intelligent“ früher läuft, wenn du in Codex arbeitest.",
+          "es-MX": "Activa la detección de actividad de Codex en Configuración para que las consultas de uso con la frecuencia Inteligente se hagan antes mientras trabajas en Codex.",
+          "es-ES": "Activa la detección de actividad de Codex en Ajustes para que las consultas de uso con la frecuencia Inteligente se hagan antes mientras trabajas en Codex.",
+          "pt-BR": "Ative a detecção de atividade do Codex em Ajustes para que a verificação de uso na frequência Inteligente aconteça mais cedo enquanto você trabalha no Codex.",
+          "pt-PT": "Ative a deteção de atividade do Codex nas Definições para que a verificação da utilização no modo Inteligente aconteça mais cedo enquanto trabalha no Codex.",
+          "ru": "Включите отслеживание активности для Codex в настройках, чтобы при графике «Умный» проверка использования выполнялась раньше, пока вы работаете в Codex.",
+          "zh-Hans": "在设置中启用 Codex 的活动检测，你在 Codex 中工作时，“智能”频率下的用量检查会更早进行。",
+          "zh-Hant": "在「設定」中啟用Codex的活動偵測，你在Codex中工作時，「智慧型」頻率下的用量檢查會更早進行。",
+          "ja": "設定でCodexのアクティビティ検出を有効にすると、Codexでの作業中は“スマート”の頻度の使用量の確認が早めに行われます。"
+        }
+      },
+      {
+        "kind": "feature",
+        "text": {
           "en": "After an update, Filbert shows what is new in each version.",
           "de-DE": "Nach einem Update zeigt Filbert, was in jeder Version neu ist.",
           "es-MX": "Después de una actualización, Filbert muestra las novedades de cada versión.",
@@ -15,6 +45,21 @@
           "zh-Hans": "更新后，Filbert 会显示每个版本的新功能。",
           "zh-Hant": "更新後，Filbert會顯示每個版本的新功能。",
           "ja": "アップデート後、Filbertに各バージョンの新機能が表示されます。"
+        }
+      },
+      {
+        "kind": "fix",
+        "text": {
+          "en": "Provider cards in Settings now show each helper button once, and only when it applies.",
+          "de-DE": "Die Anbieterkarten in den Einstellungen zeigen jede Schaltfläche für das Hilfsskript nur noch einmal und nur, wenn sie gebraucht wird.",
+          "es-MX": "Las tarjetas de proveedor en Configuración ahora muestran cada botón del script auxiliar una sola vez y solo cuando corresponde.",
+          "es-ES": "Las tarjetas de proveedor en Ajustes ahora muestran cada botón del script auxiliar una sola vez y solo cuando corresponde.",
+          "pt-BR": "Os cartões de provedor em Ajustes agora mostram cada botão do script auxiliar só uma vez e só quando se aplica.",
+          "pt-PT": "Os cartões de fornecedor nas Definições mostram agora cada botão do script auxiliar apenas uma vez e apenas quando se aplica.",
+          "ru": "Карточки провайдеров в настройках теперь показывают каждую кнопку вспомогательного скрипта один раз и только тогда, когда она нужна.",
+          "zh-Hans": "设置中的提供商卡片现在每个辅助脚本按钮只显示一次，且仅在需要时显示。",
+          "zh-Hant": "「設定」中的提供者卡片現在每個輔助腳本按鈕只會顯示一次，而且只在需要時顯示。",
+          "ja": "設定のプロバイダカードで、ヘルパースクリプトの各ボタンが1回だけ、必要なときにのみ表示されるようになりました。"
         }
       }
     ]
