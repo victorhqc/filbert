@@ -248,6 +248,37 @@ public final class ProviderRegistry {
         }
         try await refreshable.proactiveRefresh()
     }
+
+    // MARK: - Activity signals
+
+    /// Returns `nil` when the provider is disabled, not registered, or does
+    /// not conform.
+    public func activitySignals(for providerId: String) -> AsyncStream<Date>? {
+        activitySignalingProvider(for: providerId)?.activitySignals()
+    }
+
+    public func activitySignalStatus(for providerId: String) async -> ActivitySignalStatus? {
+        await activitySignalingProvider(for: providerId)?.activitySignalStatus()
+    }
+
+    public func installActivitySignal(for providerId: String) async throws {
+        guard let provider = activitySignalingProvider(for: providerId) else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.installActivitySignal()
+    }
+
+    public func removeActivitySignal(for providerId: String) async throws {
+        guard let provider = activitySignalingProvider(for: providerId) else {
+            throw ProviderSetupError.notSupported
+        }
+        try await provider.removeActivitySignal()
+    }
+
+    private func activitySignalingProvider(for providerId: String) -> (any ActivitySignaling)? {
+        guard isEnabled(providerId) else { return nil }
+        return providers[providerId] as? any ActivitySignaling
+    }
 }
 
 private extension ProviderRegistry {

@@ -10,7 +10,7 @@ extension QuotaViewModel {
         stopAutoRefresh(for: providerId)
         let interval = automaticRefreshInterval(for: providerId)
         let schedulingRevision = schedulingRevisions[providerId, default: 0]
-        refreshLoops[providerId] = Task { [weak self] in
+        let task = Task { [weak self] in
             do {
                 try await self?.autoRefreshSleeper(interval)
             } catch {
@@ -22,11 +22,12 @@ extension QuotaViewModel {
                 expectedSchedulingRevision: schedulingRevision
             )
         }
+        refreshLoops[providerId] = ScheduledRefresh(task: task, deadline: smartRefreshElapsed() + interval)
     }
 
     func stopAutoRefresh(for providerId: String) {
         schedulingRevisions[providerId, default: 0] += 1
-        refreshLoops[providerId]?.cancel()
+        refreshLoops[providerId]?.task.cancel()
         refreshLoops[providerId] = nil
     }
 
@@ -112,6 +113,7 @@ extension QuotaViewModel {
                 return
             }
             performFetch(for: providerId, origin: .initial)
+            syncActivitySignalSubscription(for: providerId)
         case .apiKeyFree:
             let revision = lifecycleRevisions[providerId, default: 0]
             setupTasks[providerId]?.cancel()
@@ -132,12 +134,14 @@ extension QuotaViewModel {
 
         setupTasks[providerId] = nil
         if let setupState {
+            cancelActivitySignalSubscription(for: providerId)
             setState(setupState, for: providerId)
             refreshDerived()
             return
         }
 
         guard registry.isConfigured(providerId) else {
+            cancelActivitySignalSubscription(for: providerId)
             setState(.unconfigured, for: providerId)
             refreshDerived()
             return
@@ -146,10 +150,12 @@ extension QuotaViewModel {
         setState(.loading, for: providerId)
         refreshDerived()
         performFetch(for: providerId, origin: .initial)
+        syncActivitySignalSubscription(for: providerId)
     }
 
     func invalidateProviderWork(for providerId: String) {
         lifecycleRevisions[providerId, default: 0] += 1
+        cancelActivitySignalSubscription(for: providerId)
         stopAutoRefresh(for: providerId)
         smartRefreshPolicy.reset(for: providerId)
         clearSmartRetryDeadline(for: providerId)
@@ -169,6 +175,11 @@ extension QuotaViewModel {
         isEnabled(providerId) && registry.isConfigured(providerId)
     }
 
+    func isAutoRefreshEnabled(for providerId: String) -> Bool {
+        _ = autoRefreshSettingsRevision
+        return AutoRefreshPreferences.isEnabled(for: providerId)
+    }
+
     func isEligibleForAutoRefresh(_ providerId: String) -> Bool {
         isReadyToFetch(providerId) && AutoRefreshPreferences.isEnabled(for: providerId)
     }
@@ -177,13 +188,9 @@ extension QuotaViewModel {
         for providerId: String,
         expectedSchedulingRevision: Int
     ) {
-        guard schedulingRevisions[providerId, default: 0] == expectedSchedulingRevision,
-              isEligibleForAutoRefresh(providerId),
-              fetchTasks[providerId] == nil
-        else {
-            return
-        }
+        guard schedulingRevisions[providerId, default: 0] == expectedSchedulingRevision else { return }
         refreshLoops[providerId] = nil
+        guard isEligibleForAutoRefresh(providerId), fetchTasks[providerId] == nil else { return }
         performFetch(for: providerId, origin: .automatic)
     }
 

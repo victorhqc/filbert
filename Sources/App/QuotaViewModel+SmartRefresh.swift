@@ -28,6 +28,10 @@ extension QuotaViewModel {
         else {
             return
         }
+        recordSmartActivityHint(for: providerId)
+    }
+
+    func recordSmartActivityHint(for providerId: String) {
         _ = smartRefreshPolicy.recordActivityHint(
             for: providerId,
             at: smartRefreshElapsed(),
