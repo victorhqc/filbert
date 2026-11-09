@@ -34,7 +34,7 @@ extension CodexHooksError: DiagnosticError {
 /// a new or changed hook until the user trusts it, so the command must never
 /// change between Filbert versions.
 struct CodexHooksInstaller: Sendable {
-    static let events = ["UserPromptSubmit", "Stop"]
+    static let events = ["UserPromptSubmit", "Stop", "PostModelRequest", "PostToolUse"]
     static let timeoutSeconds = 5
 
     let hooksURL: URL
@@ -119,7 +119,7 @@ struct CodexHooksInstaller: Sendable {
     private static let installDescription = DisplayText {
         String(
             displayLocalized: """
-            Install adds two hooks to ~/.codex/hooks.json. Each hook only updates a file in ~/.cache/filbert. \
+            Install adds Filbert's hooks to ~/.codex/hooks.json. Each hook only updates a file in ~/.cache/filbert. \
             Filbert does not read your prompts or send anything.
             """,
             bundle: .module
@@ -130,9 +130,9 @@ struct CodexHooksInstaller: Sendable {
         String(
             displayLocalized: """
             Codex runs new hooks only after you approve them.
-            1. In the Codex CLI, type /hooks and trust both Filbert hooks. In the Codex app, use Settings > Hooks.
+            1. In the Codex CLI, type /hooks and trust all Filbert hooks. In the Codex app, use Settings > Hooks.
             2. Send any prompt in Codex. Activity detection turns on after that.
-            You approve once for every Codex app on this Mac, such as the CLI, the Codex app, and Zed. \
+            You approve once for every app on this Mac that uses Codex, such as the CLI, the Codex app, and other tools. \
             If hooks are turned off in ~/.codex/config.toml, turn them on first.
             """,
             bundle: .module

@@ -4,7 +4,7 @@ Install two Codex hooks that tell Filbert when a Codex turn starts or ends, in a
 
 ## Context
 
-- Status: merged 2026-11-09 (#112). Amended 2026-11-09: AC6 status texts reworded with (ui 41), uncommitted. First drafted 2026-10-23. Implements the capability from (core 14). Its Settings UI is (ui 41).
+- Status: merged 2026-11-09 (#112). Amended 2026-11-09: AC6 status texts reworded with (ui 41), uncommitted. First drafted 2026-10-23. Implements the capability from (core 14). Its Settings UI is (ui 41). (providers 31) adds two in-progress hooks.
 - `Sources/Providers/OpenAICodex/OpenAICodexProvider.swift` — reads usage through `account/rateLimits/read` on the local app server (providers 05). That stays the only usage source. The hooks only signal activity.
 - `Sources/Providers/OpenAICodex/CodexLocator.swift` — finds the `codex` binary. Install is unavailable without it.
 - `Sources/Providers/ClaudeCode/StatuslineHelperInstaller.swift` — the precedent for editing another tool's config: merge into it, mark Filbert's entry, and restore it on removal (providers 02).
@@ -88,7 +88,7 @@ Collected 2026-10-23 on the user's Mac and from the [Codex hooks documentation](
 - **And** it is `awaitingFirstSignal` when both handlers are present and no signal file exists
 - **And** it is `active` when both handlers are present and the signal file exists
 - **And** install deletes any existing signal file, so only a hook run after install can make the status `active`
-- **And** the `awaitingFirstSignal` text gives numbered steps: trust Filbert's two hooks with `/hooks` in the Codex CLI or Settings > Hooks in the Codex app, then send any Codex prompt. It says one approval covers every Codex app on the Mac, naming only the tested ones (the CLI, the Codex app, and Zed), and that hooks turned off in `~/.codex/config.toml` must be turned on first (amended 2026-11-09)
+- **And** the `awaitingFirstSignal` text gives numbered steps: trust Filbert's two hooks with `/hooks` in the Codex CLI or Settings > Hooks in the Codex app, then send any Codex prompt. It says one approval covers every app on the Mac that uses Codex, naming the CLI and the Codex app and then "other tools" instead of any specific editor, so users know activity is detected when Codex runs inside another tool, and that hooks turned off in `~/.codex/config.toml` must be turned on first (amended 2026-11-09)
 - **And** the plain `notInstalled` text says install adds two hooks to `~/.codex/hooks.json`, that each one only updates a file in `~/.cache/filbert`, and that Filbert reads no prompts and sends nothing. A failed read still returns its error text instead (amended 2026-11-09, for (ui 41 AC1)).
 
 ### AC7: Usage reads are unchanged
