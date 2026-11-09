@@ -31,14 +31,15 @@ final class CodexHooksInstallerTests: XCTestCase {
         try FileManager.default.removeItem(at: directory)
     }
 
-    func testInstallCreatesAMissingFileWithTwoAsyncHandlers() throws {
+    func testInstallCreatesAMissingFileWithFourAsyncHandlers() throws {
         try installer.install()
 
         let hooks = try XCTUnwrap(readJSON()["hooks"] as? [String: Any])
-        XCTAssertEqual(Set(hooks.keys), ["UserPromptSubmit", "Stop"])
-        for event in CodexHooksInstaller.events {
+        XCTAssertEqual(Set(hooks.keys), ["UserPromptSubmit", "Stop", "PostModelRequest", "PostToolUse"])
+        for event in hooks.keys {
             let groups = try XCTUnwrap(hooks[event] as? [[String: Any]])
             XCTAssertEqual(groups.count, 1)
+            XCTAssertNil(groups.first?["matcher"], "\(event) must run for every occurrence")
             let handlers = try XCTUnwrap(groups.first?["hooks"] as? [[String: Any]])
             XCTAssertEqual(handlers.count, 1)
             let handler = try XCTUnwrap(handlers.first)
@@ -85,6 +86,22 @@ final class CodexHooksInstallerTests: XCTestCase {
         XCTAssertEqual(try Data(contentsOf: hooksURL), firstWrite)
         XCTAssertEqual(try handlerCount(for: "Stop"), 1)
         XCTAssertEqual(try handlerCount(for: "UserPromptSubmit"), 1)
+    }
+
+    func testInstallUpgradesATwoHookInstallWithoutMovingItsTrustedHandlers() throws {
+        let userStop: [String: Any] = ["hooks": [["type": "command", "command": "say done"]]]
+        let filbertGroup: [String: Any] = [
+            "hooks": [["type": "command", "command": installer.command, "async": true, "timeout": 5]],
+        ]
+        try writeJSON(["hooks": ["UserPromptSubmit": [filbertGroup], "Stop": [userStop, filbertGroup]]])
+
+        try installer.install()
+
+        let hooks = try XCTUnwrap(readJSON()["hooks"] as? [String: Any])
+        XCTAssertEqual(hooks["UserPromptSubmit"] as? NSArray, [filbertGroup] as NSArray)
+        XCTAssertEqual(hooks["Stop"] as? NSArray, [userStop, filbertGroup] as NSArray)
+        XCTAssertEqual(try handlerCount(for: "PostModelRequest"), 1)
+        XCTAssertEqual(try handlerCount(for: "PostToolUse"), 1)
     }
 
     func testInstallNeverTouchesConfigToml() throws {
@@ -176,6 +193,22 @@ final class CodexHooksInstallerTests: XCTestCase {
         XCTAssertEqual(handlers.map { $0["command"] as? String }, ["echo mine"])
     }
 
+    func testRemoveTakesOutEveryFilbertHandlerFromAMixedFile() throws {
+        let filbertGroup: [String: Any] = ["hooks": [["type": "command", "command": installer.command]]]
+        let userGroup: [String: Any] = ["hooks": [["type": "command", "command": "echo mine"]]]
+        try writeJSON([
+            "hooks": [
+                "Stop": [filbertGroup],
+                "PostToolUse": [userGroup, filbertGroup],
+                "PostModelRequest": [filbertGroup],
+            ],
+        ])
+
+        try installer.remove()
+
+        XCTAssertEqual(try readJSON() as NSDictionary, ["hooks": ["PostToolUse": [userGroup]]] as NSDictionary)
+    }
+
     func testRemoveLeavesAnUnrelatedEmptyEventAlone() throws {
         try writeJSON(["hooks": ["SessionStart": [] as [Any]]])
         try installer.install()
@@ -211,6 +244,8 @@ final class CodexHooksInstallerTests: XCTestCase {
         }
         XCTAssertTrue(text?.resolved.contains("/hooks") == true)
         XCTAssertTrue(text?.resolved.contains("Settings > Hooks") == true)
+        XCTAssertTrue(text?.resolved.contains("other tools") == true)
+        XCTAssertFalse(text?.resolved.contains("Zed") == true)
 
         try runHookCommand()
         guard case .active = installer.status() else {
@@ -221,6 +256,31 @@ final class CodexHooksInstallerTests: XCTestCase {
         guard case .awaitingFirstSignal = installer.status() else {
             return XCTFail("A reinstall must wait for a new hook run")
         }
+    }
+
+    func testStatusIsNotInstalledUntilAllFourHandlersArePresent() throws {
+        let filbertGroup: [String: Any] = ["hooks": [["type": "command", "command": installer.command]]]
+        try writeJSON(["hooks": ["UserPromptSubmit": [filbertGroup], "Stop": [filbertGroup]]])
+        XCTAssertTrue(isNotInstalled(installer.status()), "an install from an earlier version")
+
+        try writeJSON([
+            "hooks": ["UserPromptSubmit": [filbertGroup], "Stop": [filbertGroup], "PostModelRequest": [filbertGroup]],
+        ])
+        XCTAssertTrue(isNotInstalled(installer.status()), "three of four handlers")
+    }
+
+    func testStatusTextsDoNotCountTheHooks() throws {
+        guard case let .notInstalled(description) = installer.status() else {
+            return XCTFail("Expected notInstalled")
+        }
+        XCTAssertTrue(description?.resolved.contains("adds Filbert's hooks to ~/.codex/hooks.json") == true)
+
+        try installer.install()
+        guard case let .awaitingFirstSignal(nextSteps) = installer.status() else {
+            return XCTFail("Expected awaitingFirstSignal")
+        }
+        XCTAssertTrue(nextSteps?.resolved.contains("trust all Filbert hooks") == true)
+        XCTAssertFalse(nextSteps?.resolved.contains("both") == true)
     }
 
     func testStatusExplainsAnUnreadableFile() throws {
