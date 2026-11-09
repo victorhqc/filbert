@@ -58,14 +58,20 @@ public struct OpenAICodexProvider: AIProvider {
     private let locator: CodexLocator
     private let client: CodexAppServerClient
     private let coordinator: CodexFetchCoordinator
+    let hooksInstaller: CodexHooksInstaller
 
     public init() {
         self.init(locator: CodexLocator(), client: CodexAppServerClient())
     }
 
-    init(locator: CodexLocator, client: CodexAppServerClient) {
+    init(
+        locator: CodexLocator,
+        client: CodexAppServerClient,
+        hooksInstaller: CodexHooksInstaller = .production
+    ) {
         self.locator = locator
         self.client = client
+        self.hooksInstaller = hooksInstaller
         coordinator = CodexFetchCoordinator()
     }
 
