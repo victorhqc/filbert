@@ -2,14 +2,6 @@ import AppKit
 import Core
 import SwiftUI
 
-enum SettingsTab: Hashable {
-    case general
-    case providers
-    case appearance
-    case refresh
-    case about
-}
-
 @MainActor
 struct SettingsView: View {
     let viewModel: QuotaViewModel
@@ -25,9 +17,10 @@ struct SettingsView: View {
         @Bindable var navigation = navigation
         TabView(selection: $navigation.selectedTab) {
             GeneralSettingsView(
+                viewModel: viewModel,
+                sleepPrevention: sleepPrevention,
                 launchAtLogin: launchAtLogin,
-                displayLanguage: displayLanguage,
-                welcomeWindow: welcomeWindow
+                displayLanguage: displayLanguage
             )
             .tabItem {
                 Label(String(displayLocalized: "General", bundle: .module), systemImage: "gearshape")
@@ -40,30 +33,28 @@ struct SettingsView: View {
                 }
                 .tag(SettingsTab.providers)
 
-            AppearanceTab(viewModel: viewModel, sleepPrevention: sleepPrevention)
+            AppearanceTab(viewModel: viewModel)
                 .tabItem {
-                    Label(String(displayLocalized: "Appearance", bundle: .module), systemImage: "list.bullet.indent")
+                    Label(String(displayLocalized: "Appearance", bundle: .module), systemImage: "paintbrush")
                 }
                 .tag(SettingsTab.appearance)
 
-            RefreshSettingsView(viewModel: viewModel)
-                .tabItem {
-                    Label(String(displayLocalized: "Usage Checks", bundle: .module), systemImage: "arrow.clockwise")
-                }
-                .tag(SettingsTab.refresh)
-
-            AboutSettingsView(updateCoordinator: updateCoordinator, whatsNewWindow: whatsNewWindow)
-                .tabItem {
-                    Label(String(displayLocalized: "About", bundle: .module), systemImage: "info.circle")
-                }
-                .tag(SettingsTab.about)
+            AboutSettingsView(
+                updateCoordinator: updateCoordinator,
+                whatsNewWindow: whatsNewWindow,
+                welcomeWindow: welcomeWindow
+            )
+            .tabItem {
+                Label(String(displayLocalized: "About", bundle: .module), systemImage: "info.circle")
+            }
+            .tag(SettingsTab.about)
         }
         .frame(
-            minWidth: 520,
-            idealWidth: 620,
+            minWidth: SettingsWindowConfigurator.minimumSize.width,
+            idealWidth: 720,
             maxWidth: .infinity,
-            minHeight: 420,
-            idealHeight: 520,
+            minHeight: SettingsWindowConfigurator.minimumSize.height,
+            idealHeight: 560,
             maxHeight: .infinity
         )
         .environment(navigation)

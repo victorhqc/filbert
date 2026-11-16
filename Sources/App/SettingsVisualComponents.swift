@@ -3,6 +3,8 @@ import Core
 import SwiftUI
 
 struct SettingsWindowConfigurator: NSViewRepresentable {
+    static let minimumSize = NSSize(width: 680, height: 460)
+
     func makeNSView(context _: Context) -> NSView {
         SettingsWindowConfigurationView()
     }
@@ -19,25 +21,8 @@ private final class SettingsWindowConfigurationView: NSView {
             // style changes until that pass completes.
             try? await Task.sleep(for: .milliseconds(100))
             window?.styleMask.insert(.resizable)
-            window?.contentMinSize = NSSize(width: 520, height: 420)
+            window?.contentMinSize = SettingsWindowConfigurator.minimumSize
         }
-    }
-}
-
-struct SettingsScrollColumn<Content: View>: View {
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        ScrollView(.vertical) {
-            LazyVStack(alignment: .leading, spacing: 14) {
-                content
-            }
-            .frame(maxWidth: 680)
-            .frame(maxWidth: .infinity)
-            .padding(.horizontal, 24)
-            .padding(.vertical, 20)
-        }
-        .background(SettingsWindowConfigurator())
     }
 }
 
@@ -222,20 +207,14 @@ private struct ProviderStatusPill: View {
     }
 
     private var foregroundColor: Color {
-        switch status.role {
-        case .good:
-            ProviderVisualStyle.tierColor(.good, scheme: colorScheme)
-        case .critical:
-            ProviderVisualStyle.tierColor(.critical, scheme: colorScheme)
-        case .neutral:
-            .secondary
-        }
+        status.color(scheme: colorScheme)
     }
 }
 
-struct ProviderStatusPresentation {
-    enum Role {
+struct ProviderStatusPresentation: Equatable {
+    enum Role: Equatable {
         case good
+        case warn
         case critical
         case neutral
     }
@@ -244,67 +223,69 @@ struct ProviderStatusPresentation {
     let symbolName: String
     let role: Role
 
-    static func apiKey(_ state: ProviderState) -> Self {
+    init(state: ProviderState?, isEnabled: Bool) {
+        guard isEnabled else {
+            self = .off
+            return
+        }
         switch state {
         case .loaded:
-            Self(
-                label: String(displayLocalized: "Configured", bundle: .module),
-                symbolName: "checkmark.circle.fill",
-                role: .good
-            )
+            self = .ready
         case .error:
-            error
+            self = .error
         case .loading:
-            working
-        case .unconfigured, .setup:
-            unconfigured
+            self = .working
+        case .none, .unconfigured, .setup:
+            self = .needsSetup
         }
     }
 
-    static func apiKeyFree(_ state: ProviderState) -> Self {
-        switch state {
-        case .loaded:
-            Self(
-                label: String(displayLocalized: "Ready", bundle: .module),
-                symbolName: "checkmark.circle.fill",
-                role: .good
-            )
-        case .error:
-            error
-        case .loading:
-            working
-        case .setup:
-            Self(
-                label: String(displayLocalized: "Setup needed", bundle: .module),
-                symbolName: "wrench.and.screwdriver.fill",
-                role: .neutral
-            )
-        case .unconfigured:
-            unconfigured
-        }
+    private init(label: String, symbolName: String, role: Role) {
+        self.label = label
+        self.symbolName = symbolName
+        self.role = role
     }
 
-    static let disabled = Self(
-        label: String(displayLocalized: "Disabled", bundle: .module),
-        symbolName: "pause.circle.fill",
-        role: .neutral
+    static let ready = Self(
+        label: String(displayLocalized: "Ready", bundle: .module),
+        symbolName: "checkmark.circle.fill",
+        role: .good
     )
 
-    private static let error = Self(
+    static let needsSetup = Self(
+        label: String(displayLocalized: "Needs setup", bundle: .module),
+        symbolName: "wrench.and.screwdriver.fill",
+        role: .warn
+    )
+
+    static let error = Self(
         label: String(displayLocalized: "Error", bundle: .module),
         symbolName: "exclamationmark.triangle.fill",
         role: .critical
     )
 
-    private static let working = Self(
+    static let working = Self(
         label: String(displayLocalized: "Working…", bundle: .module),
         symbolName: "clock.arrow.circlepath",
         role: .neutral
     )
 
-    private static let unconfigured = Self(
-        label: String(displayLocalized: "Unconfigured", bundle: .module),
-        symbolName: "circle.dashed",
+    static let off = Self(
+        label: String(displayLocalized: "Off", bundle: .module),
+        symbolName: "pause.circle.fill",
         role: .neutral
     )
+
+    func color(scheme: ColorScheme) -> Color {
+        switch role {
+        case .good:
+            ProviderVisualStyle.tierColor(.good, scheme: scheme)
+        case .warn:
+            ProviderVisualStyle.tierColor(.warn, scheme: scheme)
+        case .critical:
+            ProviderVisualStyle.tierColor(.critical, scheme: scheme)
+        case .neutral:
+            .secondary
+        }
+    }
 }

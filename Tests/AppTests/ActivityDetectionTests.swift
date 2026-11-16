@@ -86,26 +86,28 @@ final class ActivityDetectionTests: XCTestCase {
 
     // MARK: - Settings destination
 
-    func testOpeningADestinationSelectsTheTabAndKeepsTheProviderUntilTaken() {
+    func testOpeningADestinationSelectsTheTabAndProviderAndKeepsTheAnchorUntilTaken() {
         let navigation = SettingsNavigation()
 
-        navigation.open(SettingsDestination(tab: .providers, providerId: providerId))
+        navigation.open(SettingsDestination(tab: .providers, providerId: providerId, anchor: .activityDetection))
 
         XCTAssertEqual(navigation.selectedTab, .providers)
-        XCTAssertEqual(navigation.pendingProviderId, providerId)
-        XCTAssertEqual(navigation.takePendingProviderId(), providerId)
-        XCTAssertNil(navigation.pendingProviderId)
-        XCTAssertNil(navigation.takePendingProviderId())
+        XCTAssertEqual(navigation.selectedProviderId, providerId)
+        XCTAssertEqual(navigation.pendingAnchor, .activityDetection)
+        XCTAssertEqual(navigation.takePendingAnchor(), .activityDetection)
+        XCTAssertNil(navigation.pendingAnchor)
+        XCTAssertNil(navigation.takePendingAnchor())
     }
 
-    func testOpeningATabAloneClearsAnyPendingProvider() {
+    func testOpeningATabAloneClearsThePendingAnchorAndKeepsTheSelectedProvider() {
         let navigation = SettingsNavigation()
-        navigation.open(SettingsDestination(tab: .providers, providerId: providerId))
+        navigation.open(SettingsDestination(tab: .providers, providerId: providerId, anchor: .activityDetection))
 
-        navigation.open(SettingsDestination(tab: .refresh))
+        navigation.open(SettingsDestination(tab: .general))
 
-        XCTAssertEqual(navigation.selectedTab, .refresh)
-        XCTAssertNil(navigation.pendingProviderId)
+        XCTAssertEqual(navigation.selectedTab, .general)
+        XCTAssertNil(navigation.pendingAnchor)
+        XCTAssertEqual(navigation.selectedProviderId, providerId)
     }
 
     // MARK: - Model
