@@ -1,5 +1,40 @@
 [
   {
+    "version": "0.28.0",
+    "items": [
+      {
+        "kind": "feature",
+        "text": {
+          "en": "Settings now keeps each provider's connection, automatic usage checks, and activity detection on one page.",
+          "de-DE": "In den Einstellungen findest du die Verbindung, automatische Nutzungsprüfungen und Aktivitätserkennung jedes Anbieters jetzt auf einer Seite.",
+          "es-MX": "Configuración ahora reúne la conexión, las consultas de uso automáticas y la detección de actividad de cada proveedor en una sola página.",
+          "es-ES": "Ajustes ahora reúne la conexión, las consultas de uso automáticas y la detección de actividad de cada proveedor en una sola página.",
+          "pt-BR": "Os Ajustes agora reúnem a conexão, as verificações automáticas de uso e a detecção de atividade de cada provedor em uma só página.",
+          "pt-PT": "As Definições reúnem agora a ligação, as verificações automáticas da utilização e a deteção de atividade de cada fornecedor numa só página.",
+          "ru": "В настройках подключение, автоматические проверки использования и отслеживание активности каждого провайдера теперь собраны на одной странице.",
+          "zh-Hans": "设置现在将每个提供商的连接、自动用量检查和活动检测集中在同一页面。",
+          "zh-Hant": "「設定」現在將每個提供者的連線、自動用量檢查和活動偵測集中在同一頁。",
+          "ja": "設定で、各プロバイダの接続、使用量の自動確認、アクティビティ検出を1つのページにまとめました。"
+        }
+      },
+      {
+        "kind": "feature",
+        "text": {
+          "en": "Find the usage-check schedule and Keep Mac Awake controls in General, with display options in Appearance.",
+          "de-DE": "Den Zeitplan für Nutzungsprüfungen und die Optionen für „Mac wach halten“ findest du unter „Allgemein“, die Anzeigeoptionen unter „Darstellung“.",
+          "es-MX": "Encuentra la frecuencia de las consultas de uso y los controles de “Mantener la Mac activa” en General, y las opciones de visualización en Apariencia.",
+          "es-ES": "Encuentra la frecuencia de las consultas de uso y los controles de «Mantener el Mac activo» en General, y las opciones de visualización en Apariencia.",
+          "pt-BR": "Encontre a frequência das verificações de uso e os controles de “Manter o Mac ativo” em Geral, e as opções de exibição em Aparência.",
+          "pt-PT": "Encontre a frequência das verificações da utilização e os controlos de «Manter o Mac ativo» em Geral, e as opções de apresentação em Aspeto.",
+          "ru": "Расписание проверок использования и параметры «Не давать Mac уснуть» находятся в разделе «Основные», а параметры отображения — в разделе «Оформление».",
+          "zh-Hans": "用量检查频率和“保持 Mac 唤醒”控制项位于“通用”中，显示选项位于“外观”中。",
+          "zh-Hant": "用量檢查頻率和「防止Mac進入睡眠」控制項位於「一般」中，顯示選項位於「外觀」中。",
+          "ja": "使用量の確認頻度と“Macをスリープさせない”の設定は“一般”に、表示オプションは“外観”にあります。"
+        }
+      }
+    ]
+  },
+  {
     "version": "0.27.0",
     "items": [
       {
