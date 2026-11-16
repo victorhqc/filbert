@@ -2,37 +2,18 @@ import AppKit
 import Core
 import SwiftUI
 
+/// The setup card the Welcome window shows for one provider.
 @MainActor
-struct ProviderSetupCard<Supplement: View>: View {
+struct ProviderSetupCard: View {
     let viewModel: QuotaViewModel
     let provider: ProviderInfo
-    let isHighlighted: Bool
-    let supplement: Supplement
-
-    init(
-        viewModel: QuotaViewModel,
-        provider: ProviderInfo,
-        isHighlighted: Bool = false,
-        @ViewBuilder supplement: () -> Supplement
-    ) {
-        self.viewModel = viewModel
-        self.provider = provider
-        self.isHighlighted = isHighlighted
-        self.supplement = supplement()
-    }
 
     var body: some View {
         let state = viewModel.providerStates[provider.id] ?? .unconfigured
         let isEnabled = viewModel.isEnabled(provider.id)
         SettingsCard {
             providerSettingsRow(for: provider, state: state, isEnabled: isEnabled)
-            supplement
             providerDisclaimer(for: provider)
-        }
-        .overlay {
-            RoundedRectangle(cornerRadius: ProviderVisualStyle.cardCornerRadius)
-                .strokeBorder(Color.accentColor, lineWidth: 2)
-                .opacity(isHighlighted ? 1 : 0)
         }
     }
 
@@ -120,12 +101,6 @@ struct ProviderSetupCard<Supplement: View>: View {
     }
 }
 
-extension ProviderSetupCard where Supplement == EmptyView {
-    init(viewModel: QuotaViewModel, provider: ProviderInfo) {
-        self.init(viewModel: viewModel, provider: provider) { EmptyView() }
-    }
-}
-
 @MainActor
 private struct ProviderSettingsRow: View {
     let provider: ProviderInfo
@@ -141,15 +116,13 @@ private struct ProviderSettingsRow: View {
 
     @State private var apiKeyEntryState = APIKeyEntryState()
     @State private var advancedExpanded: Bool = false
-    @State private var overrideInput: String = ""
-    @State private var overrideErrorMessage: String?
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             SettingsCardHeader(
                 provider: provider,
-                status: isEnabled ? ProviderStatusPresentation.apiKey(state) : .disabled,
+                status: ProviderStatusPresentation(state: state, isEnabled: isEnabled),
                 isEnabled: isEnabled,
                 onEnabledChange: onEnabledChange,
                 supplementaryLabel: overrideURL == nil ? nil : String(displayLocalized: "custom URL", bundle: .module)
@@ -244,9 +217,6 @@ private struct ProviderSettingsRow: View {
         VStack(alignment: .leading, spacing: 6) {
             Button {
                 advancedExpanded.toggle()
-                if advancedExpanded {
-                    refreshOverrideInput()
-                }
             } label: {
                 HStack(spacing: 4) {
                     Text(String(displayLocalized: "Advanced", bundle: .module))
@@ -259,49 +229,15 @@ private struct ProviderSettingsRow: View {
             .buttonStyle(.borderless)
             .controlSize(.small)
             if advancedExpanded {
-                overrideEditor
-            }
-        }
-    }
-
-    private var overrideEditor: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 4) {
-                Text(String(displayLocalized: "Default:", bundle: .module))
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                Text(provider.defaultBaseURL.absoluteString)
-                    .font(.caption.monospaced())
-                    .foregroundColor(.secondary)
-                    .textSelection(.enabled)
-            }
-            HStack(spacing: 6) {
-                TextField(
-                    String(displayLocalized: "Custom base URL (proxy)", bundle: .module),
-                    text: $overrideInput
+                BaseURLOverrideEditor(
+                    provider: provider,
+                    overrideURL: overrideURL,
+                    errorLog: errorLog,
+                    onSave: onSaveOverride
                 )
-                .textFieldStyle(.roundedBorder)
-                .onSubmit { saveOverride() }
-                .onChange(of: overrideInput) { _, _ in
-                    overrideErrorMessage = nil
-                }
-                Button(String(displayLocalized: "Save", bundle: .module)) {
-                    saveOverride()
-                }
-                .buttonStyle(.borderedProminent)
-                Button(String(displayLocalized: "Use Default", bundle: .module)) {
-                    resetOverride()
-                }
-                .disabled(overrideURL == nil)
-            }
-            if let overrideErrorMessage {
-                Text(overrideErrorMessage)
-                    .font(.caption)
-                    .foregroundStyle(ProviderVisualStyle.tierColor(.critical, scheme: colorScheme))
-                ErrorLogLink(errorLog: errorLog)
+                .padding(.top, 2)
             }
         }
-        .padding(.top, 2)
     }
 
     private func saveKeyIfValid() {
@@ -317,46 +253,5 @@ private struct ProviderSettingsRow: View {
             get: { apiKeyEntryState.input },
             set: { apiKeyEntryState.updateInput($0) }
         )
-    }
-
-    private func saveOverride() {
-        let trimmed = overrideInput.trimmingCharacters(in: .whitespacesAndNewlines)
-        let resolved: URL?
-        if trimmed.isEmpty {
-            resolved = nil
-        } else if let url = URL(string: trimmed) {
-            resolved = url
-        } else {
-            errorLog.record(
-                component: "app",
-                operation: "save-override",
-                code: "invalid-url",
-                providerID: provider.id
-            )
-            overrideErrorMessage = String(displayLocalized: "Only https URLs are allowed.", bundle: .module)
-            return
-        }
-
-        do {
-            try onSaveOverride(resolved)
-            overrideErrorMessage = nil
-        } catch {
-            overrideErrorMessage = String(displayLocalized: "Only https URLs are allowed.", bundle: .module)
-        }
-    }
-
-    private func resetOverride() {
-        do {
-            try onSaveOverride(nil)
-            overrideInput = ""
-            overrideErrorMessage = nil
-        } catch {
-            overrideErrorMessage = String(displayLocalized: "Only https URLs are allowed.", bundle: .module)
-        }
-    }
-
-    private func refreshOverrideInput() {
-        overrideInput = overrideURL?.absoluteString ?? ""
-        overrideErrorMessage = nil
     }
 }

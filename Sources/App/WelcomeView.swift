@@ -113,7 +113,7 @@ struct WelcomeView: View {
                     if viewModel.configuredProviderIds.contains(provider.id) {
                         Image(systemName: "checkmark.circle.fill")
                             .foregroundStyle(.green)
-                            .accessibilityLabel(String(displayLocalized: "Configured", bundle: .module))
+                            .accessibilityLabel(String(displayLocalized: "Ready", bundle: .module))
                     }
                     Image(systemName: "chevron.right")
                         .foregroundStyle(.secondary)

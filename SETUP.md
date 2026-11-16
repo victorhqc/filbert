@@ -38,9 +38,10 @@ Every release is signed with a Developer ID and notarized by Apple.
 On first launch, a welcome window helps you choose a language and add your
 first provider.
 
-To add more later, click the Filbert menu-bar icon and open **Settings**. For
-providers that use an API key, enter the key. The key goes straight into the
-Keychain. Filbert checks usage once, then leaves further checks to
+To add more later, click the Filbert menu-bar icon and open **Settings** →
+**Providers**. Select a provider in the list and turn it on. For providers that
+use an API key, enter the key. The key goes straight into the Keychain. Filbert
+checks usage once, then leaves further checks to
 [automatic usage checks](#automatic-usage-checks), which you turn on per
 provider.
 
@@ -85,9 +86,9 @@ which claude
 **Log in.** Make sure `claude` is logged in. Filbert reads the usage Claude
 Code already fetched for your account. It never handles your credentials.
 
-Then open Filbert → Settings → Claude Code and click **Install Helper**. The
-helper hooks into Claude Code's `statusLine` command. It writes a small cache
-file that Filbert reads during a usage check.
+Then open Filbert → Settings → Providers → Claude Code and click
+**Install Helper**. The helper hooks into Claude Code's `statusLine` command. It
+writes a small cache file that Filbert reads during a usage check.
 
 Filbert includes the compiled helper. Installation does not require Xcode or
 Command Line Tools. If installation fails, select **Show Logs**, correct the
@@ -238,15 +239,18 @@ added your balance.
 
 ## Automatic usage checks
 
-Automatic usage checks are opt-in for each provider and run on one of two
-schedules:
+Automatic usage checks are opt-in for each provider. Turn on **Check
+automatically** on the provider's page in Settings → **Providers**. Settings →
+**General** → **Usage checks** sets how often Filbert checks:
 
-- **Regular** checks every provider at the shared slow interval (five
-  minutes by default), whether or not usage changed.
-- **Smart** starts a provider slow and moves it to the fast interval while its
-  usage keeps changing. It returns the provider to slow through a time-based
-  quiet window and a short cooldown. A **Keep checking** option can hold the
-  fast interval for a chosen, finite period.
+- **Check every** sets the normal interval (five minutes by default). With
+  **Check faster while you work** off, Filbert checks every provider at this
+  interval, whether or not usage changed.
+- **Check faster while you work** moves a provider to the faster interval while
+  its usage keeps changing. **Faster checks every** and **Stay fast for** set
+  that interval and how long it lasts. The provider then returns to the normal
+  interval through a short cooldown. On a provider's page, **Keep checking
+  fast** holds the faster interval for a chosen, finite period.
 
 Provider limits and server rate limits always win. A provider with a minimum
 interval is never checked more often than it allows, and a `429` or
@@ -297,7 +301,7 @@ Logs remain on your Mac unless you choose to share them.
 ## Uninstall
 
 If you use Claude Code, first select **Remove Helper** in Filbert → Settings →
-Claude Code, so your statusline keeps working.
+Providers → Claude Code, so your statusline keeps working.
 
 - **Homebrew:** run `brew uninstall --zap --cask filbert`. This removes Filbert
   with its preferences, caches, and logs.

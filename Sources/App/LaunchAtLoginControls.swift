@@ -37,7 +37,11 @@ struct LaunchAtLoginControls: View {
     }
 
     private var statusDescription: String {
-        switch launchAtLogin.status {
+        Self.statusDescription(for: launchAtLogin.status)
+    }
+
+    static func statusDescription(for status: LaunchAtLoginStatus) -> String {
+        switch status {
         case .notRegistered:
             String(displayLocalized: "Filbert will not start at login.", bundle: .module)
         case .enabled:

@@ -23,7 +23,7 @@ struct APIKeyFreeSettingsRow: View {
         VStack(alignment: .leading, spacing: 12) {
             SettingsCardHeader(
                 provider: provider,
-                status: isEnabled ? ProviderStatusPresentation.apiKeyFree(state) : .disabled,
+                status: ProviderStatusPresentation(state: state, isEnabled: isEnabled),
                 isEnabled: isEnabled,
                 onEnabledChange: onEnabledChange
             )
@@ -203,6 +203,25 @@ enum APIKeyFreeManagementAction: Hashable {
             [(.installHelper, canInstall), (.importCredentials, canImportCredentials)]
         case .error:
             [(.importCredentials, canImportCredentials)]
+        case .loading, .unconfigured:
+            []
+        }
+        return candidates.filter(\.1).map(\.0)
+    }
+
+    /// The Settings provider page shows state as text only, so every action
+    /// that applies to the state goes in its one action row.
+    static func connectionActions(
+        for state: ProviderState,
+        canInstall: Bool,
+        canRemove: Bool,
+        canImportCredentials: Bool
+    ) -> [Self] {
+        let candidates: [(Self, Bool)] = switch state {
+        case .loaded:
+            [(.removeHelper, canRemove)]
+        case .setup, .error:
+            [(.installHelper, canInstall), (.importCredentials, canImportCredentials), (.removeHelper, canRemove)]
         case .loading, .unconfigured:
             []
         }

@@ -1,68 +1,74 @@
 import Core
 import SwiftUI
-import UniformTypeIdentifiers
 
 @MainActor
 struct AppearanceTab: View {
     let viewModel: QuotaViewModel
-    let sleepPrevention: SleepPreventionController
-    @State private var draggedProviderId: String?
+
+    @Environment(SettingsNavigation.self) private var navigation: SettingsNavigation?
 
     var body: some View {
-        SettingsScrollColumn {
-            SettingsCard(
-                heading: String(displayLocalized: "Provider order", bundle: .module),
-                description: String(displayLocalized: "Drag providers to change their order.", bundle: .module)
-            ) {
-                if viewModel.configuredProvidersOrdered.isEmpty {
-                    providerOrderEmptyHint
-                } else {
-                    VStack(alignment: .leading, spacing: 10) {
-                        automaticMenuBarSelection
-                        Text(menuBarSelectionText)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                        Divider()
-                        providerOrderRows
-                    }
-                }
-            }
-
-            SettingsCard(heading: String(displayLocalized: "Panel layout", bundle: .module)) {
-                panelLayoutSettings
-            }
-
-            SettingsCard(heading: String(displayLocalized: "Balance thresholds", bundle: .module)) {
-                BalanceThresholdsSettingsRow()
-            }
-
-            SettingsCard(heading: String(displayLocalized: "Menu bar icon", bundle: .module)) {
-                Toggle(
-                    isOn: Binding(
-                        get: { viewModel.isVintageMacIconEnabled },
-                        set: { viewModel.setVintageMacIconEnabled($0) }
-                    )
-                ) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(String(displayLocalized: "Vintage Mac", bundle: .module))
-                        Text(vintageMacSubtitle)
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-
-            SettingsCard(heading: String(displayLocalized: "Keep Mac Awake", bundle: .module)) {
-                keepAwakeSettings
-            }
+        SettingsForm {
+            menuBarSection
+            panelSection
+            BalanceColorsSection()
         }
         .navigationTitle(String(displayLocalized: "Appearance", bundle: .module))
     }
 
-    private var panelLayoutSettings: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private var menuBarSection: some View {
+        Section {
             Picker(
-                String(displayLocalized: "Panel layout", bundle: .module),
+                String(displayLocalized: "Icon style", bundle: .module),
+                selection: Binding(
+                    get: { viewModel.isVintageMacIconEnabled },
+                    set: { viewModel.setVintageMacIconEnabled($0) }
+                )
+            ) {
+                Text(String(displayLocalized: "Ring", bundle: .module)).tag(false)
+                Text(String(displayLocalized: "Vintage Mac", bundle: .module)).tag(true)
+            }
+            .pickerStyle(.segmented)
+            .help(String(
+                displayLocalized: "Show a classic Happy / Sad Mac face instead of the ring in the menu bar",
+                bundle: .module
+            ))
+
+            Picker(
+                String(displayLocalized: "Show usage for", bundle: .module),
+                selection: Binding(
+                    get: { viewModel.isAutomaticMenuBarProviderSelection },
+                    set: { viewModel.setAutomaticMenuBarProviderSelection($0) }
+                )
+            ) {
+                Text(String(displayLocalized: "Most active provider", bundle: .module)).tag(true)
+                Text(String(displayLocalized: "First provider in list", bundle: .module)).tag(false)
+            }
+            .pickerStyle(.menu)
+            .accessibilityHint(automaticSelectionHint)
+        } header: {
+            Text(String(displayLocalized: "Menu bar", bundle: .module))
+        } footer: {
+            menuBarFooter
+        }
+    }
+
+    @ViewBuilder
+    private var menuBarFooter: some View {
+        if let provider = viewModel.menuBarProviderInfo {
+            SettingsCaption(String.localizedStringWithFormat(
+                String(displayLocalized: "Now showing %@.", bundle: .module),
+                provider.displayName
+            ))
+        } else {
+            providersLink(String(displayLocalized: "Set up a provider in Providers.", bundle: .module))
+        }
+    }
+
+    private var panelSection: some View {
+        Section {
+            Picker(
+                String(displayLocalized: "Layout", bundle: .module),
                 selection: Binding(
                     get: { viewModel.panelLayout },
                     set: { viewModel.setPanelLayout($0) }
@@ -72,11 +78,14 @@ struct AppearanceTab: View {
                 Text(String(displayLocalized: "Tabs", bundle: .module)).tag(PanelLayout.tabs)
             }
             .pickerStyle(.segmented)
-            .labelsHidden()
 
-            Text(panelLayoutDescription)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            LabeledContent(String(displayLocalized: "Provider order", bundle: .module)) {
+                providersLink(String(displayLocalized: "Change in Providers", bundle: .module))
+            }
+        } header: {
+            Text(String(displayLocalized: "Panel", bundle: .module))
+        } footer: {
+            SettingsCaption(panelLayoutDescription)
         }
     }
 
@@ -89,83 +98,9 @@ struct AppearanceTab: View {
         }
     }
 
-    private var keepAwakeSettings: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Toggle(
-                isOn: Binding(
-                    get: { sleepPrevention.isFeatureVisible },
-                    set: { sleepPrevention.setFeatureVisible($0) }
-                )
-            ) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(String(displayLocalized: "Show Keep Mac Awake", bundle: .module))
-                    Text(String(displayLocalized: "Show a Keep Mac Awake timer in Filbert's panel", bundle: .module))
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Divider()
-
-            Toggle(
-                isOn: Binding(
-                    get: { sleepPrevention.remembersUntilTurnedOff },
-                    set: { sleepPrevention.setRemembersUntilTurnedOff($0) }
-                )
-            ) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(String(displayLocalized: "Remember “Until turned off”", bundle: .module))
-                    Text(rememberUntilTurnedOffSubtitle)
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                }
-            }
-            .disabled(!sleepPrevention.isFeatureVisible)
-        }
-    }
-
-    private var providerOrderRows: some View {
-        let visible = viewModel.configuredProvidersOrdered
-        return VStack(spacing: 0) {
-            ForEach(Array(visible.enumerated()), id: \.element.id) { index, provider in
-                providerOrderRow(provider, at: index)
-
-                if index < visible.count - 1 {
-                    Divider()
-                        .padding(.leading, 33)
-                }
-            }
-        }
-    }
-
-    private var automaticMenuBarSelection: some View {
-        Toggle(
-            isOn: Binding(
-                get: { viewModel.isAutomaticMenuBarProviderSelection },
-                set: { viewModel.setAutomaticMenuBarProviderSelection($0) }
-            )
-        ) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(String(displayLocalized: "Automatic", bundle: .module))
-                Text(automaticSelectionDescription)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-            }
-        }
-        .accessibilityHint(automaticSelectionHint)
-    }
-
-    private var menuBarSelectionText: String {
-        guard let provider = viewModel.menuBarProviderInfo else { return "" }
-        if viewModel.isAutomaticMenuBarProviderSelection {
-            return String(displayLocalized: "Menu bar automatically selects \(provider.displayName)", bundle: .module)
-        }
-        return String(displayLocalized: "Menu bar uses the first provider: \(provider.displayName)", bundle: .module)
-    }
-
     private var automaticSelectionHint: String {
         guard let provider = viewModel.menuBarProviderInfo else {
-            return automaticSelectionDescription
+            return String(displayLocalized: "Automatic selection description", bundle: .module)
         }
         return String.localizedStringWithFormat(
             String(displayLocalized: "Automatic selection accessibility hint", bundle: .module),
@@ -173,133 +108,36 @@ struct AppearanceTab: View {
         )
     }
 
-    private var automaticSelectionDescription: String {
-        String(displayLocalized: "Automatic selection description", bundle: .module)
-    }
-
-    private var providerOrderEmptyHint: some View {
-        Text(String(
-            displayLocalized: "Configure a provider on the Providers tab to start reordering.",
-            bundle: .module
-        ))
+    private func providersLink(_ title: String) -> some View {
+        Button {
+            navigation?.open(SettingsDestination(tab: .providers))
+        } label: {
+            Label(title, systemImage: "arrow.right.circle")
+        }
+        .buttonStyle(.link)
         .font(.caption)
-        .foregroundColor(.secondary)
-        .frame(maxWidth: .infinity, alignment: .leading)
-    }
-
-    private func providerOrderRow(_ provider: ProviderInfo, at index: Int) -> some View {
-        HStack(spacing: 10) {
-            ProviderLogoBadge(glyph: provider.glyph)
-            Text(provider.displayName)
-                .lineLimit(2)
-            Spacer()
-            Image(systemName: "line.3.horizontal")
-                .foregroundStyle(.secondary)
-                .help(String(displayLocalized: "Drag to reorder providers", bundle: .module))
-                .accessibilityHidden(true)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.vertical, 7)
-        .contentShape(Rectangle())
-        .onDrag {
-            draggedProviderId = provider.id
-            return NSItemProvider(object: provider.id as NSString)
-        }
-        .onDrop(
-            of: [UTType.text],
-            delegate: ProviderOrderDropDelegate(
-                destinationId: provider.id,
-                providers: viewModel.registeredProvidersOrdered,
-                draggedProviderId: $draggedProviderId,
-                move: viewModel.moveProvider
-            )
-        )
-        .accessibilityAction(named: String(displayLocalized: "Move up", bundle: .module)) {
-            moveProvider(at: index, direction: -1)
-        }
-        .accessibilityAction(named: String(displayLocalized: "Move down", bundle: .module)) {
-            moveProvider(at: index, direction: 1)
-        }
-    }
-
-    /// Indices resolve against the full ordered list (`registeredProvidersOrdered`)
-    /// so saved positions of unconfigured (hidden) providers stay intact.
-    private func moveProvider(at visibleIndex: Int, direction: Int) {
-        let visible = viewModel.configuredProvidersOrdered
-        let destinationVisibleIndex = visibleIndex + direction
-        guard visible.indices.contains(destinationVisibleIndex) else { return }
-        let sourceId = visible[visibleIndex].id
-        let destinationId = visible[destinationVisibleIndex].id
-        guard let sourceIndex = viewModel.registeredProvidersOrdered.firstIndex(where: { $0.id == sourceId }),
-              let destinationIndex = viewModel.registeredProvidersOrdered.firstIndex(where: { $0.id == destinationId })
-        else {
-            return
-        }
-        let destination = direction < 0 ? destinationIndex : destinationIndex + 1
-        viewModel.moveProvider(from: IndexSet(integer: sourceIndex), to: destination)
-    }
-
-    private var vintageMacSubtitle: String {
-        String(
-            displayLocalized: "Show a classic Happy / Sad Mac face instead of the ring in the menu bar",
-            bundle: .module
-        )
-    }
-
-    private var rememberUntilTurnedOffSubtitle: String {
-        String(
-            displayLocalized: """
-            After a restart, Filbert turns Keep Mac Awake back on \
-            if it was set to Until turned off.
-            """,
-            bundle: .module
-        )
-    }
-}
-
-private struct ProviderOrderDropDelegate: DropDelegate {
-    let destinationId: String
-    let providers: [ProviderInfo]
-    @Binding var draggedProviderId: String?
-    let move: (IndexSet, Int) -> Void
-
-    func dropEntered(info _: DropInfo) {
-        guard let draggedProviderId,
-              draggedProviderId != destinationId,
-              let sourceIndex = providers.firstIndex(where: { $0.id == draggedProviderId }),
-              let destinationIndex = providers.firstIndex(where: { $0.id == destinationId })
-        else {
-            return
-        }
-
-        let destination = destinationIndex > sourceIndex ? destinationIndex + 1 : destinationIndex
-        move(IndexSet(integer: sourceIndex), destination)
-    }
-
-    func dropUpdated(info _: DropInfo) -> DropProposal? {
-        DropProposal(operation: .move)
-    }
-
-    func performDrop(info _: DropInfo) -> Bool {
-        draggedProviderId = nil
-        return true
     }
 }
 
 @MainActor
-private struct BalanceThresholdsSettingsRow: View {
+private struct BalanceColorsSection: View {
     @State private var lowInput: Double = BalanceThresholds.low
     @State private var okInput: Double = BalanceThresholds.ok
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
+        Section {
             lowStepper
             okStepper
             tierPreview
-            hint
+        } header: {
+            Text(String(displayLocalized: "Balance colors", bundle: .module))
+        } footer: {
+            SettingsCaption(String(
+                displayLocalized: "Applies to every provider currency (USD, CNY, …).",
+                bundle: .module
+            ))
         }
-        .padding(.vertical, 4)
     }
 
     private var lowStepper: some View {
@@ -346,7 +184,7 @@ private struct BalanceThresholdsSettingsRow: View {
     private var tierPreview: some View {
         let lowInt = Int(lowInput)
         let okInt = Int(okInput)
-        return VStack(alignment: .leading, spacing: 4) {
+        return HStack(spacing: 16) {
             swatchRow(
                 color: ProviderVisualStyle.tierColor(.critical, scheme: colorScheme),
                 caption: String(displayLocalized: "under \(lowInt)", bundle: .module)
@@ -360,7 +198,7 @@ private struct BalanceThresholdsSettingsRow: View {
                 caption: String(displayLocalized: "\(okInt) and up", bundle: .module)
             )
         }
-        .padding(.top, 2)
+        .accessibilityElement(children: .combine)
     }
 
     private func swatchRow(color: Color, caption: String) -> some View {
@@ -372,12 +210,6 @@ private struct BalanceThresholdsSettingsRow: View {
                 .font(.caption)
                 .foregroundColor(.secondary)
         }
-    }
-
-    private var hint: some View {
-        Text(String(displayLocalized: "Applies to every provider currency (USD, CNY, …).", bundle: .module))
-            .font(.caption2)
-            .foregroundColor(.secondary)
     }
 
     private func persist() {

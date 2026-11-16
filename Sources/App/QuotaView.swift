@@ -159,7 +159,7 @@ struct QuotaView: View {
                 )
             } else {
                 Text(String(displayLocalized: "Open Settings", bundle: .module))
-                    .openAndRaiseSettings()
+                    .openAndRaiseSettings(at: SettingsDestination(tab: .providers, providerId: providerId))
             }
             ErrorLogLink(errorLog: viewModel.errorLog)
         }

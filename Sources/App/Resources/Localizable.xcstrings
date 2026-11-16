@@ -16,21 +16,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "關於活動偵測" } }
       }
     },
-    "Optional. Filbert can add a small helper to %@ that tells it when you start and finish a task. With it, the Smart schedule checks your usage while you work, so the numbers stay up to date. Without it, Filbert checks on its normal schedule." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Optional. Filbert kann für %@ einen kleinen Helfer einrichten, der meldet, wann du eine Aufgabe beginnst und beendest. Damit prüft der Rhythmus „Intelligent“ deine Nutzung, während du arbeitest, und die Werte bleiben aktuell. Ohne ihn prüft Filbert nach dem normalen Rhythmus." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Optional. Filbert can add a small helper to %@ that tells it when you start and finish a task. With it, the Smart schedule checks your usage while you work, so the numbers stay up to date. Without it, Filbert checks on its normal schedule." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. Filbert puede añadir un pequeño ayudante a %@ que le avisa de cuándo empiezas y terminas una tarea. Con él, la frecuencia Inteligente consulta tu uso mientras trabajas, para que los datos estén al día. Sin él, Filbert consulta con su frecuencia normal." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. Filbert puede agregar un pequeño ayudante a %@ que le avisa cuándo empiezas y terminas una tarea. Con él, la frecuencia Inteligente consulta tu uso mientras trabajas, para que los datos estén al día. Sin él, Filbert consulta con su frecuencia normal." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オプション。Filbertは%@に小さなヘルパーを追加して、タスクの開始と終了を知らせるようにできます。これにより、“スマート”の頻度で作業中に使用量を確認し、数値を最新に保ちます。追加しない場合は、通常の頻度で確認します。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. O Filbert pode adicionar um pequeno auxiliar em %@ que avisa quando uma tarefa começa e termina. Com ele, a frequência Inteligente verifica o uso durante o trabalho, e os números ficam atualizados. Sem ele, o Filbert verifica na frequência normal." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. O Filbert pode adicionar um pequeno auxiliar em %@ que avisa quando uma tarefa começa e termina. Com ele, a frequência do modo Inteligente verifica a utilização durante o trabalho, e os números ficam atualizados. Sem ele, o Filbert verifica na frequência normal." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Необязательно. Filbert может добавить в %@ небольшой помощник, который сообщает, когда вы начинаете и заканчиваете задачу. С ним график «Умный» проверяет использование, пока вы работаете, и данные остаются актуальными. Без него Filbert проверяет по обычному графику." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可选。Filbert 可以为 %@ 添加一个小助手，在你开始和完成任务时通知 Filbert。有了它，“智能”频率会在你工作时检查用量，让数据保持最新。没有它，Filbert 会按正常频率检查。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選用。Filbert可以為%@加入一個小幫手，在你開始和完成任務時通知Filbert。有了它，「智慧型」頻率會在你工作時檢查用量，讓資料保持最新。沒有它，Filbert會依一般頻率檢查。" } }
-      }
-    },
     "Installed. Finish setup in %@" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -119,36 +104,6 @@
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Удалить" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "移除" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "移除" } }
-      }
-    },
-    "Activity detection works only with automatic checks on the Smart schedule." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Aktivitätserkennung wirkt nur, wenn die automatische Prüfung den Rhythmus „Intelligent“ verwendet." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Activity detection works only with automatic checks on the Smart schedule." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La detección de actividad solo funciona con las consultas automáticas en la frecuencia Inteligente." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La detección de actividad solo funciona con las consultas automáticas en la frecuencia Inteligente." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アクティビティ検出は、使用量の自動確認が“スマート”の頻度のときにのみ機能します。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A detecção de atividade só funciona com a verificação automática na frequência Inteligente." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A deteção de atividade só funciona com a verificação automática na frequência do modo Inteligente." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отслеживание активности работает только при автоматической проверке по графику «Умный»." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "活动检测仅在自动检查使用“智能”频率时生效。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "活動偵測只在自動檢查使用「智慧型」頻率時生效。" } }
-      }
-    },
-    "Opens the Usage Checks settings." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet die Einstellungen „Nutzungsprüfung“." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Opens the Usage Checks settings." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abre los ajustes de Consultas de uso." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abre la configuración de Consultas de uso." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“使用量の確認”の設定を開きます。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abre os ajustes de Verificações de uso." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abre as definições de Verificações da utilização." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывает настройки «Проверка использования»." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开“用量检查”设置。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "打開「用量檢查」設定。" } }
       }
     },
     "Activity detection for %@" : {
@@ -1946,136 +1901,6 @@
         }
       }
     },
-    "Configure a provider on the Providers tab to start reordering." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Richte im Tab „Anbieter“ einen Anbieter ein, um die Reihenfolge zu ändern."
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configure a provider on the Providers tab to start reordering."
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configura un proveedor en la pestaña «Proveedores» para empezar a reordenar."
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configura un proveedor en la pestaña “Proveedores” para empezar a reordenar."
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "並べ替えるには、“プロバイダ”タブでプロバイダを設定してください。"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configure um provedor na aba Provedores para começar a reordenar."
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configure um fornecedor no separador Fornecedores para começar a reordenar."
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Настройте провайдера на вкладке «Провайдеры», чтобы менять порядок."
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "在“提供商”标签页中配置一个提供商以开始排序。"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "請在「提供者」標籤頁中設定提供者，即可開始排序。"
-          }
-        }
-      }
-    },
-    "Configured" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configured"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurado"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurado"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Eingerichtet"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "設定済み"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurado"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Configurado"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Настроен"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已配置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "已設定"
-          }
-        }
-      }
-    },
     "Unable to save the API key. Check Keychain access and try again." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2137,71 +1962,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "無法儲存API金鑰。請檢查鑰匙圈的取用權限，然後再試一次。"
-          }
-        }
-      }
-    },
-    "Unconfigured" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Unconfigured"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin configurar"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Sin configurar"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Nicht eingerichtet"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未設定"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não configurado"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Não configurado"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Не настроен"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未配置"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "未設定"
           }
         }
       }
@@ -3702,71 +3462,6 @@
         }
       }
     },
-    "Balance thresholds" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Balance thresholds"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Umbrales de saldo"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Umbrales de saldo"
-          }
-        },
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Guthabenschwellen"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "残高のしきい値"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limites de saldo"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Limiares de saldo"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Пороги баланса"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "余额阈值"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "餘額門檻"
-          }
-        }
-      }
-    },
     "Low below" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4182,21 +3877,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在GitHub上打開Simple Icons" } }
       }
     },
-    "Open Source" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Open Source" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open Source" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Código abierto" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Código abierto" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オープンソース" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Código aberto" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Código aberto" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открытый исходный код" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开源" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開放原始碼" } }
-      }
-    },
     "Open the MIT License on GitHub" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4497,21 +4177,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "外觀" } }
       }
     },
-    "Automatic" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Automático" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動" } }
-      }
-    },
     "Automatic selection description" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4540,36 +4205,6 @@
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматически отдавать предпочтение недавно активным провайдерам; когда активность спадает, возвращаться к сохранённому порядку. Текущий провайдер в строке меню: %@." } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动优先显示最近活跃的提供商；活跃度降低后，恢复已存储的顺序。当前菜单栏提供商：%@。" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動優先顯示最近活躍的提供者；活動減少後，恢復已儲存的順序。目前的選單列提供者：%@。" } }
-      }
-    },
-    "Drag providers to change their order." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ziehe Anbieter, um ihre Reihenfolge zu ändern." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag providers to change their order." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra los proveedores para cambiar su orden." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra los proveedores para cambiar su orden." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダをドラッグして順序を変更します。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste os provedores para mudar a ordem." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste os fornecedores para alterar a ordem." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетаскивайте провайдеров, чтобы изменить порядок." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移提供商以更改顺序。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "拖移提供者來更改順序。" } }
-      }
-    },
-    "Drag to reorder providers" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ziehen, um Anbieter neu anzuordnen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag to reorder providers" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar los proveedores" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar los proveedores" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ドラッグしてプロバイダを並べ替え" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar os provedores" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar os fornecedores" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетащите, чтобы изменить порядок провайдеров" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移以重新排列提供商" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "拖移來重新排列提供者" } }
       }
     },
     "Error" : {
@@ -4647,51 +4282,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已啟用" } }
       }
     },
-    "Menu bar icon" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Menüleistensymbol" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar icon" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Icono de la barra de menús" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ícono de la barra de menús" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーアイコン" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ícone da barra de menus" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ícone da barra de menus" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Значок в строке меню" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏图标" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列圖像" } }
-      }
-    },
-    "Menu bar automatically selects %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Menüleiste wählt automatisch %@ aus" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar automatically selects %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús selecciona automáticamente %@" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーは%@を自動的に選択します" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus seleciona automaticamente %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus seleciona automaticamente %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню автоматически выбирает %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏自动选择 %@" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列自動選擇%@" } }
-      }
-    },
-    "Menu bar uses the first provider: %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die Menüleiste verwendet den ersten Anbieter: %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar uses the first provider: %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La barra de menús usa el primer proveedor: %@" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバーは最初のプロバイダを使用します: %@" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus usa o primeiro provedor: %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A barra de menus usa o primeiro fornecedor: %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню использует первого провайдера: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏使用第一个提供商：%@" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列使用第一個提供者：%@" } }
-      }
-    },
     "Move down" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4767,21 +4357,6 @@
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "準備就緒" } }
       }
     },
-    "Setup needed" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einrichtung nötig" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Setup needed" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定が必要" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Требуется настройка" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要设置" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要設定" } }
-      }
-    },
     "Working…" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -4795,279 +4370,6 @@
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выполняется…" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "正在处理…" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "運作中⋯" } }
-      }
-    },
-    "Automatic usage checks" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Nutzungsprüfung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic usage checks" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量の自動確認" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática de uso" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática da utilização" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка использования" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查用量" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查用量" } }
-      }
-    },
-    "Check schedule" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Prüfrhythmus" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check schedule" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Frecuencia de consulta" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Frecuencia de consulta" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認の頻度" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Frequência de verificação" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Frequência de verificação" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "График проверок" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查频率" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢查頻率" } }
-      }
-    },
-    "Regular" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Regelmäßig" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Normal" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Normal" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "標準" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Regular" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Обычный" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "常规" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "標準" } }
-      }
-    },
-    "Smart" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Intelligent" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Smart" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "スマート" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Inteligente" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Умный" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "智能" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "智慧型" } }
-      }
-    },
-    "Choose which providers Filbert checks automatically. The schedule and intervals set how often." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle, welche Anbieter Filbert automatisch prüft. Rhythmus und Intervalle bestimmen, wie oft." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose which providers Filbert checks automatically. The schedule and intervals set how often." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores consulta Filbert automáticamente. La frecuencia y los intervalos determinan cada cuánto." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige qué proveedores consulta Filbert automáticamente. La frecuencia y los intervalos definen cada cuánto." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertが自動的に確認するプロバイダを選択します。確認する頻度は、確認の頻度と間隔の設定で決まります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha quais provedores o Filbert verifica automaticamente. A frequência e os intervalos definem com que regularidade." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha que fornecedores o Filbert verifica automaticamente. A frequência e os intervalos definem com que regularidade." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите, каких провайдеров Filbert проверяет автоматически. График и интервалы задают частоту." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择 Filbert 要自动检查哪些提供商。检查频率和间隔决定多久检查一次。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇Filbert要自動檢查哪些提供者。檢查頻率和間隔決定多久檢查一次。" } }
-      }
-    },
-    "Choose a shared cadence for opted-in providers." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wähle einen gemeinsamen Rhythmus für Anbieter mit automatischer Aktualisierung." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose a shared cadence for opted-in providers." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elige una frecuencia compartida para los proveedores activados." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オンにしたプロバイダに共通の更新間隔を選択します。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolha uma frequência comum para os provedores selecionados." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolha uma frequência comum para os fornecedores selecionados." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выберите общую частоту для выбранных провайдеров." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为已选择的提供商设定统一的刷新频率。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為已選擇的提供者設定共用的頻率。" } }
-      }
-    },
-    "Slow interval" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Langsames Intervall" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Slow interval" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "低速間隔" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo lento" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Медленный интервал" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "慢速间隔" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "慢速間隔" } }
-      }
-    },
-    "Fast interval" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnelles Intervall" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast interval" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速間隔" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo rápido" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрый интервал" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速间隔" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速間隔" } }
-      }
-    },
-    "Turn on automatic checks for each provider you want to track." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere die automatische Prüfung für jeden Anbieter, den du im Blick behalten möchtest." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn on automatic checks for each provider you want to track." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa las consultas automáticas para cada proveedor que quieras seguir." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa las consultas automáticas para cada proveedor que quieras seguir." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "追跡したいプロバイダごとに自動確認をオンにしてください。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative a verificação automática para cada provedor que quiser acompanhar." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative a verificação automática para cada fornecedor que pretende acompanhar." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите автоматическую проверку для каждого провайдера, за которым хотите следить." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "为每个要关注的提供商打开自动检查。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "為每個要追蹤的提供者開啟自動檢查。" } }
-      }
-    },
-    "Usage Checks" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nutzungsprüfung" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage Checks" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas de uso" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas de uso" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量の確認" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações de uso" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações da utilização" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка использования" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量检查" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量檢查" } }
-      }
-    },
-    "The Regular schedule checks the selected providers %@." : {
-      "comment" : "Every %@ except a plain duration is an interval phrase from “every %lld minutes” / “every %lld seconds”, such as “every minute” or “every 5 minutes”.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Rhythmus „Regelmäßig“ prüft Filbert die ausgewählten Anbieter %@." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Regular schedule checks the selected providers %@." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Normal consulta a los proveedores seleccionados %@." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Normal consulta a los proveedores seleccionados %@." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“標準”では、選択したプロバイダを%@に確認します。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Regular verifica os provedores selecionados %@." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Regular verifica os fornecedores selecionados %@." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "По графику «Обычный» Filbert проверяет выбранных провайдеров %@." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“常规”频率会%@检查一次已选择的提供商。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「標準」頻率會%@檢查一次已選擇的提供者。" } }
-      }
-    },
-    "Fast-check duration" : {
-      "comment" : "Slider label: how long a provider keeps fast checks after its usage changes.",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer schneller Prüfungen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Fast-check duration" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de consultas rápidas" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de consultas rápidas" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認の継続時間" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração das verificações rápidas" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração das verificações rápidas" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность быстрых проверок" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查时长" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查持續時間" } }
-      }
-    },
-    "The Smart schedule checks %1$@. When usage changes, it checks that provider %2$@ for %3$@, then %4$@ for another %3$@, and then returns to the slow interval." : {
-      "comment" : "Every %@ except a plain duration is an interval phrase from “every %lld minutes” / “every %lld seconds”, such as “every minute” or “every 5 minutes”. %3$@ is a plain duration (“10 minutes”).",
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Rhythmus „Intelligent“ prüft Filbert %1$@. Ändert sich die Nutzung, prüft Filbert diesen Anbieter %3$@ lang %2$@, danach weitere %3$@ lang %4$@ und kehrt dann zum langsamen Intervall zurück." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "The Smart schedule checks %1$@. When usage changes, it checks that provider %2$@ for %3$@, then %4$@ for another %3$@, and then returns to the slow interval." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Inteligente consulta %1$@. Cuando el uso cambia, consulta a ese proveedor %2$@ durante %3$@, luego %4$@ durante %3$@ más y después vuelve al intervalo lento." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "La frecuencia Inteligente consulta %1$@. Cuando el uso cambia, consulta a ese proveedor %2$@ durante %3$@, luego %4$@ durante %3$@ más y después vuelve al intervalo lento." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“スマート”では%1$@に確認します。使用量が変化すると、そのプロバイダを%3$@間、%2$@に確認し、さらに%3$@間、%4$@に確認してから低速間隔に戻ります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Inteligente verifica %1$@. Quando o uso muda, ela verifica esse provedor %2$@ durante %3$@, depois %4$@ por mais %3$@ e então volta ao intervalo lento." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A frequência Inteligente verifica %1$@. Quando a utilização muda, verifica esse fornecedor %2$@ durante %3$@, depois %4$@ durante mais %3$@ e então volta ao intervalo lento." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "По графику «Умный» Filbert проверяет провайдеров %1$@. Когда использование меняется, Filbert проверяет этого провайдера %2$@ в течение заданного времени (%3$@), затем ещё столько же (%3$@) — %4$@, после чего возвращается к медленному интервалу." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "“智能”频率会%1$@检查一次。用量变化后，会在 %3$@内%2$@检查一次该提供商，然后在接下来的 %3$@内%4$@检查一次，之后恢复慢速间隔。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "「智慧型」頻率會%1$@檢查一次。用量變化後，會在%3$@內%2$@檢查一次該提供者，然後在接下來的%3$@內%4$@檢查一次，之後恢復慢速間隔。" } }
-      }
-    },
-    "Selected interval: %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ausgewähltes Intervall: %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Selected interval: %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo seleccionado: %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo seleccionado: %@" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "選択した間隔: %@" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo selecionado: %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo selecionado: %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выбранный интервал: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "所选间隔：%@" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "所選間隔：%@" } }
-      }
-    },
-    "Filbert runs %2$@ in the background to check %1$@ usage. These checks may use some of your %3$@ quota. Shorter Smart intervals can increase the number of checks." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert führt %2$@ im Hintergrund aus, um die Nutzung von %1$@ zu prüfen. Diese Prüfungen können einen Teil deines Kontingents bei %3$@ verbrauchen. Kürzere Intervalle im Modus „Intelligent“ können die Anzahl der Prüfungen erhöhen." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert runs %2$@ in the background to check %1$@ usage. These checks may use some of your %3$@ quota. Shorter Smart intervals can increase the number of checks." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert ejecuta %2$@ en segundo plano para consultar el uso de %1$@. Estas consultas pueden usar parte de tu cuota de %3$@. Los intervalos inteligentes más cortos pueden aumentar el número de consultas." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert ejecuta %2$@ en segundo plano para consultar el uso de %1$@. Estas consultas pueden usar parte de tu cuota de %3$@. Los intervalos inteligentes más cortos pueden aumentar el número de consultas." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertは%1$@の使用量を確認するため、バックグラウンドで%2$@を実行します。これらの確認で%3$@の割り当ての一部が使われる場合があります。スマートの間隔を短くすると、確認の回数が増えることがあります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert executa %2$@ em segundo plano para verificar o uso do %1$@. Essas verificações podem consumir parte da sua cota do %3$@. Intervalos inteligentes mais curtos podem aumentar o número de verificações." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert executa %2$@ em segundo plano para verificar a utilização do %1$@. Estas verificações podem consumir parte da sua quota do %3$@. Intervalos inteligentes mais curtos podem aumentar o número de verificações." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert запускает %2$@ в фоновом режиме, чтобы проверять использование %1$@. Эти проверки могут расходовать часть квоты %3$@. Более короткие интервалы умного режима могут увеличить число проверок." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 会在后台运行 %2$@ 以检查 %1$@ 用量。这些检查可能会消耗部分 %3$@ 配额。较短的智能刷新间隔可能会增加检查次数。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert會在背景執行%2$@來檢查%1$@用量。這些檢查可能會消耗部分%3$@配額。較短的智慧型間隔可能會增加檢查次數。" } }
-      }
-    },
-    "Automatic usage checks for %@" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatische Nutzungsprüfung für %@" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic usage checks for %@" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso para %@" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas automáticas de uso para %@" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@の使用量の自動確認" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática de uso para %@" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificação automática da utilização para %@" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка использования: %@" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查 %@ 的用量" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查%@的用量" } }
-      }
-    },
-    "Turn automatic usage checks on or off for this provider." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schalte die automatische Nutzungsprüfung für diesen Anbieter ein oder aus." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn automatic usage checks on or off for this provider." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva las consultas automáticas de uso para este proveedor." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa o desactiva las consultas automáticas de uso para este proveedor." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダの使用量の自動確認をオンまたはオフにします。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a verificação automática de uso deste provedor." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ativa ou desativa a verificação automática da utilização deste fornecedor." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включает или выключает автоматическую проверку использования этого провайдера." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开或关闭此提供商的自动用量检查。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟或關閉此提供者的自動用量檢查。" } }
-      }
-    },
-    "Automatic checks are paused because this provider is disabled." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Die automatische Prüfung ist pausiert, weil dieser Anbieter deaktiviert ist." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Automatic checks are paused because this provider is disabled." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas automáticas están en pausa porque este proveedor está desactivado." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Las consultas automáticas están en pausa porque este proveedor está desactivado." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "このプロバイダが無効なため、自動確認は一時停止しています。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "A verificação automática está pausada porque este provedor está desativado." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A verificação automática está em pausa porque este fornecedor está desativado." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Автоматическая проверка приостановлена, потому что этот провайдер выключен." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "此提供商已停用，因此自动检查已暂停。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "此提供者已停用，因此自動檢查已暫停。" } }
       }
     },
     "Automatic checks start after setup." : {
@@ -5113,21 +4415,6 @@
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Быстрые и медленные проверки используют один интервал, поэтому быстрые проверки не чаще обычных." } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查和慢速检查使用相同的间隔，因此快速检查并不会更频繁。" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查和慢速檢查使用相同的間隔，因此快速檢查不會更頻繁。" } }
-      }
-    },
-    "Keep checking" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Weiter prüfen" } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking" } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando" } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando" } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認を続ける" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando" } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar" } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжить проверки" } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续检查" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "繼續檢查" } }
       }
     },
     "Keep checking %@" : {
@@ -5190,21 +4477,6 @@
         "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановить быстрые проверки" } },
         "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止快速检查" } },
         "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止快速檢查" } }
-      }
-    },
-    "Stopping ends the fast checks early. Automatic checks stay on, and the normal Smart schedule resumes." : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Damit enden die schnellen Prüfungen vorzeitig. Die automatische Prüfung bleibt eingeschaltet, und der normale Rhythmus „Intelligent“ gilt wieder." } },
-        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stopping ends the fast checks early. Automatic checks stay on, and the normal Smart schedule resumes." } },
-        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al detenerlas, las consultas rápidas terminan antes. Las consultas automáticas siguen activadas y vuelve la frecuencia Inteligente normal." } },
-        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Si las detienes, las consultas rápidas terminan antes. Las consultas automáticas siguen activadas y se reanuda la frecuencia Inteligente normal." } },
-        "ja" : { "stringUnit" : { "state" : "translated", "value" : "停止すると高速確認が早めに終了します。自動確認はオンのままで、通常の“スマート”の頻度に戻ります。" } },
-        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar encerra as verificações rápidas antes do tempo. A verificação automática continua ativa e a frequência Inteligente normal é retomada." } },
-        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao parar, as verificações rápidas terminam mais cedo. A verificação automática mantém-se ativa e a frequência normal do modo Inteligente é retomada." } },
-        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановка досрочно завершает быстрые проверки. Автоматическая проверка остаётся включённой, и возобновляется обычный график «Умный»." } },
-        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止会提前结束快速检查。自动检查保持开启，并恢复正常的“智能”频率。" } },
-        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止後，快速檢查會提早結束。自動檢查會保持開啟，並恢復一般的「智慧型」頻率。" } }
       }
     },
     "Provider limit: checks no more often than %@." : {
@@ -8159,71 +7431,6 @@
         }
       }
     },
-    "Welcome" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Willkommen"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Welcome"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bienvenida"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Bienvenida"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "ようこそ"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Boas-vindas"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Boas-vindas"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Приветствие"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "欢迎"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "歡迎使用"
-          }
-        }
-      }
-    },
     "See the introduction to Filbert again." : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8549,71 +7756,6 @@
         }
       }
     },
-    "Panel layout" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "de-DE" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Layout des Bereichs"
-          }
-        },
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Panel layout"
-          }
-        },
-        "es-ES" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diseño del panel"
-          }
-        },
-        "es-MX" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Diseño del panel"
-          }
-        },
-        "ja" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "パネルのレイアウト"
-          }
-        },
-        "pt-BR" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Layout do painel"
-          }
-        },
-        "pt-PT" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Disposição do painel"
-          }
-        },
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Вид панели"
-          }
-        },
-        "zh-Hans" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "面板布局"
-          }
-        },
-        "zh-Hant" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "面板版面配置"
-          }
-        }
-      }
-    },
     "Stacked" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8872,6 +8014,801 @@
             "value" : "一次顯示一個提供者。請選擇標籤頁來查看詳細資訊。"
           }
         }
+      }
+    },
+    "Source code" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Quellcode" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Source code" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Código fuente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Código fuente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ソースコード" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Código-fonte" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Código-fonte" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Исходный код" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "源代码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "原始碼" } }
+      }
+    },
+    "License" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Lizenz" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "License" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Licencia" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Licencia" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ライセンス" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Licença" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Licença" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Лицензия" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "许可证" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "授權條款" } }
+      }
+    },
+    "Acknowledgements" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Danksagungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Acknowledgements" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Agradecimientos" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Agradecimientos" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "謝辞" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Agradecimentos" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Agradecimentos" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Благодарности" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "致谢" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "致謝" } }
+      }
+    },
+    "Check now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Jetzt suchen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check now" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Buscar ahora" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Buscar ahora" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "今すぐ確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Buscar agora" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Procurar agora" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверить сейчас" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "立即检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "立即檢查" } }
+      }
+    },
+    "Show…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Anzeigen …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "表示…" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar…" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar…" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показать…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示⋯" } }
+      }
+    },
+    "Welcome window" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Willkommensfenster" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Welcome window" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de bienvenida" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ventana de bienvenida" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ようこそウインドウ" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Janela de boas-vindas" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Janela de boas-vindas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Окно приветствия" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "欢迎窗口" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "歡迎視窗" } }
+      }
+    },
+    "Opens the General settings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Öffnet die Einstellungen „Allgemein“." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Opens the General settings." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abre los ajustes generales." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abre la configuración general." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“一般”の設定を開きます。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abre os ajustes gerais." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abre as definições gerais." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открывает настройки «Основные»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开“通用”设置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "打開「一般」設定。" } }
+      }
+    },
+    "Works when Check automatically is on." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Funktioniert, wenn „Automatisch prüfen“ eingeschaltet ist." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Works when Check automatically is on." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Funciona cuando «Consultar automáticamente» está activado." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Funciona cuando “Consultar automáticamente” está activado." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“自動的に確認”がオンのときに機能します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Funciona quando “Verificar automaticamente” está ativado." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Funciona quando «Verificar automaticamente» está ativado." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Работает, когда включено «Проверять автоматически»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "开启“自动检查”后生效。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟「自動檢查」後生效。" } }
+      }
+    },
+    "Optional. Filbert can add a small helper to %@ that tells it when you start and finish a task. With it, Filbert checks faster while you work, so the numbers stay up to date. Without it, Filbert checks on its normal schedule." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Optional. Filbert kann für %@ ein kleines Hilfsskript einrichten, das meldet, wann du eine Aufgabe beginnst und beendest. Damit prüft Filbert schneller, während du arbeitest, und die Werte bleiben aktuell. Ohne das Hilfsskript prüft Filbert in seinem normalen Rhythmus." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Optional. Filbert can add a small helper to %@ that tells it when you start and finish a task. With it, Filbert checks faster while you work, so the numbers stay up to date. Without it, Filbert checks on its normal schedule." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. Filbert puede añadir un pequeño script auxiliar a %@ que le avisa de cuándo empiezas y terminas una tarea. Con él, Filbert consulta más rápido mientras trabajas, para que los datos estén al día. Sin él, Filbert consulta con su frecuencia normal." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. Filbert puede agregar un pequeño script auxiliar a %@ que le avisa cuándo empiezas y terminas una tarea. Con él, Filbert consulta más rápido mientras trabajas, para que los datos estén al día. Sin él, Filbert consulta con su frecuencia normal." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "オプション。Filbertは%@にヘルパースクリプトを追加して、タスクの開始と終了を知らせるようにできます。これにより、作業中はFilbertが高速に確認し、数値を最新に保ちます。追加しない場合は、通常の頻度で確認します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. O Filbert pode adicionar um pequeno script auxiliar em %@ que avisa quando uma tarefa começa e termina. Com ele, o Filbert verifica mais rápido durante o trabalho, e os números ficam em dia. Sem ele, o Filbert verifica na frequência normal." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Opcional. O Filbert pode adicionar um pequeno script auxiliar em %@ que avisa quando uma tarefa começa e termina. Com ele, o Filbert verifica mais depressa durante o trabalho, e os números ficam em dia. Sem ele, o Filbert verifica na frequência normal." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Необязательно. Filbert может добавить в %@ небольшой вспомогательный скрипт, который сообщает, когда вы начинаете и заканчиваете задачу. С ним Filbert проверяет быстрее, пока вы работаете, и данные остаются актуальными. Без него Filbert проверяет по обычному графику." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "可选。Filbert 可以为 %@ 添加一个辅助脚本，在你开始和完成任务时通知 Filbert。有了它，Filbert 会在你工作时加快检查，让数据保持最新。没有它，Filbert 会按正常频率检查。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選用。Filbert可以為%@加入一個輔助腳本，在你開始和完成任務時通知Filbert。有了它，Filbert會在你工作時加快檢查，讓資料保持最新。沒有它，Filbert會依一般頻率檢查。" } }
+      }
+    },
+    "Works when “Check faster while you work” is on in General." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Funktioniert, wenn „Beim Arbeiten schneller prüfen“ unter Allgemein eingeschaltet ist." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Works when “Check faster while you work” is on in General." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Funciona cuando «Consultar más rápido mientras trabajas» está activado en General." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Funciona cuando “Consultar más rápido mientras trabajas” está activado en General." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“一般”で“作業中は高速で確認”がオンのときに機能します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Funciona quando “Verificar mais rápido durante o trabalho” está ativado em Geral." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Funciona quando «Verificar mais depressa durante o trabalho» está ativado em Geral." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Работает, когда в разделе «Основные» включено «Проверять быстрее во время работы»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在“通用”中开启“工作时加快检查”后生效。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在「一般」中開啟「工作時加快檢查」後生效。" } }
+      }
+    },
+    "Balance colors" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Guthabenfarben" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Balance colors" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Colores del saldo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Colores del saldo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "残高の色" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cores do saldo" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cores do saldo" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Цвета баланса" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "余额颜色" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "餘額顏色" } }
+      }
+    },
+    "Icon style" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Symbolstil" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Icon style" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Estilo de icono" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Estilo de ícono" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "アイコンのスタイル" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Estilo do ícone" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Estilo do ícone" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Стиль значка" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "图标样式" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圖像樣式" } }
+      }
+    },
+    "Ring" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Ring" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Ring" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Anillo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Anillo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リング" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Anel" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Anel" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Кольцо" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "圆环" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "圓環" } }
+      }
+    },
+    "Show usage for" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nutzung anzeigen für" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Show usage for" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar uso de" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar uso de" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "表示する使用量" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar uso de" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Mostrar utilização de" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Показывать использование" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "显示用量" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "顯示用量" } }
+      }
+    },
+    "Most active provider" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktivster Anbieter" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Most active provider" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Proveedor más activo" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Proveedor más activo" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "最もアクティブなプロバイダ" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Provedor mais ativo" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Fornecedor mais ativo" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Самый активный провайдер" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "最活跃的提供商" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "最活躍的提供者" } }
+      }
+    },
+    "First provider in list" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Erster Anbieter in der Liste" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "First provider in list" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Primer proveedor de la lista" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Primer proveedor de la lista" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "リストの最初のプロバイダ" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Primeiro provedor da lista" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Primeiro fornecedor da lista" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Первый провайдер в списке" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "列表中的第一个提供商" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "清單中的第一個提供者" } }
+      }
+    },
+    "Menu bar" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Menüleiste" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Menu bar" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Barra de menús" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Barra de menús" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "メニューバー" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Barra de menus" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Barra de menus" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Строка меню" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "菜单栏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選單列" } }
+      }
+    },
+    "Now showing %@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktuell angezeigt: %@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Now showing %@." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Ahora se muestra %@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Ahora se muestra %@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "現在%@を表示しています。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Mostrando agora o %@." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "A mostrar agora o %@." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сейчас показывается: %@." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当前显示 %@。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "目前顯示%@。" } }
+      }
+    },
+    "Set up a provider in Providers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Richte unter „Anbieter“ einen Anbieter ein." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Set up a provider in Providers." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configura un proveedor en Proveedores." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configura un proveedor en Proveedores." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“プロバイダ”でプロバイダを設定してください。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configure um provedor em Provedores." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configure um fornecedor em Fornecedores." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Настройте провайдера в разделе «Провайдеры»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在“提供商”中设置提供商。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在「提供者」中設定提供者。" } }
+      }
+    },
+    "Layout" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Layout" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Layout" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Diseño" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Diseño" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "レイアウト" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Layout" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Disposição" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вид" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "布局" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "版面配置" } }
+      }
+    },
+    "Change in Providers" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Unter „Anbieter“ ändern" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Change in Providers" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Cambiar en Proveedores" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Cambiar en Proveedores" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“プロバイダ”で変更" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Alterar em Provedores" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Alterar em Fornecedores" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Изменить в разделе «Провайдеры»" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在“提供商”中更改" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在「提供者」中變更" } }
+      }
+    },
+    "Panel" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Bereich" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "パネル" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Painel" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Painel" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Панель" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "面板" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "面板" } }
+      }
+    },
+    "Saved in Keychain" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Im Schlüsselbund gespeichert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Saved in Keychain" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Guardada en el llavero" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Guardada en el llavero" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "キーチェーンに保存済み" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Salva nas chaves" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Guardada no porta-chaves" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сохранён в связке ключей" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已保存到钥匙串" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已儲存到鑰匙圈" } }
+      }
+    },
+    "Remove the %@ API key" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "API-Schlüssel für %@ entfernen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Remove the %@ API key" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Quitar la clave de API de %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Quitar la clave de API de %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@のAPIキーを削除" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Remover a chave de API do %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Remover a chave de API do %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Удалить ключ API %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "移除 %@ 的 API 密钥" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "移除%@的API金鑰" } }
+      }
+    },
+    "Helper" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Hilfsskript" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Helper" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Script auxiliar" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Script auxiliar" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ヘルパースクリプト" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Script auxiliar" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Script auxiliar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Вспомогательный скрипт" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "辅助脚本" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "輔助腳本" } }
+      }
+    },
+    "Installed" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Installiert" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Installed" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Instalado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Instalado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "インストール済み" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Instalado" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Instalado" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Установлен" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "已安装" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "已安裝" } }
+      }
+    },
+    "Connection" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Verbindung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Connection" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Conexión" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Conexión" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "接続" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Conexão" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ligação" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Подключение" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "连接" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "連線" } }
+      }
+    },
+    "Dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Panel" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ダッシュボード" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Painel" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Painel" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Панель" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "仪表盘" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "儀表板" } }
+      }
+    },
+    "Open" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "開く" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "打開" } }
+      }
+    },
+    "Open the %@ dashboard" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dashboard von %@ öffnen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Open the %@ dashboard" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Abrir el panel de %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Abrir el panel de %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@のダッシュボードを開く" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o painel do %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Abrir o painel do %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Открыть панель %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开 %@ 仪表盘" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "打開%@儀表板" } }
+      }
+    },
+    "Filbert saves the key in your Keychain." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Filbert speichert den Schlüssel in deinem Schlüsselbund." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Filbert saves the key in your Keychain." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Filbert guarda la clave en tu llavero." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Filbert guarda la clave en tu llavero." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "Filbertはキーをキーチェーンに保存します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert salva a chave nas suas chaves." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "O Filbert guarda a chave no seu porta-chaves." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Filbert сохраняет ключ в вашей связке ключей." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "Filbert 会将密钥保存到你的钥匙串中。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "Filbert會將金鑰儲存到你的鑰匙圈中。" } }
+      }
+    },
+    "Tracking" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wird verfolgt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Tracking" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "En seguimiento" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "En seguimiento" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "追跡中" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Em acompanhamento" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Em acompanhamento" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отслеживаются" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "跟踪中" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "追蹤中" } }
+      }
+    },
+    "Not tracking" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wird nicht verfolgt" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Not tracking" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Sin seguimiento" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Sin seguimiento" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "未追跡" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sem acompanhamento" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Sem acompanhamento" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Не отслеживаются" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "未跟踪" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "未追蹤" } }
+      }
+    },
+    "Drag to reorder." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Zum Neuordnen ziehen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Drag to reorder." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Arrastra para reordenar." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ドラッグして並べ替えます。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Arraste para reordenar." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Перетащите, чтобы изменить порядок." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "拖移以重新排列。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "拖移來重新排列。" } }
+      }
+    },
+    "Provider list row accessibility label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%1$@、%2$@" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "%1$@, %2$@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "%1$@，%2$@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "%1$@，%2$@" } }
+      }
+    },
+    "Turn on %@ to track its usage. Filbert keeps its saved settings." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere %@, um die Nutzung zu verfolgen. Filbert behält die gespeicherten Einstellungen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn on %@ to track its usage. Filbert keeps its saved settings." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa %@ para seguir su uso. Filbert conserva los ajustes guardados." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa %@ para seguir su uso. Filbert conserva la configuración guardada." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@をオンにすると使用量を追跡できます。保存済みの設定はFilbertが保持します。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative o %@ para acompanhar o uso. O Filbert mantém os ajustes salvos." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative o %@ para acompanhar a utilização. O Filbert mantém as definições guardadas." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите %@, чтобы отслеживать его использование. Filbert сохраняет настройки." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "打开 %@ 以跟踪其用量。Filbert 会保留已保存的设置。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "開啟%@來追蹤其用量。Filbert會保留已儲存的設定。" } }
+      }
+    },
+    "Track %@" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ verfolgen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Track %@" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir %@" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir %@" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@を追跡" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Acompanhar o %@" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Acompanhar o %@" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отслеживать %@" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "跟踪 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "追蹤%@" } }
+      }
+    },
+    "Choose…" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Auswählen …" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Choose…" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Elegir…" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Elegir…" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "選択…" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Escolher…" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Escolher…" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Выбрать…" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "选择…" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "選擇⋯" } }
+      }
+    },
+    "Each check runs %1$@ and may use some of your %2$@ quota." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Jede Prüfung führt %1$@ aus und kann einen Teil deines Kontingents bei %2$@ verbrauchen." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Each check runs %1$@ and may use some of your %2$@ quota." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Cada consulta ejecuta %1$@ y puede usar parte de tu cuota de %2$@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Cada consulta ejecuta %1$@ y puede usar parte de tu cuota de %2$@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認のたびに%1$@を実行し、%2$@の割り当ての一部が使われる場合があります。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Cada verificação executa %1$@ e pode consumir parte da sua cota do %2$@." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Cada verificação executa %1$@ e pode consumir parte da sua quota do %2$@." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Каждая проверка запускает %1$@ и может расходовать часть квоты %2$@." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "每次检查都会运行 %1$@，并可能消耗部分 %2$@ 配额。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "每次檢查都會執行%1$@，並可能消耗部分%2$@配額。" } }
+      }
+    },
+    "Stopping ends the fast checks early. Automatic checks stay on." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Damit enden die schnellen Prüfungen vorzeitig. Die automatische Prüfung bleibt eingeschaltet." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stopping ends the fast checks early. Automatic checks stay on." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Al detenerlas, las consultas rápidas terminan antes. Las consultas automáticas siguen activadas." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Si las detienes, las consultas rápidas terminan antes. Las consultas automáticas siguen activadas." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "停止すると高速確認が早めに終了します。自動確認はオンのままです。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Parar encerra as verificações rápidas antes do tempo. A verificação automática continua ativa." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ao parar, as verificações rápidas terminam mais cedo. A verificação automática mantém-se ativa." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Остановка досрочно завершает быстрые проверки. Автоматическая проверка остаётся включённой." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "停止会提前结束快速检查。自动检查保持开启。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "停止後，快速檢查會提早結束。自動檢查會保持開啟。" } }
+      }
+    },
+    "Check automatically" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Automatisch prüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check automatically" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultar automáticamente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultar automáticamente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "自動的に確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificar automaticamente" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificar automaticamente" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверять автоматически" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查" } }
+      }
+    },
+    "Check %@ automatically" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "%@ automatisch prüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check %@ automatically" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultar %@ automáticamente" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultar %@ automáticamente" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "%@を自動的に確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificar o %@ automaticamente" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificar o %@ automaticamente" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверять %@ автоматически" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "自动检查 %@" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "自動檢查%@" } }
+      }
+    },
+    "Usage checks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Nutzungsprüfung" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Usage checks" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultas de uso" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultas de uso" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "使用量の確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificações de uso" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificações da utilização" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверка использования" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用量检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "用量檢查" } }
+      }
+    },
+    "Keep checking fast" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Schnell weiter prüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Keep checking fast" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando rápido" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Seguir consultando rápido" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認を続ける" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Continuar verificando rápido" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Continuar a verificar depressa" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Продолжать быстрые проверки" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "继续快速检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "繼續快速檢查" } }
+      }
+    },
+    "Status" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Status" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Status" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Estado" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Estado" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "ステータス" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Status" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Estado" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Статус" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "状态" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "狀態" } }
+      }
+    },
+    "Needs setup" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Einrichtung nötig" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Needs setup" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Configuración necesaria" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "設定が必要" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Configuração necessária" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Требуется настройка" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "需要设置" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "需要設定" } }
+      }
+    },
+    "Check every" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Prüfintervall" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check every" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de consulta" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de consulta" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "確認の間隔" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de verificação" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de verificação" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Интервал проверки" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "检查间隔" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "檢查間隔" } }
+      }
+    },
+    "About faster checks" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Über schnellere Prüfungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "About faster checks" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de las consultas más rápidas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Acerca de las consultas más rápidas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認について" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Sobre as verificações mais rápidas" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Acerca das verificações mais rápidas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "О быстрых проверках" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "关于快速检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "關於快速檢查" } }
+      }
+    },
+    "Faster checks every" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Intervall schneller Prüfungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Faster checks every" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de consultas rápidas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo de consultas rápidas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認の間隔" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo das verificações rápidas" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Intervalo das verificações rápidas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Интервал быстрых проверок" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查间隔" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查間隔" } }
+      }
+    },
+    "Stay fast for" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Dauer schneller Prüfungen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Stay fast for" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Duración de consultas rápidas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Duración de consultas rápidas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "高速確認の継続時間" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Duração das verificações rápidas" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Duração das verificações rápidas" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Длительность быстрых проверок" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "快速检查时长" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "快速檢查持續時間" } }
+      }
+    },
+    "Turn checks on for each provider in Providers." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Aktiviere die Prüfung für jeden Anbieter unter „Anbieter“." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Turn checks on for each provider in Providers." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Activa las consultas de cada proveedor en Proveedores." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Activa las consultas de cada proveedor en Proveedores." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "“プロバイダ”で、プロバイダごとに確認をオンにします。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Ative as verificações de cada provedor em Provedores." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Ative as verificações de cada fornecedor em Fornecedores." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Включите проверки для каждого провайдера в разделе «Провайдеры»." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "在“提供商”中为每个提供商开启检查。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "在「提供者」中為每個提供者開啟檢查。" } }
+      }
+    },
+    "Check faster while you work" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Beim Arbeiten schneller prüfen" } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "Check faster while you work" } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Consultar más rápido mientras trabajas" } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Consultar más rápido mientras trabajas" } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "作業中は高速で確認" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Verificar mais rápido durante o trabalho" } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Verificar mais depressa durante o trabalho" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Проверять быстрее во время работы" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "工作时加快检查" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "工作時加快檢查" } }
+      }
+    },
+    "When a provider's usage changes, Filbert checks it %1$@ for %2$@, then %3$@ for another %2$@. Then it goes back to checking %4$@." : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de-DE" : { "stringUnit" : { "state" : "translated", "value" : "Wenn sich die Nutzung eines Anbieters ändert, prüft Filbert ihn %2$@ lang %1$@, danach weitere %2$@ lang %3$@. Anschließend prüft Filbert wieder %4$@." } },
+        "en" : { "stringUnit" : { "state" : "translated", "value" : "When a provider's usage changes, Filbert checks it %1$@ for %2$@, then %3$@ for another %2$@. Then it goes back to checking %4$@." } },
+        "es-ES" : { "stringUnit" : { "state" : "translated", "value" : "Cuando cambia el uso de un proveedor, Filbert lo consulta %1$@ durante %2$@, luego %3$@ durante %2$@ más. Después vuelve a consultar %4$@." } },
+        "es-MX" : { "stringUnit" : { "state" : "translated", "value" : "Cuando cambia el uso de un proveedor, Filbert lo consulta %1$@ durante %2$@, luego %3$@ durante %2$@ más. Después vuelve a consultar %4$@." } },
+        "ja" : { "stringUnit" : { "state" : "translated", "value" : "プロバイダの使用量が変化すると、Filbertはそのプロバイダを%2$@間、%1$@に確認し、さらに%2$@間、%3$@に確認します。その後、%4$@の確認に戻ります。" } },
+        "pt-BR" : { "stringUnit" : { "state" : "translated", "value" : "Quando o uso de um provedor muda, o Filbert verifica esse provedor %1$@ durante %2$@, depois %3$@ por mais %2$@. Em seguida, volta a verificar %4$@." } },
+        "pt-PT" : { "stringUnit" : { "state" : "translated", "value" : "Quando a utilização de um fornecedor muda, o Filbert verifica esse fornecedor %1$@ durante %2$@, depois %3$@ durante mais %2$@. Depois, volta a verificar %4$@." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Когда использование провайдера меняется, Filbert проверяет его %1$@ (%2$@), затем %3$@ (ещё %2$@). После этого снова проверяет %4$@." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "当某个提供商的用量变化时，Filbert 会在 %2$@内%1$@检查一次，然后在接下来的 %2$@内%3$@检查一次。之后会恢复为%4$@检查一次。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "當某個提供者的用量變化時，Filbert會在%2$@內%1$@檢查一次，然後在接下來的%2$@內%3$@檢查一次。之後會恢復為%4$@檢查一次。" } }
       }
     }
   },

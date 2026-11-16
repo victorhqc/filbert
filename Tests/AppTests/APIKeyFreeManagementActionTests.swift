@@ -80,4 +80,47 @@ final class APIKeyFreeManagementActionTests: XCTestCase {
 
         XCTAssertEqual(actions, [])
     }
+
+    func testTheSettingsPageOffersEverySetupActionInOneRow() {
+        let actions = APIKeyFreeManagementAction.connectionActions(
+            for: .setup(DisplayText(verbatim: "Install the helper")),
+            canInstall: true,
+            canRemove: true,
+            canImportCredentials: true
+        )
+
+        XCTAssertEqual(actions, [.installHelper, .importCredentials, .removeHelper])
+    }
+
+    func testTheSettingsPageOffersRecoveryActionsAfterAnError() {
+        let actions = APIKeyFreeManagementAction.connectionActions(
+            for: .error(DisplayText(verbatim: "Failed")),
+            canInstall: true,
+            canRemove: false,
+            canImportCredentials: false
+        )
+
+        XCTAssertEqual(actions, [.installHelper])
+    }
+
+    func testTheSettingsPageOffersRemovalOnlyForALoadedProviderWithAHelper() {
+        XCTAssertEqual(
+            APIKeyFreeManagementAction.connectionActions(
+                for: .loaded(quota),
+                canInstall: true,
+                canRemove: true,
+                canImportCredentials: true
+            ),
+            [.removeHelper]
+        )
+        XCTAssertEqual(
+            APIKeyFreeManagementAction.connectionActions(
+                for: .loaded(quota),
+                canInstall: false,
+                canRemove: false,
+                canImportCredentials: false
+            ),
+            []
+        )
+    }
 }

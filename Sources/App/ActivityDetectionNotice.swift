@@ -22,7 +22,11 @@ struct ActivityDetectionNotice: View {
 
             HStack(spacing: 12) {
                 Text(String(displayLocalized: "Set Up…", bundle: .module))
-                    .openAndRaiseSettings(at: SettingsDestination(tab: .providers, providerId: providerId))
+                    .openAndRaiseSettings(at: SettingsDestination(
+                        tab: .providers,
+                        providerId: providerId,
+                        anchor: .activityDetection
+                    ))
                     .accessibilityLabel(String.localizedStringWithFormat(
                         String(displayLocalized: "Set up activity detection for %@", bundle: .module),
                         providerName

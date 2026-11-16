@@ -50,8 +50,8 @@ checks, and how to uninstall.
 
 - **Menu bar** — what is left for the provider you use right now.
 - **Popover** — usage, limits, reset times, and forecasts for every provider.
-- **Smart usage checks** — more frequent checks while usage changes, within
-  provider rate limits.
+- **Faster checks while you work** — more frequent usage checks while usage
+  changes, within provider rate limits.
 - **Keep Mac Awake** — for a set time, or until you turn it off.
 
 See the [features](https://victorhqc.github.io/filbert/#features) on the
